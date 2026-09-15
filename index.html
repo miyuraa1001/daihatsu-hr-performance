@@ -364,14 +364,14 @@
             </div>
           </div>
 
-          <!-- 5 KPI CARDS -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-            
+          <!-- 5 KPI CARDS (FIXED RESPONSIVE GRID) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 w-full">
+          
             <!-- CARD 1: MASTER KARYAWAN -->
-            <div onclick="switchView('master-karyawan')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-blue-300 transition cursor-pointer">
+            <div onclick="switchView('master-karyawan')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-blue-300 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100">
+                  <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100 flex-shrink-0">
                     <i class="fa-solid fa-user-group"></i>
                   </div>
                   <div class="text-right">
@@ -396,17 +396,17 @@
                         <circle id="donut-slice-admin" cx="18" cy="18" r="14" fill="none" stroke="#F59E0B" stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
                       </svg>
                     </div>
-                    <div class="space-y-0.5 text-[10px] flex-1">
+                    <div class="space-y-0.5 text-[10px] flex-1 min-w-0">
                       <div class="flex items-center justify-between text-slate-600">
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-600 inline-block"></span> Sales</span>
+                        <span class="flex items-center gap-1 truncate"><span class="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0"></span> Sales</span>
                         <span class="font-bold text-slate-900" id="card-pct-sales">0%</span>
                       </div>
                       <div class="flex items-center justify-between text-slate-600">
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Bengkel</span>
+                        <span class="flex items-center gap-1 truncate"><span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span> Bengkel</span>
                         <span class="font-bold text-slate-900" id="card-pct-service">0%</span>
                       </div>
                       <div class="flex items-center justify-between text-slate-600">
-                        <span class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> Admin</span>
+                        <span class="flex items-center gap-1 truncate"><span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span> Admin</span>
                         <span class="font-bold text-slate-900" id="card-pct-admin">0%</span>
                       </div>
                     </div>
@@ -429,10 +429,10 @@
             </div>
           
             <!-- CARD 2: ABSENSI & DISIPLIN -->
-            <div onclick="switchView('absensi')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-emerald-300 transition cursor-pointer">
+            <div onclick="switchView('absensi')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-emerald-300 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm border border-emerald-100">
+                  <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm border border-emerald-100 flex-shrink-0">
                     <i class="fa-solid fa-calendar-check"></i>
                   </div>
                   <div class="text-right">
@@ -472,10 +472,10 @@
             </div>
           
             <!-- CARD 3: SUMBANG SARAN (SS) -->
-            <div onclick="switchView('ss')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-amber-300 transition cursor-pointer">
+            <div onclick="switchView('ss')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-amber-300 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm border border-amber-100">
+                  <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm border border-amber-100 flex-shrink-0">
                     <i class="fa-solid fa-lightbulb"></i>
                   </div>
                   <div class="text-right">
@@ -521,10 +521,10 @@
             </div>
           
             <!-- CARD 4: QCC / MUTU -->
-            <div onclick="switchView('qcc')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-purple-300 transition cursor-pointer">
+            <div onclick="switchView('qcc')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-purple-300 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm border border-purple-100">
+                  <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm border border-purple-100 flex-shrink-0">
                     <i class="fa-solid fa-users-gear"></i>
                   </div>
                   <div class="text-right">
@@ -562,22 +562,22 @@
                 </div>
               </div>
               <div class="mt-3 bg-purple-50/80 p-2.5 rounded-xl border border-purple-100 flex items-center gap-2">
-                <div class="w-6 h-6 rounded-lg bg-purple-200/70 text-purple-700 flex items-center justify-center text-xs">
+                <div class="w-6 h-6 rounded-lg bg-purple-200/70 text-purple-700 flex items-center justify-center text-xs flex-shrink-0">
                   <i class="fa-solid fa-trophy"></i>
                 </div>
                 <div class="min-w-0 flex-1">
                   <span class="text-[8px] font-bold text-purple-500 uppercase tracking-wider block">Predikat Terbaik Bulan Ini</span>
                   <p class="text-[10px] font-bold text-purple-900 truncate" id="card-qcc-best-team">-</p>
-                  <span class="text-[9px] text-purple-700 font-semibold" id="card-qcc-best-score">Poin: -</span>
+                  <span class="text-[9px] text-purple-700 font-semibold block" id="card-qcc-best-score">Poin: -</span>
                 </div>
               </div>
             </div>
           
             <!-- CARD 5: CATATAN DISIPLIN / SP -->
-            <div onclick="switchView('sp')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-red-300 transition cursor-pointer">
+            <div onclick="switchView('sp')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-red-300 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm border border-red-100">
+                  <div class="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm border border-red-100 flex-shrink-0">
                     <i class="fa-solid fa-shield-halved"></i>
                   </div>
                   <div class="text-right">
@@ -618,7 +618,6 @@
             </div>
           
           </div>
-
           </div>
 
           <!-- SPOTLIGHT & COACHING ALERT -->
