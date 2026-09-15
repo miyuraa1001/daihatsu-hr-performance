@@ -616,8 +616,6 @@
                 <p class="text-[9px] text-emerald-600 mt-0.5 leading-tight">Seluruh karyawan bersih tanpa sanksi</p>
               </div>
             </div>
-          
-          </div>
           </div>
 
           <!-- SPOTLIGHT & COACHING ALERT -->
@@ -923,7 +921,7 @@
       try {
         const bodyData = {
           action: actionName,
-          ...payload
+          ...payload // Kirim action dan payload saja tanpa SECRET_TOKEN
         };
     
         // Perbaikan: Gunakan BACKEND_PROXY_URL
