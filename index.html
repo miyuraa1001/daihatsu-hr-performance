@@ -366,8 +366,9 @@
 
           <!-- 5 KPI CARDS -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-            <!-- CARD 1 -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
+            
+            <!-- CARD 1: MASTER KARYAWAN -->
+            <div onclick="switchView('master-karyawan')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-blue-300 transition cursor-pointer">
               <div>
                 <div class="flex items-center justify-between mb-3">
                   <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100">
@@ -426,9 +427,9 @@
                 </div>
               </div>
             </div>
-
-            <!-- CARD 2 -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
+          
+            <!-- CARD 2: ABSENSI & DISIPLIN -->
+            <div onclick="switchView('absensi')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-emerald-300 transition cursor-pointer">
               <div>
                 <div class="flex items-center justify-between mb-3">
                   <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm border border-emerald-100">
@@ -469,9 +470,9 @@
                 <span class="text-[9px] text-emerald-600">Target &ge; 95%</span>
               </div>
             </div>
-
-            <!-- CARD 3 -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
+          
+            <!-- CARD 3: SUMBANG SARAN (SS) -->
+            <div onclick="switchView('ss')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-amber-300 transition cursor-pointer">
               <div>
                 <div class="flex items-center justify-between mb-3">
                   <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm border border-amber-100">
@@ -518,9 +519,9 @@
                 </div>
               </div>
             </div>
-
-            <!-- CARD 4 -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
+          
+            <!-- CARD 4: QCC / MUTU -->
+            <div onclick="switchView('qcc')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-purple-300 transition cursor-pointer">
               <div>
                 <div class="flex items-center justify-between mb-3">
                   <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm border border-purple-100">
@@ -571,9 +572,9 @@
                 </div>
               </div>
             </div>
-
-            <!-- CARD 5 -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
+          
+            <!-- CARD 5: CATATAN DISIPLIN / SP -->
+            <div onclick="switchView('sp')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-red-300 transition cursor-pointer">
               <div>
                 <div class="flex items-center justify-between mb-3">
                   <div class="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm border border-red-100">
@@ -615,6 +616,8 @@
                 <p class="text-[9px] text-emerald-600 mt-0.5 leading-tight">Seluruh karyawan bersih tanpa sanksi</p>
               </div>
             </div>
+          
+          </div>
 
           </div>
 
@@ -1014,29 +1017,39 @@
     function populateBranchDropdown() {
       const select = document.getElementById('branch-select');
       select.innerHTML = '';
-
-      if (loggedInUser.assignedBACodes && loggedInUser.assignedBACodes.length > 1) {
-        const optAll = document.createElement('option');
-        optAll.value = 'ALL';
-        optAll.textContent = 'Semua Cabang Wewenang';
-        select.appendChild(optAll);
-      }
-
+    
       const branchNameMap = {
         "D660": "Lampung A Yani (D660)",
         "D661": "Lampung S Hatta (D661)",
         "D662": "Bandarjaya (D662)",
-        "D663": "Kotabumi (D663)",
+        "D663": "Lampung Utara (D663)",
         "D664": "Lampung Timur (D664)"
       };
-
-      if (loggedInUser.assignedBACodes) {
+    
+      // Jika Admin/HRD: Beri pilihan "Semua Cabang" dan daftar seluruh cabang
+      if (loggedInUser.isAllBranch) {
+        const optAll = document.createElement('option');
+        optAll.value = 'ALL';
+        optAll.textContent = 'Semua Cabang Wewenang';
+        select.appendChild(optAll);
+    
         loggedInUser.assignedBACodes.forEach(code => {
           const opt = document.createElement('option');
           opt.value = code;
           opt.textContent = branchNameMap[code] || code;
           select.appendChild(opt);
         });
+      } else {
+        // Jika Kacab (User biasa): Kunci dropdown HANYA ke cabangnya sendiri
+        const userCode = loggedInUser.assignedBACodes[0];
+        const opt = document.createElement('option');
+        opt.value = userCode;
+        opt.textContent = branchNameMap[userCode] || userCode;
+        select.appendChild(opt);
+        
+        // Nonaktifkan dropdown agar Kacab tidak bisa mengganti cabang lain
+        select.disabled = true;
+        select.classList.add('cursor-not-allowed', 'opacity-80');
       }
     }
 
