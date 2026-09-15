@@ -1,33 +1,34 @@
-// Mengambil variabel dari Environment Variable Vercel (atau fallback)
-const API_URL = process.env.NEXT_PUBLIC_APPS_SCRIPT_URL || "URL_WEB_APP_APPS_SCRIPT_KAMU";
-const SECRET_TOKEN = process.env.NEXT_PUBLIC_SECRET_TOKEN || "COBA_COBA_PART01";
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ success: false, message: 'Method not allowed' });
+  }
 
-/**
- * Fungsi serbaguna untuk mengirim data ke Google Apps Script
- */
-async function sendToAppsScript(action, payloadData = {}) {
   try {
-    const bodyPayload = {
+    const APPS_SCRIPT_URL = process.env.API_URL || process.env.NEXT_PUBLIC_APPS_SCRIPT_URL;
+    const SECRET_TOKEN = process.env.SECRET_TOKEN || process.env.NEXT_PUBLIC_SECRET_TOKEN;
+
+    if (!APPS_SCRIPT_URL) {
+      return res.status(500).json({ success: false, message: 'API_URL belum diset di Vercel Environment Variables.' });
+    }
+
+    // Gabungkan token rahasia Vercel dengan payload dari frontend HTML
+    const payload = {
       token: SECRET_TOKEN,
-      action: action,
-      ...payloadData
+      ...req.body
     };
 
-    const response = await fetch(API_URL, {
-      method: "POST",
+    // Meneruskan request ke Google Apps Script
+    const response = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
       headers: {
-        "Content-Type": "text/plain;charset=utf-8" // Disarankan untuk Apps Script
+        'Content-Type': 'text/plain;charset=utf-8'
       },
-      body: JSON.stringify(bodyPayload)
+      body: JSON.stringify(payload)
     });
 
-    const result = await response.json();
-    return result;
+    const data = await response.json();
+    return res.status(200).json(data);
   } catch (error) {
-    console.error("Error API Call:", error);
-    return { success: false, message: "Gagal terhubung ke server backend." };
+    return res.status(500).json({ success: false, message: 'Proxy Error: ' + error.message });
   }
 }
-
-// Contoh Pemanggilan:
-// sendToAppsScript("PING").then(res => console.log(res));
