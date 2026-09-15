@@ -1014,22 +1014,21 @@
     function populateBranchDropdown() {
       const select = document.getElementById('branch-select');
       select.innerHTML = '';
-    
+      
       const branchNameMap = {
         "D660": "Lampung A Yani (D660)",
         "D661": "Lampung S Hatta (D661)",
         "D662": "Bandarjaya (D662)",
-        "D663": "Lampung Utara (D663)",
+        "D663": "Kotabumi (D663)",
         "D664": "Lampung Timur (D664)"
       };
-    
-      // Jika Admin/HRD: Beri pilihan "Semua Cabang" dan daftar seluruh cabang
+      
       if (loggedInUser.isAllBranch) {
         const optAll = document.createElement('option');
         optAll.value = 'ALL';
         optAll.textContent = 'Semua Cabang Wewenang';
         select.appendChild(optAll);
-    
+        
         loggedInUser.assignedBACodes.forEach(code => {
           const opt = document.createElement('option');
           opt.value = code;
@@ -1037,17 +1036,18 @@
           select.appendChild(opt);
         });
       } else {
-        // Jika Kacab (User biasa): Kunci dropdown HANYA ke cabangnya sendiri
         const userCode = loggedInUser.assignedBACodes[0];
         const opt = document.createElement('option');
         opt.value = userCode;
         opt.textContent = branchNameMap[userCode] || userCode;
         select.appendChild(opt);
         
-        // Nonaktifkan dropdown agar Kacab tidak bisa mengganti cabang lain
         select.disabled = true;
         select.classList.add('cursor-not-allowed', 'opacity-80');
       }
+
+      // Pastikan nilai default dropdown terpilih otomatis!
+      select.value = loggedInUser.isAllBranch ? 'ALL' : loggedInUser.assignedBACodes[0];
     }
 
     function handleBranchOrPeriodChange() {
