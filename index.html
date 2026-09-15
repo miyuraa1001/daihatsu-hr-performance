@@ -907,8 +907,7 @@
   <!-- ======================================================== -->
   <script>
     // Membaca Variabel Lingkungan dari Vercel secara Aman (Tanpa Hardcode)
-    const APPS_SCRIPT_URL = (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_APPS_SCRIPT_URL) ? process.env.NEXT_PUBLIC_APPS_SCRIPT_URL : "";
-    const SECRET_TOKEN    = (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_SECRET_TOKEN) ? process.env.NEXT_PUBLIC_SECRET_TOKEN : "";
+    const BACKEND_PROXY_URL = "/api/backend";
 
     // State Global
     let loggedInUser = null;
@@ -920,20 +919,15 @@
      */
     async function callBackendAPI(actionName, payload = {}) {
       try {
-        if (!APPS_SCRIPT_URL) {
-          return { success: false, message: "URL Apps Script belum diset di Environment Variable Vercel." };
-        }
-
         const bodyData = {
-          token: SECRET_TOKEN,
           action: actionName,
           ...payload
         };
 
-        const response = await fetch(APPS_SCRIPT_URL, {
+        const response = await fetch(PROXY_API_URL, {
           method: "POST",
           headers: {
-            "Content-Type": "text/plain;charset=utf-8"
+            "Content-Type": "application/json"
           },
           body: JSON.stringify(bodyData)
         });
@@ -942,11 +936,11 @@
         return result;
       } catch (err) {
         console.error("API Error:", err);
-        return { success: false, message: "Gagal terhubung ke Apps Script Backend: " + err.message };
+        return { success: false, message: "Gagal terhubung ke server backend: " + err.message };
       }
     }
 
-    // 0. Toggle Visibility Password
+    // 0. Toggle Mata Password
     function togglePasswordVisibility() {
       const passInput = document.getElementById('login-password');
       const toggleIcon = document.getElementById('password-toggle-icon');
@@ -975,6 +969,7 @@
       btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Memverifikasi...`;
       errEl.classList.add('hidden');
 
+      // Mengirimkan data login ke api/proxy.js
       const res = await callBackendAPI("LOGIN", { username: u, password: p });
 
       btn.disabled = false;
