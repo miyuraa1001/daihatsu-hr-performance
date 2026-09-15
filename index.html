@@ -907,7 +907,7 @@
   <!-- ======================================================== -->
   <script>
     // Membaca Variabel Lingkungan dari Vercel secara Aman (Tanpa Hardcode)
-    const BACKEND_PROXY_URL = "/api/backend";
+    const BACKEND_PROXY_URL = "/api/proxy";
 
     // State Global
     let loggedInUser = null;
@@ -923,15 +923,16 @@
           action: actionName,
           ...payload
         };
-
-        const response = await fetch(PROXY_API_URL, {
+    
+        // Perbaikan: Gunakan BACKEND_PROXY_URL
+        const response = await fetch(BACKEND_PROXY_URL, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify(bodyData)
         });
-
+    
         const result = await response.json();
         return result;
       } catch (err) {
@@ -939,7 +940,6 @@
         return { success: false, message: "Gagal terhubung ke server backend: " + err.message };
       }
     }
-
     // 0. Toggle Mata Password
     function togglePasswordVisibility() {
       const passInput = document.getElementById('login-password');
