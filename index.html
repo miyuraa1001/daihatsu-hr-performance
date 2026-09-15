@@ -127,7 +127,6 @@
               maxlength="6"
               class="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-medium tracking-wider"
             >
-            <!-- Tombol Toggle Show/Hide Password -->
             <button 
               type="button" 
               onclick="togglePasswordVisibility()" 
@@ -283,17 +282,13 @@
           </div>
         </div>
 
-        <!-- Controls: Branch Switcher, Period Selector & User Profile -->
         <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          <!-- Dynamic Branch Selector -->
           <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5">
             <span class="text-xs text-slate-400 mr-1.5 font-medium hidden sm:inline"><i class="fa-solid fa-location-dot mr-1 text-red-500"></i>Cabang:</span>
             <select id="branch-select" onchange="handleBranchOrPeriodChange()" class="text-xs font-bold bg-transparent text-slate-800 focus:outline-none cursor-pointer">
-              <!-- Populated via JS -->
             </select>
           </div>
 
-          <!-- Period Selector -->
           <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 gap-1.5 text-xs">
             <span class="text-[11px] text-slate-400 font-medium hidden sm:inline">Periode PBK</span>
             <select id="period-select" onchange="handleBranchOrPeriodChange()" class="bg-transparent focus:outline-none cursor-pointer text-xs font-bold text-slate-800">
@@ -304,7 +299,6 @@
             <i class="fa-regular fa-calendar text-slate-400 text-xs hidden sm:inline"></i>
           </div>
 
-          <!-- User Menu & Logout -->
           <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-1 sm:pr-3">
             <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-xs">
               <i class="fa-solid fa-user-tie"></i>
@@ -329,12 +323,9 @@
           <p class="text-xs font-bold text-slate-700 mt-3">Mengambil data dari Google Spreadsheet...</p>
         </div>
 
-        <!-- ======================================================== -->
-        <!-- VIEW: DASHBOARD (MAIN OVERVIEW) -->
-        <!-- ======================================================== -->
+        <!-- VIEW: DASHBOARD -->
         <div id="view-dashboard" class="space-y-4 max-w-[1400px] mx-auto">
           
-          <!-- Admin Action Banner (Only visible for HR/Admin) -->
           <div id="admin-action-banner" class="hidden bg-gradient-to-r from-red-600 to-red-700 text-white p-4 sm:px-5 sm:py-3 rounded-2xl shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3">
               <div class="w-9 h-9 rounded-xl bg-white/10 flex items-center justify-center text-white flex-shrink-0">
@@ -352,7 +343,6 @@
             </div>
           </div>
 
-          <!-- TOP WELCOME GREETING CARD -->
           <div class="bg-white rounded-2xl p-4 sm:px-6 border border-slate-200/80 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <div class="flex items-center gap-3.5">
               <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center text-base sm:text-lg border border-red-100 flex-shrink-0">
@@ -374,10 +364,9 @@
             </div>
           </div>
 
-          <!-- 5 KPI SUMMARY CARDS GRID -->
+          <!-- 5 KPI CARDS -->
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3.5">
-            
-            <!-- CARD 1: MASTER KARYAWAN -->
+            <!-- CARD 1 -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
               <div>
                 <div class="flex items-center justify-between mb-3">
@@ -395,8 +384,6 @@
                     <span class="text-xs font-bold text-slate-500">Karyawan Aktif</span>
                   </div>
                 </div>
-
-                <!-- Komposisi Divisi: Donut Chart Dinamis -->
                 <div class="pt-2.5 border-t border-slate-100">
                   <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Komposisi Divisi</span>
                   <div class="flex items-center gap-3">
@@ -425,8 +412,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Status Tenaga Kerja -->
               <div class="pt-3 border-t border-slate-100 mt-3 text-[10px]">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Tenaga Kerja</span>
                 <div class="flex items-center justify-between">
@@ -442,7 +427,7 @@
               </div>
             </div>
 
-            <!-- CARD 2: ABSENSI & KEDISIPLINAN -->
+            <!-- CARD 2 -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
               <div>
                 <div class="flex items-center justify-between mb-3">
@@ -454,23 +439,18 @@
                     <span class="text-[9px] text-slate-400">Attendance Rate</span>
                   </div>
                 </div>
-
                 <div class="mb-2">
                   <div class="flex items-baseline gap-1">
                     <span class="text-3xl font-black text-slate-900" id="card-kehadiran-rate">0.0<span class="text-2xl font-bold">%</span></span>
                   </div>
                   <span class="text-[10px] font-bold text-slate-400 block">Tingkat Kehadiran</span>
                 </div>
-
-                <!-- SVG Sparkline Trendline -->
                 <div class="my-2 py-1 bg-emerald-50/50 rounded-lg p-2 border border-emerald-100/50">
                   <svg class="w-full h-8 text-emerald-500 overflow-visible" viewBox="0 0 100 25" preserveAspectRatio="none">
                     <path d="M0 20 Q 20 8, 35 15 T 65 10 T 100 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
                     <circle cx="100" cy="5" r="3" fill="#059669"/>
                   </svg>
                 </div>
-
-                <!-- Detail Alpha & Sering Telat -->
                 <div class="grid grid-cols-2 gap-2 mt-2">
                   <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 text-center">
                     <span class="text-[9px] text-slate-400 block font-medium">Alpha / Mangkir</span>
@@ -484,15 +464,13 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Status Kehadiran Badge -->
               <div class="mt-3 bg-emerald-50 p-2 rounded-xl border border-emerald-100 text-center" id="card-attendance-badge">
                 <span class="text-[10px] font-extrabold text-emerald-700 block">SANGAT BAIK</span>
                 <span class="text-[9px] text-emerald-600">Target &ge; 95%</span>
               </div>
             </div>
 
-            <!-- CARD 3: SUMBANG SARAN (SS) -->
+            <!-- CARD 3 -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
               <div>
                 <div class="flex items-center justify-between mb-3">
@@ -504,7 +482,6 @@
                     <span class="text-[9px] text-slate-400">Inovasi & Keterlibatan</span>
                   </div>
                 </div>
-
                 <div class="mb-2">
                   <div class="flex items-baseline gap-1">
                     <span class="text-3xl font-black text-slate-900" id="card-ss-total">0</span>
@@ -512,8 +489,6 @@
                   </div>
                   <span class="text-[10px] font-bold text-slate-400 block">Ide SS Masuk (Target Bulanan)</span>
                 </div>
-
-                <!-- Progress Bar SS -->
                 <div class="my-2">
                   <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
                     <div id="card-ss-progress-bar" class="bg-amber-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
@@ -523,16 +498,12 @@
                     <span class="font-bold text-amber-600" id="card-ss-target-pct">0%</span>
                   </div>
                 </div>
-
-                <!-- Partisipasi Karyawan -->
                 <div class="pt-2 border-t border-slate-100">
                   <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Partisipasi Karyawan</span>
                   <span class="text-xl font-black text-slate-900" id="card-ss-part-pct">0%</span>
-                  <p class="text-[9px] text-slate-500 mt-0.5" id="card-ss-part-text">0 karyawan sudah setor SS bulan ini</p>
+                  <p class="text-[9px] text-slate-500 mt-0.5" id="card-ss-part-text">Inisiatif Kaizen cabang berjalan optimal</p>
                 </div>
               </div>
-
-              <!-- Status SS: Implemented vs Evaluasi -->
               <div class="pt-2.5 border-t border-slate-100 mt-2 text-[10px]">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status SS</span>
                 <div class="flex items-center justify-between">
@@ -548,7 +519,7 @@
               </div>
             </div>
 
-            <!-- CARD 4: QCC / GUGUS KENDALI MUTU -->
+            <!-- CARD 4 -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
               <div>
                 <div class="flex items-center justify-between mb-3">
@@ -560,7 +531,6 @@
                     <span class="text-[9px] text-slate-400">Kolaborasi & Problem Solving</span>
                   </div>
                 </div>
-
                 <div class="mb-2">
                   <div class="flex items-baseline gap-1">
                     <span class="text-3xl font-black text-slate-900" id="card-qcc-total">0</span>
@@ -568,8 +538,6 @@
                   </div>
                   <span class="text-[10px] font-bold text-slate-400 block">Proyek QCC Aktif</span>
                 </div>
-
-                <!-- Tahapan Proyek (PDCA) -->
                 <div class="pt-2 border-t border-slate-100">
                   <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Tahapan Proyek (PDCA)</span>
                   <div class="grid grid-cols-4 gap-1 text-center">
@@ -592,8 +560,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Predikat Terbaik -->
               <div class="mt-3 bg-purple-50/80 p-2.5 rounded-xl border border-purple-100 flex items-center gap-2">
                 <div class="w-6 h-6 rounded-lg bg-purple-200/70 text-purple-700 flex items-center justify-center text-xs">
                   <i class="fa-solid fa-trophy"></i>
@@ -606,7 +572,7 @@
               </div>
             </div>
 
-            <!-- CARD 5: CATATAN DISIPLIN / SP -->
+            <!-- CARD 5 -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
               <div>
                 <div class="flex items-center justify-between mb-3">
@@ -618,7 +584,6 @@
                     <span class="text-[9px] text-slate-400">Risk & Compliance</span>
                   </div>
                 </div>
-
                 <div class="mb-2">
                   <div class="flex items-baseline gap-1">
                     <span class="text-3xl font-black text-slate-900" id="card-sp-total">0</span>
@@ -626,8 +591,6 @@
                   </div>
                   <span class="text-[10px] font-bold text-slate-400 block">SP Aktif</span>
                 </div>
-
-                <!-- Rincian SP1, SP2, SP3 -->
                 <div class="pt-2 border-t border-slate-100">
                   <div class="grid grid-cols-3 gap-1.5 text-center">
                     <div class="bg-amber-50 rounded-xl p-1.5 border border-amber-200">
@@ -645,8 +608,6 @@
                   </div>
                 </div>
               </div>
-
-              <!-- Status Alert Box -->
               <div id="card-sp-alert-box" class="mt-3 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 text-center">
                 <p class="text-[11px] font-extrabold text-emerald-700 flex items-center justify-center gap-1">
                   <i class="fa-solid fa-circle-check"></i> CLEAR BRANCH
@@ -657,10 +618,8 @@
 
           </div>
 
-          <!-- DUAL INSIGHT SECTION: TOP SPOTLIGHT & COACHING ALERT -->
+          <!-- SPOTLIGHT & COACHING ALERT -->
           <div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
-            
-            <!-- LEFT: TOP PERFORMANCE SPOTLIGHT -->
             <div class="lg:col-span-6 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
               <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2.5">
                 <div class="flex items-center gap-2">
@@ -669,7 +628,6 @@
                 </div>
                 <span class="text-[10px] text-slate-400 font-medium">Bahan Apresiasi & Reward</span>
               </div>
-
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-100">
                   <span class="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded block mb-2 w-fit">Top 3 Kehadiran Tertinggi</span>
@@ -677,7 +635,6 @@
                     <p class="text-xs text-slate-400 italic">Memuat data...</p>
                   </div>
                 </div>
-
                 <div class="bg-slate-50/70 p-3 rounded-xl border border-slate-100">
                   <span class="text-[10px] font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded block mb-2 w-fit">Top 3 SS Contributor</span>
                   <div class="space-y-2" id="spotlight-top-ss">
@@ -687,7 +644,6 @@
               </div>
             </div>
 
-            <!-- RIGHT: COACHING ALERT (PERLU PEMBINAAN) -->
             <div class="lg:col-span-6 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between mb-3 border-b border-slate-100 pb-2.5">
@@ -697,7 +653,6 @@
                   </div>
                   <span class="text-[10px] text-red-600 font-bold bg-red-50 px-2 py-0.5 rounded">Tindakan Cepat</span>
                 </div>
-
                 <div class="overflow-x-auto">
                   <table class="w-full text-left text-xs">
                     <thead>
@@ -713,16 +668,14 @@
                   </table>
                 </div>
               </div>
-
               <div class="pt-3 mt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
                 <span>Evaluasi pembinaan dicatat langsung pada lembar PBK</span>
                 <button onclick="switchView('pbk')" class="text-red-600 font-bold hover:underline">Buka Modul PBK &rarr;</button>
               </div>
             </div>
-
           </div>
 
-          <!-- BOTTOM EMPLOYEE TABLE FOR CABANG -->
+          <!-- EMPLOYEE TABLE -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
               <div>
@@ -734,7 +687,6 @@
                 <input type="text" id="employee-search-input" onkeyup="filterEmployeeTable()" placeholder="Cari nama atau NPK..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
               </div>
             </div>
-
             <div class="overflow-x-auto">
               <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
@@ -758,9 +710,7 @@
 
         </div>
 
-        <!-- ======================================================== -->
         <!-- VIEW: MODUL PBK -->
-        <!-- ======================================================== -->
         <div id="view-pbk" class="hidden space-y-4 max-w-[1400px] mx-auto">
           <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
             <div class="flex items-center justify-between mb-4">
@@ -793,7 +743,7 @@
           </div>
         </div>
 
-        <!-- VIEW PLACEHOLDERS (Master Karyawan, Absensi, SS, QCC, SP, Laporan) -->
+        <!-- VIEW PLACEHOLDERS -->
         <div id="view-master-karyawan" class="hidden space-y-4 max-w-[1400px] mx-auto">
           <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
             <h3 class="text-base font-extrabold text-slate-900 mb-1">Master Karyawan DSO Lampung</h3>
@@ -836,7 +786,6 @@
 
       </main>
 
-      <!-- FOOTER INFO BAR -->
       <footer class="bg-white border-t border-slate-200 px-4 py-2 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400 gap-1">
         <div class="flex items-center gap-1.5">
           <i class="fa-solid fa-circle-info text-slate-400"></i>
@@ -849,9 +798,7 @@
 
   </div>
 
-  <!-- ======================================================== -->
-  <!-- MODAL: UPLOAD DATA EXCEL HR (ADMIN ONLY) -->
-  <!-- ======================================================== -->
+  <!-- MODAL: UPLOAD EXCEL -->
   <div id="modal-upload" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full p-6 relative">
       <button onclick="closeModal('modal-upload')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
@@ -895,9 +842,7 @@
     </div>
   </div>
 
-  <!-- ======================================================== -->
-  <!-- MODAL: DETAIL PBK KARYAWAN -->
-  <!-- ======================================================== -->
+  <!-- MODAL: DETAIL PBK -->
   <div id="modal-pbk-detail" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full p-6 relative my-auto">
       <button onclick="closeModal('modal-pbk-detail')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
@@ -951,22 +896,57 @@
     </div>
   </div>
 
-  <!-- TOAST NOTIFICATION CONTAINER -->
+  <!-- TOAST CONTAINER -->
   <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none text-xs">
     <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
     <span id="toast-message" class="font-medium">Pemberitahuan</span>
   </div>
 
   <!-- ======================================================== -->
-  <!-- JAVASCRIPT: LOGIKA PENUH BACKEND APPS SCRIPT SINKRON -->
+  <!-- JAVASCRIPT: SECURE AMAN UNTUK VERCEL & GITHUB -->
   <!-- ======================================================== -->
   <script>
-    // State Global Aplikasi
+    // Membaca Variabel Lingkungan dari Vercel secara Aman (Tanpa Hardcode)
+    const APPS_SCRIPT_URL = (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_APPS_SCRIPT_URL) ? process.env.NEXT_PUBLIC_APPS_SCRIPT_URL : "";
+    const SECRET_TOKEN    = (typeof process !== 'undefined' && process.env && process.env.NEXT_PUBLIC_SECRET_TOKEN) ? process.env.NEXT_PUBLIC_SECRET_TOKEN : "";
+
+    // State Global
     let loggedInUser = null;
     let currentDashboardPayload = null;
     let currentView = 'dashboard';
 
-    // 0. Toggle Mata Password
+    /**
+     * Helper Pemanggil Backend Google Apps Script via API Fetch
+     */
+    async function callBackendAPI(actionName, payload = {}) {
+      try {
+        if (!APPS_SCRIPT_URL) {
+          return { success: false, message: "URL Apps Script belum diset di Environment Variable Vercel." };
+        }
+
+        const bodyData = {
+          token: SECRET_TOKEN,
+          action: actionName,
+          ...payload
+        };
+
+        const response = await fetch(APPS_SCRIPT_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "text/plain;charset=utf-8"
+          },
+          body: JSON.stringify(bodyData)
+        });
+
+        const result = await response.json();
+        return result;
+      } catch (err) {
+        console.error("API Error:", err);
+        return { success: false, message: "Gagal terhubung ke Apps Script Backend: " + err.message };
+      }
+    }
+
+    // 0. Toggle Visibility Password
     function togglePasswordVisibility() {
       const passInput = document.getElementById('login-password');
       const toggleIcon = document.getElementById('password-toggle-icon');
@@ -982,8 +962,8 @@
       }
     }
 
-    // 1. Logika Login Pengguna
-    function handleLoginSubmit(e) {
+    // 1. Submit Login
+    async function handleLoginSubmit(e) {
       e.preventDefault();
       const u = document.getElementById('login-username').value.trim();
       const p = document.getElementById('login-password').value.trim();
@@ -995,30 +975,17 @@
       btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Memverifikasi...`;
       errEl.classList.add('hidden');
 
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler(function(res) {
-            btn.disabled = false;
-            btn.innerHTML = `<span>Masuk ke Dashboard</span> <i class="fa-solid fa-arrow-right"></i>`;
-            if (res.success) {
-              loggedInUser = res.user;
-              initAuthenticatedApp();
-            } else {
-              errEl.textContent = res.message || 'NPK atau Tanggal Lahir (DDMMYY) salah!';
-              errEl.classList.remove('hidden');
-            }
-          })
-          .withFailureHandler(function(err) {
-            btn.disabled = false;
-            btn.innerHTML = `<span>Masuk ke Dashboard</span> <i class="fa-solid fa-arrow-right"></i>`;
-            errEl.textContent = "Error: " + err.message;
-            errEl.classList.remove('hidden');
-          })
-          .loginUser(u, p);
+      const res = await callBackendAPI("LOGIN", { username: u, password: p });
+
+      btn.disabled = false;
+      btn.innerHTML = `<span>Masuk ke Dashboard</span> <i class="fa-solid fa-arrow-right"></i>`;
+
+      if (res.success) {
+        loggedInUser = res.user;
+        initAuthenticatedApp();
       } else {
-        alert("Google Apps Script Backend tidak terdeteksi. Pastikan file dijalankan dalam Web App Apps Script.");
-        btn.disabled = false;
-        btn.innerHTML = `<span>Masuk ke Dashboard</span> <i class="fa-solid fa-arrow-right"></i>`;
+        errEl.textContent = res.message || 'NPK atau Tanggal Lahir (DDMMYY) salah!';
+        errEl.classList.remove('hidden');
       }
     }
 
@@ -1029,7 +996,7 @@
       document.getElementById('login-password').value = '';
     }
 
-    // 2. Inisialisasi Tampilan Setelah Login Berhasil
+    // 2. Inisialisasi Tampilan Setelah Login
     function initAuthenticatedApp() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app-screen').classList.remove('hidden');
@@ -1038,15 +1005,13 @@
       document.getElementById('header-user-role').textContent = loggedInUser.jabatan || loggedInUser.role;
       document.getElementById('welcome-greeting-title').textContent = `Selamat datang, ${loggedInUser.nama}!`;
 
-      // Tampilkan banner admin jika HRD
       const adminBanner = document.getElementById('admin-action-banner');
-      if (loggedInUser.role.toLowerCase() === 'admin') {
+      if (loggedInUser.role && loggedInUser.role.toLowerCase() === 'admin') {
         adminBanner.classList.remove('hidden');
       } else {
         adminBanner.classList.add('hidden');
       }
 
-      // Render Dropdown Cabang Sesuai Assigned Branches User
       populateBranchDropdown();
       loadBackendDashboardData();
     }
@@ -1070,12 +1035,14 @@
         "D664": "Lampung Timur (D664)"
       };
 
-      loggedInUser.assignedBACodes.forEach(code => {
-        const opt = document.createElement('option');
-        opt.value = code;
-        opt.textContent = branchNameMap[code] || code;
-        select.appendChild(opt);
-      });
+      if (loggedInUser.assignedBACodes) {
+        loggedInUser.assignedBACodes.forEach(code => {
+          const opt = document.createElement('option');
+          opt.value = code;
+          opt.textContent = branchNameMap[code] || code;
+          select.appendChild(opt);
+        });
+      }
     }
 
     function handleBranchOrPeriodChange() {
@@ -1084,37 +1051,33 @@
       loadBackendDashboardData();
     }
 
-    // 3. Mengambil Data Real-Time dari Backend Apps Script
-    function loadBackendDashboardData() {
+    // 3. Ambil Data Dashboard
+    async function loadBackendDashboardData() {
       const branchVal = document.getElementById('branch-select').value;
       const periodVal = document.getElementById('period-select').value;
       const loader = document.getElementById('loading-overlay');
       loader.classList.remove('hidden');
 
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler(function(res) {
-            loader.classList.add('hidden');
-            if (res.success) {
-              currentDashboardPayload = res.data;
-              renderAllDashboardData(res.data);
-            } else {
-              showToast("Gagal memuat: " + res.message);
-            }
-          })
-          .withFailureHandler(function(err) {
-            loader.classList.add('hidden');
-            showToast("Error koneksi backend: " + err.message);
-          })
-          .getDashboardData(loggedInUser, branchVal, periodVal);
+      const res = await callBackendAPI("GET_DASHBOARD", {
+        user: loggedInUser,
+        branch: branchVal,
+        period: periodVal
+      });
+
+      loader.classList.add('hidden');
+
+      if (res.success) {
+        currentDashboardPayload = res.data;
+        renderAllDashboardData(res.data);
+      } else {
+        showToast("Gagal memuat data: " + res.message);
       }
     }
 
-    // 4. Render Seluruh Metrik & Grafik Visual Berdasarkan Data Nyata
+    // 4. Render Metrik
     function renderAllDashboardData(data) {
       const s = data.summary;
 
-      // Card 1: Master Karyawan
       document.getElementById('card-total-karyawan').textContent = s.totalKaryawan;
       document.getElementById('card-pct-sales').textContent = `${s.salesPct}%`;
       document.getElementById('card-pct-service').textContent = `${s.servicePct}%`;
@@ -1122,7 +1085,6 @@
       document.getElementById('card-tetap-count').textContent = `${s.countTetap} (${s.totalKaryawan ? Math.round((s.countTetap/s.totalKaryawan)*100) : 0}%)`;
       document.getElementById('card-kontrak-count').textContent = `${s.countPKWT} (${s.totalKaryawan ? Math.round((s.countPKWT/s.totalKaryawan)*100) : 0}%)`;
 
-      // Donut Chart Slices (Dynamic Dasharray & Dashoffset)
       const cSales = document.getElementById('donut-slice-sales');
       const cSvc = document.getElementById('donut-slice-service');
       const cAdm = document.getElementById('donut-slice-admin');
@@ -1138,23 +1100,19 @@
       cAdm.setAttribute('stroke-dasharray', `${s.adminPct} 100`);
       cAdm.setAttribute('stroke-dashoffset', `${admOffset}`);
 
-      // Card 2: Absensi
       document.getElementById('card-kehadiran-rate').innerHTML = `${s.avgAttendance}<span class="text-2xl font-bold">%</span>`;
       document.getElementById('card-alpha-count').textContent = s.totalAlpha;
       document.getElementById('card-telat-count').textContent = s.totalSeringTelat;
 
-      // Card 3: SS
       document.getElementById('card-ss-total').textContent = s.totalSS;
       document.getElementById('card-ss-target-denom').textContent = `/ ${s.targetSS}`;
       const ssPct = s.targetSS > 0 ? Math.min(Math.round((s.totalSS / s.targetSS) * 100), 100) : 0;
       document.getElementById('card-ss-progress-bar').style.width = `${ssPct}%`;
       document.getElementById('card-ss-target-pct').textContent = `${ssPct}%`;
       document.getElementById('card-ss-part-pct').textContent = `${s.ssParticipationRate}%`;
-      document.getElementById('card-ss-part-text').textContent = `Inisiatif Kaizen cabang berjalan optimal`;
       document.getElementById('card-ss-implemented').textContent = `${s.countImplementedSS} Ide`;
       document.getElementById('card-ss-evaluasi').textContent = `${s.countEvaluasiSS} Ide`;
 
-      // Card 4: QCC
       document.getElementById('card-qcc-total').textContent = s.totalQCCCircles;
       document.getElementById('card-pdca-plan').textContent = s.pdcaCount.Plan;
       document.getElementById('card-pdca-do').textContent = s.pdcaCount.Do;
@@ -1162,44 +1120,19 @@
       document.getElementById('card-pdca-action').textContent = s.pdcaCount.Action;
       if (s.bestQCC) {
         document.getElementById('card-qcc-best-team').textContent = s.bestQCC.namaTim;
-        document.getElementById('card-qcc-best-score').textContent = `Poin Tertinggi: ${s.bestQCC.skor}`;
+        document.getElementById('card-qcc-best-score').textContent = `Poin: ${s.bestQCC.skor}`;
       } else {
         document.getElementById('card-qcc-best-team').textContent = "Belum Ada Circle";
         document.getElementById('card-qcc-best-score').textContent = "Poin: -";
       }
 
-      // Card 5: SP
       document.getElementById('card-sp-total').textContent = s.totalSP;
       document.getElementById('card-sp1-count').textContent = s.countSP1;
       document.getElementById('card-sp2-count').textContent = s.countSP2;
       document.getElementById('card-sp3-count').textContent = s.countSP3;
 
-      const alertBox = document.getElementById('card-sp-alert-box');
-      if (s.totalSP === 0) {
-        alertBox.className = 'mt-3 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 text-center';
-        alertBox.innerHTML = `
-          <p class="text-[11px] font-extrabold text-emerald-700 flex items-center justify-center gap-1">
-            <i class="fa-solid fa-circle-check"></i> CLEAR BRANCH
-          </p>
-          <p class="text-[9px] text-emerald-600 mt-0.5 leading-tight">Seluruh karyawan bersih tanpa sanksi</p>
-        `;
-      } else {
-        alertBox.className = 'mt-3 bg-red-50 p-2.5 rounded-xl border border-red-200 text-center';
-        alertBox.innerHTML = `
-          <p class="text-[11px] font-extrabold text-red-700 flex items-center justify-center gap-1">
-            <i class="fa-solid fa-triangle-exclamation"></i> NEEDS ATTENTION
-          </p>
-          <p class="text-[9px] text-red-600 mt-0.5 leading-tight">Terdapat ${s.totalSP} SP Aktif yang perlu ditindaklanjuti</p>
-        `;
-      }
-
-      // Render Top Spotlight
       renderTopSpotlight(data.topAttendance, data.topSS);
-
-      // Render Coaching Alert
       renderCoachingAlert(data.coachingAlerts);
-
-      // Render Bottom Tables
       renderEmployeeTable(data.employeeList);
       renderPBKTable(data.employeeList);
     }
@@ -1330,7 +1263,7 @@
       }).join('');
     }
 
-    // 5. Pembacaan dan Eksekusi Upload Excel Frontend (SheetJS)
+    // 5. Upload Excel
     function prosesUploadExcelFrontend() {
       const fileInput = document.getElementById('excel-file-input');
       const targetSheet = document.getElementById('upload-target-sheet').value;
@@ -1350,7 +1283,7 @@
       statusBox.className = "text-[11px] p-2.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 block";
       statusBox.textContent = "Mengekstrak baris dan kolom file...";
 
-      reader.onload = function(e) {
+      reader.onload = async function(e) {
         try {
           const data = new Uint8Array(e.target.result);
           const workbook = XLSX.read(data, { type: 'array' });
@@ -1370,30 +1303,27 @@
 
           statusBox.textContent = "Menyimpan ke database Google Sheets...";
 
-          google.script.run
-            .withSuccessHandler(function(response) {
-              btn.disabled = false;
-              btn.textContent = "Proses & Simpan";
-              if (response.success) {
-                statusBox.className = "text-[11px] p-2.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 block";
-                statusBox.textContent = "✅ " + response.message;
-                fileInput.value = "";
-                setTimeout(() => {
-                  closeModal('modal-upload');
-                  loadBackendDashboardData();
-                }, 1500);
-              } else {
-                statusBox.className = "text-[11px] p-2.5 rounded-xl bg-red-50 text-red-700 border border-red-200 block";
-                statusBox.textContent = "❌ " + response.message;
-              }
-            })
-            .withFailureHandler(function(err) {
-              btn.disabled = false;
-              btn.textContent = "Proses & Simpan";
-              statusBox.className = "text-[11px] p-2.5 rounded-xl bg-red-50 text-red-700 border border-red-200 block";
-              statusBox.textContent = "❌ Error: " + err.message;
-            })
-            .importExcelToSheet(targetSheet, fileHeaders, fileDataRows);
+          const res = await callBackendAPI("IMPORT_EXCEL", {
+            targetSheet: targetSheet,
+            headers: fileHeaders,
+            dataRows: fileDataRows
+          });
+
+          btn.disabled = false;
+          btn.textContent = "Proses & Simpan";
+
+          if (res.success) {
+            statusBox.className = "text-[11px] p-2.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 block";
+            statusBox.textContent = "✅ " + res.message;
+            fileInput.value = "";
+            setTimeout(() => {
+              closeModal('modal-upload');
+              loadBackendDashboardData();
+            }, 1500);
+          } else {
+            statusBox.className = "text-[11px] p-2.5 rounded-xl bg-red-50 text-red-700 border border-red-200 block";
+            statusBox.textContent = "❌ " + res.message;
+          }
 
         } catch (err) {
           alert("Gagal memproses file Excel: " + err.message);
@@ -1405,7 +1335,7 @@
       reader.readAsArrayBuffer(file);
     }
 
-    // 6. Ekspor Data ke Excel Langsung di Browser
+    // 6. Ekspor Data
     function exportCurrentTableToExcel(fileNamePrefix) {
       if (!currentDashboardPayload || !currentDashboardPayload.employeeList) {
         showToast("Tidak ada data untuk diekspor!");
