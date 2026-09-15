@@ -102,19 +102,42 @@
 
       <form onsubmit="handleLoginSubmit(event)" class="space-y-4 text-xs">
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Username / NPK</label>
+          <label class="block font-bold text-slate-700 mb-1">Username (NPK)</label>
           <div class="relative">
-            <i class="fa-solid fa-user absolute left-3 top-3 text-slate-400"></i>
-            <input type="text" id="login-username" required placeholder="Contoh: kacab.d660 / hrd.lampung" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-medium">
+            <i class="fa-solid fa-id-badge absolute left-3 top-3 text-slate-400"></i>
+            <input 
+              type="text" 
+              id="login-username" 
+              required 
+              placeholder="Masukkan NPK (Contoh: 64600)" 
+              class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-medium"
+            >
           </div>
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Password</label>
+          <label class="block font-bold text-slate-700 mb-1">Password (Tanggal Lahir)</label>
           <div class="relative">
             <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-400"></i>
-            <input type="password" id="login-password" required placeholder="Masukkan password" class="w-full pl-9 pr-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-medium">
+            <input 
+              type="password" 
+              id="login-password" 
+              required 
+              placeholder="Format: DDMMYY (Contoh: 120899)" 
+              maxlength="6"
+              class="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-medium tracking-wider"
+            >
+            <!-- Tombol Toggle Show/Hide Password -->
+            <button 
+              type="button" 
+              onclick="togglePasswordVisibility()" 
+              class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-700 p-1 focus:outline-none"
+              title="Lihat Password"
+            >
+              <i id="password-toggle-icon" class="fa-regular fa-eye text-sm"></i>
+            </button>
           </div>
+          <span class="text-[10px] text-slate-400 mt-1 block">Gunakan 6 digit tanggal lahir (DDMMYY)</span>
         </div>
 
         <div id="login-error-msg" class="hidden text-[11px] font-bold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-100 text-center"></div>
@@ -420,7 +443,7 @@
             </div>
 
             <!-- CARD 2: ABSENSI & KEDISIPLINAN -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-               card-hover transition">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover transition">
               <div>
                 <div class="flex items-center justify-between mb-3">
                   <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm border border-emerald-100">
@@ -943,6 +966,22 @@
     let currentDashboardPayload = null;
     let currentView = 'dashboard';
 
+    // 0. Toggle Mata Password
+    function togglePasswordVisibility() {
+      const passInput = document.getElementById('login-password');
+      const toggleIcon = document.getElementById('password-toggle-icon');
+      
+      if (passInput.type === 'password') {
+        passInput.type = 'text';
+        toggleIcon.classList.remove('fa-regular', 'fa-eye');
+        toggleIcon.classList.add('fa-solid', 'fa-eye-slash', 'text-red-500');
+      } else {
+        passInput.type = 'password';
+        toggleIcon.classList.remove('fa-solid', 'fa-eye-slash', 'text-red-500');
+        toggleIcon.classList.add('fa-regular', 'fa-eye');
+      }
+    }
+
     // 1. Logika Login Pengguna
     function handleLoginSubmit(e) {
       e.preventDefault();
@@ -965,7 +1004,7 @@
               loggedInUser = res.user;
               initAuthenticatedApp();
             } else {
-              errEl.textContent = res.message || 'Username atau password salah!';
+              errEl.textContent = res.message || 'NPK atau Tanggal Lahir (DDMMYY) salah!';
               errEl.classList.remove('hidden');
             }
           })
