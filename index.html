@@ -324,7 +324,7 @@
                 <i class="fa-solid fa-shield-halved text-base"></i>
               </div>
               <div>
-                <h4 class="font-bold text-sm">Mode Administrator HRD / GA / HDA</h4>
+                <h4 class="font-bold text-sm">Mode Administrator HRD / GA</h4>
                 <p class="text-xs text-red-100">Akses penuh 5 cabang wilayah Lampung: Impor berkas Excel dan kelola master karyawan.</p>
               </div>
             </div>
@@ -356,8 +356,8 @@
             </div>
           </div>
 
-          <!-- 5 KPI CARDS (FIXED RESPONSIVE GRID) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 w-full">
+          <!-- 5 KPI CARDS (BAGI 2 PRESISI DI DEDIKASIKAN 2 KOLOM) -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 w-full">
           
             <!-- CARD 1: MASTER KARYAWAN -->
             <div onclick="switchView('master-karyawan')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-blue-300 transition cursor-pointer min-w-0">
@@ -471,7 +471,7 @@
                     <i class="fa-solid fa-lightbulb"></i>
                   </div>
                   <div class="text-right">
-                    <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">3. suggestion system (SS)</span>
+                    <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">3. Suggestion System (SS)</span>
                     <span class="text-[9px] text-slate-400">Inovasi & Keterlibatan</span>
                   </div>
                 </div>
@@ -565,8 +565,8 @@
               </div>
             </div>
           
-            <!-- CARD 5: CATATAN DISIPLIN / SP -->
-            <div onclick="switchView('sp')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-red-300 transition cursor-pointer min-w-0">
+            <!-- CARD 5: CATATAN DISIPLIN / SP (MENGAMBIL 2 KOLOM PENUH AGAR LEBIH PRESISI DI BARIS BARU) -->
+            <div onclick="switchView('sp')" class="md:col-span-2 lg:col-span-2 xl:col-span-2 bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-red-300 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
                   <div class="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm border border-red-100 flex-shrink-0">
@@ -587,31 +587,31 @@
                 
                 <!-- SUB CARD STATISTIK SANKSI (5 KOLOM) -->
                 <div class="pt-2 border-t border-slate-100">
-                  <div class="grid grid-cols-5 gap-1 text-center">
+                  <div class="grid grid-cols-5 gap-1.5 text-center">
                     <!-- Teguran -->
-                    <div class="bg-blue-50 rounded-lg p-1 border border-blue-200">
-                      <span class="text-[8px] font-bold text-blue-700 block truncate" title="Teguran">Teguran</span>
-                      <span class="text-xs font-extrabold text-blue-800" id="card-teguran-count">0</span>
+                    <div class="bg-blue-50 rounded-lg p-1.5 border border-blue-200">
+                      <span class="text-[9px] font-bold text-blue-700 block truncate" title="Teguran">Teguran</span>
+                      <span class="text-sm font-extrabold text-blue-800" id="card-teguran-count">0</span>
                     </div>
                     <!-- SP1 -->
-                    <div class="bg-amber-50 rounded-lg p-1 border border-amber-200">
-                      <span class="text-[8px] font-bold text-amber-700 block truncate">SP1</span>
-                      <span class="text-xs font-extrabold text-amber-800" id="card-sp1-count">0</span>
+                    <div class="bg-amber-50 rounded-lg p-1.5 border border-amber-200">
+                      <span class="text-[9px] font-bold text-amber-700 block truncate">SP1</span>
+                      <span class="text-sm font-extrabold text-amber-800" id="card-sp1-count">0</span>
                     </div>
                     <!-- SP2 -->
-                    <div class="bg-orange-50 rounded-lg p-1 border border-orange-200">
-                      <span class="text-[8px] font-bold text-orange-700 block truncate">SP2</span>
-                      <span class="text-xs font-extrabold text-orange-800" id="card-sp2-count">0</span>
+                    <div class="bg-orange-50 rounded-lg p-1.5 border border-orange-200">
+                      <span class="text-[9px] font-bold text-orange-700 block truncate">SP2</span>
+                      <span class="text-sm font-extrabold text-orange-800" id="card-sp2-count">0</span>
                     </div>
                     <!-- SP3 -->
-                    <div class="bg-red-50 rounded-lg p-1 border border-red-200">
-                      <span class="text-[8px] font-bold text-red-700 block truncate">SP3</span>
-                      <span class="text-xs font-extrabold text-red-800" id="card-sp3-count">0</span>
+                    <div class="bg-red-50 rounded-lg p-1.5 border border-red-200">
+                      <span class="text-[9px] font-bold text-red-700 block truncate">SP3</span>
+                      <span class="text-sm font-extrabold text-red-800" id="card-sp3-count">0</span>
                     </div>
                     <!-- SPPT -->
-                    <div class="bg-purple-50 rounded-lg p-1 border border-purple-200">
-                      <span class="text-[8px] font-bold text-purple-700 block truncate" title="SPPT">SPPT</span>
-                      <span class="text-xs font-extrabold text-purple-800" id="card-sppt-count">0</span>
+                    <div class="bg-purple-50 rounded-lg p-1.5 border border-purple-200">
+                      <span class="text-[9px] font-bold text-purple-700 block truncate" title="SPPT">SPPT</span>
+                      <span class="text-sm font-extrabold text-purple-800" id="card-sppt-count">0</span>
                     </div>
                   </div>
                 </div>
@@ -624,8 +624,11 @@
                 <p class="text-[9px] text-emerald-600 mt-0.5 leading-tight">Seluruh karyawan bersih tanpa sanksi</p>
               </div>
             </div>
-          <!-- EMPLOYEE TABLE -->
-          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
+
+          </div>
+
+          <!-- EMPLOYEE TABLE (LETAK DI PALING BAWAH SETELAH KPI 5) -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card w-full mt-4">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h4 class="text-sm font-extrabold text-slate-900">Daftar Karyawan Cabang</h4>
@@ -873,7 +876,6 @@
           ...payload // Kirim action dan payload saja tanpa SECRET_TOKEN
         };
     
-        // Perbaikan: Gunakan BACKEND_PROXY_URL
         const response = await fetch(BACKEND_PROXY_URL, {
           method: "POST",
           headers: {
@@ -889,6 +891,7 @@
         return { success: false, message: "Gagal terhubung ke server backend: " + err.message };
       }
     }
+
     // 0. Toggle Mata Password
     function togglePasswordVisibility() {
       const passInput = document.getElementById('login-password');
@@ -918,7 +921,6 @@
       btn.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin mr-1"></i> Memverifikasi...`;
       errEl.classList.add('hidden');
 
-      // Mengirimkan data login ke api/proxy.js
       const res = await callBackendAPI("LOGIN", { username: u, password: p });
 
       btn.disabled = false;
@@ -995,7 +997,6 @@
         select.classList.add('cursor-not-allowed', 'opacity-80');
       }
 
-      // Pastikan nilai default dropdown terpilih otomatis!
       select.value = loggedInUser.isAllBranch ? 'ALL' : loggedInUser.assignedBACodes[0];
     }
 
@@ -1081,83 +1082,14 @@
       }
 
       document.getElementById('card-sp-total').textContent = s.totalSP;
+      if (document.getElementById('card-teguran-count')) document.getElementById('card-teguran-count').textContent = s.countTeguran || 0;
       document.getElementById('card-sp1-count').textContent = s.countSP1;
       document.getElementById('card-sp2-count').textContent = s.countSP2;
       document.getElementById('card-sp3-count').textContent = s.countSP3;
+      if (document.getElementById('card-sppt-count')) document.getElementById('card-sppt-count').textContent = s.countSPPT || 0;
 
-      renderTopSpotlight(data.topAttendance, data.topSS);
-      renderCoachingAlert(data.coachingAlerts);
       renderEmployeeTable(data.employeeList);
       renderPBKTable(data.employeeList);
-    }
-
-    function renderTopSpotlight(topAtt, topSS) {
-      const attEl = document.getElementById('spotlight-top-attendance');
-      if (topAtt && topAtt.length > 0) {
-        attEl.innerHTML = topAtt.map((e, idx) => `
-          <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-100 shadow-sm text-xs">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="font-extrabold text-slate-400 text-xs w-3">${idx+1}</span>
-              <div class="w-6 h-6 rounded-full bg-slate-800 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                ${e.nama.charAt(0)}
-              </div>
-              <span class="font-bold text-slate-800 truncate">${e.nama}</span>
-            </div>
-            <span class="font-black text-emerald-600 flex-shrink-0 ml-1">${e.kehadiranPct}%</span>
-          </div>
-        `).join('');
-      } else {
-        attEl.innerHTML = `<p class="text-xs text-slate-400 italic">Belum ada data kehadiran.</p>`;
-      }
-
-      const ssEl = document.getElementById('spotlight-top-ss');
-      if (topSS && topSS.length > 0) {
-        ssEl.innerHTML = topSS.map((e, idx) => `
-          <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-slate-100 shadow-sm text-xs">
-            <div class="flex items-center gap-2 min-w-0">
-              <span class="font-extrabold text-slate-400 text-xs w-3">${idx+1}</span>
-              <div class="w-6 h-6 rounded-full bg-amber-500 text-white flex items-center justify-center text-[10px] font-bold flex-shrink-0">
-                ${e.nama.charAt(0)}
-              </div>
-              <span class="font-bold text-slate-800 truncate">${e.nama}</span>
-            </div>
-            <span class="font-black text-amber-600 flex-shrink-0 ml-1">${e.totalSS} <span class="text-[10px] font-semibold text-slate-400">Ide</span></span>
-          </div>
-        `).join('');
-      } else {
-        ssEl.innerHTML = `<p class="text-xs text-slate-400 italic">Belum ada data SS.</p>`;
-      }
-    }
-
-    function renderCoachingAlert(alerts) {
-      const tbody = document.getElementById('coaching-alert-tbody');
-      if (!alerts || alerts.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="3" class="py-4 text-center text-emerald-600 font-semibold"><i class="fa-solid fa-check-circle mr-1"></i> Seluruh performa prima! Tidak ada coaching alert.</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = alerts.map((e, idx) => {
-        let area = 'Performa Umum';
-        if (e.spAktif) area = `Sanksi Disiplin (${e.spAktif})`;
-        else if (e.seringTelat >= 3) area = `Sering Terlambat (${e.seringTelat}x)`;
-        else if (e.kehadiranPct < 95) area = `Kehadiran (${e.kehadiranPct}%)`;
-        else if (e.totalSS === 0) area = `Belum Kontribusi SS`;
-
-        return `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="py-2.5 flex items-center gap-2">
-              <span class="font-bold text-slate-400 text-xs">${idx+1}</span>
-              <span class="font-bold text-slate-900">${e.nama}</span>
-            </td>
-            <td class="py-2.5 text-slate-600 text-xs">${area}</td>
-            <td class="py-2.5 text-center">
-              <button onclick="openPBKModal('${e.npk}')" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 text-[10px] font-bold px-2.5 py-1 rounded-full transition">
-                Perlu Dibina
-              </button>
-            </td>
-          </tr>
-        `;
-      }).join('');
     }
 
     function renderEmployeeTable(list) {
