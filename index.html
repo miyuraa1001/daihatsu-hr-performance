@@ -48,17 +48,21 @@
     body {
       font-family: 'Inter', sans-serif;
       background-color: #F8FAFC;
+      -webkit-font-smoothing: antialiased;
     }
     .scrollbar-thin::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
+      width: 5px;
+      height: 5px;
     }
     .scrollbar-thin::-webkit-scrollbar-track {
-      background: #F1F5F9;
+      background: transparent;
     }
     .scrollbar-thin::-webkit-scrollbar-thumb {
       background: #CBD5E1;
       border-radius: 9999px;
+    }
+    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+      background: #94A3B8;
     }
     .nav-item-active {
       background-color: #FEF2F2;
@@ -71,12 +75,30 @@
       font-weight: 500;
     }
     .nav-item-inactive:hover {
-      background-color: #F1F5F9;
+      background-color: #F8FAFC;
       color: #0F172A;
     }
     .modal-backdrop {
-      background-color: rgba(15, 23, 42, 0.55);
-      backdrop-filter: blur(3px);
+      background-color: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+    }
+    /* Modern card shadows */
+    .shadow-clean {
+      box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+    }
+    .shadow-clean-hover:hover {
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.06), 0 6px 8px -4px rgba(0, 0, 0, 0.04);
+    }
+    /* Mobile-first select styling */
+    select {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.4rem center;
+      background-repeat: no-repeat;
+      background-size: 1.25em 1.25em;
+      padding-right: 1.75rem;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
     }
   </style>
 </head>
@@ -263,45 +285,83 @@
     <div class="flex-1 flex flex-col h-full overflow-hidden w-full min-w-0">
       
       <!-- TOP HEADER -->
-      <header class="bg-white border-b border-slate-200 px-4 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between z-20 gap-2">
-        <div class="flex items-center gap-2.5 min-w-0">
-          <button onclick="openSidebarMobile()" class="md:hidden p-2 -ml-1 rounded-lg text-slate-600 hover:bg-slate-100 focus:outline-none flex-shrink-0">
-            <i class="fa-solid fa-bars text-lg"></i>
-          </button>
-          <div class="min-w-0">
-            <h2 id="page-title" class="text-base sm:text-xl font-extrabold text-slate-900 tracking-tight truncate">Dashboard D-PERFROM</h2>
-            <p id="page-subtitle" class="text-[10px] sm:text-xs text-slate-500 font-medium truncate hidden xs:block">Ringkasan Data Karyawan & Performa Cabang</p>
+      <header class="bg-white border-b border-slate-200/80 sticky top-0 z-20 shadow-clean">
+        <!-- Main Top Bar -->
+        <div class="px-3.5 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-3">
+          <!-- Left: Mobile Menu Toggle & Dynamic Titles -->
+          <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+            <button onclick="openSidebarMobile()" class="md:hidden p-2 -ml-1 rounded-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 focus:outline-none flex-shrink-0 transition">
+              <i class="fa-solid fa-bars text-lg"></i>
+            </button>
+            <div class="min-w-0">
+              <h2 id="page-title" class="text-sm sm:text-base md:text-lg font-black text-slate-900 tracking-tight truncate">Dashboard D-PERFORM</h2>
+              <p id="page-subtitle" class="text-[10px] sm:text-xs text-slate-400 font-medium truncate hidden sm:block">Ringkasan Data Karyawan & Performa Cabang</p>
+            </div>
+          </div>
+
+          <!-- Right Desktop Controls (Hidden on Mobile) -->
+          <div class="hidden md:flex items-center gap-2.5 flex-shrink-0">
+            <!-- Dropdown Cabang Desktop -->
+            <div class="relative flex items-center bg-slate-50 border border-slate-200/90 rounded-xl px-3 py-1.5 hover:border-slate-300 transition">
+              <i class="fa-solid fa-location-dot text-red-600 text-xs mr-2 flex-shrink-0"></i>
+              <span class="text-[11px] text-slate-400 mr-1.5 font-medium">Cabang:</span>
+              <select id="branch-select" onchange="handleBranchOrPeriodChange()" class="text-xs font-bold bg-transparent text-slate-800 focus:outline-none cursor-pointer max-w-[190px] truncate">
+              </select>
+            </div>
+
+            <!-- Dropdown Periode Desktop -->
+            <div class="flex items-center bg-slate-50 border border-slate-200/90 rounded-xl px-3 py-1.5 gap-2 text-xs hover:border-slate-300 transition">
+              <i class="fa-regular fa-calendar text-slate-400 text-xs"></i>
+              <select id="period-select" onchange="handleBranchOrPeriodChange()" class="bg-transparent focus:outline-none cursor-pointer text-xs font-bold text-slate-800">
+                <option value="Mei 2025" selected>Mei 2025</option>
+                <option value="Juni 2025">Juni 2025</option>
+                <option value="Semester 1 2025">Sem. 1 2025</option>
+              </select>
+            </div>
+
+            <!-- Profile Info Desktop -->
+            <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-200/90 rounded-xl py-1 px-2.5">
+              <div class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
+                <i class="fa-solid fa-user-tie"></i>
+              </div>
+              <div class="text-left hidden lg:block">
+                <p class="text-xs font-bold text-slate-800 leading-tight" id="header-user-name">Pengguna</p>
+                <p class="text-[10px] text-slate-400 font-medium" id="header-user-role">Kepala Cabang</p>
+              </div>
+              <button onclick="handleLogout()" title="Keluar / Logout" class="text-slate-400 hover:text-red-600 p-1 text-xs transition">
+                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Right Mobile Controls: Avatar & Logout (Clean & Compact) -->
+          <div class="flex md:hidden items-center gap-1.5 flex-shrink-0">
+            <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-sm">
+              <i class="fa-solid fa-user-tie"></i>
+            </div>
+            <button onclick="handleLogout()" title="Keluar / Logout" class="p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-slate-100 text-xs transition">
+              <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
+            </button>
           </div>
         </div>
 
-        <div class="flex items-center gap-2 sm:gap-3 flex-shrink-0">
-          <div class="relative flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5">
-            <span class="text-xs text-slate-400 mr-1.5 font-medium hidden sm:inline"><i class="fa-solid fa-location-dot mr-1 text-red-500"></i>Cabang:</span>
-            <select id="branch-select" onchange="handleBranchOrPeriodChange()" class="text-xs font-bold bg-transparent text-slate-800 focus:outline-none cursor-pointer">
+        <!-- Mobile Filter Bar: Dedicated clean row on small screens -->
+        <div class="md:hidden px-3.5 py-2 bg-slate-50/90 border-t border-slate-100 flex items-center gap-2">
+          <!-- Dropdown Cabang Mobile -->
+          <div class="flex-1 min-w-0 flex items-center bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-sm">
+            <i class="fa-solid fa-location-dot text-red-500 text-xs mr-2 flex-shrink-0"></i>
+            <select id="branch-select-mobile" onchange="syncBranchChangeMobile(this.value)" class="w-full text-xs font-bold bg-transparent text-slate-800 focus:outline-none cursor-pointer truncate">
             </select>
           </div>
 
-          <div class="flex items-center bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-1.5 gap-1.5 text-xs">
-            <span class="text-[11px] text-slate-400 font-medium hidden sm:inline">Periode PBK</span>
-            <select id="period-select" onchange="handleBranchOrPeriodChange()" class="bg-transparent focus:outline-none cursor-pointer text-xs font-bold text-slate-800">
+          <!-- Dropdown Periode Mobile -->
+          <div class="w-32 flex-shrink-0 flex items-center bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-sm">
+            <i class="fa-regular fa-calendar text-slate-400 text-xs mr-1.5 flex-shrink-0"></i>
+            <select id="period-select-mobile" onchange="syncPeriodChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-bold text-slate-800">
               <option value="Mei 2025" selected>Mei 2025</option>
               <option value="Juni 2025">Juni 2025</option>
               <option value="Semester 1 2025">Sem. 1 2025</option>
             </select>
-            <i class="fa-regular fa-calendar text-slate-400 text-xs hidden sm:inline"></i>
-          </div>
-
-          <div class="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-1 sm:pr-3">
-            <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-slate-800 text-white flex items-center justify-center font-bold text-xs">
-              <i class="fa-solid fa-user-tie"></i>
-            </div>
-            <div class="text-left hidden md:block">
-              <p class="text-xs font-bold text-slate-800 leading-tight" id="header-user-name">Pengguna</p>
-              <p class="text-[10px] text-slate-400 font-medium" id="header-user-role">Kepala Cabang</p>
-            </div>
-            <button onclick="handleLogout()" title="Keluar / Logout" class="text-slate-400 hover:text-red-600 p-1 ml-1 text-xs">
-              <i class="fa-solid fa-arrow-right-from-bracket"></i>
-            </button>
           </div>
         </div>
       </header>
@@ -585,33 +645,33 @@
                   <span class="text-[10px] font-bold text-slate-400 block">Sanksi / SP Aktif</span>
                 </div>
                 
-                <!-- SUB CARD STATISTIK SANKSI (5 KOLOM) -->
+                <!-- SUB CARD STATISTIK SANKSI (RESPONSIVE) -->
                 <div class="pt-2 border-t border-slate-100">
-                  <div class="grid grid-cols-5 gap-1.5 text-center">
+                  <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2 text-center">
                     <!-- Teguran -->
-                    <div class="bg-blue-50 rounded-lg p-1.5 border border-blue-200">
-                      <span class="text-[9px] font-bold text-blue-700 block truncate" title="Surat Teguran">Surat Teguran</span>
-                      <span class="text-sm font-extrabold text-blue-800" id="card-teguran-count">0</span>
+                    <div class="bg-blue-50/80 rounded-xl p-2 border border-blue-200/80">
+                      <span class="text-[9px] font-bold text-blue-700 block truncate" title="Surat Teguran">Teguran</span>
+                      <span class="text-sm font-black text-blue-800" id="card-teguran-count">0</span>
                     </div>
                     <!-- SP1 -->
-                    <div class="bg-amber-50 rounded-lg p-1.5 border border-amber-200">
+                    <div class="bg-amber-50/80 rounded-xl p-2 border border-amber-200/80">
                       <span class="text-[9px] font-bold text-amber-700 block truncate">SP1</span>
-                      <span class="text-sm font-extrabold text-amber-800" id="card-sp1-count">0</span>
+                      <span class="text-sm font-black text-amber-800" id="card-sp1-count">0</span>
                     </div>
                     <!-- SP2 -->
-                    <div class="bg-orange-50 rounded-lg p-1.5 border border-orange-200">
+                    <div class="bg-orange-50/80 rounded-xl p-2 border border-orange-200/80">
                       <span class="text-[9px] font-bold text-orange-700 block truncate">SP2</span>
-                      <span class="text-sm font-extrabold text-orange-800" id="card-sp2-count">0</span>
+                      <span class="text-sm font-black text-orange-800" id="card-sp2-count">0</span>
                     </div>
                     <!-- SP3 -->
-                    <div class="bg-red-50 rounded-lg p-1.5 border border-red-200">
+                    <div class="bg-red-50/80 rounded-xl p-2 border border-red-200/80">
                       <span class="text-[9px] font-bold text-red-700 block truncate">SP3</span>
-                      <span class="text-sm font-extrabold text-red-800" id="card-sp3-count">0</span>
+                      <span class="text-sm font-black text-red-800" id="card-sp3-count">0</span>
                     </div>
                     <!-- SPPT -->
-                    <div class="bg-purple-50 rounded-lg p-1.5 border border-purple-200">
+                    <div class="bg-purple-50/80 rounded-xl p-2 border border-purple-200/80 col-span-2 xs:col-span-1 sm:col-span-1">
                       <span class="text-[9px] font-bold text-purple-700 block truncate" title="SPPT">SPPT</span>
-                      <span class="text-sm font-extrabold text-purple-800" id="card-sppt-count">0</span>
+                      <span class="text-sm font-black text-purple-800" id="card-sppt-count">0</span>
                     </div>
                   </div>
                 </div>
@@ -629,14 +689,14 @@
 
           <!-- EMPLOYEE TABLE (LETAK DI PALING BAWAH SETELAH KPI 5) -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card w-full mt-4">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h4 class="text-sm font-extrabold text-slate-900">Daftar Karyawan Cabang</h4>
                 <p class="text-[11px] text-slate-400">Tinjau metrik kehadiran, SS, QCC, dan SP per individu sebelum finalisasi nilai PBK</p>
               </div>
               <div class="relative w-full sm:w-64">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                <input type="text" id="employee-search-input" onkeyup="filterEmployeeTable()" placeholder="Cari nama atau NPK..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+                <input type="text" id="employee-search-input" onkeyup="filterEmployeeTable()" placeholder="Cari nama atau NPK..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
               </div>
             </div>
             <div class="overflow-x-auto">
@@ -761,23 +821,25 @@
 
           <!-- Table Container -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-              <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                <div class="relative flex-1 sm:w-64">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
+                <div class="relative w-full sm:w-64">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="mk-search-input" onkeyup="filterMasterKaryawanTable()" placeholder="Cari NPK, nama, jabatan..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+                  <input type="text" id="mk-search-input" onkeyup="filterMasterKaryawanTable()" placeholder="Cari NPK, nama, jabatan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="mk-filter-divisi" onchange="filterMasterKaryawanTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
-                  <option value="ALL">Semua Divisi</option>
-                  <option value="Sales">Sales</option>
-                  <option value="Service">Bengkel / Service</option>
-                  <option value="Admin">Admin / General</option>
-                </select>
-                <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
-                  <option value="ALL">Semua Kontrak</option>
-                  <option value="Tetap">Tetap</option>
-                  <option value="Kontrak">Kontrak (PKWT)</option>
-                </select>
+                <div class="grid grid-cols-2 sm:flex items-center gap-2">
+                  <select id="mk-filter-divisi" onchange="filterMasterKaryawanTable()" class="w-full sm:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                    <option value="ALL">Semua Divisi</option>
+                    <option value="Sales">Sales</option>
+                    <option value="Service">Bengkel / Service</option>
+                    <option value="Admin">Admin / General</option>
+                  </select>
+                  <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="w-full sm:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                    <option value="ALL">Semua Kontrak</option>
+                    <option value="Tetap">Tetap</option>
+                    <option value="Kontrak">Kontrak (PKWT)</option>
+                  </select>
+                </div>
               </div>
               <span class="text-[11px] text-slate-400 font-medium" id="mk-row-count">Menampilkan 0 karyawan</span>
             </div>
@@ -871,13 +933,13 @@
 
           <!-- Table Container Absensi -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-              <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                <div class="relative flex-1 sm:w-64">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 w-full sm:w-auto">
+                <div class="relative w-full sm:w-64">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="abs-search-input" onkeyup="filterAbsensiTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+                  <input type="text" id="abs-search-input" onkeyup="filterAbsensiTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
+                <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="w-full xs:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Tingkat Hadir</option>
                   <option value="PRIMA">Kehadiran Prima (&ge; 95%)</option>
                   <option value="WARNING">Di Bawah Target (&lt; 95%)</option>
@@ -975,13 +1037,13 @@
 
           <!-- Table Container SS -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-              <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                <div class="relative flex-1 sm:w-64">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 w-full sm:w-auto">
+                <div class="relative w-full sm:w-64">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="ss-search-input" onkeyup="filterSSTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+                  <input type="text" id="ss-search-input" onkeyup="filterSSTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="ss-filter-part" onchange="filterSSTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
+                <select id="ss-filter-part" onchange="filterSSTable()" class="w-full xs:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Partisipan</option>
                   <option value="ACTIVE">Ada Ide SS (&ge; 1)</option>
                   <option value="ZERO">Belum Mengajukan (0 Ide)</option>
@@ -1153,26 +1215,26 @@
 
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Distribusi Tingkat Sanksi</span>
-              <div class="grid grid-cols-5 gap-1 text-center">
-                <div class="bg-blue-50 p-1.5 rounded-lg border border-blue-200">
-                  <span class="text-[8px] font-bold text-blue-700 block truncate" title="Surat Teguran">Teguran</span>
-                  <span class="font-extrabold text-blue-800 text-xs" id="sp-view-teguran">0</span>
+              <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2 text-center">
+                <div class="bg-blue-50/80 p-2 rounded-xl border border-blue-200/80">
+                  <span class="text-[9px] font-bold text-blue-700 block truncate" title="Surat Teguran">Teguran</span>
+                  <span class="font-black text-blue-800 text-xs sm:text-sm" id="sp-view-teguran">0</span>
                 </div>
-                <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-200">
-                  <span class="text-[8px] font-bold text-amber-700 block">SP1</span>
-                  <span class="font-extrabold text-amber-800 text-xs" id="sp-view-sp1">0</span>
+                <div class="bg-amber-50/80 p-2 rounded-xl border border-amber-200/80">
+                  <span class="text-[9px] font-bold text-amber-700 block">SP1</span>
+                  <span class="font-black text-amber-800 text-xs sm:text-sm" id="sp-view-sp1">0</span>
                 </div>
-                <div class="bg-orange-50 p-1.5 rounded-lg border border-orange-200">
-                  <span class="text-[8px] font-bold text-orange-700 block">SP2</span>
-                  <span class="font-extrabold text-orange-800 text-xs" id="sp-view-sp2">0</span>
+                <div class="bg-orange-50/80 p-2 rounded-xl border border-orange-200/80">
+                  <span class="text-[9px] font-bold text-orange-700 block">SP2</span>
+                  <span class="font-black text-orange-800 text-xs sm:text-sm" id="sp-view-sp2">0</span>
                 </div>
-                <div class="bg-red-50 p-1.5 rounded-lg border border-red-200">
-                  <span class="text-[8px] font-bold text-red-700 block">SP3</span>
-                  <span class="font-extrabold text-red-800 text-xs" id="sp-view-sp3">0</span>
+                <div class="bg-red-50/80 p-2 rounded-xl border border-red-200/80">
+                  <span class="text-[9px] font-bold text-red-700 block">SP3</span>
+                  <span class="font-black text-red-800 text-xs sm:text-sm" id="sp-view-sp3">0</span>
                 </div>
-                <div class="bg-purple-50 p-1.5 rounded-lg border border-purple-200">
-                  <span class="text-[8px] font-bold text-purple-700 block">SPPT</span>
-                  <span class="font-extrabold text-purple-800 text-xs" id="sp-view-sppt">0</span>
+                <div class="bg-purple-50/80 p-2 rounded-xl border border-purple-200/80 col-span-2 xs:col-span-1 sm:col-span-1">
+                  <span class="text-[9px] font-bold text-purple-700 block">SPPT</span>
+                  <span class="font-black text-purple-800 text-xs sm:text-sm" id="sp-view-sppt">0</span>
                 </div>
               </div>
             </div>
@@ -1191,13 +1253,13 @@
 
           <!-- Table Container SP -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-              <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                <div class="relative flex-1 sm:w-64">
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 w-full sm:w-auto">
+                <div class="relative w-full sm:w-64">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="sp-search-input" onkeyup="filterSPTable()" placeholder="Cari NPK, nama, atau alasan sanksi..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+                  <input type="text" id="sp-search-input" onkeyup="filterSPTable()" placeholder="Cari NPK, nama, atau alasan sanksi..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="sp-filter-status" onchange="filterSPTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
+                <select id="sp-filter-status" onchange="filterSPTable()" class="w-full xs:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Karyawan</option>
                   <option value="ACTIVE_ONLY">Hanya Yang Memiliki Sanksi</option>
                   <option value="CLEAN_ONLY">Karyawan Bersih (Bebas SP)</option>
@@ -1464,8 +1526,11 @@
     }
 
     function populateBranchDropdown() {
-      const select = document.getElementById('branch-select');
-      select.innerHTML = '';
+      const selectDesktop = document.getElementById('branch-select');
+      const selectMobile = document.getElementById('branch-select-mobile');
+      const selects = [selectDesktop, selectMobile].filter(Boolean);
+      
+      selects.forEach(sel => sel.innerHTML = '');
       
       const branchNameMap = {
         "D660": "Lampung A Yani (D660)",
@@ -1475,35 +1540,57 @@
         "D664": "Lampung Timur (D664)"
       };
       
-      if (loggedInUser.isAllBranch) {
-        const optAll = document.createElement('option');
-        optAll.value = 'ALL';
-        optAll.textContent = 'Semua Cabang Wewenang';
-        select.appendChild(optAll);
-        
-        loggedInUser.assignedBACodes.forEach(code => {
+      selects.forEach(select => {
+        if (loggedInUser.isAllBranch) {
+          const optAll = document.createElement('option');
+          optAll.value = 'ALL';
+          optAll.textContent = 'Semua Cabang Wewenang';
+          select.appendChild(optAll);
+          
+          loggedInUser.assignedBACodes.forEach(code => {
+            const opt = document.createElement('option');
+            opt.value = code;
+            opt.textContent = branchNameMap[code] || code;
+            select.appendChild(opt);
+          });
+        } else {
+          const userCode = loggedInUser.assignedBACodes[0];
           const opt = document.createElement('option');
-          opt.value = code;
-          opt.textContent = branchNameMap[code] || code;
+          opt.value = userCode;
+          opt.textContent = branchNameMap[userCode] || userCode;
           select.appendChild(opt);
-        });
-      } else {
-        const userCode = loggedInUser.assignedBACodes[0];
-        const opt = document.createElement('option');
-        opt.value = userCode;
-        opt.textContent = branchNameMap[userCode] || userCode;
-        select.appendChild(opt);
-        
-        select.disabled = true;
-        select.classList.add('cursor-not-allowed', 'opacity-80');
-      }
+          
+          select.disabled = true;
+          select.classList.add('cursor-not-allowed', 'opacity-80');
+        }
 
-      select.value = loggedInUser.isAllBranch ? 'ALL' : loggedInUser.assignedBACodes[0];
+        select.value = loggedInUser.isAllBranch ? 'ALL' : loggedInUser.assignedBACodes[0];
+      });
+    }
+
+    function syncBranchChangeMobile(val) {
+      const desktop = document.getElementById('branch-select');
+      if (desktop) desktop.value = val;
+      handleBranchOrPeriodChange();
+    }
+
+    function syncPeriodChangeMobile(val) {
+      const desktop = document.getElementById('period-select');
+      if (desktop) desktop.value = val;
+      handleBranchOrPeriodChange();
     }
 
     function handleBranchOrPeriodChange() {
-      const period = document.getElementById('period-select').value;
-      document.getElementById('welcome-period-badge').textContent = period;
+      const period = document.getElementById('period-select')?.value || 'Mei 2025';
+      const mPeriod = document.getElementById('period-select-mobile');
+      if (mPeriod) mPeriod.value = period;
+
+      const branch = document.getElementById('branch-select')?.value || 'ALL';
+      const mBranch = document.getElementById('branch-select-mobile');
+      if (mBranch) mBranch.value = branch;
+
+      const badge = document.getElementById('welcome-period-badge');
+      if (badge) badge.textContent = period;
       loadBackendDashboardData();
     }
 
