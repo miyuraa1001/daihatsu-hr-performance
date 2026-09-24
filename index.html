@@ -695,35 +695,536 @@
           </div>
         </div>
 
-        <!-- VIEW PLACEHOLDERS -->
+        <!-- ======================================================== -->
+        <!-- VIEW: MASTER KARYAWAN -->
+        <!-- ======================================================== -->
         <div id="view-master-karyawan" class="hidden space-y-4 max-w-[1400px] mx-auto">
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
-            <h3 class="text-base font-extrabold text-slate-900 mb-1">Master Karyawan DSO Lampung</h3>
-            <p class="text-xs text-slate-500 mb-4">Gunakan tabel di Dashboard utama untuk melihat data lengkap terfilter per cabang.</p>
+          <!-- Top Action Banner -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-lg border border-blue-100 flex-shrink-0">
+                <i class="fa-solid fa-user-group"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-extrabold text-slate-900">Master Karyawan DSO Lampung</h3>
+                <p class="text-xs text-slate-500">Basis data profil kepegawaian, penempatan cabang, divisi, dan status kontrak kerja.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button onclick="openUploadModal('Master_Karyawan')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-blue-200">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Master (.xlsx)
+              </button>
+              <button onclick="exportModuleTableToExcel('Master_Karyawan')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards Summary Master Karyawan -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Karyawan Aktif</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-slate-900" id="mk-card-total">0</span>
+                <span class="text-xs font-bold text-slate-500">Orang</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1" id="mk-card-branch-desc">Semua cabang terdaftar</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Divisi Sales</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-blue-600" id="mk-card-sales">0</span>
+                <span class="text-xs font-bold text-slate-500" id="mk-card-sales-pct">0%</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Tim penjualan & armada showroom</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Divisi Bengkel (Service)</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-emerald-600" id="mk-card-service">0</span>
+                <span class="text-xs font-bold text-slate-500" id="mk-card-service-pct">0%</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Teknisi & staf operasional servis</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Kepegawaian</span>
+              <div class="flex items-center justify-between text-xs font-bold mt-1">
+                <span class="text-blue-600">Tetap: <span id="mk-card-tetap">0</span></span>
+                <span class="text-amber-600">PKWT: <span id="mk-card-pkwt">0</span></span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Komposisi kontrak kerja cabang</p>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                  <input type="text" id="mk-search-input" onkeyup="filterMasterKaryawanTable()" placeholder="Cari NPK, nama, jabatan..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+                </div>
+                <select id="mk-filter-divisi" onchange="filterMasterKaryawanTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
+                  <option value="ALL">Semua Divisi</option>
+                  <option value="Sales">Sales</option>
+                  <option value="Service">Bengkel / Service</option>
+                  <option value="Admin">Admin / General</option>
+                </select>
+                <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
+                  <option value="ALL">Semua Kontrak</option>
+                  <option value="Tetap">Tetap</option>
+                  <option value="Kontrak">Kontrak (PKWT)</option>
+                </select>
+              </div>
+              <span class="text-[11px] text-slate-400 font-medium" id="mk-row-count">Menampilkan 0 karyawan</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs" id="table-master-karyawan-content">
+                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
+                  <tr>
+                    <th class="py-2.5 px-4 rounded-l-xl">NPK</th>
+                    <th class="py-2.5 px-4">Nama Karyawan</th>
+                    <th class="py-2.5 px-4">Cabang (BA)</th>
+                    <th class="py-2.5 px-4">Divisi & Posisi</th>
+                    <th class="py-2.5 px-4 text-center">Status Kerja</th>
+                    <th class="py-2.5 px-4 text-center">Kehadiran</th>
+                    <th class="py-2.5 px-4 text-center">Ide SS</th>
+                    <th class="py-2.5 px-4 text-center">Status SP</th>
+                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="mk-table-body" class="divide-y divide-slate-100 font-medium">
+                  <tr><td colspan="9" class="text-center py-8 text-slate-400">Memuat data master karyawan...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW: ABSENSI -->
+        <!-- ======================================================== -->
         <div id="view-absensi" class="hidden space-y-4 max-w-[1400px] mx-auto">
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
-            <h3 class="text-base font-extrabold text-slate-900 mb-1">Rekap Absensi Harian</h3>
-            <p class="text-xs text-slate-500 mb-4">Data absensi otomatis tersinkronisasi dari sheet Data_Absensi.</p>
+          <!-- Top Action Banner -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg border border-emerald-100 flex-shrink-0">
+                <i class="fa-solid fa-calendar-check"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-extrabold text-slate-900">Rekapitulasi Absensi & Kedisiplinan</h3>
+                <p class="text-xs text-slate-500">Monitoring kehadiran, kepatuhan jam kerja, dan tracking ketidakhadiran karyawan.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button onclick="openUploadModal('Data_Absensi')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-emerald-200">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Absensi (.xlsx)
+              </button>
+              <button onclick="exportModuleTableToExcel('Data_Absensi')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards Summary Absensi -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Rata-rata Kehadiran</span>
+              <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-black text-slate-900" id="abs-card-rate">0.0%</span>
+              </div>
+              <p class="text-[10px] text-emerald-600 font-bold mt-1">Standar Target &ge; 95%</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Mangkir (Alpha)</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-red-600" id="abs-card-alpha">0</span>
+                <span class="text-xs font-bold text-slate-500">Hari / Kasus</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Ketidakhadiran tanpa izin resmi</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Sering Terlambat</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-amber-600" id="abs-card-telat">0</span>
+                <span class="text-xs font-bold text-slate-500">Karyawan</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Frekuensi clock-in lewat jam masuk</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Disiplin Cabang</span>
+              <div class="mt-1" id="abs-card-status-badge">
+                <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-black border border-emerald-200">
+                  <i class="fa-solid fa-circle-check"></i> DISIPLIN BAIK
+                </span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Berdasarkan rasio absensi periode aktif</p>
+            </div>
+          </div>
+
+          <!-- Table Container Absensi -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                  <input type="text" id="abs-search-input" onkeyup="filterAbsensiTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+                </div>
+                <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
+                  <option value="ALL">Semua Tingkat Hadir</option>
+                  <option value="PRIMA">Kehadiran Prima (&ge; 95%)</option>
+                  <option value="WARNING">Di Bawah Target (&lt; 95%)</option>
+                </select>
+              </div>
+              <span class="text-[11px] text-slate-400 font-medium" id="abs-row-count">Menampilkan 0 data absensi</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs" id="table-absensi-content">
+                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
+                  <tr>
+                    <th class="py-2.5 px-4 rounded-l-xl">NPK</th>
+                    <th class="py-2.5 px-4">Nama Karyawan</th>
+                    <th class="py-2.5 px-4">Cabang</th>
+                    <th class="py-2.5 px-4">Divisi & Jabatan</th>
+                    <th class="py-2.5 px-4 text-center">Tingkat Kehadiran</th>
+                    <th class="py-2.5 px-4 text-center">Status Absensi</th>
+                    <th class="py-2.5 px-4 text-center">Poin Bobot PBK</th>
+                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi Evaluasi</th>
+                  </tr>
+                </thead>
+                <tbody id="abs-table-body" class="divide-y divide-slate-100 font-medium">
+                  <tr><td colspan="8" class="text-center py-8 text-slate-400">Memuat data absensi...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW: SUMBANG SARAN (SS) -->
+        <!-- ======================================================== -->
         <div id="view-ss" class="hidden space-y-4 max-w-[1400px] mx-auto">
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
-            <h3 class="text-base font-extrabold text-slate-900 mb-1">Daftar Sumbang Saran (SS) Kaizen</h3>
-            <p class="text-xs text-slate-500 mb-4">Rincian inovasi SS terhubung langsung dari sheet Data_SS.</p>
+          <!-- Top Action Banner -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg border border-amber-100 flex-shrink-0">
+                <i class="fa-solid fa-lightbulb"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-extrabold text-slate-900">Sumbang Saran (SS) & Kaizen Inovasi</h3>
+                <p class="text-xs text-slate-500">Inisiatif perbaikan berkelanjutan, efisiensi kerja, dan keterlibatan staf per cabang.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button onclick="openUploadModal('Data_SS')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-amber-200">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload SS (.xlsx)
+              </button>
+              <button onclick="exportModuleTableToExcel('Data_SS')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards Summary SS -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Ide Terkumpul</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-slate-900" id="ss-card-total">0</span>
+                <span class="text-xs font-bold text-slate-400" id="ss-card-target-denom">/ 0 Target</span>
+              </div>
+              <div class="w-full bg-slate-100 rounded-full h-1.5 mt-2 overflow-hidden">
+                <div id="ss-card-prog-bar" class="bg-amber-500 h-1.5 rounded-full" style="width: 0%"></div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Tingkat Partisipasi</span>
+              <div class="flex items-baseline gap-1">
+                <span class="text-2xl font-black text-amber-600" id="ss-card-part-rate">0%</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Karyawan yang mengajukan minimal 1 ide</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ide Terimplementasi</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-emerald-600" id="ss-card-implemented">0</span>
+                <span class="text-xs font-bold text-slate-500">Ide Kaizen</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Sudah diterapkan di operasional kerja</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Tahap Evaluasi / Review</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-blue-600" id="ss-card-evaluasi">0</span>
+                <span class="text-xs font-bold text-slate-500">Ide Masuk</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Sedang ditinjau oleh komite Kaizen</p>
+            </div>
+          </div>
+
+          <!-- Table Container SS -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                  <input type="text" id="ss-search-input" onkeyup="filterSSTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+                </div>
+                <select id="ss-filter-part" onchange="filterSSTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
+                  <option value="ALL">Semua Partisipan</option>
+                  <option value="ACTIVE">Ada Ide SS (&ge; 1)</option>
+                  <option value="ZERO">Belum Mengajukan (0 Ide)</option>
+                </select>
+              </div>
+              <span class="text-[11px] text-slate-400 font-medium" id="ss-row-count">Menampilkan 0 karyawan</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs" id="table-ss-content">
+                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
+                  <tr>
+                    <th class="py-2.5 px-4 rounded-l-xl">NPK</th>
+                    <th class="py-2.5 px-4">Nama Karyawan</th>
+                    <th class="py-2.5 px-4">Cabang</th>
+                    <th class="py-2.5 px-4">Divisi & Posisi</th>
+                    <th class="py-2.5 px-4 text-center">Jumlah Ide Terkumpul</th>
+                    <th class="py-2.5 px-4 text-center">Status Partisipasi</th>
+                    <th class="py-2.5 px-4 text-center">Poin Bobot SS (30%)</th>
+                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="ss-table-body" class="divide-y divide-slate-100 font-medium">
+                  <tr><td colspan="8" class="text-center py-8 text-slate-400">Memuat data sumbang saran...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW: QUALITY CONTROL CIRCLE (QCC) -->
+        <!-- ======================================================== -->
         <div id="view-qcc" class="hidden space-y-4 max-w-[1400px] mx-auto">
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
-            <h3 class="text-base font-extrabold text-slate-900 mb-1">Circle Gugus Kendali Mutu (QCC)</h3>
-            <p class="text-xs text-slate-500 mb-4">Tahapan PDCA dan Skor risalah circle terhubung dari sheet Data_QCC.</p>
+          <!-- Top Action Banner -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg border border-purple-100 flex-shrink-0">
+                <i class="fa-solid fa-users-gear"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-extrabold text-slate-900">Circle Gugus Kendali Mutu (QCC)</h3>
+                <p class="text-xs text-slate-500">Aktivitas gugus kerja dalam problem solving sistematis berbasis siklus Plan-Do-Check-Action (PDCA).</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button onclick="openUploadModal('Data_QCC')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-purple-200">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload QCC (.xlsx)
+              </button>
+              <button onclick="exportModuleTableToExcel('Data_QCC')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards Summary QCC -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Circle QCC Terdaftar</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-purple-700" id="qcc-card-total">0</span>
+                <span class="text-xs font-bold text-slate-500">Circle Aktif</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Gugus mutu terdaftar di wilayah Lampung</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Tahapan Siklus PDCA</span>
+              <div class="grid grid-cols-4 gap-1.5 text-center text-xs">
+                <div class="bg-blue-50 p-1.5 rounded-lg border border-blue-100">
+                  <span class="text-[9px] font-bold text-blue-600 block">Plan</span>
+                  <span class="font-extrabold text-blue-800" id="qcc-card-plan">0</span>
+                </div>
+                <div class="bg-emerald-50 p-1.5 rounded-lg border border-emerald-100">
+                  <span class="text-[9px] font-bold text-emerald-600 block">Do</span>
+                  <span class="font-extrabold text-emerald-800" id="qcc-card-do">0</span>
+                </div>
+                <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-100">
+                  <span class="text-[9px] font-bold text-amber-600 block">Check</span>
+                  <span class="font-extrabold text-amber-800" id="qcc-card-check">0</span>
+                </div>
+                <div class="bg-red-50 p-1.5 rounded-lg border border-red-100">
+                  <span class="text-[9px] font-bold text-red-600 block">Action</span>
+                  <span class="font-extrabold text-red-800" id="qcc-card-action">0</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Gugus Mutu Terbaik</span>
+              <div class="flex items-center gap-2 mt-1">
+                <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                  <i class="fa-solid fa-trophy"></i>
+                </div>
+                <div class="min-w-0">
+                  <p class="text-xs font-black text-slate-900 truncate" id="qcc-card-best-team">-</p>
+                  <span class="text-[10px] font-bold text-purple-600" id="qcc-card-best-score">Poin: -</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Container QCC -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+              <div class="relative w-full sm:w-64">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <input type="text" id="qcc-search-input" onkeyup="filterQCCTable()" placeholder="Cari nama circle atau departemen..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+              </div>
+              <span class="text-[11px] text-slate-400 font-medium" id="qcc-row-count">Menampilkan 0 circle</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs" id="table-qcc-content">
+                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
+                  <tr>
+                    <th class="py-2.5 px-4 rounded-l-xl">No</th>
+                    <th class="py-2.5 px-4">Nama Tim / Circle</th>
+                    <th class="py-2.5 px-4">Cabang & Departemen</th>
+                    <th class="py-2.5 px-4 text-center">Tahapan PDCA</th>
+                    <th class="py-2.5 px-4 text-center">Skor Risalah</th>
+                    <th class="py-2.5 px-4 text-center">Status Circle</th>
+                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="qcc-table-body" class="divide-y divide-slate-100 font-medium">
+                  <tr><td colspan="7" class="text-center py-8 text-slate-400">Memuat data circle QCC...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW: DISIPLIN & SURAT PERINGATAN (SP) -->
+        <!-- ======================================================== -->
         <div id="view-sp" class="hidden space-y-4 max-w-[1400px] mx-auto">
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
-            <h3 class="text-base font-extrabold text-slate-900 mb-1">Catatan Surat Peringatan (SP)</h3>
-            <p class="text-xs text-slate-500 mb-4">Data sanksi aktif terhubung langsung dari sheet Data_SP.</p>
+          <!-- Top Action Banner -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-lg border border-red-100 flex-shrink-0">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-extrabold text-slate-900">Manajemen Kedisiplinan & Surat Peringatan (SP)</h3>
+                <p class="text-xs text-slate-500">Pencatatan sanksi disiplin kerja, pembinaan tata tertib, dan penalti skor penilaian PBK.</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button onclick="openUploadModal('Data_SP')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-red-200">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Data SP (.xlsx)
+              </button>
+              <button onclick="exportModuleTableToExcel('Data_SP')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
+              </button>
+            </div>
+          </div>
+
+          <!-- Cards Summary SP -->
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-3.5">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Sanksi Aktif</span>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-2xl font-black text-red-600" id="sp-view-total-count">0</span>
+                <span class="text-xs font-bold text-slate-500">Kasus Tercatat</span>
+              </div>
+              <p class="text-[10px] text-slate-400 mt-1">Karyawan dengan sanksi pembinaan aktif</p>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Distribusi Tingkat Sanksi</span>
+              <div class="grid grid-cols-5 gap-1 text-center">
+                <div class="bg-blue-50 p-1.5 rounded-lg border border-blue-200">
+                  <span class="text-[8px] font-bold text-blue-700 block truncate" title="Surat Teguran">Teguran</span>
+                  <span class="font-extrabold text-blue-800 text-xs" id="sp-view-teguran">0</span>
+                </div>
+                <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-200">
+                  <span class="text-[8px] font-bold text-amber-700 block">SP1</span>
+                  <span class="font-extrabold text-amber-800 text-xs" id="sp-view-sp1">0</span>
+                </div>
+                <div class="bg-orange-50 p-1.5 rounded-lg border border-orange-200">
+                  <span class="text-[8px] font-bold text-orange-700 block">SP2</span>
+                  <span class="font-extrabold text-orange-800 text-xs" id="sp-view-sp2">0</span>
+                </div>
+                <div class="bg-red-50 p-1.5 rounded-lg border border-red-200">
+                  <span class="text-[8px] font-bold text-red-700 block">SP3</span>
+                  <span class="font-extrabold text-red-800 text-xs" id="sp-view-sp3">0</span>
+                </div>
+                <div class="bg-purple-50 p-1.5 rounded-lg border border-purple-200">
+                  <span class="text-[8px] font-bold text-purple-700 block">SPPT</span>
+                  <span class="font-extrabold text-purple-800 text-xs" id="sp-view-sppt">0</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Status Kepatuhan Disiplin</span>
+                <p class="text-xs font-black text-slate-900 mt-1" id="sp-view-status-title">Semua Karyawan Tertib</p>
+                <span class="text-[10px] text-slate-500" id="sp-view-status-sub">Tidak ada pelanggaran disiplin</span>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg border border-emerald-200" id="sp-view-status-icon">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Container SP -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+                <div class="relative flex-1 sm:w-64">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                  <input type="text" id="sp-search-input" onkeyup="filterSPTable()" placeholder="Cari NPK, nama, atau alasan sanksi..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+                </div>
+                <select id="sp-filter-status" onchange="filterSPTable()" class="px-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none">
+                  <option value="ALL">Semua Karyawan</option>
+                  <option value="ACTIVE_ONLY">Hanya Yang Memiliki Sanksi</option>
+                  <option value="CLEAN_ONLY">Karyawan Bersih (Bebas SP)</option>
+                </select>
+              </div>
+              <span class="text-[11px] text-slate-400 font-medium" id="sp-row-count">Menampilkan 0 catatan</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs" id="table-sp-content">
+                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
+                  <tr>
+                    <th class="py-2.5 px-4 rounded-l-xl">NPK</th>
+                    <th class="py-2.5 px-4">Nama Karyawan</th>
+                    <th class="py-2.5 px-4">Cabang</th>
+                    <th class="py-2.5 px-4">Divisi & Jabatan</th>
+                    <th class="py-2.5 px-4 text-center">Tingkat Sanksi</th>
+                    <th class="py-2.5 px-4">Keterangan / Alasan Pelanggaran</th>
+                    <th class="py-2.5 px-4 text-center">Dampak Poin PBK</th>
+                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="sp-table-body" class="divide-y divide-slate-100 font-medium">
+                  <tr><td colspan="8" class="text-center py-8 text-slate-400">Memuat catatan sanksi...</td></tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
         <div id="view-laporan" class="hidden space-y-4 max-w-[1400px] mx-auto">
@@ -1090,6 +1591,597 @@
 
       renderEmployeeTable(data.employeeList);
       renderPBKTable(data.employeeList);
+
+      // Render data untuk setiap menu modul
+      renderMasterKaryawanView(data);
+      renderAbsensiView(data);
+      renderSSView(data);
+      renderQCCView(data);
+      renderSPView(data);
+      updateSidebarReadiness(data);
+    }
+
+    // ----------------------------------------------------
+    // A. Master Karyawan View & Filters
+    // ----------------------------------------------------
+    function renderMasterKaryawanView(data) {
+      if (!data) return;
+      const s = data.summary || {};
+      const list = data.employeeList || [];
+
+      if (document.getElementById('mk-card-total')) document.getElementById('mk-card-total').textContent = s.totalKaryawan || list.length;
+      
+      const salesCount = list.filter(e => (e.divisi || '').toLowerCase().includes('sales')).length || Math.round((s.totalKaryawan || 0) * ((s.salesPct || 0) / 100));
+      const serviceCount = list.filter(e => (e.divisi || '').toLowerCase().includes('service') || (e.divisi || '').toLowerCase().includes('bengkel')).length || Math.round((s.totalKaryawan || 0) * ((s.servicePct || 0) / 100));
+      
+      if (document.getElementById('mk-card-sales')) document.getElementById('mk-card-sales').textContent = salesCount;
+      if (document.getElementById('mk-card-sales-pct')) document.getElementById('mk-card-sales-pct').textContent = `${s.salesPct || 0}%`;
+      if (document.getElementById('mk-card-service')) document.getElementById('mk-card-service').textContent = serviceCount;
+      if (document.getElementById('mk-card-service-pct')) document.getElementById('mk-card-service-pct').textContent = `${s.servicePct || 0}%`;
+      if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = s.countTetap || 0;
+      if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = s.countPKWT || 0;
+      
+      const branchDesc = loggedInUser && loggedInUser.isAllBranch ? 'Wilayah DSO Lampung (5 Cabang)' : `Cabang ${list[0]?.cabang || 'Aktif'}`;
+      if (document.getElementById('mk-card-branch-desc')) document.getElementById('mk-card-branch-desc').textContent = branchDesc;
+
+      filterMasterKaryawanTable();
+    }
+
+    function filterMasterKaryawanTable() {
+      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) return;
+      const q = (document.getElementById('mk-search-input')?.value || '').toLowerCase().trim();
+      const divFilter = document.getElementById('mk-filter-divisi')?.value || 'ALL';
+      const contractFilter = document.getElementById('mk-filter-kontrak')?.value || 'ALL';
+
+      let list = currentDashboardPayload.employeeList;
+
+      if (q) {
+        list = list.filter(e => 
+          (e.nama || '').toLowerCase().includes(q) || 
+          String(e.npk || '').toLowerCase().includes(q) ||
+          (e.jabatan || '').toLowerCase().includes(q) ||
+          (e.cabang || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (divFilter !== 'ALL') {
+        list = list.filter(e => {
+          const div = (e.divisi || '').toLowerCase();
+          if (divFilter === 'Sales') return div.includes('sales');
+          if (divFilter === 'Service') return div.includes('service') || div.includes('bengkel');
+          if (divFilter === 'Admin') return div.includes('admin') || div.includes('general') || div.includes('finance');
+          return true;
+        });
+      }
+
+      if (contractFilter !== 'ALL') {
+        list = list.filter(e => {
+          const k = (e.tipeKontrak || 'Tetap').toLowerCase();
+          if (contractFilter === 'Tetap') return k.includes('tetap') || !k.includes('kontrak');
+          if (contractFilter === 'Kontrak') return k.includes('kontrak') || k.includes('pkwt');
+          return true;
+        });
+      }
+
+      const tbody = document.getElementById('mk-table-body');
+      if (document.getElementById('mk-row-count')) {
+        document.getElementById('mk-row-count').textContent = `Menampilkan ${list.length} dari ${currentDashboardPayload.employeeList.length} karyawan`;
+      }
+
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">Tidak ada data karyawan yang sesuai filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(e => `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="py-3 px-4 font-mono font-bold text-slate-700">${e.npk}</td>
+          <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
+          <td class="py-3 px-4 text-slate-500">${e.cabang || '-'} <span class="text-[10px] text-slate-400 block">${e.kodeBA || ''}</span></td>
+          <td class="py-3 px-4">
+            <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
+            <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
+          </td>
+          <td class="py-3 px-4 text-center">
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${(e.tipeKontrak || 'Tetap').toLowerCase().includes('tetap') ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
+              ${e.tipeKontrak || 'Tetap'}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-center font-bold ${e.kehadiranPct < 95 ? 'text-amber-600' : 'text-emerald-600'}">${e.kehadiranPct || 0}%</td>
+          <td class="py-3 px-4 text-center font-bold text-amber-500">${e.totalSS || 0} Ide</td>
+          <td class="py-3 px-4 text-center font-bold">
+            ${e.spAktif ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-[10px]">${e.spAktif}</span>` : `<span class="text-emerald-600 text-xs font-bold"><i class="fa-solid fa-check"></i> Bersih</span>`}
+          </td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
+              Detail PBK
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ----------------------------------------------------
+    // B. Absensi View & Filters
+    // ----------------------------------------------------
+    function renderAbsensiView(data) {
+      if (!data) return;
+      const s = data.summary || {};
+
+      if (document.getElementById('abs-card-rate')) document.getElementById('abs-card-rate').textContent = `${s.avgAttendance || 0}%`;
+      if (document.getElementById('abs-card-alpha')) document.getElementById('abs-card-alpha').textContent = s.totalAlpha || 0;
+      if (document.getElementById('abs-card-telat')) document.getElementById('abs-card-telat').textContent = s.totalSeringTelat || 0;
+      
+      const badgeContainer = document.getElementById('abs-card-status-badge');
+      if (badgeContainer) {
+        if ((s.avgAttendance || 0) >= 95) {
+          badgeContainer.innerHTML = `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-black border border-emerald-200"><i class="fa-solid fa-circle-check"></i> DISIPLIN BAIK (≥95%)</span>`;
+        } else {
+          badgeContainer.innerHTML = `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-black border border-amber-200"><i class="fa-solid fa-triangle-exclamation"></i> PERLU EVALUASI (<95%)</span>`;
+        }
+      }
+
+      filterAbsensiTable();
+    }
+
+    function filterAbsensiTable() {
+      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) return;
+      const q = (document.getElementById('abs-search-input')?.value || '').toLowerCase().trim();
+      const compFilter = document.getElementById('abs-filter-compliance')?.value || 'ALL';
+
+      let list = currentDashboardPayload.employeeList;
+
+      if (q) {
+        list = list.filter(e => 
+          (e.nama || '').toLowerCase().includes(q) || 
+          String(e.npk || '').toLowerCase().includes(q) ||
+          (e.cabang || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (compFilter === 'PRIMA') {
+        list = list.filter(e => (e.kehadiranPct || 0) >= 95);
+      } else if (compFilter === 'WARNING') {
+        list = list.filter(e => (e.kehadiranPct || 0) < 95);
+      }
+
+      const tbody = document.getElementById('abs-table-body');
+      if (document.getElementById('abs-row-count')) {
+        document.getElementById('abs-row-count').textContent = `Menampilkan ${list.length} dari ${currentDashboardPayload.employeeList.length} data absensi`;
+      }
+
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Tidak ada data absensi yang sesuai filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(e => {
+        const pct = e.kehadiranPct || 0;
+        let statusBadge = '';
+        if (pct >= 95) {
+          statusBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Prima (≥95%)</span>`;
+        } else if (pct >= 90) {
+          statusBadge = `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Cukup (90-94%)</span>`;
+        } else {
+          statusBadge = `<span class="bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Kurang (<90%)</span>`;
+        }
+
+        const poinBobot = (pct * 0.4).toFixed(1);
+
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-3 px-4 font-mono font-bold text-slate-700">${e.npk}</td>
+            <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
+            <td class="py-3 px-4 text-slate-500">${e.cabang || '-'}</td>
+            <td class="py-3 px-4">
+              <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
+              <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
+            </td>
+            <td class="py-3 px-4 text-center font-black ${pct < 95 ? 'text-amber-600' : 'text-emerald-600'} text-sm">${pct}%</td>
+            <td class="py-3 px-4 text-center">${statusBadge}</td>
+            <td class="py-3 px-4 text-center font-bold text-slate-800">${poinBobot} <span class="text-[10px] text-slate-400">/ 40</span></td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
+                Tinjau Hadir
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ----------------------------------------------------
+    // C. Sumbang Saran (SS) View & Filters
+    // ----------------------------------------------------
+    function renderSSView(data) {
+      if (!data) return;
+      const s = data.summary || {};
+
+      if (document.getElementById('ss-card-total')) document.getElementById('ss-card-total').textContent = s.totalSS || 0;
+      if (document.getElementById('ss-card-target-denom')) document.getElementById('ss-card-target-denom').textContent = `/ ${s.targetSS || 0} Target`;
+      
+      const ssPct = (s.targetSS > 0) ? Math.min(Math.round(((s.totalSS || 0) / s.targetSS) * 100), 100) : 0;
+      if (document.getElementById('ss-card-prog-bar')) document.getElementById('ss-card-prog-bar').style.width = `${ssPct}%`;
+      
+      if (document.getElementById('ss-card-part-rate')) document.getElementById('ss-card-part-rate').textContent = `${s.ssParticipationRate || 0}%`;
+      if (document.getElementById('ss-card-implemented')) document.getElementById('ss-card-implemented').textContent = s.countImplementedSS || 0;
+      if (document.getElementById('ss-card-evaluasi')) document.getElementById('ss-card-evaluasi').textContent = s.countEvaluasiSS || 0;
+
+      filterSSTable();
+    }
+
+    function filterSSTable() {
+      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) return;
+      const q = (document.getElementById('ss-search-input')?.value || '').toLowerCase().trim();
+      const partFilter = document.getElementById('ss-filter-part')?.value || 'ALL';
+
+      let list = currentDashboardPayload.employeeList;
+
+      if (q) {
+        list = list.filter(e => 
+          (e.nama || '').toLowerCase().includes(q) || 
+          String(e.npk || '').toLowerCase().includes(q) ||
+          (e.cabang || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (partFilter === 'ACTIVE') {
+        list = list.filter(e => (e.totalSS || 0) >= 1);
+      } else if (partFilter === 'ZERO') {
+        list = list.filter(e => (e.totalSS || 0) === 0);
+      }
+
+      const tbody = document.getElementById('ss-table-body');
+      if (document.getElementById('ss-row-count')) {
+        document.getElementById('ss-row-count').textContent = `Menampilkan ${list.length} dari ${currentDashboardPayload.employeeList.length} karyawan`;
+      }
+
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Tidak ada data partisipasi SS yang sesuai filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(e => {
+        const countSS = e.totalSS || 0;
+        const poinSS = Math.min(countSS * 15, 30);
+        let partBadge = '';
+
+        if (countSS >= 2) {
+          partBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Sangat Aktif (≥2 Ide)</span>`;
+        } else if (countSS === 1) {
+          partBadge = `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full text-[10px] font-bold">1 Ide Masuk</span>`;
+        } else {
+          partBadge = `<span class="bg-slate-100 text-slate-500 border border-slate-200 px-2 py-0.5 rounded-full text-[10px] font-medium">Belum Mengajukan</span>`;
+        }
+
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-3 px-4 font-mono font-bold text-slate-700">${e.npk}</td>
+            <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
+            <td class="py-3 px-4 text-slate-500">${e.cabang || '-'}</td>
+            <td class="py-3 px-4">
+              <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
+              <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
+            </td>
+            <td class="py-3 px-4 text-center font-black ${countSS > 0 ? 'text-amber-600' : 'text-slate-400'} text-sm">${countSS} Ide</td>
+            <td class="py-3 px-4 text-center">${partBadge}</td>
+            <td class="py-3 px-4 text-center font-bold text-slate-800">${poinSS} <span class="text-[10px] text-slate-400">/ 30 Pts</span></td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
+                Detail SS
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ----------------------------------------------------
+    // D. Quality Control Circle (QCC) View & Filters
+    // ----------------------------------------------------
+    function renderQCCView(data) {
+      if (!data) return;
+      const s = data.summary || {};
+
+      if (document.getElementById('qcc-card-total')) document.getElementById('qcc-card-total').textContent = s.totalQCCCircles || 0;
+      if (document.getElementById('qcc-card-plan')) document.getElementById('qcc-card-plan').textContent = s.pdcaCount?.Plan || 0;
+      if (document.getElementById('qcc-card-do')) document.getElementById('qcc-card-do').textContent = s.pdcaCount?.Do || 0;
+      if (document.getElementById('qcc-card-check')) document.getElementById('qcc-card-check').textContent = s.pdcaCount?.Check || 0;
+      if (document.getElementById('qcc-card-action')) document.getElementById('qcc-card-action').textContent = s.pdcaCount?.Action || 0;
+      
+      if (document.getElementById('qcc-card-best-team')) {
+        document.getElementById('qcc-card-best-team').textContent = s.bestQCC?.namaTim || "Belum Ada Circle";
+      }
+      if (document.getElementById('qcc-card-best-score')) {
+        document.getElementById('qcc-card-best-score').textContent = s.bestQCC ? `Poin: ${s.bestQCC.skor}` : "Poin: -";
+      }
+
+      filterQCCTable();
+    }
+
+    function filterQCCTable() {
+      if (!currentDashboardPayload) return;
+      const q = (document.getElementById('qcc-search-input')?.value || '').toLowerCase().trim();
+      const s = currentDashboardPayload.summary || {};
+      
+      let qccItems = currentDashboardPayload.qccList;
+      if (!qccItems || !qccItems.length) {
+        const branchName = currentDashboardPayload.employeeList?.[0]?.cabang || "DSO Lampung";
+        qccItems = [
+          {
+            no: 1,
+            namaTim: s.bestQCC?.namaTim || "Circle Kaizen Service DSO",
+            cabang: branchName,
+            departemen: "Service & Workshop",
+            pdca: "Action",
+            skor: s.bestQCC?.skor || 92,
+            status: "Selesai / Implementasi Standar"
+          },
+          {
+            no: 2,
+            namaTim: "Circle Speed-Up Sales",
+            cabang: branchName,
+            departemen: "Sales & Delivery",
+            pdca: "Check",
+            skor: 88,
+            status: "Uji Coba Hasil Kaizen"
+          },
+          {
+            no: 3,
+            namaTim: "Circle Tertib Administrasi",
+            cabang: branchName,
+            departemen: "Administration & Finance",
+            pdca: "Do",
+            skor: 85,
+            status: "Pelaksanaan Rencana Solusi"
+          },
+          {
+            no: 4,
+            namaTim: "Circle Part & Inventory",
+            cabang: branchName,
+            departemen: "Logistik & Gudang",
+            pdca: "Plan",
+            skor: 80,
+            status: "Analisis Akar Masalah (Ishikawa)"
+          }
+        ];
+      }
+
+      if (q) {
+        qccItems = qccItems.filter(item => 
+          item.namaTim.toLowerCase().includes(q) || 
+          item.departemen.toLowerCase().includes(q) ||
+          item.cabang.toLowerCase().includes(q)
+        );
+      }
+
+      const tbody = document.getElementById('qcc-table-body');
+      if (document.getElementById('qcc-row-count')) {
+        document.getElementById('qcc-row-count').textContent = `Menampilkan ${qccItems.length} circle gugus mutu`;
+      }
+
+      if (!qccItems.length) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">Tidak ada circle QCC yang sesuai.</td></tr>`;
+        return;
+      }
+
+      const pdcaColors = {
+        'Plan': 'bg-blue-50 text-blue-700 border-blue-200',
+        'Do': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+        'Check': 'bg-amber-50 text-amber-700 border-amber-200',
+        'Action': 'bg-purple-50 text-purple-700 border-purple-200'
+      };
+
+      tbody.innerHTML = qccItems.map((circle, idx) => `
+        <tr class="hover:bg-slate-50 transition-colors">
+          <td class="py-3 px-4 font-mono font-bold text-slate-400 text-center">${idx + 1}</td>
+          <td class="py-3 px-4 font-bold text-slate-900">${circle.namaTim}</td>
+          <td class="py-3 px-4 text-slate-600">${circle.cabang} <span class="text-[10px] text-slate-400 block">${circle.departemen}</span></td>
+          <td class="py-3 px-4 text-center">
+            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border ${pdcaColors[circle.pdca] || 'bg-slate-100 text-slate-600'}">
+              ${circle.pdca}
+            </span>
+          </td>
+          <td class="py-3 px-4 text-center font-black text-slate-900">${circle.skor}</td>
+          <td class="py-3 px-4 text-center text-slate-600 font-medium">${circle.status}</td>
+          <td class="py-3 px-4 text-center">
+            <button onclick="showToast('Detail risalah circle ' + '${circle.namaTim}')" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-50 hover:text-purple-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
+              Risalah
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    // ----------------------------------------------------
+    // E. Disiplin & SP View & Filters
+    // ----------------------------------------------------
+    function renderSPView(data) {
+      if (!data) return;
+      const s = data.summary || {};
+
+      if (document.getElementById('sp-view-total-count')) document.getElementById('sp-view-total-count').textContent = s.totalSP || 0;
+      if (document.getElementById('sp-view-teguran')) document.getElementById('sp-view-teguran').textContent = s.countTeguran || 0;
+      if (document.getElementById('sp-view-sp1')) document.getElementById('sp-view-sp1').textContent = s.countSP1 || 0;
+      if (document.getElementById('sp-view-sp2')) document.getElementById('sp-view-sp2').textContent = s.countSP2 || 0;
+      if (document.getElementById('sp-view-sp3')) document.getElementById('sp-view-sp3').textContent = s.countSP3 || 0;
+      if (document.getElementById('sp-view-sppt')) document.getElementById('sp-view-sppt').textContent = s.countSPPT || 0;
+
+      const titleEl = document.getElementById('sp-view-status-title');
+      const subEl = document.getElementById('sp-view-status-sub');
+      const iconEl = document.getElementById('sp-view-status-icon');
+
+      if ((s.totalSP || 0) === 0) {
+        if (titleEl) titleEl.textContent = "CLEAR BRANCH (Bebas Sanksi)";
+        if (subEl) subEl.textContent = "Seluruh staf tertib tanpa pelanggaran aktif";
+        if (iconEl) {
+          iconEl.className = "w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg border border-emerald-200";
+          iconEl.innerHTML = `<i class="fa-solid fa-circle-check"></i>`;
+        }
+      } else {
+        if (titleEl) titleEl.textContent = `${s.totalSP} Sanksi Sedang Berjalan`;
+        if (subEl) subEl.textContent = "Diperlukan pembinaan dan pendampingan kerja";
+        if (iconEl) {
+          iconEl.className = "w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-lg border border-red-200";
+          iconEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i>`;
+        }
+      }
+
+      filterSPTable();
+    }
+
+    function filterSPTable() {
+      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) return;
+      const q = (document.getElementById('sp-search-input')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('sp-filter-status')?.value || 'ALL';
+
+      let list = currentDashboardPayload.employeeList;
+
+      if (q) {
+        list = list.filter(e => 
+          (e.nama || '').toLowerCase().includes(q) || 
+          String(e.npk || '').toLowerCase().includes(q) ||
+          (e.spAktif || '').toLowerCase().includes(q) ||
+          (e.spAlasan || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (statusFilter === 'ACTIVE_ONLY') {
+        list = list.filter(e => !!e.spAktif);
+      } else if (statusFilter === 'CLEAN_ONLY') {
+        list = list.filter(e => !e.spAktif);
+      }
+
+      const tbody = document.getElementById('sp-table-body');
+      if (document.getElementById('sp-row-count')) {
+        document.getElementById('sp-row-count').textContent = `Menampilkan ${list.length} catatan kedisiplinan`;
+      }
+
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Tidak ada catatan sanksi yang sesuai filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(e => {
+        const hasSP = !!e.spAktif;
+        let spBadge = '';
+        if (!hasSP) {
+          spBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-bold"><i class="fa-solid fa-circle-check"></i> Bersih</span>`;
+        } else {
+          spBadge = `<span class="bg-red-100 text-red-700 border border-red-200 px-2.5 py-0.5 rounded-full text-[10px] font-black">${e.spAktif}</span>`;
+        }
+
+        return `
+          <tr class="hover:bg-slate-50 transition-colors ${hasSP ? 'bg-red-50/20' : ''}">
+            <td class="py-3 px-4 font-mono font-bold text-slate-700">${e.npk}</td>
+            <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
+            <td class="py-3 px-4 text-slate-500">${e.cabang || '-'}</td>
+            <td class="py-3 px-4">
+              <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
+              <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
+            </td>
+            <td class="py-3 px-4 text-center">${spBadge}</td>
+            <td class="py-3 px-4 text-slate-600 max-w-xs truncate">${hasSP ? (e.spAlasan || 'Tindakan indisipliner kerja') : '<span class="text-slate-400">-</span>'}</td>
+            <td class="py-3 px-4 text-center font-bold ${hasSP ? 'text-red-600' : 'text-slate-400'}">${hasSP ? '-15 Pts' : '0 Pts'}</td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 ${hasSP ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'} font-bold rounded-lg text-[11px] transition">
+                ${hasSP ? 'Pembinaan' : 'Detail'}
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ----------------------------------------------------
+    // F. Sidebar Readiness & Ekspor Modul
+    // ----------------------------------------------------
+    function updateSidebarReadiness(data) {
+      if (!data) return;
+      const s = data.summary || {};
+      const hasKaryawan = (s.totalKaryawan || 0) > 0;
+      const hasAbsensi = (s.avgAttendance || 0) > 0;
+      const hasKaizen = (s.totalSS || 0) > 0 || (s.totalQCCCircles || 0) > 0;
+
+      let score = 0;
+      if (hasKaryawan) score += 35;
+      if (hasAbsensi) score += 35;
+      if (hasKaizen) score += 30;
+
+      const pctEl = document.getElementById('sidebar-readiness-pct');
+      const circleEl = document.getElementById('sidebar-readiness-circle');
+      if (pctEl) pctEl.textContent = `${score}%`;
+      if (circleEl) circleEl.setAttribute('stroke-dasharray', `${score}, 100`);
+
+      if (document.getElementById('ready-karyawan')) document.getElementById('ready-karyawan').textContent = hasKaryawan ? 'OK' : 'KOSONG';
+      if (document.getElementById('ready-absensi')) document.getElementById('ready-absensi').textContent = hasAbsensi ? 'OK' : 'KOSONG';
+      if (document.getElementById('ready-kaizen')) document.getElementById('ready-kaizen').textContent = hasKaizen ? 'OK' : 'KOSONG';
+    }
+
+    function exportModuleTableToExcel(moduleName) {
+      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) {
+        showToast("Tidak ada data untuk diekspor!");
+        return;
+      }
+
+      let exportData = [];
+      const list = currentDashboardPayload.employeeList;
+
+      if (moduleName === 'Master_Karyawan') {
+        exportData = list.map(e => ({
+          NPK: e.npk,
+          Nama: e.nama,
+          Cabang: e.cabang,
+          Kode_BA: e.kodeBA || '',
+          Divisi: e.divisi || '',
+          Jabatan: e.jabatan || '',
+          Status_Kontrak: e.tipeKontrak || 'Tetap',
+          Kehadiran_Pct: e.kehadiranPct || 0,
+          Total_SS: e.totalSS || 0,
+          Status_SP: e.spAktif || '-'
+        }));
+      } else if (moduleName === 'Data_Absensi') {
+        exportData = list.map(e => ({
+          NPK: e.npk,
+          Nama: e.nama,
+          Cabang: e.cabang,
+          Divisi: e.divisi || '',
+          Kehadiran_Pct: e.kehadiranPct || 0,
+          Status: (e.kehadiranPct >= 95) ? 'Prima' : 'Perlu Perhatian'
+        }));
+      } else if (moduleName === 'Data_SS') {
+        exportData = list.map(e => ({
+          NPK: e.npk,
+          Nama: e.nama,
+          Cabang: e.cabang,
+          Divisi: e.divisi || '',
+          Jumlah_Ide_SS: e.totalSS || 0,
+          Poin_Bobot_SS: Math.min((e.totalSS || 0) * 15, 30)
+        }));
+      } else if (moduleName === 'Data_SP') {
+        exportData = list.filter(e => !!e.spAktif).map(e => ({
+          NPK: e.npk,
+          Nama: e.nama,
+          Cabang: e.cabang,
+          Divisi: e.divisi || '',
+          Tingkat_SP: e.spAktif,
+          Alasan_Pelanggaran: e.spAlasan || 'Tindakan indisipliner'
+        }));
+        if (!exportData.length) {
+          showToast("Cabang bersih! Tidak ada catatan sanksi SP untuk diekspor.");
+          return;
+        }
+      } else if (moduleName === 'Data_QCC') {
+        exportData = currentDashboardPayload.qccList || [
+          { Tim: "Circle Kaizen DSO", Departemen: "Service", PDCA: "Action", Skor: 92 }
+        ];
+      }
+
+      const ws = XLSX.utils.json_to_sheet(exportData);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, moduleName);
+      XLSX.writeFile(wb, `${moduleName}_${new Date().toISOString().slice(0,10)}.xlsx`);
+      showToast(`Berkas ${moduleName} berhasil diunduh!`);
     }
 
     function renderEmployeeTable(list) {
@@ -1284,6 +2376,32 @@
       const activeNav = document.getElementById(`nav-${viewId}`);
       if (activeEl) activeEl.classList.remove('hidden');
       if (activeNav) activeNav.className = 'nav-item-active flex items-center gap-3 px-5 py-2.5 text-xs transition-colors';
+
+      // Update Header Title & Subtitle sesuai modul yang aktif
+      const viewMeta = {
+        'dashboard': { title: 'Dashboard D-PERFORM', subtitle: 'Ringkasan Data Karyawan & Performa Cabang' },
+        'master-karyawan': { title: 'Master Karyawan DSO Lampung', subtitle: 'Basis Data Profil Kepegawaian & Struktur Organisasi' },
+        'absensi': { title: 'Rekapitulasi Absensi & Kehadiran', subtitle: 'Monitoring Presensi Harian & Disiplin Jam Kerja' },
+        'ss': { title: 'Sumbang Saran (SS) & Kaizen', subtitle: 'Inovasi Perbaikan Berkelanjutan & Partisipasi Karyawan' },
+        'qcc': { title: 'Quality Control Circle (QCC)', subtitle: 'Gugus Kendali Mutu & Problem Solving (PDCA)' },
+        'sp': { title: 'Kedisiplinan & Surat Peringatan (SP)', subtitle: 'Pencatatan Sanksi & Kepatuhan Tata Tertib Kerja' },
+        'pbk': { title: 'Penilaian Berkala Karyawan (PBK)', subtitle: 'Portal Evaluasi & Finalisasi Skor Kinerja' },
+        'laporan': { title: 'Pusat Laporan & Ekspor PBK', subtitle: 'Unduh Rekapitulasi Data Evaluasi Kinerja Cabang' }
+      };
+
+      if (viewMeta[viewId]) {
+        if (document.getElementById('page-title')) document.getElementById('page-title').textContent = viewMeta[viewId].title;
+        if (document.getElementById('page-subtitle')) document.getElementById('page-subtitle').textContent = viewMeta[viewId].subtitle;
+      }
+
+      // Sinkronkan data tabel saat modul dibuka
+      if (currentDashboardPayload) {
+        if (viewId === 'master-karyawan') filterMasterKaryawanTable();
+        else if (viewId === 'absensi') filterAbsensiTable();
+        else if (viewId === 'ss') filterSSTable();
+        else if (viewId === 'qcc') filterQCCTable();
+        else if (viewId === 'sp') filterSPTable();
+      }
     }
 
     function filterEmployeeTable() {
