@@ -839,23 +839,10 @@
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
             <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
               <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                <div class="relative w-full sm:w-56">
+                <div class="relative w-full sm:w-64">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                   <input type="text" id="mk-search-input" onkeyup="filterMasterKaryawanTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="mk-filter-cabang" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Cabang (BA)</option>
-                  <option value="D660">D660 - Lampung A Yani</option>
-                  <option value="D661">D661 - Lampung S Hatta</option>
-                  <option value="D662">D662 - Bandarjaya</option>
-                  <option value="D663">D663 - Kotabumi</option>
-                  <option value="D664">D664 - Lampung Timur</option>
-                </select>
-                <select id="mk-filter-wilayah" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Wilayah</option>
-                  <option value="DSO Lampung">DSO Lampung</option>
-                  <option value="Wilayah Lampung">Wilayah Lampung</option>
-                </select>
                 <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Kontrak</option>
                   <option value="Tetap">Tetap</option>
@@ -953,23 +940,10 @@
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
             <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
               <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                <div class="relative w-full sm:w-56">
+                <div class="relative w-full sm:w-64">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                   <input type="text" id="abs-search-input" onkeyup="filterAbsensiTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="abs-filter-cabang" onchange="filterAbsensiTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Cabang (BA)</option>
-                  <option value="D660">D660 - Lampung A Yani</option>
-                  <option value="D661">D661 - Lampung S Hatta</option>
-                  <option value="D662">D662 - Bandarjaya</option>
-                  <option value="D663">D663 - Kotabumi</option>
-                  <option value="D664">D664 - Lampung Timur</option>
-                </select>
-                <select id="abs-filter-wilayah" onchange="filterAbsensiTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Wilayah</option>
-                  <option value="DSO Lampung">DSO Lampung</option>
-                  <option value="Wilayah Lampung">Wilayah Lampung</option>
-                </select>
                 <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Keterangan</option>
                   <option value="Hadir Tepat Waktu">Hadir Tepat Waktu</option>
@@ -1068,23 +1042,10 @@
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
             <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
               <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                <div class="relative w-full sm:w-56">
+                <div class="relative w-full sm:w-64">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                   <input type="text" id="ss-search-input" onkeyup="filterSSTable()" placeholder="Cari NPK, nama, atau tema..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="ss-filter-cabang" onchange="filterSSTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Cabang (BA)</option>
-                  <option value="D660">D660 - Lampung A Yani</option>
-                  <option value="D661">D661 - Lampung S Hatta</option>
-                  <option value="D662">D662 - Bandarjaya</option>
-                  <option value="D663">D663 - Kotabumi</option>
-                  <option value="D664">D664 - Lampung Timur</option>
-                </select>
-                <select id="ss-filter-wilayah" onchange="filterSSTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Wilayah</option>
-                  <option value="DSO Lampung">DSO Lampung</option>
-                  <option value="Wilayah Lampung">Wilayah Lampung</option>
-                </select>
                 <select id="ss-filter-part" onchange="filterSSTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Status Reward</option>
                   <option value="Approved">Approved</option>
@@ -1190,23 +1151,10 @@
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
             <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
               <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                <div class="relative w-full sm:w-56">
+                <div class="relative w-full sm:w-64">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                   <input type="text" id="qcc-search-input" onkeyup="filterQCCTable()" placeholder="Cari nama tim, leader, tema..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="qcc-filter-cabang" onchange="filterQCCTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Cabang (BA)</option>
-                  <option value="D660">D660 - Lampung A Yani</option>
-                  <option value="D661">D661 - Lampung S Hatta</option>
-                  <option value="D662">D662 - Bandarjaya</option>
-                  <option value="D663">D663 - Kotabumi</option>
-                  <option value="D664">D664 - Lampung Timur</option>
-                </select>
-                <select id="qcc-filter-wilayah" onchange="filterQCCTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Wilayah</option>
-                  <option value="DSO Lampung">DSO Lampung</option>
-                  <option value="Wilayah Lampung">Wilayah Lampung</option>
-                </select>
                 <select id="qcc-filter-pdca" onchange="filterQCCTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Tahap PDCA</option>
                   <option value="Plan">Plan</option>
@@ -2703,11 +2651,7 @@
     function populateBranchDropdown(availableBranchList = null) {
       const selectDesktop = document.getElementById('branch-select');
       const selectMobile = document.getElementById('branch-select-mobile');
-      const mkFilter = document.getElementById('mk-filter-cabang');
-      const absFilter = document.getElementById('abs-filter-cabang');
-      const ssFilter = document.getElementById('ss-filter-cabang');
-      const qccFilter = document.getElementById('qcc-filter-cabang');
-      const selects = [selectDesktop, selectMobile, mkFilter, absFilter, ssFilter, qccFilter].filter(Boolean);
+      const selects = [selectDesktop, selectMobile].filter(Boolean);
       if (!selects.length) return;
 
       const isAdmin = isUserAdmin(loggedInUser);
@@ -2726,7 +2670,7 @@
 
           const optAll = document.createElement('option');
           optAll.value = 'ALL';
-          optAll.textContent = (select === selectDesktop || select === selectMobile) ? 'Semua Cabang Wewenang' : 'Semua Cabang (BA)';
+          optAll.textContent = 'Semua Cabang Wewenang';
           select.appendChild(optAll);
 
           branchList.forEach(b => {
@@ -3079,8 +3023,6 @@
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
       const rawRows = currentDashboardPayload.rawTables.Master_Karyawan || [];
       const q = (document.getElementById('mk-search-input')?.value || '').toLowerCase().trim();
-      const cabangFilter = document.getElementById('mk-filter-cabang')?.value || 'ALL';
-      const wilayahFilter = document.getElementById('mk-filter-wilayah')?.value || 'ALL';
       const contractFilter = document.getElementById('mk-filter-kontrak')?.value || 'ALL';
 
       let list = rawRows;
@@ -3092,19 +3034,6 @@
           String(e['Job Title'] || '').toLowerCase().includes(q) ||
           String(e['P.subarea'] || '').toLowerCase().includes(q) ||
           String(e['Business area'] || '').toLowerCase().includes(q)
-        );
-      }
-
-      if (cabangFilter !== 'ALL') {
-        list = list.filter(e => 
-          String(e['Business area'] || '').toLowerCase() === cabangFilter.toLowerCase() ||
-          String(e['P.subarea'] || '').toLowerCase().includes(cabangFilter.toLowerCase())
-        );
-      }
-
-      if (wilayahFilter !== 'ALL') {
-        list = list.filter(e => 
-          String(e['Wilayah'] || '').toLowerCase().includes(wilayahFilter.toLowerCase())
         );
       }
 
@@ -3183,8 +3112,6 @@
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
       const rawRows = currentDashboardPayload.rawTables.Data_Kehadiran || [];
       const q = (document.getElementById('abs-search-input')?.value || '').toLowerCase().trim();
-      const cabangFilter = document.getElementById('abs-filter-cabang')?.value || 'ALL';
-      const wilayahFilter = document.getElementById('abs-filter-wilayah')?.value || 'ALL';
       const compFilter = document.getElementById('abs-filter-compliance')?.value || 'ALL';
 
       let list = rawRows;
@@ -3195,18 +3122,6 @@
           String(e['Employee Name'] || '').toLowerCase().includes(q) ||
           String(e['Cabang'] || '').toLowerCase().includes(q) ||
           String(e['Keterangan'] || '').toLowerCase().includes(q)
-        );
-      }
-
-      if (cabangFilter !== 'ALL') {
-        list = list.filter(e => 
-          String(e['Cabang'] || '').toLowerCase().includes(cabangFilter.toLowerCase())
-        );
-      }
-
-      if (wilayahFilter !== 'ALL') {
-        list = list.filter(e => 
-          String(e['Wilayah'] || '').toLowerCase().includes(wilayahFilter.toLowerCase())
         );
       }
 
@@ -3282,8 +3197,6 @@
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
       const rawRows = currentDashboardPayload.rawTables.Data_SS || [];
       const q = (document.getElementById('ss-search-input')?.value || '').toLowerCase().trim();
-      const cabangFilter = document.getElementById('ss-filter-cabang')?.value || 'ALL';
-      const wilayahFilter = document.getElementById('ss-filter-wilayah')?.value || 'ALL';
       const partFilter = document.getElementById('ss-filter-part')?.value || 'ALL';
 
       let list = rawRows;
@@ -3297,19 +3210,6 @@
           String(e['Tema'] || '').toLowerCase().includes(q) ||
           String(e['Cabang'] || '').toLowerCase().includes(q) ||
           String(e['Kode BA'] || '').toLowerCase().includes(q)
-        );
-      }
-
-      if (cabangFilter !== 'ALL') {
-        list = list.filter(e => 
-          String(e['Kode BA'] || '').toLowerCase() === cabangFilter.toLowerCase() ||
-          String(e['Cabang'] || '').toLowerCase().includes(cabangFilter.toLowerCase())
-        );
-      }
-
-      if (wilayahFilter !== 'ALL') {
-        list = list.filter(e => 
-          String(e['Wilayah'] || '').toLowerCase().includes(wilayahFilter.toLowerCase())
         );
       }
 
@@ -3388,8 +3288,6 @@
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
       const rawRows = currentDashboardPayload.rawTables.Data_QCC || [];
       const q = (document.getElementById('qcc-search-input')?.value || '').toLowerCase().trim();
-      const cabangFilter = document.getElementById('qcc-filter-cabang')?.value || 'ALL';
-      const wilayahFilter = document.getElementById('qcc-filter-wilayah')?.value || 'ALL';
       const pdcaFilter = document.getElementById('qcc-filter-pdca')?.value || 'ALL';
 
       let list = rawRows;
@@ -3403,19 +3301,6 @@
           String(e['Tema'] || '').toLowerCase().includes(q) ||
           String(e['Cabang/Departemen'] || '').toLowerCase().includes(q) ||
           String(e['Kode BA'] || '').toLowerCase().includes(q)
-        );
-      }
-
-      if (cabangFilter !== 'ALL') {
-        list = list.filter(e => 
-          String(e['Kode BA'] || '').toLowerCase() === cabangFilter.toLowerCase() ||
-          String(e['Cabang/Departemen'] || '').toLowerCase().includes(cabangFilter.toLowerCase())
-        );
-      }
-
-      if (wilayahFilter !== 'ALL') {
-        list = list.filter(e => 
-          String(e['Wilayah/Divisi'] || '').toLowerCase().includes(wilayahFilter.toLowerCase())
         );
       }
 
