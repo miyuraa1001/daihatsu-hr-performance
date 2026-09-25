@@ -482,15 +482,25 @@
                 </div>
               </div>
               <div class="pt-3 border-t border-slate-100 mt-3 text-[10px]">
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Kepegawaian (Contract)</span>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <span class="text-slate-400 block text-[9px]">Tetap / Permanent</span>
-                    <span class="font-extrabold text-blue-600 text-xs" id="card-tetap-count">0</span>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Status Kepegawaian (Contract)</span>
+                <div class="grid grid-cols-2 gap-2">
+                  <div class="flex items-center gap-2 p-1.5 rounded-xl bg-blue-50/60 border border-blue-100">
+                    <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] flex-shrink-0">
+                      <i class="fa-solid fa-user-check"></i>
+                    </span>
+                    <div class="min-w-0">
+                      <span class="text-[9px] text-slate-500 font-bold block truncate">Tetap</span>
+                      <span class="font-extrabold text-blue-700 text-xs" id="card-tetap-count">0</span>
+                    </div>
                   </div>
-                  <div class="text-right">
-                    <span class="text-slate-400 block text-[9px]">Kontrak / PKWT</span>
-                    <span class="font-extrabold text-amber-600 text-xs" id="card-kontrak-count">0</span>
+                  <div class="flex items-center gap-2 p-1.5 rounded-xl bg-amber-50/60 border border-amber-100">
+                    <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-[10px] flex-shrink-0">
+                      <i class="fa-solid fa-user-clock"></i>
+                    </span>
+                    <div class="min-w-0">
+                      <span class="text-[9px] text-slate-500 font-bold block truncate">PKWT</span>
+                      <span class="font-extrabold text-amber-700 text-xs" id="card-kontrak-count">0</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -802,98 +812,133 @@
             <!-- CARD 1: TOTAL KARYAWAN -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
               <div>
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Karyawan Aktif</span>
-                  <span class="w-6 h-6 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-[10px]"><i class="fa-solid fa-users"></i></span>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Karyawan</span>
+                  <span class="w-7 h-7 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-xs"><i class="fa-solid fa-users"></i></span>
                 </div>
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-2xl font-black text-slate-900" id="mk-card-total">0</span>
+                <div class="flex items-baseline gap-1.5 my-1">
+                  <span class="text-3xl font-black text-slate-900" id="mk-card-total">0</span>
                   <span class="text-xs font-bold text-slate-500">Orang</span>
                 </div>
+                <p class="text-[11px] text-slate-500 font-medium truncate mt-0.5" id="mk-card-branch-desc">Semua cabang terdaftar</p>
               </div>
-              <div class="pt-2 border-t border-slate-100 mt-2">
-                <p class="text-[10px] text-slate-500 font-medium truncate" id="mk-card-branch-desc">Semua cabang terdaftar</p>
-                <div class="flex items-center gap-1.5 mt-1 text-[10px] text-emerald-600 font-bold">
-                  <i class="fa-solid fa-circle-check text-[9px]"></i> Data Master Terverifikasi
-                </div>
+              <div class="pt-2.5 border-t border-slate-100 mt-2 flex items-center justify-between text-[10px]">
+                <span class="text-emerald-700 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-[9px]"></i> Data Terverifikasi
+                </span>
+                <span class="text-slate-400 font-mono text-[9px]">DSO Lampung</span>
               </div>
             </div>
 
             <!-- CARD 2: DISTRIBUSI DIVISI (1 KPI Terpadu) -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
               <div>
-                <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center justify-between mb-2">
                   <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Distribusi Divisi</span>
-                  <span class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]"><i class="fa-solid fa-sitemap"></i></span>
+                  <span class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs"><i class="fa-solid fa-sitemap"></i></span>
                 </div>
-                <div class="flex items-baseline justify-between">
-                  <span class="text-base font-black text-blue-700 truncate" id="mk-card-sales-lead">Sales & Bengkel</span>
-                  <span class="text-[10px] font-extrabold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full" id="mk-card-divisi-insight">0% Dominan</span>
+                <!-- Kelompok Divisi: Icon, Jumlah, Persen -->
+                <div class="space-y-1.5">
+                  <!-- Sales -->
+                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-blue-50/40 transition">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] flex-shrink-0">
+                        <i class="fa-solid fa-car"></i>
+                      </span>
+                      <span class="text-[11px] font-bold text-slate-700 truncate">Sales</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                      <span class="text-xs font-black text-slate-900"><span id="mk-card-sales-val">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
+                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-blue-100 text-blue-700 border border-blue-200" id="mk-card-sales-pct">0%</span>
+                    </div>
+                  </div>
+                  <!-- Service / Bengkel -->
+                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50/40 transition">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-[10px] flex-shrink-0">
+                        <i class="fa-solid fa-wrench"></i>
+                      </span>
+                      <span class="text-[11px] font-bold text-slate-700 truncate">Bengkel (Svc)</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                      <span class="text-xs font-black text-slate-900"><span id="mk-card-service-val">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
+                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-emerald-100 text-emerald-700 border border-emerald-200" id="mk-card-service-pct">0%</span>
+                    </div>
+                  </div>
+                  <!-- Admin & Lainnya -->
+                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-purple-50/40 transition">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-[10px] flex-shrink-0">
+                        <i class="fa-solid fa-building"></i>
+                      </span>
+                      <span class="text-[11px] font-bold text-slate-700 truncate">Admin & Umum</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                      <span class="text-xs font-black text-slate-900"><span id="mk-card-admin-val">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
+                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-purple-100 text-purple-700 border border-purple-200" id="mk-card-admin-pct">0%</span>
+                    </div>
+                  </div>
                 </div>
-                <!-- Visual Multi-segment Progress Bar -->
-                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex my-2">
-                  <div id="mk-bar-div-sales" class="bg-blue-600 h-full transition-all duration-500" style="width: 50%" title="Sales"></div>
-                  <div id="mk-bar-div-service" class="bg-emerald-500 h-full transition-all duration-500" style="width: 40%" title="Service / Bengkel"></div>
-                  <div id="mk-bar-div-admin" class="bg-purple-500 h-full transition-all duration-500" style="width: 10%" title="Admin & Lainnya"></div>
-                </div>
-              </div>
-              <div class="pt-1.5 border-t border-slate-100 text-[10px] flex items-center justify-between font-semibold">
-                <span class="text-blue-700 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-600 inline-block"></span> Sales: <b id="mk-card-sales-val">0</b> (<span id="mk-card-sales-pct">0%</span>)</span>
-                <span class="text-emerald-700 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span> Svc: <b id="mk-card-service-val">0</b> (<span id="mk-card-service-pct">0%</span>)</span>
-                <span class="text-purple-700 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-purple-500 inline-block"></span> Adm: <b id="mk-card-admin-val">0</b></span>
               </div>
             </div>
 
             <!-- CARD 3: INSIGHT JOB TITLE (JABATAN) -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
               <div>
-                <div class="flex items-center justify-between mb-1">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Insight Job Title</span>
-                  <span class="w-6 h-6 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-[10px]"><i class="fa-solid fa-id-badge"></i></span>
+                <div class="flex items-center justify-between mb-2">
+                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Top Job Title (Jabatan)</span>
+                  <span class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs"><i class="fa-solid fa-id-badge"></i></span>
                 </div>
-                <div>
-                  <span class="text-[10px] text-slate-400 block font-semibold">Jabatan Dominan Terbanyak:</span>
-                  <div class="flex items-baseline justify-between mt-0.5">
-                    <span class="text-sm font-black text-indigo-700 truncate max-w-[145px]" id="mk-top-job-title" title="Job Title Terbanyak">Sales Executive</span>
-                    <span class="text-xs font-black text-indigo-900 bg-indigo-50 px-2 py-0.5 rounded-lg border border-indigo-100" id="mk-top-job-count">0 Orang</span>
-                  </div>
-                </div>
-              </div>
-              <div class="pt-2 border-t border-slate-100 mt-2">
-                <div class="flex items-center justify-between text-[10px] text-slate-600 font-medium">
-                  <span class="truncate max-w-[160px]" id="mk-sub-job-titles" title="Posisi lainnya">Top posisi lainnya</span>
-                  <span class="text-slate-400 text-[9px] font-mono whitespace-nowrap" id="mk-total-job-variants">0 Posisi</span>
+                <!-- Kelompok Job Title: Icon per Job Title, Jumlah, Persen -->
+                <div class="space-y-1.5" id="mk-jobtitle-group-list">
+                  <div class="text-center py-4 text-slate-400 text-xs">Memuat data jabatan...</div>
                 </div>
               </div>
             </div>
 
-            <!-- CARD 4: STATUS KEPEGAWAIAN (CONTRACT INSIGHT) -->
+            <!-- CARD 4: STATUS KEPEGAWAIAN (CONTRACT) -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
               <div>
-                <div class="flex items-center justify-between mb-1">
+                <div class="flex items-center justify-between mb-2">
                   <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Status Kepegawaian (Contract)</span>
-                  <span class="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-[10px]"><i class="fa-solid fa-file-contract"></i></span>
+                  <span class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs"><i class="fa-solid fa-file-contract"></i></span>
                 </div>
-                <div class="flex items-baseline justify-between">
-                  <div class="flex items-baseline gap-1">
-                    <span class="text-xl font-black text-blue-600" id="mk-card-tetap-pct">0%</span>
-                    <span class="text-[11px] font-bold text-slate-500">Tetap</span>
+                <!-- Kelompok Status: Icon, Jumlah, Persen -->
+                <div class="space-y-1.5">
+                  <!-- Tetap / Permanent -->
+                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-blue-50/40 transition">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] flex-shrink-0">
+                        <i class="fa-solid fa-user-check"></i>
+                      </span>
+                      <span class="text-[11px] font-bold text-slate-700 truncate">Tetap (Permanent)</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                      <span class="text-xs font-black text-slate-900"><span id="mk-card-tetap">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
+                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-blue-100 text-blue-700 border border-blue-200" id="mk-card-tetap-pct">0%</span>
+                    </div>
                   </div>
-                  <span class="text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1" id="mk-card-contract-badge">
-                    <i class="fa-solid fa-shield-check text-[9px]"></i> Stabilitas Tinggi
-                  </span>
+                  <!-- Kontrak / PKWT -->
+                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-amber-50/40 transition">
+                    <div class="flex items-center gap-2 min-w-0">
+                      <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-[10px] flex-shrink-0">
+                        <i class="fa-solid fa-user-clock"></i>
+                      </span>
+                      <span class="text-[11px] font-bold text-slate-700 truncate">Kontrak (PKWT)</span>
+                    </div>
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                      <span class="text-xs font-black text-slate-900"><span id="mk-card-pkwt">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
+                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-amber-100 text-amber-700 border border-amber-200" id="mk-card-pkwt-pct">0%</span>
+                    </div>
+                  </div>
                 </div>
                 <!-- Dual-color Visual Ratio Progress Bar -->
-                <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex my-2">
-                  <div id="mk-bar-contract-tetap" class="bg-blue-600 h-full transition-all duration-500" style="width: 90%" title="Tetap / Permanent"></div>
-                  <div id="mk-bar-contract-pkwt" class="bg-amber-500 h-full transition-all duration-500" style="width: 10%" title="Kontrak / PKWT"></div>
+                <div class="pt-2">
+                  <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex">
+                    <div id="mk-bar-contract-tetap" class="bg-blue-600 h-full transition-all duration-500" style="width: 90%" title="Tetap / Permanent"></div>
+                    <div id="mk-bar-contract-pkwt" class="bg-amber-500 h-full transition-all duration-500" style="width: 10%" title="Kontrak / PKWT"></div>
+                  </div>
                 </div>
-              </div>
-              <div class="pt-1.5 border-t border-slate-100 text-[10px] flex items-center justify-between font-semibold">
-                <span class="text-blue-700 font-bold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-600 inline-block"></span> Tetap: <b id="mk-card-tetap">0</b></span>
-                <span class="text-slate-300">|</span>
-                <span class="text-amber-700 font-bold flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-amber-500 inline-block"></span> PKWT: <b id="mk-card-pkwt">0</b></span>
-                <span class="text-slate-400 text-[9px]" id="mk-card-pkwt-pct">(0%)</span>
               </div>
             </div>
           </div>
@@ -3027,6 +3072,33 @@
     // ----------------------------------------------------
     // A. Master Karyawan View & Filters
     // ----------------------------------------------------
+    // Helper metadata ikon dan warna untuk masing-masing Job Title
+    function getJobTitleMeta(jobTitle) {
+      const t = String(jobTitle || '').toLowerCase();
+      if (t.includes('sales') || t.includes('marketing') || t.includes('wiraniaga')) {
+        return { icon: 'fa-solid fa-user-tie', color: 'text-blue-600', bg: 'bg-blue-100 text-blue-700 border-blue-200' };
+      }
+      if (t.includes('mekanik') || t.includes('teknisi') || t.includes('mechanic') || t.includes('service')) {
+        return { icon: 'fa-solid fa-screwdriver-wrench', color: 'text-emerald-600', bg: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
+      }
+      if (t.includes('advisor') || t.includes('sa') || t.includes('customer') || t.includes('front')) {
+        return { icon: 'fa-solid fa-headset', color: 'text-cyan-600', bg: 'bg-cyan-100 text-cyan-700 border-cyan-200' };
+      }
+      if (t.includes('foreman') || t.includes('lead') || t.includes('spv') || t.includes('supervisor') || t.includes('head')) {
+        return { icon: 'fa-solid fa-user-gear', color: 'text-amber-600', bg: 'bg-amber-100 text-amber-700 border-amber-200' };
+      }
+      if (t.includes('part') || t.includes('gudang') || t.includes('logistik')) {
+        return { icon: 'fa-solid fa-boxes-stacked', color: 'text-orange-600', bg: 'bg-orange-100 text-orange-700 border-orange-200' };
+      }
+      if (t.includes('admin') || t.includes('finance') || t.includes('cashier') || t.includes('kasir') || t.includes('akunting')) {
+        return { icon: 'fa-solid fa-laptop-file', color: 'text-purple-600', bg: 'bg-purple-100 text-purple-700 border-purple-200' };
+      }
+      if (t.includes('driver') || t.includes('supir') || t.includes('delivery')) {
+        return { icon: 'fa-solid fa-truck-fast', color: 'text-teal-600', bg: 'bg-teal-100 text-teal-700 border-teal-200' };
+      }
+      return { icon: 'fa-solid fa-id-badge', color: 'text-indigo-600', bg: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
+    }
+
     function renderMasterKaryawanView(data) {
       if (!data) return;
       const s = data.summary || {};
@@ -3053,7 +3125,7 @@
         document.getElementById('mk-card-branch-desc').textContent = branchDesc;
       }
 
-      // 2. Satu KPI Terpadu: Distribusi Divisi
+      // 2. Satu KPI Terpadu: Distribusi Divisi (Kelompok: Icon, Jumlah, Persen)
       let salesCount = 0;
       let serviceCount = 0;
       let adminCount = 0;
@@ -3086,21 +3158,9 @@
       if (document.getElementById('mk-card-service-val')) document.getElementById('mk-card-service-val').textContent = serviceCount;
       if (document.getElementById('mk-card-service-pct')) document.getElementById('mk-card-service-pct').textContent = `${servicePct}%`;
       if (document.getElementById('mk-card-admin-val')) document.getElementById('mk-card-admin-val').textContent = adminCount;
+      if (document.getElementById('mk-card-admin-pct')) document.getElementById('mk-card-admin-pct').textContent = `${adminPct}%`;
 
-      if (document.getElementById('mk-bar-div-sales')) document.getElementById('mk-bar-div-sales').style.width = `${salesPct}%`;
-      if (document.getElementById('mk-bar-div-service')) document.getElementById('mk-bar-div-service').style.width = `${servicePct}%`;
-      if (document.getElementById('mk-bar-div-admin')) document.getElementById('mk-bar-div-admin').style.width = `${adminPct}%`;
-
-      const leadDivName = salesCount >= serviceCount ? 'Divisi Sales' : 'Divisi Bengkel';
-      const leadDivPct = Math.max(salesPct, servicePct);
-      if (document.getElementById('mk-card-sales-lead')) {
-        document.getElementById('mk-card-sales-lead').textContent = `${leadDivName} Dominan`;
-      }
-      if (document.getElementById('mk-card-divisi-insight')) {
-        document.getElementById('mk-card-divisi-insight').textContent = `${leadDivPct}% Terbesar`;
-      }
-
-      // 3. Insight Job Title (Jabatan)
+      // 3. Insight Job Title (Jabatan) - Render per grup: Icon, Jumlah, Persen
       const jobMap = {};
       const sourceList = rawRows.length > 0 ? rawRows : list;
       sourceList.forEach(r => {
@@ -3110,27 +3170,35 @@
       });
 
       const sortedJobs = Object.entries(jobMap).sort((a, b) => b[1] - a[1]);
-      const topJob = sortedJobs[0] || ['Belum Terdata', 0];
-      const topJobPct = totalEmployees ? Math.round((topJob[1] / totalEmployees) * 100) : 0;
+      const topJobs = sortedJobs.slice(0, 3);
+      const jobListEl = document.getElementById('mk-jobtitle-group-list');
+      
+      if (jobListEl) {
+        if (topJobs.length === 0) {
+          jobListEl.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs">Belum ada data jabatan</div>`;
+        } else {
+          jobListEl.innerHTML = topJobs.map(([jobName, count]) => {
+            const meta = getJobTitleMeta(jobName);
+            const pct = totalEmployees ? Math.round((count / totalEmployees) * 100) : 0;
+            return `
+              <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-indigo-50/40 transition">
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="w-6 h-6 rounded-lg bg-indigo-50 ${meta.color} flex items-center justify-center text-[10px] flex-shrink-0 border border-indigo-100/60">
+                    <i class="${meta.icon}"></i>
+                  </span>
+                  <span class="text-[11px] font-bold text-slate-700 truncate" title="${jobName}">${jobName}</span>
+                </div>
+                <div class="flex items-center gap-2 flex-shrink-0">
+                  <span class="text-xs font-black text-slate-900">${count} <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
+                  <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black ${meta.bg} border">${pct}%</span>
+                </div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
 
-      if (document.getElementById('mk-top-job-title')) {
-        document.getElementById('mk-top-job-title').textContent = topJob[0];
-        document.getElementById('mk-top-job-title').title = topJob[0];
-      }
-      if (document.getElementById('mk-top-job-count')) {
-        document.getElementById('mk-top-job-count').textContent = `${topJob[1]} Orang (${topJobPct}%)`;
-      }
-
-      const otherJobs = sortedJobs.slice(1, 3).map(([title, count]) => `${title} (${count})`).join(', ');
-      if (document.getElementById('mk-sub-job-titles')) {
-        document.getElementById('mk-sub-job-titles').textContent = otherJobs ? `Lainnya: ${otherJobs}` : 'Tidak ada varian lain';
-        document.getElementById('mk-sub-job-titles').title = otherJobs || '';
-      }
-      if (document.getElementById('mk-total-job-variants')) {
-        document.getElementById('mk-total-job-variants').textContent = `${sortedJobs.length} Posisi`;
-      }
-
-      // 4. Status Kepegawaian (Contract Insight)
+      // 4. Status Kepegawaian (Contract Insight) - Render per grup: Icon, Jumlah, Persen
       let countTetap = s.countTetap;
       let countPKWT = s.countPKWT;
       if (rawRows.length > 0) {
@@ -3144,27 +3212,13 @@
       if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = countTetap || 0;
       if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = countPKWT || 0;
       if (document.getElementById('mk-card-tetap-pct')) document.getElementById('mk-card-tetap-pct').textContent = `${pctTetap}%`;
-      if (document.getElementById('mk-card-pkwt-pct')) document.getElementById('mk-card-pkwt-pct').textContent = `(${pctPKWT}%)`;
+      if (document.getElementById('mk-card-pkwt-pct')) document.getElementById('mk-card-pkwt-pct').textContent = `${pctPKWT}%`;
 
       if (document.getElementById('mk-bar-contract-tetap')) {
         document.getElementById('mk-bar-contract-tetap').style.width = `${pctTetap}%`;
       }
       if (document.getElementById('mk-bar-contract-pkwt')) {
         document.getElementById('mk-bar-contract-pkwt').style.width = `${pctPKWT}%`;
-      }
-
-      const badgeContractEl = document.getElementById('mk-card-contract-badge');
-      if (badgeContractEl) {
-        if (pctTetap >= 85) {
-          badgeContractEl.className = "text-[10px] font-extrabold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100 flex items-center gap-1";
-          badgeContractEl.innerHTML = `<i class="fa-solid fa-shield-check text-[9px]"></i> Stabilitas Tinggi`;
-        } else if (pctTetap >= 60) {
-          badgeContractEl.className = "text-[10px] font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100 flex items-center gap-1";
-          badgeContractEl.innerHTML = `<i class="fa-solid fa-user-check text-[9px]"></i> Proporsional`;
-        } else {
-          badgeContractEl.className = "text-[10px] font-extrabold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100 flex items-center gap-1";
-          badgeContractEl.innerHTML = `<i class="fa-solid fa-clock text-[9px]"></i> Banyak PKWT`;
-        }
       }
 
       populateContractDropdown();
