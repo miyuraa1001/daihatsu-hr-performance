@@ -119,7 +119,7 @@
         </div>
         <h2 class="text-xl font-black text-slate-900 tracking-tight">D-PERFORM</h2>
         <p class="text-xs font-bold text-[#E60012] tracking-widest uppercase">Daihatsu DSO Lampung</p>
-        <p class="text-xs text-slate-400 mt-1">Sistem Penilaian Kinerja Karyawan (PBK)</p>
+        <p class="text-xs text-slate-400 mt-1">Portal Data Kinerja Karyawan (Data Acuan PBK)</p>
       </div>
 
       <form onsubmit="handleLoginSubmit(event)" class="space-y-4 text-xs">
@@ -246,11 +246,11 @@
           </a>
         </nav>
 
-        <!-- PBK Readiness Index Sidebar Widget -->
+        <!-- Kesiapan Data Kinerja Cabang Sidebar Widget -->
         <div class="p-4 mt-auto">
           <div class="bg-gradient-to-br from-[#E60012] to-[#99000B] rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
             <div class="flex items-center justify-between mb-2">
-              <h4 class="text-[10px] font-bold tracking-wider uppercase opacity-90">PBK Readiness Index</h4>
+              <h4 class="text-[10px] font-bold tracking-wider uppercase opacity-90">Kesiapan Data Cabang</h4>
               <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
             </div>
             
@@ -265,7 +265,7 @@
                 </div>
               </div>
               <div>
-                <p class="text-[11px] font-extrabold leading-tight">Data Cabang Siap Dinilai</p>
+                <p class="text-[11px] font-extrabold leading-tight" id="sidebar-readiness-title">Data Siap Diambil</p>
                 <p class="text-[9px] text-red-100 mt-0.5" id="sidebar-readiness-status">Database Terhubung</p>
               </div>
             </div>
@@ -409,8 +409,8 @@
                 <span class="text-[9px] sm:text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Periode Aktif</span>
                 <span class="text-xs sm:text-sm font-black text-red-600" id="welcome-period-badge">Mei 2025</span>
               </div>
-              <button onclick="exportCurrentTableToExcel('Rekap_PBK_Cabang')" class="px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-2">
-                <i class="fa-solid fa-arrow-down-to-bracket text-slate-500"></i> Unduh Rekap Cabang
+              <button onclick="exportCurrentTableToExcel('Rekap_Data_Kinerja_Cabang')" class="px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center gap-2">
+                <i class="fa-solid fa-file-arrow-down text-slate-500"></i> Unduh Data Kinerja (.xlsx)
               </button>
             </div>
           </div>
@@ -691,7 +691,7 @@
             <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
               <div>
                 <h4 class="text-sm font-extrabold text-slate-900">Daftar Karyawan Cabang</h4>
-                <p class="text-[11px] text-slate-400">Tinjau metrik kehadiran, SS, QCC, dan SP per individu sebelum finalisasi nilai PBK</p>
+                <p class="text-[11px] text-slate-400">Rekapitulasi data kehadiran, SS, QCC, dan kedisiplinan staf sebagai data acuan PBK</p>
               </div>
               <div class="relative w-full sm:w-64">
                 <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
@@ -721,16 +721,16 @@
 
         </div>
 
-        <!-- VIEW: MODUL PBK -->
+        <!-- VIEW: REKAPITULASI DATA PENDUKUNG PBK -->
         <div id="view-pbk" class="hidden space-y-4 max-w-[1400px] mx-auto">
           <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
-            <div class="flex items-center justify-between mb-4">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
               <div>
-                <h3 class="text-base font-extrabold text-slate-900">Penilaian Berkala Karyawan (PBK Portal)</h3>
-                <p class="text-xs text-slate-500">Formula Nilai: Kehadiran (30%), SS (30%), QCC (20%), Penalti Sanksi (-15 Poin/SP)</p>
+                <h3 class="text-base font-extrabold text-slate-900">Rekapitulasi Data Kinerja Staf (Acuan PBK)</h3>
+                <p class="text-xs text-slate-500">Basis data objektif kehadiran, inovasi SS, gugus QCC, dan status sanksi untuk keperluan penilaian PBK oleh Kepala Cabang.</p>
               </div>
-              <button onclick="exportCurrentTableToExcel('Rekap_Nilai_PBK_Cabang')" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5">
-                <i class="fa-solid fa-file-excel text-emerald-400"></i> Ekspor Lembar PBK
+              <button onclick="exportCurrentTableToExcel('Rekap_Data_Acuan_PBK')" class="px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                <i class="fa-solid fa-file-excel text-emerald-400"></i> Ekspor Data Kinerja Cabang
               </button>
             </div>
             <div class="overflow-x-auto">
@@ -739,15 +739,15 @@
                   <tr>
                     <th class="py-3 px-4">Karyawan</th>
                     <th class="py-3 px-4">Cabang</th>
-                    <th class="py-3 px-4 text-center">Poin Absensi (30%)</th>
-                    <th class="py-3 px-4 text-center">Poin SS (30%)</th>
-                    <th class="py-3 px-4 text-center">Pinalti SP</th>
-                    <th class="py-3 px-4 text-center">Estimasi Skor PBK</th>
-                    <th class="py-3 px-4 text-center">Aksi Evaluasi</th>
+                    <th class="py-3 px-4 text-center">Kehadiran</th>
+                    <th class="py-3 px-4 text-center">Total Ide SS</th>
+                    <th class="py-3 px-4 text-center">Catatan SP</th>
+                    <th class="py-3 px-4 text-center">Kesiapan Data</th>
+                    <th class="py-3 px-4 text-center">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="pbk-table-tbody" class="divide-y divide-slate-100">
-                  <tr><td colspan="7" class="text-center py-6 text-slate-400">Memuat data penilaian PBK...</td></tr>
+                  <tr><td colspan="7" class="text-center py-6 text-slate-400">Memuat data kinerja cabang...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -957,8 +957,8 @@
                     <th class="py-2.5 px-4">Divisi & Jabatan</th>
                     <th class="py-2.5 px-4 text-center">Tingkat Kehadiran</th>
                     <th class="py-2.5 px-4 text-center">Status Absensi</th>
-                    <th class="py-2.5 px-4 text-center">Poin Bobot PBK</th>
-                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi Evaluasi</th>
+                    <th class="py-2.5 px-4 text-center">Bobot Hadir (40%)</th>
+                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="abs-table-body" class="divide-y divide-slate-100 font-medium">
@@ -1188,7 +1188,7 @@
               </div>
               <div>
                 <h3 class="text-sm font-extrabold text-slate-900">Manajemen Kedisiplinan & Surat Peringatan (SP)</h3>
-                <p class="text-xs text-slate-500">Pencatatan sanksi disiplin kerja, pembinaan tata tertib, dan penalti skor penilaian PBK.</p>
+                <p class="text-xs text-slate-500">Pencatatan sanksi disiplin kerja, pembinaan tata tertib, dan rekam jejak kepatuhan staf.</p>
               </div>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -1277,7 +1277,7 @@
                     <th class="py-2.5 px-4">Divisi & Jabatan</th>
                     <th class="py-2.5 px-4 text-center">Tingkat Sanksi</th>
                     <th class="py-2.5 px-4">Keterangan / Alasan Pelanggaran</th>
-                    <th class="py-2.5 px-4 text-center">Dampak Poin PBK</th>
+                    <th class="py-2.5 px-4 text-center">Status Sanksi</th>
                     <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
                   </tr>
                 </thead>
@@ -1290,10 +1290,10 @@
         </div>
         <div id="view-laporan" class="hidden space-y-4 max-w-[1400px] mx-auto">
           <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
-            <h3 class="text-base font-extrabold text-slate-900 mb-2">Pusat Laporan & Ekspor PBK</h3>
-            <p class="text-xs text-slate-500 mb-4">Klik tombol di bawah untuk mengunduh rekap evaluasi cabang saat ini.</p>
-            <button onclick="exportCurrentTableToExcel('Laporan_PBK_Lengkap')" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow">
-              <i class="fa-solid fa-file-excel mr-1"></i> Unduh File Excel PBK
+            <h3 class="text-base font-extrabold text-slate-900 mb-2">Pusat Laporan & Ekspor Data Kinerja</h3>
+            <p class="text-xs text-slate-500 mb-4">Unduh rekapitulasi data kehadiran, inovasi SS, dan kedisiplinan cabang sebagai acuan penilaian PBK.</p>
+            <button onclick="exportCurrentTableToExcel('Laporan_Data_Kinerja_Lengkap')" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow">
+              <i class="fa-solid fa-file-excel mr-1"></i> Unduh File Excel Data Kinerja
             </button>
           </div>
         </div>
@@ -1356,56 +1356,64 @@
     </div>
   </div>
 
-  <!-- MODAL: DETAIL PBK -->
+  <!-- MODAL: DETAIL KINERJA KARYAWAN (ACUAN PBK) -->
   <div id="modal-pbk-detail" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full p-6 relative my-auto">
       <button onclick="closeModal('modal-pbk-detail')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <div class="flex items-center gap-3.5 mb-5 pb-4 border-b border-slate-100">
-        <div class="w-12 h-12 rounded-2xl bg-[#E60012] text-white flex items-center justify-center font-black text-lg" id="modal-emp-avatar">
-          DSO
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 rounded-2xl bg-[#E60012] text-white flex items-center justify-center font-black text-base" id="modal-emp-avatar">
+            DSO
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-extrabold text-slate-900" id="modal-emp-name">-</h3>
+            <p class="text-[11px] text-slate-500 font-medium" id="modal-emp-role">NPK: - • Cabang -</p>
+          </div>
         </div>
-        <div>
-          <h3 class="text-base font-extrabold text-slate-900" id="modal-emp-name">-</h3>
-          <p class="text-xs text-slate-500 font-medium" id="modal-emp-role">NPK: - • Cabang -</p>
-        </div>
+        <span class="px-2.5 py-1 bg-red-50 text-[#E60012] border border-red-100 rounded-full text-[10px] font-bold">
+          Data Acuan PBK
+        </span>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-5 text-center text-xs">
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4 text-center text-xs">
         <div class="bg-emerald-50 p-2.5 rounded-2xl border border-emerald-100">
           <span class="text-[9px] font-bold text-emerald-700 block uppercase">Kehadiran</span>
           <span class="text-base font-extrabold text-emerald-800" id="modal-emp-hadir">0%</span>
-          <span class="text-[9px] text-emerald-600 block">Bobot 30%</span>
+          <span class="text-[9px] text-emerald-600 block">Target ≥95%</span>
         </div>
         <div class="bg-amber-50 p-2.5 rounded-2xl border border-amber-100">
           <span class="text-[9px] font-bold text-amber-700 block uppercase">Suggestion System</span>
           <span class="text-base font-extrabold text-amber-800" id="modal-emp-ss">0 Ide</span>
-          <span class="text-[9px] text-amber-600 block">Bobot 30%</span>
+          <span class="text-[9px] text-amber-600 block">Inisiatif Kaizen</span>
         </div>
         <div class="bg-purple-50 p-2.5 rounded-2xl border border-purple-100">
-          <span class="text-[9px] font-bold text-purple-700 block uppercase">Kontrak</span>
+          <span class="text-[9px] font-bold text-purple-700 block uppercase">Status Kerja</span>
           <span class="text-xs font-extrabold text-purple-800" id="modal-emp-kontrak">Tetap</span>
-          <span class="text-[9px] text-purple-600 block">Status Kerja</span>
+          <span class="text-[9px] text-purple-600 block">Kepegawaian</span>
         </div>
         <div class="bg-red-50 p-2.5 rounded-2xl border border-red-100">
-          <span class="text-[9px] font-bold text-red-700 block uppercase">Status SP</span>
+          <span class="text-[9px] font-bold text-red-700 block uppercase">Kedisiplinan</span>
           <span class="text-xs font-extrabold text-red-700" id="modal-emp-sp">Bersih</span>
-          <span class="text-[9px] text-red-600 block">Pinalti PBK</span>
+          <span class="text-[9px] text-red-600 block">Status Sanksi</span>
         </div>
       </div>
 
-      <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 mb-5 text-xs text-slate-700 space-y-1.5">
+      <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 mb-4 text-xs text-slate-700 space-y-1.5">
         <p><strong>Catatan Kedisiplinan:</strong> <span id="modal-emp-notes">Kehadiran baik tanpa catatan mangkir.</span></p>
       </div>
 
-      <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
         <div>
-          <span class="text-[10px] text-slate-400 block font-bold">Estimasi Skor PBK</span>
-          <span class="text-2xl font-black text-[#E60012]" id="modal-emp-score">0 / 100</span>
+          <span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Status Validasi Data</span>
+          <span class="text-xs font-extrabold text-emerald-600 flex items-center gap-1.5 mt-0.5">
+            <i class="fa-solid fa-circle-check"></i> Terverifikasi Database HRD
+          </span>
+          <span class="text-[10px] text-slate-400 block mt-0.5">*Penilaian akhir PBK dinilai langsung oleh Kepala Cabang pada lembar resmi</span>
         </div>
-        <button onclick="closeModal('modal-pbk-detail')" class="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow">Tutup Evaluasi</button>
+        <button onclick="closeModal('modal-pbk-detail')" class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">Tutup Detail</button>
       </div>
     </div>
   </div>
@@ -2233,7 +2241,7 @@
           </td>
           <td class="py-3 px-4 text-center">
             <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
-              Detail PBK
+              Detail Kinerja
             </button>
           </td>
         </tr>
@@ -2652,6 +2660,16 @@
       if (pctEl) pctEl.textContent = `${score}%`;
       if (circleEl) circleEl.setAttribute('stroke-dasharray', `${score}, 100`);
 
+      const statusTitleEl = document.getElementById('sidebar-readiness-title');
+      const statusSubEl = document.getElementById('sidebar-readiness-status');
+      if (score >= 100) {
+        if (statusTitleEl) statusTitleEl.textContent = 'Data Siap Diambil';
+        if (statusSubEl) statusSubEl.textContent = 'Siap Acuan PBK';
+      } else {
+        if (statusTitleEl) statusTitleEl.textContent = 'Data Sebagian';
+        if (statusSubEl) statusSubEl.textContent = 'Sinkronisasi Spreadsheet...';
+      }
+
       if (document.getElementById('ready-karyawan')) document.getElementById('ready-karyawan').textContent = hasKaryawan ? 'OK' : 'KOSONG';
       if (document.getElementById('ready-absensi')) document.getElementById('ready-absensi').textContent = hasAbsensi ? 'OK' : 'KOSONG';
       if (document.getElementById('ready-kaizen')) document.getElementById('ready-kaizen').textContent = hasKaizen ? 'OK' : 'KOSONG';
@@ -2746,7 +2764,7 @@
           </td>
           <td class="py-3 px-4 text-center">
             <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
-              Detail PBK
+              Detail Kinerja
             </button>
           </td>
         </tr>
@@ -2755,25 +2773,23 @@
 
     function renderPBKTable(list) {
       const tbody = document.getElementById('pbk-table-tbody');
+      if (!tbody) return;
       if (!list || list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Data penilaian PBK belum tersedia.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Data kinerja staf belum tersedia.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = list.map(emp => {
-        let score = (emp.kehadiranPct * 0.4) + (Math.min(emp.totalSS * 15, 30)) + 20 - (emp.spAktif ? 15 : 0);
-        score = Math.min(Math.max(score, 40), 98).toFixed(1);
-
         return `
           <tr class="hover:bg-slate-50">
             <td class="py-3.5 px-4 font-semibold text-slate-900">${emp.nama} <span class="font-mono text-slate-400 text-[10px] block">${emp.npk}</span></td>
             <td class="py-3.5 px-4 text-slate-600">${emp.cabang}</td>
-            <td class="py-3.5 px-4 text-center font-bold text-emerald-600">${emp.kehadiranPct}%</td>
+            <td class="py-3.5 px-4 text-center font-bold ${emp.kehadiranPct < 95 ? 'text-amber-600' : 'text-emerald-600'}">${emp.kehadiranPct}%</td>
             <td class="py-3.5 px-4 text-center font-bold text-amber-500">${emp.totalSS} Ide</td>
-            <td class="py-3.5 px-4 text-center font-bold ${emp.spAktif ? 'text-red-600' : 'text-slate-400'}">${emp.spAktif ? '-15 (' + emp.spAktif + ')' : '0'}</td>
-            <td class="py-3.5 px-4 text-center"><span class="text-xs font-black text-slate-900 bg-slate-100 px-2.5 py-1 rounded-lg">${score}</span></td>
+            <td class="py-3.5 px-4 text-center font-bold ${emp.spAktif ? 'text-red-600' : 'text-slate-400'}">${emp.spAktif || '-'}</td>
+            <td class="py-3.5 px-4 text-center"><span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-circle-check mr-1"></i>Siap Acuan</span></td>
             <td class="py-3.5 px-4 text-center">
-              <button onclick="openPBKModal('${emp.npk}')" class="px-3 py-1 bg-red-600 text-white font-bold rounded-lg text-[11px] hover:bg-red-700 shadow">Evaluasi</button>
+              <button onclick="openPBKModal('${emp.npk}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-lg text-[11px] transition">Detail</button>
             </td>
           </tr>
         `;
@@ -2865,7 +2881,7 @@
       
       const ws = XLSX.utils.json_to_sheet(currentDashboardPayload.employeeList);
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, "Rekap_PBK");
+      XLSX.utils.book_append_sheet(wb, ws, "Rekap_Data_Kinerja");
       XLSX.writeFile(wb, `${fileNamePrefix}_${new Date().toISOString().slice(0,10)}.xlsx`);
       showToast("Berkas Excel berhasil diunduh!");
     }
@@ -2884,13 +2900,12 @@
       document.getElementById('modal-emp-kontrak').textContent = emp.tipeKontrak || 'Tetap';
       document.getElementById('modal-emp-sp').textContent = emp.spAktif || 'Bersih';
 
-      let score = (emp.kehadiranPct * 0.4) + (Math.min(emp.totalSS * 15, 30)) + 20 - (emp.spAktif ? 15 : 0);
-      score = Math.min(Math.max(score, 40), 98).toFixed(1);
-      document.getElementById('modal-emp-score').textContent = `${score} / 100`;
-
-      document.getElementById('modal-emp-notes').textContent = emp.spAktif 
-        ? `Tercatat sanksi aktif ${emp.spAktif}: ${emp.spAlasan || 'Perlu pembinaan disiplin kerja.'}`
-        : `Disiplin kerja sangat baik. Tidak ada pelanggaran atau catatan sanksi.`;
+      const notesEl = document.getElementById('modal-emp-notes');
+      if (notesEl) {
+        notesEl.textContent = emp.spAktif 
+          ? `Tercatat sanksi aktif ${emp.spAktif}: ${emp.spAlasan || 'Perlu pembinaan disiplin kerja.'}`
+          : `Disiplin kerja sangat baik. Tidak ada pelanggaran atau catatan sanksi.`;
+      }
 
       document.getElementById('modal-pbk-detail').classList.remove('hidden');
     }
@@ -2926,14 +2941,14 @@
 
       // Update Header Title & Subtitle sesuai modul yang aktif
       const viewMeta = {
-        'dashboard': { title: 'Dashboard D-PERFORM', subtitle: 'Ringkasan Data Karyawan & Performa Cabang' },
-        'master-karyawan': { title: 'Master Karyawan DSO Lampung', subtitle: 'Basis Data Profil Kepegawaian & Struktur Organisasi' },
+        'dashboard': { title: 'Dashboard D-PERFORM', subtitle: 'Monitoring & Rekapitulasi Data Kinerja Karyawan' },
+        'master-karyawan': { title: 'Master Karyawan DSO Lampung', subtitle: 'Basis Data Profil Kepegawaian & Penempatan Cabang' },
         'absensi': { title: 'Rekapitulasi Absensi & Kehadiran', subtitle: 'Monitoring Presensi Harian & Disiplin Jam Kerja' },
         'ss': { title: 'Suggestion System (SS)', subtitle: 'Inovasi Perbaikan Berkelanjutan & Partisipasi Karyawan' },
         'qcc': { title: 'Quality Control Circle (QCC)', subtitle: 'Gugus Kendali Mutu & Problem Solving (PDCA)' },
         'sp': { title: 'Kedisiplinan & Surat Peringatan (SP)', subtitle: 'Pencatatan Sanksi & Kepatuhan Tata Tertib Kerja' },
-        'pbk': { title: 'Penilaian Berkala Karyawan (PBK)', subtitle: 'Portal Evaluasi & Finalisasi Skor Kinerja' },
-        'laporan': { title: 'Pusat Laporan & Ekspor PBK', subtitle: 'Unduh Rekapitulasi Data Evaluasi Kinerja Cabang' }
+        'pbk': { title: 'Rekapitulasi Data Pendukung PBK', subtitle: 'Basis Data Terpadu Acuan Penilaian Kepala Cabang' },
+        'laporan': { title: 'Pusat Laporan & Ekspor Data Kinerja', subtitle: 'Unduh Rekapitulasi Data Kinerja Cabang' }
       };
 
       if (viewMeta[viewId]) {
