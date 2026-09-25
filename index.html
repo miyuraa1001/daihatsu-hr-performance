@@ -2916,7 +2916,22 @@
         return;
       }
       if (sheetName) document.getElementById('upload-target-sheet').value = sheetName;
-      document.getElementById('upload-status-box').classList.add('hidden');
+      
+      const fileInput = document.getElementById('excel-file-input');
+      if (fileInput) fileInput.value = '';
+      
+      const statusBox = document.getElementById('upload-status-box');
+      if (statusBox) {
+        statusBox.className = "hidden text-[11px] p-2.5 rounded-xl";
+        statusBox.textContent = '';
+      }
+
+      const btn = document.getElementById('btn-submit-upload');
+      if (btn) {
+        btn.disabled = false;
+        btn.textContent = "Proses & Simpan";
+      }
+
       document.getElementById('modal-upload').classList.remove('hidden');
     }
 
