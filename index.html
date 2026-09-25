@@ -927,8 +927,11 @@
                 </div>
                 <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Kontrak</option>
-                  <option value="Tetap">Tetap / Permanent</option>
-                  <option value="Kontrak">Kontrak / PKWT</option>
+                  <option value="Tetap / Permanent">Tetap / Permanent</option>
+                  <option value="Kontrak / PKWT">Kontrak / PKWT</option>
+                  <option value="Contracters">Contracters</option>
+                  <option value="On probation">On probation</option>
+                  <option value="Magang/Intern">Magang/Intern</option>
                 </select>
                 <button type="button" onclick="toggleColumnMode('mk')" id="btn-col-toggle-mk" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
                   <i class="fa-solid fa-table-columns"></i>
@@ -2047,19 +2050,44 @@
       return isNaN(parsed) ? fallback : Math.round(parsed * 100) / 100;
     }
 
+    // 5 Kategori Baku Status Kepegawaian (Contract) DSO Lampung
+    const STANDARD_CONTRACT_CATEGORIES = [
+      'Tetap / Permanent',
+      'Kontrak / PKWT',
+      'Contracters',
+      'On probation',
+      'Magang/Intern'
+    ];
+
+    function normalizeContractCategory(val) {
+      if (!val) return 'Tetap / Permanent';
+      const s = String(val).trim().toLowerCase();
+      
+      if (s.includes('probation') || s.includes('percobaan')) {
+        return 'On probation';
+      }
+      if (s.includes('magang') || s.includes('intern') || s.includes('trainee')) {
+        return 'Magang/Intern';
+      }
+      if (s.includes('contracter') || s.includes('contractor') || s.includes('outsource') || s.includes('vendor')) {
+        return 'Contracters';
+      }
+      if (s.includes('kontrak') || s.includes('pkwt')) {
+        return 'Kontrak / PKWT';
+      }
+      if (s.includes('tetap') || s.includes('permanent') || s.includes('pkwtt') || s === 'p') {
+        return 'Tetap / Permanent';
+      }
+      return String(val).trim();
+    }
+
     // Helper klasifikasi Status Kepegawaian berbasis nilai kolom 'Contract'
     function isTetapContract(val) {
-      if (!val) return true;
-      const s = String(val).trim().toLowerCase();
-      if (s.includes('tetap') || s.includes('permanent') || s.includes('pkwtt') || s === 'p') return true;
-      if (s.includes('kontrak') || s.includes('contract') || s.includes('pkwt') || s.includes('magang') || s.includes('intern') || s.includes('outsource') || s.includes('temporary')) return false;
-      return true;
+      return normalizeContractCategory(val) === 'Tetap / Permanent';
     }
 
     function isPKWTContract(val) {
-      if (!val) return false;
-      const s = String(val).trim().toLowerCase();
-      return s.includes('kontrak') || s.includes('contract') || s.includes('pkwt') || s.includes('magang') || s.includes('intern') || s.includes('outsource') || s.includes('temporary');
+      return normalizeContractCategory(val) === 'Kontrak / PKWT';
     }
 
     function castSchemaValue(colName, val, fallbackIdx = 1) {
@@ -3142,71 +3170,71 @@
       return { icon: 'fa-solid fa-id-badge', color: 'text-indigo-600', bg: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
     }
 
-    // Helper ikon dan warna status kepegawaian (Contract)
+    // Helper ikon dan warna 5 kategori baku status kepegawaian (Contract) DSO Lampung
     function getContractMeta(contractName) {
-      const norm = String(contractName || '').trim().toLowerCase();
-      if (norm.includes('tetap') || norm.includes('permanent') || norm.includes('pkwtt')) {
+      const norm = normalizeContractCategory(contractName);
+      if (norm === 'Tetap / Permanent') {
         return {
-          name: 'Tetap',
-          fullName: 'Tetap (Permanent)',
+          displayName: 'Tetap',
+          fullName: 'Tetap / Permanent',
           icon: 'fa-solid fa-user-check',
           iconBg: 'bg-blue-100 text-blue-600',
           iconBorder: 'border-blue-200',
           badgeBg: 'bg-blue-100 text-blue-700 border-blue-200',
-          cardHover: 'hover:bg-blue-50/60 hover:border-blue-200',
+          cardHover: 'hover:bg-blue-50/70 hover:border-blue-200',
           barColor: 'bg-blue-600'
         };
       }
-      if (norm.includes('pkwt') || norm.includes('kontrak') || norm.includes('contract')) {
+      if (norm === 'Kontrak / PKWT') {
         return {
-          name: 'PKWT',
-          fullName: 'Kontrak (PKWT)',
+          displayName: 'PKWT',
+          fullName: 'Kontrak / PKWT',
           icon: 'fa-solid fa-user-clock',
           iconBg: 'bg-amber-100 text-amber-600',
           iconBorder: 'border-amber-200',
           badgeBg: 'bg-amber-100 text-amber-700 border-amber-200',
-          cardHover: 'hover:bg-amber-50/60 hover:border-amber-200',
+          cardHover: 'hover:bg-amber-50/70 hover:border-amber-200',
           barColor: 'bg-amber-500'
         };
       }
-      if (norm.includes('magang') || norm.includes('intern') || norm.includes('trainee')) {
+      if (norm === 'Contracters') {
         return {
-          name: 'Magang',
-          fullName: 'Magang (Intern)',
-          icon: 'fa-solid fa-graduation-cap',
-          iconBg: 'bg-emerald-100 text-emerald-600',
-          iconBorder: 'border-emerald-200',
-          badgeBg: 'bg-emerald-100 text-emerald-700 border-emerald-200',
-          cardHover: 'hover:bg-emerald-50/60 hover:border-emerald-200',
-          barColor: 'bg-emerald-500'
-        };
-      }
-      if (norm.includes('outsource') || norm.includes('os') || norm.includes('vendor')) {
-        return {
-          name: 'Outsource',
-          fullName: 'Outsource (OS)',
-          icon: 'fa-solid fa-user-shield',
+          displayName: 'Contracters',
+          fullName: 'Contracters',
+          icon: 'fa-solid fa-helmet-safety',
           iconBg: 'bg-purple-100 text-purple-600',
           iconBorder: 'border-purple-200',
           badgeBg: 'bg-purple-100 text-purple-700 border-purple-200',
-          cardHover: 'hover:bg-purple-50/60 hover:border-purple-200',
+          cardHover: 'hover:bg-purple-50/70 hover:border-purple-200',
           barColor: 'bg-purple-500'
         };
       }
-      if (norm.includes('probation') || norm.includes('percobaan')) {
+      if (norm === 'On probation') {
         return {
-          name: 'Percobaan',
-          fullName: 'Probation',
+          displayName: 'Probation',
+          fullName: 'On probation',
           icon: 'fa-solid fa-user-gear',
           iconBg: 'bg-orange-100 text-orange-600',
           iconBorder: 'border-orange-200',
           badgeBg: 'bg-orange-100 text-orange-700 border-orange-200',
-          cardHover: 'hover:bg-orange-50/60 hover:border-orange-200',
+          cardHover: 'hover:bg-orange-50/70 hover:border-orange-200',
           barColor: 'bg-orange-500'
         };
       }
+      if (norm === 'Magang/Intern') {
+        return {
+          displayName: 'Magang',
+          fullName: 'Magang / Intern',
+          icon: 'fa-solid fa-graduation-cap',
+          iconBg: 'bg-emerald-100 text-emerald-600',
+          iconBorder: 'border-emerald-200',
+          badgeBg: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+          cardHover: 'hover:bg-emerald-50/70 hover:border-emerald-200',
+          barColor: 'bg-emerald-500'
+        };
+      }
       return {
-        name: contractName || 'Lainnya',
+        displayName: contractName || 'Lainnya',
         fullName: contractName || 'Lainnya',
         icon: 'fa-solid fa-id-card-clip',
         iconBg: 'bg-slate-100 text-slate-600',
@@ -3316,45 +3344,40 @@
         }
       }
 
-      // 4. Status Kepegawaian (Contract Insight) - Render per kelompok dinamis: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen
+      // 4. Status Kepegawaian (Contract Insight) - 5 Kelompok Sesuai Database DSO Lampung
       const contractGroupMap = {};
+      STANDARD_CONTRACT_CATEGORIES.forEach(cat => {
+        contractGroupMap[cat] = 0;
+      });
+
       sourceList.forEach(r => {
-        let rawVal = (r['Contract'] || r.Contract || r.contract || r.tipeKontrak || 'Tetap').trim();
-        let groupKey = rawVal;
-        if (isTetapContract(rawVal)) {
-          groupKey = 'Tetap';
-        } else if (isPKWTContract(rawVal)) {
-          groupKey = 'PKWT';
-        }
+        let rawVal = (r['Contract'] || r.Contract || r.contract || r.tipeKontrak || 'Tetap / Permanent').trim();
+        let groupKey = normalizeContractCategory(rawVal);
         contractGroupMap[groupKey] = (contractGroupMap[groupKey] || 0) + 1;
       });
 
-      // Default jika data belum ada
-      if (!contractGroupMap['Tetap'] && !contractGroupMap['PKWT']) {
-        contractGroupMap['Tetap'] = 0;
-        contractGroupMap['PKWT'] = 0;
-      }
-
       const totalContract = Object.values(contractGroupMap).reduce((a, b) => a + b, 0) || totalEmployees || 1;
-      const contractEntries = Object.entries(contractGroupMap).sort((a, b) => b[1] - a[1]);
-
       const contractListEl = document.getElementById('mk-contract-group-list');
-      if (contractListEl) {
-        const colClass = contractEntries.length === 3 ? 'grid-cols-3' : (contractEntries.length >= 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2');
-        contractListEl.className = `grid ${colClass} gap-2`;
 
-        contractListEl.innerHTML = contractEntries.map(([grpName, count]) => {
+      if (contractListEl) {
+        // Susun 5 kategori: 3 di atas, 2 di bawah
+        const topRow = ['Tetap / Permanent', 'Kontrak / PKWT', 'Contracters'];
+        const bottomRow = ['On probation', 'Magang/Intern'];
+        const extraCats = Object.keys(contractGroupMap).filter(k => !STANDARD_CONTRACT_CATEGORIES.includes(k));
+
+        const renderItem = (grpName) => {
+          const count = contractGroupMap[grpName] || 0;
           const meta = getContractMeta(grpName);
           const pct = Math.round((count / totalContract) * 100);
           return `
-            <div class="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-slate-50 border border-slate-100 ${meta.cardHover} transition text-center shadow-xs">
-              <!-- 1. Icon di atas -->
-              <div class="w-8 h-8 rounded-xl ${meta.iconBg} flex items-center justify-center text-xs mb-1.5 border ${meta.iconBorder} shadow-2xs">
+            <div class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50/90 border border-slate-100 ${meta.cardHover} transition text-center shadow-xs">
+              <!-- 1. Icone (di atas) -->
+              <div class="w-7 h-7 rounded-xl ${meta.iconBg} flex items-center justify-center text-xs mb-1 border ${meta.iconBorder} shadow-2xs">
                 <i class="${meta.icon}"></i>
               </div>
               <!-- 2. Bawahnya Nama -->
-              <span class="text-[10px] font-bold text-slate-600 truncate block w-full mb-0.5" title="${meta.fullName}">
-                ${meta.name}
+              <span class="text-[10px] font-bold text-slate-700 truncate block w-full leading-tight mb-0.5" title="${meta.fullName}">
+                ${meta.displayName}
               </span>
               <!-- 3. Bawahnya Angka -->
               <span class="text-xs font-black text-slate-900 leading-tight">
@@ -3366,22 +3389,42 @@
               </span>
             </div>
           `;
-        }).join('');
+        };
+
+        let html = `
+          <div class="grid grid-cols-3 gap-1.5 mb-1.5">
+            ${topRow.map(cat => renderItem(cat)).join('')}
+          </div>
+          <div class="grid grid-cols-2 gap-1.5">
+            ${bottomRow.map(cat => renderItem(cat)).join('')}
+          </div>
+        `;
+
+        if (extraCats.length > 0) {
+          html += `
+            <div class="grid grid-cols-2 gap-1.5 mt-1.5">
+              ${extraCats.map(cat => renderItem(cat)).join('')}
+            </div>
+          `;
+        }
+
+        contractListEl.innerHTML = html;
       }
 
       // Visual Ratio Progress Bar
       const barContainer = document.getElementById('mk-contract-bar-segments');
       if (barContainer) {
-        barContainer.innerHTML = contractEntries.map(([grpName, count]) => {
+        barContainer.innerHTML = STANDARD_CONTRACT_CATEGORIES.map(grpName => {
+          const count = contractGroupMap[grpName] || 0;
           const meta = getContractMeta(grpName);
           const pct = Math.round((count / totalContract) * 100);
-          return `<div class="${meta.barColor} h-full transition-all duration-500" style="width: ${pct}%" title="${meta.fullName}: ${pct}%"></div>`;
+          return `<div class="${meta.barColor} h-full transition-all duration-500" style="width: ${pct}%" title="${meta.fullName}: ${count} Orang (${pct}%)"></div>`;
         }).join('');
       }
 
       // Backwards compatibility for old element IDs
-      const countTetap = contractGroupMap['Tetap'] || 0;
-      const countPKWT = contractGroupMap['PKWT'] || 0;
+      const countTetap = contractGroupMap['Tetap / Permanent'] || 0;
+      const countPKWT = contractGroupMap['Kontrak / PKWT'] || 0;
       const pctTetap = Math.round((countTetap / totalContract) * 100);
       const pctPKWT = Math.round((countPKWT / totalContract) * 100);
       if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = countTetap;
@@ -3389,39 +3432,35 @@
       if (document.getElementById('mk-card-tetap-pct')) document.getElementById('mk-card-tetap-pct').textContent = `${pctTetap}%`;
       if (document.getElementById('mk-card-pkwt-pct')) document.getElementById('mk-card-pkwt-pct').textContent = `${pctPKWT}%`;
 
-      if (document.getElementById('mk-bar-contract-tetap')) {
-        document.getElementById('mk-bar-contract-tetap').style.width = `${pctTetap}%`;
-      }
-      if (document.getElementById('mk-bar-contract-pkwt')) {
-        document.getElementById('mk-bar-contract-pkwt').style.width = `${pctPKWT}%`;
-      }
-
       populateContractDropdown();
       filterMasterKaryawanTable();
     }
 
-    // Ekstraksi opsi filter Kontrak / Status Kepegawaian dinamis dari data tabel
+    // Ekstraksi opsi filter Kontrak / Status Kepegawaian dinamis dari data tabel (bersih tanpa duplikasi)
     function populateContractDropdown() {
       const select = document.getElementById('mk-filter-kontrak');
       if (!select) return;
       const rawRows = currentDashboardPayload?.rawTables?.Master_Karyawan || [];
       const currentVal = select.value || 'ALL';
 
-      const contractSet = new Set();
-      rawRows.forEach(r => {
-        const v = (r['Contract'] || '').trim();
-        if (v) contractSet.add(v);
+      let options = `<option value="ALL">Semua Kontrak</option>`;
+      STANDARD_CONTRACT_CATEGORIES.forEach(cat => {
+        options += `<option value="${cat}">${cat}</option>`;
       });
 
-      let options = `<option value="ALL">Semua Kontrak</option>`;
-      options += `<option value="Tetap">Tetap / Permanent</option>`;
-      options += `<option value="Kontrak">Kontrak / PKWT</option>`;
-
-      contractSet.forEach(val => {
-        const lower = val.toLowerCase();
-        if (!['tetap', 'kontrak', 'pkwt', 'permanent'].includes(lower)) {
-          options += `<option value="${val}">${val}</option>`;
+      const standardNormalized = new Set(STANDARD_CONTRACT_CATEGORIES.map(c => normalizeContractCategory(c).toLowerCase()));
+      const extraSet = new Set();
+      rawRows.forEach(r => {
+        const v = (r['Contract'] || '').trim();
+        if (v) {
+          const norm = normalizeContractCategory(v).toLowerCase();
+          if (!standardNormalized.has(norm)) {
+            extraSet.add(v);
+          }
         }
+      });
+      extraSet.forEach(v => {
+        options += `<option value="${v}">${v}</option>`;
       });
 
       select.innerHTML = options;
@@ -3450,8 +3489,9 @@
       const norm = normalizeHeaderName(col);
       
       if (norm === 'contract' || norm === 'status kontrak' || norm === 'status kepegawaian') {
-        const isTetap = isTetapContract(val);
-        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isTetap ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${val}</span>`;
+        const cat = normalizeContractCategory(val);
+        const meta = getContractMeta(cat);
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${meta.badgeBg}">${val}</span>`;
       }
       if (norm === 'status reward') {
         const isApproved = String(val).toLowerCase().includes('approved') || String(val).toLowerCase().includes('terverifikasi');
@@ -3574,11 +3614,14 @@
         
         let inputHtml = '';
         if (norm === 'contract') {
-          const isTetap = isTetapContract(val);
+          const normVal = normalizeContractCategory(val);
           inputHtml = `
             <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
-              <option value="Tetap" ${isTetap ? 'selected' : ''}>Tetap</option>
-              <option value="PKWT" ${!isTetap ? 'selected' : ''}>PKWT (Kontrak)</option>
+              <option value="Tetap / Permanent" ${normVal === 'Tetap / Permanent' ? 'selected' : ''}>Tetap / Permanent</option>
+              <option value="Kontrak / PKWT" ${normVal === 'Kontrak / PKWT' ? 'selected' : ''}>Kontrak / PKWT</option>
+              <option value="Contracters" ${normVal === 'Contracters' ? 'selected' : ''}>Contracters</option>
+              <option value="On probation" ${normVal === 'On probation' ? 'selected' : ''}>On probation</option>
+              <option value="Magang/Intern" ${normVal === 'Magang/Intern' ? 'selected' : ''}>Magang/Intern</option>
             </select>
           `;
         } else if (norm === 'gender text') {
@@ -3863,11 +3906,11 @@
       }
 
       if (contractFilter !== 'ALL') {
+        const targetNorm = normalizeContractCategory(contractFilter).toLowerCase();
         list = list.filter(e => {
-          const raw = String(e['Contract'] || 'Tetap').trim();
-          if (contractFilter === 'Tetap') return isTetapContract(raw);
-          if (contractFilter === 'Kontrak') return isPKWTContract(raw);
-          return raw.toLowerCase() === contractFilter.toLowerCase();
+          const raw = String(e['Contract'] || 'Tetap / Permanent').trim();
+          const rawNorm = normalizeContractCategory(raw).toLowerCase();
+          return rawNorm === targetNorm || raw.toLowerCase() === contractFilter.toLowerCase();
         });
       }
 
