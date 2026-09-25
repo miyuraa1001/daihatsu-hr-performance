@@ -482,14 +482,14 @@
                 </div>
               </div>
               <div class="pt-3 border-t border-slate-100 mt-3 text-[10px]">
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Tenaga Kerja</span>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Kepegawaian (Contract)</span>
                 <div class="flex items-center justify-between">
                   <div>
-                    <span class="text-slate-400 block text-[9px]">Tetap</span>
+                    <span class="text-slate-400 block text-[9px]">Tetap / Permanent</span>
                     <span class="font-extrabold text-blue-600 text-xs" id="card-tetap-count">0</span>
                   </div>
                   <div class="text-right">
-                    <span class="text-slate-400 block text-[9px]">Kontrak (PKWT)</span>
+                    <span class="text-slate-400 block text-[9px]">Kontrak / PKWT</span>
                     <span class="font-extrabold text-amber-600 text-xs" id="card-kontrak-count">0</span>
                   </div>
                 </div>
@@ -826,7 +826,7 @@
             </div>
 
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Kepegawaian</span>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Kepegawaian (Contract)</span>
               <div class="flex items-center justify-between text-xs font-bold mt-1">
                 <span class="text-blue-600">Tetap: <span id="mk-card-tetap">0</span></span>
                 <span class="text-amber-600">PKWT: <span id="mk-card-pkwt">0</span></span>
@@ -845,8 +845,8 @@
                 </div>
                 <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Kontrak</option>
-                  <option value="Tetap">Tetap</option>
-                  <option value="Kontrak">Kontrak (PKWT)</option>
+                  <option value="Tetap">Tetap / Permanent</option>
+                  <option value="Kontrak">Kontrak / PKWT</option>
                 </select>
                 <button type="button" onclick="toggleColumnMode('mk')" id="btn-col-toggle-mk" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
                   <i class="fa-solid fa-table-columns"></i>
@@ -1539,9 +1539,9 @@
           <span class="text-[9px] text-amber-600 block">Inisiatif Kaizen</span>
         </div>
         <div class="bg-purple-50 p-2.5 rounded-2xl border border-purple-100">
-          <span class="text-[9px] font-bold text-purple-700 block uppercase">Status Kerja</span>
+          <span class="text-[9px] font-bold text-purple-700 block uppercase">Contract</span>
           <span class="text-xs font-extrabold text-purple-800" id="modal-emp-kontrak">Tetap</span>
-          <span class="text-[9px] text-purple-600 block">Kepegawaian</span>
+          <span class="text-[9px] text-purple-600 block">Status Kepegawaian</span>
         </div>
         <div class="bg-red-50 p-2.5 rounded-2xl border border-red-100">
           <span class="text-[9px] font-bold text-red-700 block uppercase">Kedisiplinan</span>
@@ -1614,7 +1614,7 @@
           "personnel no.": ["personnel no.", "personnel no", "npk", "id karyawan", "nik", "id"],
           "p.subarea": ["p.subarea", "subarea", "cabang", "nama cabang"],
           "wilayah": ["wilayah", "region", "area"],
-          "contract": ["contract", "kontrak", "status kontrak", "tipe kontrak"],
+          "contract": ["contract", "kontrak", "status kontrak", "tipe kontrak", "status kepegawaian", "status kepegawaian (contract)", "employment status", "status karyawan", "status"],
           "name": ["name", "nama unit organisasi", "unit"],
           "name of organizational unit": ["name of organizational unit", "organizational unit", "organisasi", "departemen", "dept"],
           "job title": ["job title", "jabatan", "posisi", "title"],
@@ -1902,6 +1902,21 @@
       return isNaN(parsed) ? fallback : Math.round(parsed * 100) / 100;
     }
 
+    // Helper klasifikasi Status Kepegawaian berbasis nilai kolom 'Contract'
+    function isTetapContract(val) {
+      if (!val) return true;
+      const s = String(val).trim().toLowerCase();
+      if (s.includes('tetap') || s.includes('permanent') || s.includes('pkwtt') || s === 'p') return true;
+      if (s.includes('kontrak') || s.includes('contract') || s.includes('pkwt') || s.includes('magang') || s.includes('intern') || s.includes('outsource') || s.includes('temporary')) return false;
+      return true;
+    }
+
+    function isPKWTContract(val) {
+      if (!val) return false;
+      const s = String(val).trim().toLowerCase();
+      return s.includes('kontrak') || s.includes('contract') || s.includes('pkwt') || s.includes('magang') || s.includes('intern') || s.includes('outsource') || s.includes('temporary');
+    }
+
     function castSchemaValue(colName, val, fallbackIdx = 1) {
       const norm = normalizeHeaderName(colName);
       if (norm === 'npk' || norm === 'personnel no.' || norm.includes('astrapay') || 
@@ -2019,24 +2034,38 @@
 
       // 1. Master_Karyawan (16 Columns)
       if (!payload.rawTables.Master_Karyawan || !payload.rawTables.Master_Karyawan.length) {
-        payload.rawTables.Master_Karyawan = employees.map(e => ({
-          "Personnel no.": safeString(e['Personnel no.'] || e.npk),
-          "P.subarea": e['P.subarea'] || e.cabang || 'Lampung A Yani',
-          "Wilayah": e['Wilayah'] || e.wilayah || 'DSO Lampung',
-          "Contract": e['Contract'] || e.tipeKontrak || 'Tetap',
-          "Name": e['Name'] || e.divisi || 'Operational',
-          "Name of organizational unit": e['Name of organizational unit'] || (e.divisi ? `${e.divisi} DSO` : 'Departemen DSO'),
-          "Job Title": e['Job Title'] || e.jabatan || 'Staff',
-          "Last name": e['Last name'] || e.nama || '',
-          "D.o.birth": parseExcelDate(e['D.o.birth'] || e.tglLahir || '1995-05-15'),
-          "Gender text": e['Gender text'] || e.gender || 'Male',
-          "Religious denomination": e['Religious denomination'] || e.agama || 'Islam',
-          "PS group": e['PS group'] || e.psGroup || 'III/A',
-          "Lvl": e['Lvl'] || e.lvl || 'Staff',
-          "Date": parseExcelDate(e['Date'] || e.joinDate || '2021-01-01'),
-          "P0001-STEXT": e['P0001-STEXT'] || e.stext || (e.jabatan || 'Staff Unit'),
-          "Business area": safeString(e['Business area'] || e.kodeBA || 'D660')
-        }));
+        payload.rawTables.Master_Karyawan = employees.map(e => {
+          const contractVal = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap';
+          e['Contract'] = contractVal;
+          e.tipeKontrak = contractVal;
+          return {
+            "Personnel no.": safeString(e['Personnel no.'] || e.npk),
+            "P.subarea": e['P.subarea'] || e.cabang || 'Lampung A Yani',
+            "Wilayah": e['Wilayah'] || e.wilayah || 'DSO Lampung',
+            "Contract": contractVal,
+            "Name": e['Name'] || e.divisi || 'Operational',
+            "Name of organizational unit": e['Name of organizational unit'] || (e.divisi ? `${e.divisi} DSO` : 'Departemen DSO'),
+            "Job Title": e['Job Title'] || e.jabatan || 'Staff',
+            "Last name": e['Last name'] || e.nama || '',
+            "D.o.birth": parseExcelDate(e['D.o.birth'] || e.tglLahir || '1995-05-15'),
+            "Gender text": e['Gender text'] || e.gender || 'Male',
+            "Religious denomination": e['Religious denomination'] || e.agama || 'Islam',
+            "PS group": e['PS group'] || e.psGroup || 'III/A',
+            "Lvl": e['Lvl'] || e.lvl || 'Staff',
+            "Date": parseExcelDate(e['Date'] || e.joinDate || '2021-01-01'),
+            "P0001-STEXT": e['P0001-STEXT'] || e.stext || (e.jabatan || 'Staff Unit'),
+            "Business area": safeString(e['Business area'] || e.kodeBA || 'D660')
+          };
+        });
+      } else {
+        payload.rawTables.Master_Karyawan.forEach(row => {
+          const npk = safeString(row['Personnel no.']);
+          const emp = employees.find(e => safeString(e.npk || e['Personnel no.']) === npk);
+          if (emp) {
+            emp['Contract'] = row['Contract'] || 'Tetap';
+            emp.tipeKontrak = row['Contract'] || 'Tetap';
+          }
+        });
       }
 
       // 2. Data_Kehadiran (19 Columns)
@@ -2487,10 +2516,13 @@
       const servicePct = totalKaryawan ? Math.round((serviceCount / totalKaryawan) * 100) : 0;
       const adminPct = totalKaryawan ? Math.max(0, 100 - salesPct - servicePct) : 0;
 
-      const countTetap = employees.filter(e => (e.tipeKontrak || 'Tetap').toLowerCase().includes('tetap')).length;
+      const countTetap = employees.filter(e => {
+        const c = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap';
+        return isTetapContract(c);
+      }).length;
       const countPKWT = employees.filter(e => {
-        const k = (e.tipeKontrak || '').toLowerCase();
-        return k.includes('kontrak') || k.includes('pkwt');
+        const c = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian;
+        return isPKWTContract(c);
       }).length;
 
       const totalAttendance = employees.reduce((sum, e) => sum + (Number(e.kehadiranPct) || 0), 0);
@@ -2936,8 +2968,17 @@
       if (!data) return;
       const s = data.summary || {};
       const list = data.employeeList || [];
+      const rawRows = currentDashboardPayload?.rawTables?.Master_Karyawan || [];
 
-      if (document.getElementById('mk-card-total')) document.getElementById('mk-card-total').textContent = s.totalKaryawan || list.length;
+      // Hitung komposisi Status Kepegawaian langsung berdasarkan kolom 'Contract' dari data Master_Karyawan
+      let countTetap = s.countTetap;
+      let countPKWT = s.countPKWT;
+      if (rawRows.length > 0) {
+        countTetap = rawRows.filter(e => isTetapContract(e['Contract'])).length;
+        countPKWT = rawRows.filter(e => isPKWTContract(e['Contract'])).length;
+      }
+
+      if (document.getElementById('mk-card-total')) document.getElementById('mk-card-total').textContent = s.totalKaryawan || rawRows.length || list.length;
       
       const salesCount = list.filter(e => (e.divisi || '').toLowerCase().includes('sales')).length || Math.round((s.totalKaryawan || 0) * ((s.salesPct || 0) / 100));
       const serviceCount = list.filter(e => (e.divisi || '').toLowerCase().includes('service') || (e.divisi || '').toLowerCase().includes('bengkel')).length || Math.round((s.totalKaryawan || 0) * ((s.servicePct || 0) / 100));
@@ -2946,8 +2987,8 @@
       if (document.getElementById('mk-card-sales-pct')) document.getElementById('mk-card-sales-pct').textContent = `${s.salesPct || 0}%`;
       if (document.getElementById('mk-card-service')) document.getElementById('mk-card-service').textContent = serviceCount;
       if (document.getElementById('mk-card-service-pct')) document.getElementById('mk-card-service-pct').textContent = `${s.servicePct || 0}%`;
-      if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = s.countTetap || 0;
-      if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = s.countPKWT || 0;
+      if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = countTetap || 0;
+      if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = countPKWT || 0;
       
       const isAdmin = isUserAdmin(loggedInUser);
       const activeBranchVal = document.getElementById('branch-select')?.value || 'ALL';
@@ -2960,7 +3001,41 @@
       }
       if (document.getElementById('mk-card-branch-desc')) document.getElementById('mk-card-branch-desc').textContent = branchDesc;
 
+      populateContractDropdown();
       filterMasterKaryawanTable();
+    }
+
+    // Ekstraksi opsi filter Kontrak / Status Kepegawaian dinamis dari data tabel
+    function populateContractDropdown() {
+      const select = document.getElementById('mk-filter-kontrak');
+      if (!select) return;
+      const rawRows = currentDashboardPayload?.rawTables?.Master_Karyawan || [];
+      const currentVal = select.value || 'ALL';
+
+      const contractSet = new Set();
+      rawRows.forEach(r => {
+        const v = (r['Contract'] || '').trim();
+        if (v) contractSet.add(v);
+      });
+
+      let options = `<option value="ALL">Semua Kontrak</option>`;
+      options += `<option value="Tetap">Tetap / Permanent</option>`;
+      options += `<option value="Kontrak">Kontrak / PKWT</option>`;
+
+      contractSet.forEach(val => {
+        const lower = val.toLowerCase();
+        if (!['tetap', 'kontrak', 'pkwt', 'permanent'].includes(lower)) {
+          options += `<option value="${val}">${val}</option>`;
+        }
+      });
+
+      select.innerHTML = options;
+      const optionsArray = Array.from(select.options).map(o => o.value);
+      if (optionsArray.includes(currentVal)) {
+        select.value = currentVal;
+      } else {
+        select.value = 'ALL';
+      }
     }
 
     // Helper dynamic table header renderer with sticky first column
@@ -2979,8 +3054,8 @@
       if (val === null || val === undefined || val === '') return '<span class="text-slate-300">-</span>';
       const norm = normalizeHeaderName(col);
       
-      if (norm === 'contract' || norm === 'status kontrak') {
-        const isTetap = String(val).toLowerCase().includes('tetap');
+      if (norm === 'contract' || norm === 'status kontrak' || norm === 'status kepegawaian') {
+        const isTetap = isTetapContract(val);
         return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isTetap ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${val}</span>`;
       }
       if (norm === 'status reward') {
@@ -3039,10 +3114,10 @@
 
       if (contractFilter !== 'ALL') {
         list = list.filter(e => {
-          const k = String(e['Contract'] || 'Tetap').toLowerCase();
-          if (contractFilter === 'Tetap') return k.includes('tetap') || !k.includes('kontrak');
-          if (contractFilter === 'Kontrak') return k.includes('kontrak') || k.includes('pkwt');
-          return true;
+          const raw = String(e['Contract'] || 'Tetap').trim();
+          if (contractFilter === 'Tetap') return isTetapContract(raw);
+          if (contractFilter === 'Kontrak') return isPKWTContract(raw);
+          return raw.toLowerCase() === contractFilter.toLowerCase();
         });
       }
 
@@ -3700,7 +3775,41 @@
           currentDashboardPayload.rawTables[targetSheet] = parsedObjects;
 
           // Perbarui tabel tampilan modul yang relevan seketika
-          if (targetSheet === 'Master_Karyawan') filterMasterKaryawanTable();
+          if (targetSheet === 'Master_Karyawan') {
+            // Sinkronkan employeeList dengan data Master_Karyawan yang baru diunggah
+            currentDashboardPayload.employeeList = parsedObjects.map(obj => {
+              const contractVal = obj['Contract'] || 'Tetap';
+              const existing = (currentDashboardPayload.employeeList || []).find(e => String(e.npk) === String(obj['Personnel no.'])) || {};
+              return {
+                ...existing,
+                npk: safeString(obj['Personnel no.']),
+                nama: obj['Last name'] || existing.nama || '',
+                cabang: obj['P.subarea'] || existing.cabang || '',
+                wilayah: obj['Wilayah'] || existing.wilayah || '',
+                kodeBA: safeString(obj['Business area'] || existing.kodeBA),
+                divisi: obj['Name'] || existing.divisi || '',
+                jabatan: obj['Job Title'] || existing.jabatan || '',
+                tipeKontrak: contractVal,
+                'Contract': contractVal,
+                joinDate: obj['Date'] || existing.joinDate || '',
+                tglLahir: obj['D.o.birth'] || existing.tglLahir || '',
+                gender: obj['Gender text'] || existing.gender || '',
+                agama: obj['Religious denomination'] || existing.agama || '',
+                psGroup: obj['PS group'] || existing.psGroup || '',
+                lvl: obj['Lvl'] || existing.lvl || '',
+                stext: obj['P0001-STEXT'] || existing.stext || ''
+              };
+            });
+
+            // Hitung ulang summary dengan data Master Karyawan terupdate
+            currentDashboardPayload.summary = computeBranchSummary(
+              currentDashboardPayload.employeeList,
+              currentDashboardPayload.qccList,
+              currentDashboardPayload.summary
+            );
+
+            renderMasterKaryawanView(currentDashboardPayload);
+          }
           else if (targetSheet === 'Data_Kehadiran') filterAbsensiTable();
           else if (targetSheet === 'Data_SS') filterSSTable();
           else if (targetSheet === 'Data_QCC') filterQCCTable();
@@ -3772,7 +3881,7 @@
       document.getElementById('modal-emp-role').textContent = `NPK: ${emp.npk} • ${emp.jabatan || emp.divisi} • Cabang ${emp.cabang}`;
       document.getElementById('modal-emp-hadir').textContent = `${emp.kehadiranPct}%`;
       document.getElementById('modal-emp-ss').textContent = `${emp.totalSS} Ide`;
-      document.getElementById('modal-emp-kontrak').textContent = emp.tipeKontrak || 'Tetap';
+      document.getElementById('modal-emp-kontrak').textContent = emp['Contract'] || emp.Contract || emp.contract || emp.tipeKontrak || 'Tetap';
       document.getElementById('modal-emp-sp').textContent = emp.spAktif || 'Bersih';
 
       const notesEl = document.getElementById('modal-emp-notes');
