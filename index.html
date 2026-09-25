@@ -483,24 +483,24 @@
               </div>
               <div class="pt-3 border-t border-slate-100 mt-3 text-[10px]">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Status Kepegawaian (Contract)</span>
-                <div class="grid grid-cols-2 gap-2">
-                  <div class="flex items-center gap-2 p-1.5 rounded-xl bg-blue-50/60 border border-blue-100">
-                    <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] flex-shrink-0">
+                <div class="grid grid-cols-2 gap-2" id="dashboard-contract-group-list">
+                  <div class="flex flex-col items-center justify-center p-2 rounded-xl bg-blue-50/60 border border-blue-100 text-center hover:bg-blue-50 transition shadow-2xs">
+                    <span class="w-7 h-7 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xs mb-1 border border-blue-200 shadow-2xs">
                       <i class="fa-solid fa-user-check"></i>
                     </span>
-                    <div class="min-w-0">
-                      <span class="text-[9px] text-slate-500 font-bold block truncate">Tetap</span>
-                      <span class="font-extrabold text-blue-700 text-xs" id="card-tetap-count">0</span>
-                    </div>
+                    <span class="text-[10px] font-bold text-slate-600 block mb-0.5">Tetap</span>
+                    <span class="text-xs font-black text-slate-900 leading-tight" id="card-tetap-val">0 Orang</span>
+                    <span class="mt-1 px-1.5 py-0.5 rounded-md text-[9px] font-black bg-blue-100 text-blue-700 border border-blue-200" id="card-tetap-pct">0%</span>
+                    <span class="hidden" id="card-tetap-count">0</span>
                   </div>
-                  <div class="flex items-center gap-2 p-1.5 rounded-xl bg-amber-50/60 border border-amber-100">
-                    <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-[10px] flex-shrink-0">
+                  <div class="flex flex-col items-center justify-center p-2 rounded-xl bg-amber-50/60 border border-amber-100 text-center hover:bg-amber-50 transition shadow-2xs">
+                    <span class="w-7 h-7 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xs mb-1 border border-amber-200 shadow-2xs">
                       <i class="fa-solid fa-user-clock"></i>
                     </span>
-                    <div class="min-w-0">
-                      <span class="text-[9px] text-slate-500 font-bold block truncate">PKWT</span>
-                      <span class="font-extrabold text-amber-700 text-xs" id="card-kontrak-count">0</span>
-                    </div>
+                    <span class="text-[10px] font-bold text-slate-600 block mb-0.5">PKWT</span>
+                    <span class="text-xs font-black text-slate-900 leading-tight" id="card-kontrak-val">0 Orang</span>
+                    <span class="mt-1 px-1.5 py-0.5 rounded-md text-[9px] font-black bg-amber-100 text-amber-700 border border-amber-200" id="card-kontrak-pct">0%</span>
+                    <span class="hidden" id="card-kontrak-count">0</span>
                   </div>
                 </div>
               </div>
@@ -903,40 +903,14 @@
                   <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Status Kepegawaian (Contract)</span>
                   <span class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs"><i class="fa-solid fa-file-contract"></i></span>
                 </div>
-                <!-- Kelompok Status: Icon, Jumlah, Persen -->
-                <div class="space-y-1.5">
-                  <!-- Tetap / Permanent -->
-                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-blue-50/40 transition">
-                    <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] flex-shrink-0">
-                        <i class="fa-solid fa-user-check"></i>
-                      </span>
-                      <span class="text-[11px] font-bold text-slate-700 truncate">Tetap (Permanent)</span>
-                    </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                      <span class="text-xs font-black text-slate-900"><span id="mk-card-tetap">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
-                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-blue-100 text-blue-700 border border-blue-200" id="mk-card-tetap-pct">0%</span>
-                    </div>
-                  </div>
-                  <!-- Kontrak / PKWT -->
-                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-amber-50/40 transition">
-                    <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-[10px] flex-shrink-0">
-                        <i class="fa-solid fa-user-clock"></i>
-                      </span>
-                      <span class="text-[11px] font-bold text-slate-700 truncate">Kontrak (PKWT)</span>
-                    </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                      <span class="text-xs font-black text-slate-900"><span id="mk-card-pkwt">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
-                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-amber-100 text-amber-700 border border-amber-200" id="mk-card-pkwt-pct">0%</span>
-                    </div>
-                  </div>
+                <!-- Kelompok Status Kepegawaian: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen -->
+                <div class="grid grid-cols-2 gap-2" id="mk-contract-group-list">
+                  <!-- Dynamically populated from database/filter -->
                 </div>
                 <!-- Dual-color Visual Ratio Progress Bar -->
-                <div class="pt-2">
-                  <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex">
-                    <div id="mk-bar-contract-tetap" class="bg-blue-600 h-full transition-all duration-500" style="width: 90%" title="Tetap / Permanent"></div>
-                    <div id="mk-bar-contract-pkwt" class="bg-amber-500 h-full transition-all duration-500" style="width: 10%" title="Kontrak / PKWT"></div>
+                <div class="pt-2.5 mt-2 border-t border-slate-100" id="mk-contract-bar-wrapper">
+                  <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex" id="mk-contract-bar-segments">
+                    <!-- Progress bar segments -->
                   </div>
                 </div>
               </div>
@@ -3065,8 +3039,14 @@
       document.getElementById('card-pct-sales').textContent = `${s.salesPct || 0}%`;
       document.getElementById('card-pct-service').textContent = `${s.servicePct || 0}%`;
       document.getElementById('card-pct-admin').textContent = `${s.adminPct || 0}%`;
-      document.getElementById('card-tetap-count').textContent = `${s.countTetap || 0} (${s.totalKaryawan ? Math.round((s.countTetap/s.totalKaryawan)*100) : 0}%)`;
-      document.getElementById('card-kontrak-count').textContent = `${s.countPKWT || 0} (${s.totalKaryawan ? Math.round((s.countPKWT/s.totalKaryawan)*100) : 0}%)`;
+      const tetapPct = s.totalKaryawan ? Math.round(((s.countTetap || 0) / s.totalKaryawan) * 100) : 0;
+      const pkwtPct = s.totalKaryawan ? Math.round(((s.countPKWT || 0) / s.totalKaryawan) * 100) : 0;
+      if (document.getElementById('card-tetap-val')) document.getElementById('card-tetap-val').textContent = `${s.countTetap || 0} Orang`;
+      if (document.getElementById('card-tetap-pct')) document.getElementById('card-tetap-pct').textContent = `${tetapPct}%`;
+      if (document.getElementById('card-kontrak-val')) document.getElementById('card-kontrak-val').textContent = `${s.countPKWT || 0} Orang`;
+      if (document.getElementById('card-kontrak-pct')) document.getElementById('card-kontrak-pct').textContent = `${pkwtPct}%`;
+      if (document.getElementById('card-tetap-count')) document.getElementById('card-tetap-count').textContent = `${s.countTetap || 0} (${tetapPct}%)`;
+      if (document.getElementById('card-kontrak-count')) document.getElementById('card-kontrak-count').textContent = `${s.countPKWT || 0} (${pkwtPct}%)`;
 
       const cSales = document.getElementById('donut-slice-sales');
       const cSvc = document.getElementById('donut-slice-service');
@@ -3160,6 +3140,81 @@
         return { icon: 'fa-solid fa-truck-fast', color: 'text-teal-600', bg: 'bg-teal-100 text-teal-700 border-teal-200' };
       }
       return { icon: 'fa-solid fa-id-badge', color: 'text-indigo-600', bg: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
+    }
+
+    // Helper ikon dan warna status kepegawaian (Contract)
+    function getContractMeta(contractName) {
+      const norm = String(contractName || '').trim().toLowerCase();
+      if (norm.includes('tetap') || norm.includes('permanent') || norm.includes('pkwtt')) {
+        return {
+          name: 'Tetap',
+          fullName: 'Tetap (Permanent)',
+          icon: 'fa-solid fa-user-check',
+          iconBg: 'bg-blue-100 text-blue-600',
+          iconBorder: 'border-blue-200',
+          badgeBg: 'bg-blue-100 text-blue-700 border-blue-200',
+          cardHover: 'hover:bg-blue-50/60 hover:border-blue-200',
+          barColor: 'bg-blue-600'
+        };
+      }
+      if (norm.includes('pkwt') || norm.includes('kontrak') || norm.includes('contract')) {
+        return {
+          name: 'PKWT',
+          fullName: 'Kontrak (PKWT)',
+          icon: 'fa-solid fa-user-clock',
+          iconBg: 'bg-amber-100 text-amber-600',
+          iconBorder: 'border-amber-200',
+          badgeBg: 'bg-amber-100 text-amber-700 border-amber-200',
+          cardHover: 'hover:bg-amber-50/60 hover:border-amber-200',
+          barColor: 'bg-amber-500'
+        };
+      }
+      if (norm.includes('magang') || norm.includes('intern') || norm.includes('trainee')) {
+        return {
+          name: 'Magang',
+          fullName: 'Magang (Intern)',
+          icon: 'fa-solid fa-graduation-cap',
+          iconBg: 'bg-emerald-100 text-emerald-600',
+          iconBorder: 'border-emerald-200',
+          badgeBg: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+          cardHover: 'hover:bg-emerald-50/60 hover:border-emerald-200',
+          barColor: 'bg-emerald-500'
+        };
+      }
+      if (norm.includes('outsource') || norm.includes('os') || norm.includes('vendor')) {
+        return {
+          name: 'Outsource',
+          fullName: 'Outsource (OS)',
+          icon: 'fa-solid fa-user-shield',
+          iconBg: 'bg-purple-100 text-purple-600',
+          iconBorder: 'border-purple-200',
+          badgeBg: 'bg-purple-100 text-purple-700 border-purple-200',
+          cardHover: 'hover:bg-purple-50/60 hover:border-purple-200',
+          barColor: 'bg-purple-500'
+        };
+      }
+      if (norm.includes('probation') || norm.includes('percobaan')) {
+        return {
+          name: 'Percobaan',
+          fullName: 'Probation',
+          icon: 'fa-solid fa-user-gear',
+          iconBg: 'bg-orange-100 text-orange-600',
+          iconBorder: 'border-orange-200',
+          badgeBg: 'bg-orange-100 text-orange-700 border-orange-200',
+          cardHover: 'hover:bg-orange-50/60 hover:border-orange-200',
+          barColor: 'bg-orange-500'
+        };
+      }
+      return {
+        name: contractName || 'Lainnya',
+        fullName: contractName || 'Lainnya',
+        icon: 'fa-solid fa-id-card-clip',
+        iconBg: 'bg-slate-100 text-slate-600',
+        iconBorder: 'border-slate-200',
+        badgeBg: 'bg-slate-100 text-slate-700 border-slate-200',
+        cardHover: 'hover:bg-slate-100/60 hover:border-slate-300',
+        barColor: 'bg-slate-400'
+      };
     }
 
     function renderMasterKaryawanView(data) {
@@ -3261,19 +3316,76 @@
         }
       }
 
-      // 4. Status Kepegawaian (Contract Insight) - Render per grup: Icon, Jumlah, Persen
-      let countTetap = s.countTetap;
-      let countPKWT = s.countPKWT;
-      if (rawRows.length > 0) {
-        countTetap = rawRows.filter(e => isTetapContract(e['Contract'])).length;
-        countPKWT = rawRows.filter(e => isPKWTContract(e['Contract'])).length;
-      }
-      const totalContract = countTetap + countPKWT || totalEmployees || 1;
-      const pctTetap = Math.round((countTetap / totalContract) * 100);
-      const pctPKWT = Math.max(0, 100 - pctTetap);
+      // 4. Status Kepegawaian (Contract Insight) - Render per kelompok dinamis: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen
+      const contractGroupMap = {};
+      sourceList.forEach(r => {
+        let rawVal = (r['Contract'] || r.Contract || r.contract || r.tipeKontrak || 'Tetap').trim();
+        let groupKey = rawVal;
+        if (isTetapContract(rawVal)) {
+          groupKey = 'Tetap';
+        } else if (isPKWTContract(rawVal)) {
+          groupKey = 'PKWT';
+        }
+        contractGroupMap[groupKey] = (contractGroupMap[groupKey] || 0) + 1;
+      });
 
-      if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = countTetap || 0;
-      if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = countPKWT || 0;
+      // Default jika data belum ada
+      if (!contractGroupMap['Tetap'] && !contractGroupMap['PKWT']) {
+        contractGroupMap['Tetap'] = 0;
+        contractGroupMap['PKWT'] = 0;
+      }
+
+      const totalContract = Object.values(contractGroupMap).reduce((a, b) => a + b, 0) || totalEmployees || 1;
+      const contractEntries = Object.entries(contractGroupMap).sort((a, b) => b[1] - a[1]);
+
+      const contractListEl = document.getElementById('mk-contract-group-list');
+      if (contractListEl) {
+        const colClass = contractEntries.length === 3 ? 'grid-cols-3' : (contractEntries.length >= 4 ? 'grid-cols-2 sm:grid-cols-4' : 'grid-cols-2');
+        contractListEl.className = `grid ${colClass} gap-2`;
+
+        contractListEl.innerHTML = contractEntries.map(([grpName, count]) => {
+          const meta = getContractMeta(grpName);
+          const pct = Math.round((count / totalContract) * 100);
+          return `
+            <div class="flex flex-col items-center justify-center p-2.5 rounded-2xl bg-slate-50 border border-slate-100 ${meta.cardHover} transition text-center shadow-xs">
+              <!-- 1. Icon di atas -->
+              <div class="w-8 h-8 rounded-xl ${meta.iconBg} flex items-center justify-center text-xs mb-1.5 border ${meta.iconBorder} shadow-2xs">
+                <i class="${meta.icon}"></i>
+              </div>
+              <!-- 2. Bawahnya Nama -->
+              <span class="text-[10px] font-bold text-slate-600 truncate block w-full mb-0.5" title="${meta.fullName}">
+                ${meta.name}
+              </span>
+              <!-- 3. Bawahnya Angka -->
+              <span class="text-xs font-black text-slate-900 leading-tight">
+                ${count} <span class="text-[9px] font-semibold text-slate-400">Orang</span>
+              </span>
+              <!-- 4. Truss Persen -->
+              <span class="mt-1 px-1.5 py-0.5 rounded-md text-[9px] font-black ${meta.badgeBg} border">
+                ${pct}%
+              </span>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Visual Ratio Progress Bar
+      const barContainer = document.getElementById('mk-contract-bar-segments');
+      if (barContainer) {
+        barContainer.innerHTML = contractEntries.map(([grpName, count]) => {
+          const meta = getContractMeta(grpName);
+          const pct = Math.round((count / totalContract) * 100);
+          return `<div class="${meta.barColor} h-full transition-all duration-500" style="width: ${pct}%" title="${meta.fullName}: ${pct}%"></div>`;
+        }).join('');
+      }
+
+      // Backwards compatibility for old element IDs
+      const countTetap = contractGroupMap['Tetap'] || 0;
+      const countPKWT = contractGroupMap['PKWT'] || 0;
+      const pctTetap = Math.round((countTetap / totalContract) * 100);
+      const pctPKWT = Math.round((countPKWT / totalContract) * 100);
+      if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = countTetap;
+      if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = countPKWT;
       if (document.getElementById('mk-card-tetap-pct')) document.getElementById('mk-card-tetap-pct').textContent = `${pctTetap}%`;
       if (document.getElementById('mk-card-pkwt-pct')) document.getElementById('mk-card-pkwt-pct').textContent = `${pctPKWT}%`;
 
