@@ -138,15 +138,14 @@
         </div>
 
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Password (Tanggal Lahir)</label>
+          <label class="block font-bold text-slate-700 mb-1">Password</label>
           <div class="relative">
             <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-400"></i>
             <input 
               type="password" 
               id="login-password" 
               required 
-              placeholder="Format: DDMMYY (Contoh: 120899)" 
-              maxlength="6"
+              placeholder="Masukkan password atau DDMMYY" 
               class="w-full pl-9 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-medium tracking-wider"
             >
             <button 
@@ -158,7 +157,7 @@
               <i id="password-toggle-icon" class="fa-regular fa-eye text-sm"></i>
             </button>
           </div>
-          <span class="text-[10px] text-slate-400 mt-1 block">Gunakan 6 digit tanggal lahir (DDMMYY)</span>
+          <span class="text-[10px] text-slate-400 mt-1 block">Gunakan 6 digit tanggal lahir (DDMMYY) untuk Kacab/Karyawan atau password Admin</span>
         </div>
 
         <div id="login-error-msg" class="hidden text-[11px] font-bold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-100 text-center"></div>
@@ -771,7 +770,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button onclick="openUploadModal('Master_Karyawan')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-blue-200">
+              <button onclick="openUploadModal('Master_Karyawan')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-blue-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload Master (.xlsx)
               </button>
               <button onclick="exportModuleTableToExcel('Master_Karyawan')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
@@ -883,7 +882,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button onclick="openUploadModal('Data_Absensi')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-emerald-200">
+              <button onclick="openUploadModal('Data_Absensi')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-emerald-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload Absensi (.xlsx)
               </button>
               <button onclick="exportModuleTableToExcel('Data_Absensi')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
@@ -986,7 +985,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button onclick="openUploadModal('Data_SS')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-amber-200">
+              <button onclick="openUploadModal('Data_SS')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-amber-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload SS (.xlsx)
               </button>
               <button onclick="exportModuleTableToExcel('Data_SS')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
@@ -1090,7 +1089,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button onclick="openUploadModal('Data_QCC')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-purple-200">
+              <button onclick="openUploadModal('Data_QCC')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-purple-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload QCC (.xlsx)
               </button>
               <button onclick="exportModuleTableToExcel('Data_QCC')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
@@ -1193,7 +1192,7 @@
               </div>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button onclick="openUploadModal('Data_SP')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-red-200">
+              <button onclick="openUploadModal('Data_SP')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-red-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload Data SP (.xlsx)
               </button>
               <button onclick="exportModuleTableToExcel('Data_SP')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
@@ -1498,74 +1497,449 @@
       }
     }
 
+    // ========================================================
+    // OTORISASI PERAN & STRUKTUR CABANG DSO LAMPUNG
+    // ========================================================
+    const KNOWN_BRANCHES = [
+      { code: "D660", name: "Lampung A Yani", fullName: "Lampung A Yani (D660)" },
+      { code: "D661", name: "Lampung S Hatta", fullName: "Lampung S Hatta (D661)" },
+      { code: "D662", name: "Bandarjaya", fullName: "Bandarjaya (D662)" },
+      { code: "D663", name: "Kotabumi", fullName: "Kotabumi (D663)" },
+      { code: "D664", name: "Lampung Timur", fullName: "Lampung Timur (D664)" }
+    ];
+
+    const INDO_MONTHS = [
+      "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+      "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+    ];
+
+    /**
+     * Memeriksa apakah user adalah Admin (Akses Penuh Seluruh Cabang)
+     */
+    function isUserAdmin(user) {
+      if (!user) return false;
+      if (user.isAllBranch === true) return true;
+      const role = String(user.role || '').toLowerCase();
+      const username = String(user.username || user.npk || '').toLowerCase();
+      const jabatan = String(user.jabatan || '').toLowerCase();
+      
+      if (role.includes('admin') || role.includes('hrd') || role.includes('ga') || 
+          username === 'admin' || jabatan.includes('admin')) {
+        return true;
+      }
+      if (Array.isArray(user.assignedBACodes) && user.assignedBACodes.length > 1 && user.isAllBranch !== false) {
+        return true;
+      }
+      return false;
+    }
+
+    /**
+     * Menemukan info cabang (kode, nama, fullName) secara fleksibel
+     */
+    function resolveBranchInfo(input) {
+      if (!input) return null;
+      const str = String(input).trim();
+      const upper = str.toUpperCase();
+      const lower = str.toLowerCase();
+
+      let found = KNOWN_BRANCHES.find(b => b.code.toUpperCase() === upper);
+      if (found) return found;
+
+      found = KNOWN_BRANCHES.find(b => lower.includes(b.name.toLowerCase()) || b.name.toLowerCase().includes(lower));
+      if (found) return found;
+
+      return { code: str, name: str, fullName: str };
+    }
+
+    /**
+     * Mengambil Kode Cabang Kacab
+     */
+    function getUserBranchCode(user) {
+      if (!user) return 'D660';
+      if (Array.isArray(user.assignedBACodes) && user.assignedBACodes.length > 0) {
+        const info = resolveBranchInfo(user.assignedBACodes[0]);
+        return info ? info.code : user.assignedBACodes[0];
+      }
+      const cand = user.kodeBA || user.kode_ba || user.cabang || user.branch;
+      const info = resolveBranchInfo(cand);
+      return info ? info.code : (cand || 'D660');
+    }
+
+    /**
+     * Mengambil Nama Cabang Kacab
+     */
+    function getUserBranchName(user) {
+      if (!user) return 'Lampung A Yani';
+      if (Array.isArray(user.assignedBACodes) && user.assignedBACodes.length > 0) {
+        const info = resolveBranchInfo(user.assignedBACodes[0]);
+        return info ? info.name : user.assignedBACodes[0];
+      }
+      const cand = user.cabang || user.kodeBA || user.kode_ba || user.branch;
+      const info = resolveBranchInfo(cand);
+      return info ? info.name : (cand || 'Cabang Terdaftar');
+    }
+
+    /**
+     * Mencocokkan data karyawan / circle dengan target cabang
+     */
+    function matchBranch(item, targetBranchCode) {
+      if (!targetBranchCode || targetBranchCode === 'ALL') return true;
+      if (!item) return false;
+
+      const targetInfo = resolveBranchInfo(targetBranchCode);
+      const targetCode = (targetInfo ? targetInfo.code : String(targetBranchCode)).toUpperCase().trim();
+      const targetName = (targetInfo ? targetInfo.name : String(targetBranchCode)).toLowerCase().trim();
+
+      const itemCode = String(item.kodeBA || item.kode_ba || '').toUpperCase().trim();
+      const itemCabang = String(item.cabang || item.branch || '').toLowerCase().trim();
+
+      // 1. Kode cabang cocok persis
+      if (itemCode && itemCode === targetCode) return true;
+
+      // 2. Kode cabang ada dalam teks cabang
+      if (itemCabang.includes(targetCode.toLowerCase())) return true;
+
+      // 3. Nama cabang cocok
+      if (targetName && itemCabang) {
+        if (itemCabang.includes(targetName) || targetName.includes(itemCabang)) return true;
+        const keywords = ['yani', 'hatta', 'bandarjaya', 'kotabumi', 'timur'];
+        for (const kw of keywords) {
+          if (targetName.includes(kw) && itemCabang.includes(kw)) return true;
+        }
+      }
+
+      return false;
+    }
+
+    /**
+     * Ekstraksi daftar cabang unik dari respon database
+     */
+    function extractBranchesFromData(data) {
+      const branchMap = new Map();
+
+      // Dari availableBranches jika backend mengirimkan
+      if (Array.isArray(data?.availableBranches) && data.availableBranches.length > 0) {
+        data.availableBranches.forEach(b => {
+          if (typeof b === 'string') {
+            const info = resolveBranchInfo(b);
+            branchMap.set(info.code, info.fullName);
+          } else if (b && b.code) {
+            const info = resolveBranchInfo(b.code);
+            branchMap.set(b.code, b.fullName || (info ? info.fullName : b.code));
+          }
+        });
+      }
+
+      // Dari employeeList yang tersimpan di spreadsheet
+      if (Array.isArray(data?.employeeList)) {
+        data.employeeList.forEach(e => {
+          const code = e.kodeBA || e.kode_ba;
+          const name = e.cabang;
+          if (code && !branchMap.has(code)) {
+            const info = resolveBranchInfo(code);
+            branchMap.set(code, info ? info.fullName : `${name || code} (${code})`);
+          } else if (name && !code) {
+            const info = resolveBranchInfo(name);
+            if (info) branchMap.set(info.code, info.fullName);
+            else branchMap.set(name, name);
+          }
+        });
+      }
+
+      if (branchMap.size === 0) {
+        KNOWN_BRANCHES.forEach(b => branchMap.set(b.code, b.fullName));
+      }
+
+      return Array.from(branchMap.entries()).map(([code, name]) => ({ code, name }));
+    }
+
+    /**
+     * Ekstraksi opsi periode (Bulan & Tahun) dinamis dari database
+     */
+    function extractPeriodsFromData(data) {
+      const periodSet = new Set();
+
+      // 1. Dari availablePeriods backend
+      if (Array.isArray(data?.availablePeriods) && data.availablePeriods.length > 0) {
+        data.availablePeriods.forEach(p => {
+          if (p && typeof p === 'string' && p.trim()) periodSet.add(p.trim());
+        });
+      }
+
+      // 2. Dari data karyawan di database
+      if (Array.isArray(data?.employeeList)) {
+        data.employeeList.forEach(e => {
+          if (e.periode && typeof e.periode === 'string' && e.periode.trim()) {
+            periodSet.add(e.periode.trim());
+          }
+          if (e.bulan && e.tahun) {
+            periodSet.add(`${e.bulan} ${e.tahun}`.trim());
+          }
+        });
+      }
+
+      // 3. Periode aktif yang tercatat di database
+      if (data?.currentPeriod && typeof data.currentPeriod === 'string') {
+        periodSet.add(data.currentPeriod.trim());
+      }
+      if (data?.activePeriod && typeof data.activePeriod === 'string') {
+        periodSet.add(data.activePeriod.trim());
+      }
+
+      let list = Array.from(periodSet);
+
+      if (list.length > 0) {
+        // Lengkapi dengan opsi semester jika ada data tahunan
+        const yearsFound = new Set();
+        list.forEach(p => {
+          const match = p.match(/\b(20\d\d)\b/);
+          if (match) yearsFound.add(parseInt(match[1]));
+        });
+
+        yearsFound.forEach(yr => {
+          if (!list.includes(`Semester 1 ${yr}`)) list.push(`Semester 1 ${yr}`);
+          if (!list.includes(`Semester 2 ${yr}`)) list.push(`Semester 2 ${yr}`);
+        });
+        return list;
+      }
+
+      // 4. Default dinamis berdasarkan tahun kalender & referensi
+      const currentYear = new Date().getFullYear();
+      const years = Array.from(new Set([2025, currentYear])).sort((a, b) => a - b);
+      const defaultList = [];
+
+      years.forEach(yr => {
+        INDO_MONTHS.forEach(m => {
+          defaultList.push(`${m} ${yr}`);
+        });
+        defaultList.push(`Semester 1 ${yr}`);
+        defaultList.push(`Semester 2 ${yr}`);
+      });
+
+      return defaultList;
+    }
+
+    /**
+     * Hitung ulang metrik agregasi ringkasan (summary) sesuai cabang yang diisolasi
+     */
+    function computeBranchSummary(employees, qccList = [], fallbackSummary = {}) {
+      const totalKaryawan = employees.length;
+
+      const salesCount = employees.filter(e => (e.divisi || '').toLowerCase().includes('sales')).length;
+      const serviceCount = employees.filter(e => (e.divisi || '').toLowerCase().includes('service') || (e.divisi || '').toLowerCase().includes('bengkel')).length;
+      const adminCount = employees.filter(e => {
+        const div = (e.divisi || '').toLowerCase();
+        return div.includes('admin') || div.includes('finance') || div.includes('general') || div.includes('ga');
+      }).length;
+
+      const otherCount = Math.max(0, totalKaryawan - salesCount - serviceCount - adminCount);
+      const finalAdminCount = adminCount + otherCount;
+
+      const salesPct = totalKaryawan ? Math.round((salesCount / totalKaryawan) * 100) : 0;
+      const servicePct = totalKaryawan ? Math.round((serviceCount / totalKaryawan) * 100) : 0;
+      const adminPct = totalKaryawan ? Math.max(0, 100 - salesPct - servicePct) : 0;
+
+      const countTetap = employees.filter(e => (e.tipeKontrak || 'Tetap').toLowerCase().includes('tetap')).length;
+      const countPKWT = employees.filter(e => {
+        const k = (e.tipeKontrak || '').toLowerCase();
+        return k.includes('kontrak') || k.includes('pkwt');
+      }).length;
+
+      const totalAttendance = employees.reduce((sum, e) => sum + (Number(e.kehadiranPct) || 0), 0);
+      const avgAttendance = totalKaryawan ? (totalAttendance / totalKaryawan).toFixed(1) : 0;
+
+      const totalAlpha = employees.reduce((sum, e) => sum + (Number(e.alpha) || ((e.kehadiranPct || 0) < 90 ? 1 : 0)), 0);
+      const totalSeringTelat = employees.reduce((sum, e) => sum + (Number(e.telat) || ((e.kehadiranPct || 0) < 95 ? 1 : 0)), 0);
+
+      const totalSS = employees.reduce((sum, e) => sum + (Number(e.totalSS) || 0), 0);
+      const targetSS = fallbackSummary.targetSS || (totalKaryawan * 2);
+      const activeSSCount = employees.filter(e => (Number(e.totalSS) || 0) >= 1).length;
+      const ssParticipationRate = totalKaryawan ? Math.round((activeSSCount / totalKaryawan) * 100) : 0;
+      const countImplementedSS = employees.reduce((sum, e) => sum + (Number(e.implementedSS) || ((e.totalSS || 0) >= 2 ? 1 : 0)), 0);
+      const countEvaluasiSS = Math.max(0, totalSS - countImplementedSS);
+
+      const countTeguran = employees.filter(e => String(e.spAktif || '').toUpperCase().includes('TEGURAN')).length;
+      const countSP1 = employees.filter(e => {
+        const sp = String(e.spAktif || '').toUpperCase();
+        return sp === 'SP 1' || sp === 'SP1';
+      }).length;
+      const countSP2 = employees.filter(e => {
+        const sp = String(e.spAktif || '').toUpperCase();
+        return sp === 'SP 2' || sp === 'SP2';
+      }).length;
+      const countSP3 = employees.filter(e => {
+        const sp = String(e.spAktif || '').toUpperCase();
+        return sp === 'SP 3' || sp === 'SP3';
+      }).length;
+      const countSPPT = employees.filter(e => String(e.spAktif || '').toUpperCase().includes('SPPT')).length;
+      const totalSP = countTeguran + countSP1 + countSP2 + countSP3 + countSPPT;
+
+      const totalQCCCircles = qccList.length || (fallbackSummary.totalQCCCircles || 0);
+      const pdcaCount = fallbackSummary.pdcaCount || { Plan: 1, Do: 1, Check: 1, Action: 1 };
+      const bestQCC = fallbackSummary.bestQCC || (qccList[0] || null);
+
+      return {
+        totalKaryawan,
+        salesPct,
+        servicePct,
+        adminPct,
+        countTetap,
+        countPKWT,
+        avgAttendance,
+        totalAlpha,
+        totalSeringTelat,
+        totalSS,
+        targetSS,
+        ssParticipationRate,
+        countImplementedSS,
+        countEvaluasiSS,
+        totalQCCCircles,
+        pdcaCount,
+        bestQCC,
+        totalSP,
+        countTeguran,
+        countSP1,
+        countSP2,
+        countSP3,
+        countSPPT
+      };
+    }
+
     function handleLogout() {
       loggedInUser = null;
+      currentDashboardPayload = null;
       document.getElementById('app-screen').classList.add('hidden');
       document.getElementById('login-screen').classList.remove('hidden');
       document.getElementById('login-password').value = '';
     }
 
-    // 2. Inisialisasi Tampilan Setelah Login
+    // 2. Inisialisasi Tampilan Setelah Login dengan RBAC
     function initAuthenticatedApp() {
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('app-screen').classList.remove('hidden');
 
-      document.getElementById('header-user-name').textContent = loggedInUser.nama;
-      document.getElementById('header-user-role').textContent = loggedInUser.jabatan || loggedInUser.role;
-      document.getElementById('welcome-greeting-title').textContent = `Selamat datang, ${loggedInUser.nama}!`;
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchName = getUserBranchName(loggedInUser);
 
+      document.getElementById('header-user-name').textContent = loggedInUser.nama || (isAdmin ? 'Administrator' : 'Kepala Cabang');
+      document.getElementById('header-user-role').textContent = isAdmin 
+        ? (loggedInUser.jabatan || 'Administrator HR & GA') 
+        : (loggedInUser.jabatan || `Kepala Cabang - ${userBranchName}`);
+      
+      document.getElementById('welcome-greeting-title').textContent = `Selamat datang, ${loggedInUser.nama || (isAdmin ? 'Admin' : 'Kepala Cabang')}!`;
+      document.getElementById('welcome-greeting-subtitle').textContent = isAdmin 
+        ? 'Akses penuh seluruh cabang wilayah DSO Lampung: Monitoring performa, impor data, dan kelola master.' 
+        : `Monitoring performa dan data karyawan cabang ${userBranchName}.`;
+
+      // Kelola banner Admin
       const adminBanner = document.getElementById('admin-action-banner');
-      if (loggedInUser.role && loggedInUser.role.toLowerCase() === 'admin') {
-        adminBanner.classList.remove('hidden');
-      } else {
-        adminBanner.classList.add('hidden');
+      if (adminBanner) {
+        if (isAdmin) adminBanner.classList.remove('hidden');
+        else adminBanner.classList.add('hidden');
       }
 
+      // Kelola tombol upload (hanya tampil untuk Admin)
+      document.querySelectorAll('.admin-only-action').forEach(el => {
+        if (isAdmin) el.classList.remove('hidden');
+        else el.classList.add('hidden');
+      });
+
       populateBranchDropdown();
+      populatePeriodDropdown();
       loadBackendDashboardData();
     }
 
-    function populateBranchDropdown() {
+    /**
+     * Mengisi dropdown Cabang sesuai hak akses (Admin: Semua Cabang, Kacab: Terkunci pada cabangnya)
+     */
+    function populateBranchDropdown(availableBranchList = null) {
       const selectDesktop = document.getElementById('branch-select');
       const selectMobile = document.getElementById('branch-select-mobile');
       const selects = [selectDesktop, selectMobile].filter(Boolean);
-      
-      selects.forEach(sel => sel.innerHTML = '');
-      
-      const branchNameMap = {
-        "D660": "Lampung A Yani (D660)",
-        "D661": "Lampung S Hatta (D661)",
-        "D662": "Bandarjaya (D662)",
-        "D663": "Kotabumi (D663)",
-        "D664": "Lampung Timur (D664)"
-      };
-      
+      if (!selects.length) return;
+
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+      const branchList = availableBranchList || 
+        (currentDashboardPayload ? extractBranchesFromData(currentDashboardPayload) : KNOWN_BRANCHES.map(b => ({ code: b.code, name: b.fullName })));
+
       selects.forEach(select => {
-        if (loggedInUser.isAllBranch) {
+        const prevVal = select.value;
+        select.innerHTML = '';
+
+        if (isAdmin) {
+          // ADMIN: Akses penuh dan dapat memilih semua cabang
+          select.disabled = false;
+          select.classList.remove('cursor-not-allowed', 'opacity-80', 'bg-slate-100');
+
           const optAll = document.createElement('option');
           optAll.value = 'ALL';
           optAll.textContent = 'Semua Cabang Wewenang';
           select.appendChild(optAll);
-          
-          loggedInUser.assignedBACodes.forEach(code => {
+
+          branchList.forEach(b => {
             const opt = document.createElement('option');
-            opt.value = code;
-            opt.textContent = branchNameMap[code] || code;
+            opt.value = b.code;
+            opt.textContent = b.name;
             select.appendChild(opt);
           });
+
+          if (prevVal && (prevVal === 'ALL' || branchList.some(b => b.code === prevVal))) {
+            select.value = prevVal;
+          } else {
+            select.value = 'ALL';
+          }
         } else {
-          const userCode = loggedInUser.assignedBACodes[0];
-          const opt = document.createElement('option');
-          opt.value = userCode;
-          opt.textContent = branchNameMap[userCode] || userCode;
-          select.appendChild(opt);
-          
+          // KACAB: Dibatasi ketat hanya pada cabangnya sendiri & dropdown terkunci
           select.disabled = true;
           select.classList.add('cursor-not-allowed', 'opacity-80');
-        }
 
-        select.value = loggedInUser.isAllBranch ? 'ALL' : loggedInUser.assignedBACodes[0];
+          const userBranchObj = branchList.find(b => b.code === userBranchCode) || 
+                                KNOWN_BRANCHES.find(b => b.code === userBranchCode);
+          const branchName = userBranchObj ? (userBranchObj.name || userBranchObj.fullName) : `Cabang ${userBranchCode}`;
+
+          const opt = document.createElement('option');
+          opt.value = userBranchCode;
+          opt.textContent = branchName;
+          select.appendChild(opt);
+          select.value = userBranchCode;
+        }
       });
+    }
+
+    /**
+     * Mengisi dropdown Periode (Bulan & Tahun) secara otomatis dari database
+     */
+    function populatePeriodDropdown(data = null) {
+      const selectDesktop = document.getElementById('period-select');
+      const selectMobile = document.getElementById('period-select-mobile');
+      const selects = [selectDesktop, selectMobile].filter(Boolean);
+      if (!selects.length) return;
+
+      const periods = extractPeriodsFromData(data);
+      const prevVal = selectDesktop.value || 'Mei 2025';
+
+      selects.forEach(sel => {
+        sel.innerHTML = '';
+        periods.forEach(p => {
+          const opt = document.createElement('option');
+          opt.value = p;
+          opt.textContent = p;
+          sel.appendChild(opt);
+        });
+
+        if (periods.includes(prevVal)) {
+          sel.value = prevVal;
+        } else if (periods.includes('Mei 2025')) {
+          sel.value = 'Mei 2025';
+        } else if (periods.length > 0) {
+          sel.value = periods[0];
+        }
+      });
+
+      const activePeriod = selectDesktop.value;
+      const badge = document.getElementById('welcome-period-badge');
+      if (badge) badge.textContent = activePeriod;
     }
 
     function syncBranchChangeMobile(val) {
@@ -1585,21 +1959,33 @@
       const mPeriod = document.getElementById('period-select-mobile');
       if (mPeriod) mPeriod.value = period;
 
-      const branch = document.getElementById('branch-select')?.value || 'ALL';
+      const isAdmin = isUserAdmin(loggedInUser);
+      let branch = 'ALL';
+      if (!isAdmin) {
+        branch = getUserBranchCode(loggedInUser);
+      } else {
+        branch = document.getElementById('branch-select')?.value || 'ALL';
+      }
+
       const mBranch = document.getElementById('branch-select-mobile');
       if (mBranch) mBranch.value = branch;
 
       const badge = document.getElementById('welcome-period-badge');
       if (badge) badge.textContent = period;
+
       loadBackendDashboardData();
     }
 
-    // 3. Ambil Data Dashboard
+    // 3. Ambil Data Dashboard dengan Pengamanan Hak Akses
     async function loadBackendDashboardData() {
-      const branchVal = document.getElementById('branch-select').value;
-      const periodVal = document.getElementById('period-select').value;
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+
+      // Jika user adalah Kacab, query mutlak diarahkan HANYA ke cabangnya
+      const branchVal = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
+      const periodVal = document.getElementById('period-select')?.value || 'Mei 2025';
       const loader = document.getElementById('loading-overlay');
-      loader.classList.remove('hidden');
+      if (loader) loader.classList.remove('hidden');
 
       const res = await callBackendAPI("GET_DASHBOARD", {
         user: loggedInUser,
@@ -1607,85 +1993,143 @@
         period: periodVal
       });
 
-      loader.classList.add('hidden');
+      if (loader) loader.classList.add('hidden');
 
       if (res.success) {
-        currentDashboardPayload = res.data;
+        // Sinkronisasi dinamis daftar cabang dan periode dari data aktual database
+        if (isAdmin) {
+          const dynamicBranches = extractBranchesFromData(res.data);
+          populateBranchDropdown(dynamicBranches);
+        }
+        populatePeriodDropdown(res.data);
+
         renderAllDashboardData(res.data);
       } else {
         showToast("Gagal memuat data: " + res.message);
       }
     }
 
-    // 4. Render Metrik
+    // 4. Render Metrik dengan Isolasi Data Kacab vs Admin
     function renderAllDashboardData(data) {
-      const s = data.summary;
+      if (!data) return;
 
-      document.getElementById('card-total-karyawan').textContent = s.totalKaryawan;
-      document.getElementById('card-pct-sales').textContent = `${s.salesPct}%`;
-      document.getElementById('card-pct-service').textContent = `${s.servicePct}%`;
-      document.getElementById('card-pct-admin').textContent = `${s.adminPct}%`;
-      document.getElementById('card-tetap-count').textContent = `${s.countTetap} (${s.totalKaryawan ? Math.round((s.countTetap/s.totalKaryawan)*100) : 0}%)`;
-      document.getElementById('card-kontrak-count').textContent = `${s.countPKWT} (${s.totalKaryawan ? Math.round((s.countPKWT/s.totalKaryawan)*100) : 0}%)`;
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+      const targetBranch = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
+
+      let scopedEmployees = data.employeeList || [];
+      let scopedQCC = data.qccList || [];
+
+      // 1. Filter ketat per cabang jika target bukan 'ALL'
+      if (targetBranch !== 'ALL') {
+        scopedEmployees = scopedEmployees.filter(e => matchBranch(e, targetBranch));
+        scopedQCC = scopedQCC.filter(q => matchBranch(q, targetBranch));
+      }
+
+      // 2. Filter periode jika record karyawan memiliki label periode spesifik
+      const selectedPeriod = document.getElementById('period-select')?.value;
+      if (selectedPeriod && scopedEmployees.some(e => e.periode)) {
+        const periodFiltered = scopedEmployees.filter(e => {
+          if (!e.periode) return true;
+          if (selectedPeriod.startsWith("Semester 1")) {
+            const sem1 = ["januari", "februari", "maret", "april", "mei", "juni"];
+            return sem1.some(m => e.periode.toLowerCase().includes(m));
+          } else if (selectedPeriod.startsWith("Semester 2")) {
+            const sem2 = ["juli", "agustus", "september", "oktober", "november", "desember"];
+            return sem2.some(m => e.periode.toLowerCase().includes(m));
+          }
+          return e.periode.toLowerCase().trim() === selectedPeriod.toLowerCase().trim();
+        });
+        if (periodFiltered.length > 0) {
+          scopedEmployees = periodFiltered;
+        }
+      }
+
+      // 3. Hitung metrik agregasi (summary) khusus cabang yang diakses
+      let s;
+      if (targetBranch === 'ALL' && data.summary && isAdmin) {
+        s = data.summary;
+      } else {
+        s = computeBranchSummary(scopedEmployees, scopedQCC, data.summary || {});
+      }
+
+      // Simpan payload scoped ke state global agar tabel dan ekspor hanya berisi data yang berhak diakses
+      currentDashboardPayload = {
+        ...data,
+        employeeList: scopedEmployees,
+        qccList: scopedQCC,
+        summary: s
+      };
+
+      document.getElementById('card-total-karyawan').textContent = s.totalKaryawan || 0;
+      document.getElementById('card-pct-sales').textContent = `${s.salesPct || 0}%`;
+      document.getElementById('card-pct-service').textContent = `${s.servicePct || 0}%`;
+      document.getElementById('card-pct-admin').textContent = `${s.adminPct || 0}%`;
+      document.getElementById('card-tetap-count').textContent = `${s.countTetap || 0} (${s.totalKaryawan ? Math.round((s.countTetap/s.totalKaryawan)*100) : 0}%)`;
+      document.getElementById('card-kontrak-count').textContent = `${s.countPKWT || 0} (${s.totalKaryawan ? Math.round((s.countPKWT/s.totalKaryawan)*100) : 0}%)`;
 
       const cSales = document.getElementById('donut-slice-sales');
       const cSvc = document.getElementById('donut-slice-service');
       const cAdm = document.getElementById('donut-slice-admin');
       
-      const salesOffset = 0;
-      const svcOffset = -s.salesPct;
-      const admOffset = -(s.salesPct + s.servicePct);
+      if (cSales && cSvc && cAdm) {
+        const salesOffset = 0;
+        const svcOffset = -(s.salesPct || 0);
+        const admOffset = -((s.salesPct || 0) + (s.servicePct || 0));
 
-      cSales.setAttribute('stroke-dasharray', `${s.salesPct} 100`);
-      cSales.setAttribute('stroke-dashoffset', `${salesOffset}`);
-      cSvc.setAttribute('stroke-dasharray', `${s.servicePct} 100`);
-      cSvc.setAttribute('stroke-dashoffset', `${svcOffset}`);
-      cAdm.setAttribute('stroke-dasharray', `${s.adminPct} 100`);
-      cAdm.setAttribute('stroke-dashoffset', `${admOffset}`);
-
-      document.getElementById('card-kehadiran-rate').innerHTML = `${s.avgAttendance}<span class="text-2xl font-bold">%</span>`;
-      document.getElementById('card-alpha-count').textContent = s.totalAlpha;
-      document.getElementById('card-telat-count').textContent = s.totalSeringTelat;
-
-      document.getElementById('card-ss-total').textContent = s.totalSS;
-      document.getElementById('card-ss-target-denom').textContent = `/ ${s.targetSS}`;
-      const ssPct = s.targetSS > 0 ? Math.min(Math.round((s.totalSS / s.targetSS) * 100), 100) : 0;
-      document.getElementById('card-ss-progress-bar').style.width = `${ssPct}%`;
-      document.getElementById('card-ss-target-pct').textContent = `${ssPct}%`;
-      document.getElementById('card-ss-part-pct').textContent = `${s.ssParticipationRate}%`;
-      document.getElementById('card-ss-implemented').textContent = `${s.countImplementedSS} Ide`;
-      document.getElementById('card-ss-evaluasi').textContent = `${s.countEvaluasiSS} Ide`;
-
-      document.getElementById('card-qcc-total').textContent = s.totalQCCCircles;
-      document.getElementById('card-pdca-plan').textContent = s.pdcaCount.Plan;
-      document.getElementById('card-pdca-do').textContent = s.pdcaCount.Do;
-      document.getElementById('card-pdca-check').textContent = s.pdcaCount.Check;
-      document.getElementById('card-pdca-action').textContent = s.pdcaCount.Action;
-      if (s.bestQCC) {
-        document.getElementById('card-qcc-best-team').textContent = s.bestQCC.namaTim;
-        document.getElementById('card-qcc-best-score').textContent = `Poin: ${s.bestQCC.skor}`;
-      } else {
-        document.getElementById('card-qcc-best-team').textContent = "Belum Ada Circle";
-        document.getElementById('card-qcc-best-score').textContent = "Poin: -";
+        cSales.setAttribute('stroke-dasharray', `${s.salesPct || 0} 100`);
+        cSales.setAttribute('stroke-dashoffset', `${salesOffset}`);
+        cSvc.setAttribute('stroke-dasharray', `${s.servicePct || 0} 100`);
+        cSvc.setAttribute('stroke-dashoffset', `${svcOffset}`);
+        cAdm.setAttribute('stroke-dasharray', `${s.adminPct || 0} 100`);
+        cAdm.setAttribute('stroke-dashoffset', `${admOffset}`);
       }
 
-      document.getElementById('card-sp-total').textContent = s.totalSP;
+      document.getElementById('card-kehadiran-rate').innerHTML = `${s.avgAttendance || 0}<span class="text-2xl font-bold">%</span>`;
+      document.getElementById('card-alpha-count').textContent = s.totalAlpha || 0;
+      document.getElementById('card-telat-count').textContent = s.totalSeringTelat || 0;
+
+      document.getElementById('card-ss-total').textContent = s.totalSS || 0;
+      document.getElementById('card-ss-target-denom').textContent = `/ ${s.targetSS || 0}`;
+      const ssPct = (s.targetSS > 0) ? Math.min(Math.round(((s.totalSS || 0) / s.targetSS) * 100), 100) : 0;
+      if (document.getElementById('card-ss-progress-bar')) document.getElementById('card-ss-progress-bar').style.width = `${ssPct}%`;
+      if (document.getElementById('card-ss-target-pct')) document.getElementById('card-ss-target-pct').textContent = `${ssPct}%`;
+      if (document.getElementById('card-ss-part-pct')) document.getElementById('card-ss-part-pct').textContent = `${s.ssParticipationRate || 0}%`;
+      if (document.getElementById('card-ss-implemented')) document.getElementById('card-ss-implemented').textContent = `${s.countImplementedSS || 0} Ide`;
+      if (document.getElementById('card-ss-evaluasi')) document.getElementById('card-ss-evaluasi').textContent = `${s.countEvaluasiSS || 0} Ide`;
+
+      if (document.getElementById('card-qcc-total')) document.getElementById('card-qcc-total').textContent = s.totalQCCCircles || 0;
+      if (s.pdcaCount) {
+        if (document.getElementById('card-pdca-plan')) document.getElementById('card-pdca-plan').textContent = s.pdcaCount.Plan || 0;
+        if (document.getElementById('card-pdca-do')) document.getElementById('card-pdca-do').textContent = s.pdcaCount.Do || 0;
+        if (document.getElementById('card-pdca-check')) document.getElementById('card-pdca-check').textContent = s.pdcaCount.Check || 0;
+        if (document.getElementById('card-pdca-action')) document.getElementById('card-pdca-action').textContent = s.pdcaCount.Action || 0;
+      }
+      if (s.bestQCC) {
+        if (document.getElementById('card-qcc-best-team')) document.getElementById('card-qcc-best-team').textContent = s.bestQCC.namaTim;
+        if (document.getElementById('card-qcc-best-score')) document.getElementById('card-qcc-best-score').textContent = `Poin: ${s.bestQCC.skor}`;
+      } else {
+        if (document.getElementById('card-qcc-best-team')) document.getElementById('card-qcc-best-team').textContent = "Belum Ada Circle";
+        if (document.getElementById('card-qcc-best-score')) document.getElementById('card-qcc-best-score').textContent = "Poin: -";
+      }
+
+      document.getElementById('card-sp-total').textContent = s.totalSP || 0;
       if (document.getElementById('card-teguran-count')) document.getElementById('card-teguran-count').textContent = s.countTeguran || 0;
-      document.getElementById('card-sp1-count').textContent = s.countSP1;
-      document.getElementById('card-sp2-count').textContent = s.countSP2;
-      document.getElementById('card-sp3-count').textContent = s.countSP3;
+      if (document.getElementById('card-sp1-count')) document.getElementById('card-sp1-count').textContent = s.countSP1 || 0;
+      if (document.getElementById('card-sp2-count')) document.getElementById('card-sp2-count').textContent = s.countSP2 || 0;
+      if (document.getElementById('card-sp3-count')) document.getElementById('card-sp3-count').textContent = s.countSP3 || 0;
       if (document.getElementById('card-sppt-count')) document.getElementById('card-sppt-count').textContent = s.countSPPT || 0;
 
-      renderEmployeeTable(data.employeeList);
-      renderPBKTable(data.employeeList);
+      renderEmployeeTable(scopedEmployees);
+      renderPBKTable(scopedEmployees);
 
       // Render data untuk setiap menu modul
-      renderMasterKaryawanView(data);
-      renderAbsensiView(data);
-      renderSSView(data);
-      renderQCCView(data);
-      renderSPView(data);
-      updateSidebarReadiness(data);
+      renderMasterKaryawanView(currentDashboardPayload);
+      renderAbsensiView(currentDashboardPayload);
+      renderSSView(currentDashboardPayload);
+      renderQCCView(currentDashboardPayload);
+      renderSPView(currentDashboardPayload);
+      updateSidebarReadiness(currentDashboardPayload);
     }
 
     // ----------------------------------------------------
@@ -1708,7 +2152,15 @@
       if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = s.countTetap || 0;
       if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = s.countPKWT || 0;
       
-      const branchDesc = loggedInUser && loggedInUser.isAllBranch ? 'Wilayah DSO Lampung (5 Cabang)' : `Cabang ${list[0]?.cabang || 'Aktif'}`;
+      const isAdmin = isUserAdmin(loggedInUser);
+      const activeBranchVal = document.getElementById('branch-select')?.value || 'ALL';
+      let branchDesc = '';
+      if (isAdmin && activeBranchVal === 'ALL') {
+        branchDesc = 'Wilayah DSO Lampung (Semua Cabang)';
+      } else {
+        const info = resolveBranchInfo(activeBranchVal !== 'ALL' ? activeBranchVal : getUserBranchCode(loggedInUser));
+        branchDesc = `Cabang ${info ? info.name : (list[0]?.cabang || 'Aktif')}`;
+      }
       if (document.getElementById('mk-card-branch-desc')) document.getElementById('mk-card-branch-desc').textContent = branchDesc;
 
       filterMasterKaryawanTable();
@@ -2330,6 +2782,10 @@
 
     // 5. Upload Excel
     function prosesUploadExcelFrontend() {
+      if (!isUserAdmin(loggedInUser)) {
+        alert("Akses ditolak: Hanya Administrator HR yang memiliki izin mengunggah data Excel.");
+        return;
+      }
       const fileInput = document.getElementById('excel-file-input');
       const targetSheet = document.getElementById('upload-target-sheet').value;
       const statusBox = document.getElementById('upload-status-box');
@@ -2440,6 +2896,10 @@
     }
 
     function openUploadModal(sheetName) {
+      if (!isUserAdmin(loggedInUser)) {
+        showToast("Akses ditolak: Hanya Administrator HR yang dapat mengunggah berkas.");
+        return;
+      }
       if (sheetName) document.getElementById('upload-target-sheet').value = sheetName;
       document.getElementById('upload-status-box').classList.add('hidden');
       document.getElementById('modal-upload').classList.remove('hidden');
