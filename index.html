@@ -1330,6 +1330,10 @@
                   <option value="SPPT">SPPT</option>
                   <option value="CLEAN_ONLY">Bebas Sanksi (Bersih)</option>
                 </select>
+                <button type="button" onclick="toggleColumnMode('sp')" id="btn-col-toggle-sp" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
+                  <i class="fa-solid fa-table-columns"></i>
+                  <span id="btn-col-text-sp">Kolom Lengkap (5)</span>
+                </button>
               </div>
               <span class="text-[11px] text-slate-400 font-medium" id="sp-row-count">Menampilkan 0 catatan</span>
             </div>
@@ -3523,14 +3527,15 @@
         list = list.filter(e => String(e['Tingkat SP'] || '').toLowerCase() === statusFilter.toLowerCase());
       }
 
-      const cols = SCHEMAS.Data_SP.columns;
+      const isFull = columnViewMode.sp === 'FULL';
+      const cols = isFull ? SCHEMAS.Data_SP.columns : ["NPK", "Nama", "Tingkat SP", "Alasan"];
 
-      // Render Header (5 Kolom Baku)
+      // Render Header
       renderTableHeader('sp-table-header', cols, true);
 
       const tbody = document.getElementById('sp-table-body');
       if (document.getElementById('sp-row-count')) {
-        document.getElementById('sp-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} catatan kedisiplinan`;
+        document.getElementById('sp-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} catatan kedisiplinan (${cols.length} kolom)`;
       }
 
       if (!list.length) {
