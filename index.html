@@ -276,6 +276,12 @@
               <div class="flex items-center justify-between"><span><i class="fa-solid fa-circle-check text-emerald-300 mr-1"></i> Data SS & QCC</span> <span class="font-bold" id="ready-kaizen">OK</span></div>
             </div>
           </div>
+
+          <!-- Tombol Keluar Sidebar -->
+          <button onclick="openLogoutModal()" class="w-full mt-2.5 flex items-center justify-center gap-2 py-2 px-3 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl text-xs font-bold transition border border-slate-100 hover:border-red-100">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i>
+            <span>Keluar Aplikasi</span>
+          </button>
         </div>
       </div>
     </aside>
@@ -327,7 +333,7 @@
                 <p class="text-xs font-bold text-slate-800 leading-tight" id="header-user-name">Pengguna</p>
                 <p class="text-[10px] text-slate-400 font-medium" id="header-user-role">Kepala Cabang</p>
               </div>
-              <button onclick="handleLogout()" title="Keluar / Logout" class="text-slate-400 hover:text-red-600 p-1 text-xs transition">
+              <button onclick="openLogoutModal()" title="Keluar / Logout" class="text-slate-400 hover:text-red-600 p-1 text-xs transition">
                 <i class="fa-solid fa-arrow-right-from-bracket"></i>
               </button>
             </div>
@@ -338,7 +344,7 @@
             <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs shadow-sm">
               <i class="fa-solid fa-user-tie"></i>
             </div>
-            <button onclick="handleLogout()" title="Keluar / Logout" class="p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-slate-100 text-xs transition">
+            <button onclick="openLogoutModal()" title="Keluar / Logout" class="p-2 text-slate-400 hover:text-red-600 rounded-xl hover:bg-slate-100 text-xs transition">
               <i class="fa-solid fa-arrow-right-from-bracket text-sm"></i>
             </button>
           </div>
@@ -1312,6 +1318,34 @@
 
   </div>
 
+  <!-- MODAL: KONFIRMASI LOGOUT -->
+  <div id="modal-logout" onclick="if(event.target === this) closeModal('modal-logout')" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200/90 max-w-sm w-full p-6 text-center relative animate-fade-in">
+      <button onclick="closeModal('modal-logout')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2 transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-2xl shadow-sm border border-red-100">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+      </div>
+
+      <h3 class="text-base font-extrabold text-slate-900 mb-1.5">Konfirmasi Keluar</h3>
+      <p class="text-xs text-slate-500 leading-relaxed mb-6">
+        Apakah Anda yakin ingin keluar dari sistem <span class="font-bold text-slate-700">D-PERFORM</span>? Anda perlu login kembali untuk mengakses data performa cabang.
+      </p>
+
+      <div class="grid grid-cols-2 gap-3">
+        <button type="button" onclick="closeModal('modal-logout')" class="w-full py-2.5 px-4 rounded-xl border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 transition active:scale-95">
+          Batal
+        </button>
+        <button type="button" onclick="executeLogout()" class="w-full py-2.5 px-4 rounded-xl bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-md shadow-red-500/20 transition active:scale-95 flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-arrow-right-from-bracket text-xs"></i>
+          <span>Ya, Keluar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: UPLOAD EXCEL -->
   <div id="modal-upload" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
     <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full p-6 relative">
@@ -1813,12 +1847,25 @@
       };
     }
 
+    function openLogoutModal() {
+      const modal = document.getElementById('modal-logout');
+      if (modal) modal.classList.remove('hidden');
+    }
+
     function handleLogout() {
+      openLogoutModal();
+    }
+
+    function executeLogout() {
+      closeModal('modal-logout');
       loggedInUser = null;
       currentDashboardPayload = null;
       document.getElementById('app-screen').classList.add('hidden');
       document.getElementById('login-screen').classList.remove('hidden');
       document.getElementById('login-password').value = '';
+      if (typeof showToast === 'function') {
+        showToast("Anda telah berhasil keluar dari sistem.");
+      }
     }
 
     // 2. Inisialisasi Tampilan Setelah Login dengan RBAC
