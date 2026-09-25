@@ -838,45 +838,47 @@
           <!-- Table Container -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
             <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
-              <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full lg:w-auto">
-                <div class="relative w-full sm:w-64">
+              <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                <div class="relative w-full sm:w-56">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="mk-search-input" onkeyup="filterMasterKaryawanTable()" placeholder="Cari NPK, nama, jabatan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+                  <input type="text" id="mk-search-input" onkeyup="filterMasterKaryawanTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <div class="grid grid-cols-2 sm:flex items-center gap-2">
-                  <select id="mk-filter-divisi" onchange="filterMasterKaryawanTable()" class="w-full sm:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                    <option value="ALL">Semua Divisi</option>
-                    <option value="Sales">Sales</option>
-                    <option value="Service">Bengkel / Service</option>
-                    <option value="Admin">Admin / General</option>
-                  </select>
-                  <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="w-full sm:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                    <option value="ALL">Semua Kontrak</option>
-                    <option value="Tetap">Tetap</option>
-                    <option value="Kontrak">Kontrak (PKWT)</option>
-                  </select>
-                </div>
+                <select id="mk-filter-cabang" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Cabang (BA)</option>
+                  <option value="D660">D660 - Lampung A Yani</option>
+                  <option value="D661">D661 - Lampung S Hatta</option>
+                  <option value="D662">D662 - Bandarjaya</option>
+                  <option value="D663">D663 - Kotabumi</option>
+                  <option value="D664">D664 - Lampung Timur</option>
+                </select>
+                <select id="mk-filter-wilayah" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Wilayah</option>
+                  <option value="DSO Lampung">DSO Lampung</option>
+                  <option value="Wilayah Lampung">Wilayah Lampung</option>
+                </select>
+                <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Kontrak</option>
+                  <option value="Tetap">Tetap</option>
+                  <option value="Kontrak">Kontrak (PKWT)</option>
+                </select>
+                <button type="button" onclick="toggleColumnMode('mk')" id="btn-col-toggle-mk" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
+                  <i class="fa-solid fa-table-columns"></i>
+                  <span id="btn-col-text-mk">Kolom Lengkap (16)</span>
+                </button>
               </div>
               <span class="text-[11px] text-slate-400 font-medium" id="mk-row-count">Menampilkan 0 karyawan</span>
             </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs" id="table-master-karyawan-content">
-                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
-                  <tr>
-                    <th class="py-2.5 px-4 rounded-l-xl">NPK</th>
-                    <th class="py-2.5 px-4">Nama Karyawan</th>
-                    <th class="py-2.5 px-4">Cabang (BA)</th>
-                    <th class="py-2.5 px-4">Divisi & Posisi</th>
-                    <th class="py-2.5 px-4 text-center">Status Kerja</th>
-                    <th class="py-2.5 px-4 text-center">Kehadiran</th>
-                    <th class="py-2.5 px-4 text-center">Ide SS</th>
-                    <th class="py-2.5 px-4 text-center">Status SP</th>
-                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+            <!-- Sticky Horizontal Table Container -->
+            <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
+              <table class="w-full text-left text-xs border-collapse" id="table-master-karyawan-content">
+                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+                  <tr id="mk-table-header">
+                    <!-- Standard 16 Columns Rendered Dynamically -->
                   </tr>
                 </thead>
                 <tbody id="mk-table-body" class="divide-y divide-slate-100 font-medium">
-                  <tr><td colspan="9" class="text-center py-8 text-slate-400">Memuat data master karyawan...</td></tr>
+                  <tr><td colspan="17" class="text-center py-8 text-slate-400">Memuat data master karyawan...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -899,10 +901,10 @@
               </div>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
-              <button onclick="openUploadModal('Data_Absensi')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-emerald-200">
-                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Absensi (.xlsx)
+              <button onclick="openUploadModal('Data_Kehadiran')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-emerald-200">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Upload Kehadiran (.xlsx)
               </button>
-              <button onclick="exportModuleTableToExcel('Data_Absensi')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
+              <button onclick="exportModuleTableToExcel('Data_Kehadiran')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
               </button>
             </div>
@@ -949,37 +951,48 @@
 
           <!-- Table Container Absensi -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
-              <div class="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 w-full sm:w-auto">
-                <div class="relative w-full sm:w-64">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                <div class="relative w-full sm:w-56">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                   <input type="text" id="abs-search-input" onkeyup="filterAbsensiTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="w-full xs:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Tingkat Hadir</option>
-                  <option value="PRIMA">Kehadiran Prima (&ge; 95%)</option>
-                  <option value="WARNING">Di Bawah Target (&lt; 95%)</option>
+                <select id="abs-filter-cabang" onchange="filterAbsensiTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Cabang (BA)</option>
+                  <option value="D660">D660 - Lampung A Yani</option>
+                  <option value="D661">D661 - Lampung S Hatta</option>
+                  <option value="D662">D662 - Bandarjaya</option>
+                  <option value="D663">D663 - Kotabumi</option>
+                  <option value="D664">D664 - Lampung Timur</option>
                 </select>
+                <select id="abs-filter-wilayah" onchange="filterAbsensiTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Wilayah</option>
+                  <option value="DSO Lampung">DSO Lampung</option>
+                  <option value="Wilayah Lampung">Wilayah Lampung</option>
+                </select>
+                <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Keterangan</option>
+                  <option value="Hadir Tepat Waktu">Hadir Tepat Waktu</option>
+                  <option value="Terlambat">Terlambat</option>
+                </select>
+                <button type="button" onclick="toggleColumnMode('abs')" id="btn-col-toggle-abs" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
+                  <i class="fa-solid fa-table-columns"></i>
+                  <span id="btn-col-text-abs">Kolom Lengkap (19)</span>
+                </button>
               </div>
               <span class="text-[11px] text-slate-400 font-medium" id="abs-row-count">Menampilkan 0 data absensi</span>
             </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs" id="table-absensi-content">
-                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
-                  <tr>
-                    <th class="py-2.5 px-4 rounded-l-xl">NPK</th>
-                    <th class="py-2.5 px-4">Nama Karyawan</th>
-                    <th class="py-2.5 px-4">Cabang</th>
-                    <th class="py-2.5 px-4">Divisi & Jabatan</th>
-                    <th class="py-2.5 px-4 text-center">Tingkat Kehadiran</th>
-                    <th class="py-2.5 px-4 text-center">Status Absensi</th>
-                    <th class="py-2.5 px-4 text-center">Bobot Hadir (40%)</th>
-                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+            <!-- Sticky Horizontal Table Container -->
+            <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
+              <table class="w-full text-left text-xs border-collapse" id="table-absensi-content">
+                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+                  <tr id="abs-table-header">
+                    <!-- Standard 19 Columns Rendered Dynamically -->
                   </tr>
                 </thead>
                 <tbody id="abs-table-body" class="divide-y divide-slate-100 font-medium">
-                  <tr><td colspan="8" class="text-center py-8 text-slate-400">Memuat data absensi...</td></tr>
+                  <tr><td colspan="19" class="text-center py-8 text-slate-400">Memuat data absensi...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1053,37 +1066,48 @@
 
           <!-- Table Container SS -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
-              <div class="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 w-full sm:w-auto">
-                <div class="relative w-full sm:w-64">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                <div class="relative w-full sm:w-56">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="ss-search-input" onkeyup="filterSSTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+                  <input type="text" id="ss-search-input" onkeyup="filterSSTable()" placeholder="Cari NPK, nama, atau tema..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="ss-filter-part" onchange="filterSSTable()" class="w-full xs:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Partisipan</option>
-                  <option value="ACTIVE">Ada Ide SS (&ge; 1)</option>
-                  <option value="ZERO">Belum Mengajukan (0 Ide)</option>
+                <select id="ss-filter-cabang" onchange="filterSSTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Cabang (BA)</option>
+                  <option value="D660">D660 - Lampung A Yani</option>
+                  <option value="D661">D661 - Lampung S Hatta</option>
+                  <option value="D662">D662 - Bandarjaya</option>
+                  <option value="D663">D663 - Kotabumi</option>
+                  <option value="D664">D664 - Lampung Timur</option>
                 </select>
+                <select id="ss-filter-wilayah" onchange="filterSSTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Wilayah</option>
+                  <option value="DSO Lampung">DSO Lampung</option>
+                  <option value="Wilayah Lampung">Wilayah Lampung</option>
+                </select>
+                <select id="ss-filter-part" onchange="filterSSTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Status Reward</option>
+                  <option value="Approved">Approved</option>
+                  <option value="Pending">Pending / Review</option>
+                </select>
+                <button type="button" onclick="toggleColumnMode('ss')" id="btn-col-toggle-ss" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
+                  <i class="fa-solid fa-table-columns"></i>
+                  <span id="btn-col-text-ss">Kolom Lengkap (21)</span>
+                </button>
               </div>
-              <span class="text-[11px] text-slate-400 font-medium" id="ss-row-count">Menampilkan 0 karyawan</span>
+              <span class="text-[11px] text-slate-400 font-medium" id="ss-row-count">Menampilkan 0 usulan SS</span>
             </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs" id="table-ss-content">
-                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
-                  <tr>
-                    <th class="py-2.5 px-4 rounded-l-xl">NPK</th>
-                    <th class="py-2.5 px-4">Nama Karyawan</th>
-                    <th class="py-2.5 px-4">Cabang</th>
-                    <th class="py-2.5 px-4">Divisi & Posisi</th>
-                    <th class="py-2.5 px-4 text-center">Jumlah Ide Terkumpul</th>
-                    <th class="py-2.5 px-4 text-center">Status Partisipasi</th>
-                    <th class="py-2.5 px-4 text-center">Poin Bobot SS (30%)</th>
-                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+            <!-- Sticky Horizontal Table Container -->
+            <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
+              <table class="w-full text-left text-xs border-collapse" id="table-ss-content">
+                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+                  <tr id="ss-table-header">
+                    <!-- Standard 21 Columns Rendered Dynamically -->
                   </tr>
                 </thead>
                 <tbody id="ss-table-body" class="divide-y divide-slate-100 font-medium">
-                  <tr><td colspan="8" class="text-center py-8 text-slate-400">Memuat data suggestion system...</td></tr>
+                  <tr><td colspan="21" class="text-center py-8 text-slate-400">Memuat data suggestion system...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1164,29 +1188,50 @@
 
           <!-- Table Container QCC -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
-              <div class="relative w-full sm:w-64">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                <input type="text" id="qcc-search-input" onkeyup="filterQCCTable()" placeholder="Cari nama circle atau departemen..." class="w-full pl-8 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                <div class="relative w-full sm:w-56">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                  <input type="text" id="qcc-search-input" onkeyup="filterQCCTable()" placeholder="Cari nama tim, leader, tema..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+                </div>
+                <select id="qcc-filter-cabang" onchange="filterQCCTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Cabang (BA)</option>
+                  <option value="D660">D660 - Lampung A Yani</option>
+                  <option value="D661">D661 - Lampung S Hatta</option>
+                  <option value="D662">D662 - Bandarjaya</option>
+                  <option value="D663">D663 - Kotabumi</option>
+                  <option value="D664">D664 - Lampung Timur</option>
+                </select>
+                <select id="qcc-filter-wilayah" onchange="filterQCCTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Wilayah</option>
+                  <option value="DSO Lampung">DSO Lampung</option>
+                  <option value="Wilayah Lampung">Wilayah Lampung</option>
+                </select>
+                <select id="qcc-filter-pdca" onchange="filterQCCTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Tahap PDCA</option>
+                  <option value="Plan">Plan</option>
+                  <option value="Do">Do</option>
+                  <option value="Check">Check</option>
+                  <option value="Action">Action</option>
+                </select>
+                <button type="button" onclick="toggleColumnMode('qcc')" id="btn-col-toggle-qcc" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
+                  <i class="fa-solid fa-table-columns"></i>
+                  <span id="btn-col-text-qcc">Kolom Lengkap (29)</span>
+                </button>
               </div>
-              <span class="text-[11px] text-slate-400 font-medium" id="qcc-row-count">Menampilkan 0 circle</span>
+              <span class="text-[11px] text-slate-400 font-medium" id="qcc-row-count">Menampilkan 0 circle QCC</span>
             </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs" id="table-qcc-content">
-                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
-                  <tr>
-                    <th class="py-2.5 px-4 rounded-l-xl">No</th>
-                    <th class="py-2.5 px-4">Nama Tim / Circle</th>
-                    <th class="py-2.5 px-4">Cabang & Departemen</th>
-                    <th class="py-2.5 px-4 text-center">Tahapan PDCA</th>
-                    <th class="py-2.5 px-4 text-center">Skor Risalah</th>
-                    <th class="py-2.5 px-4 text-center">Status Circle</th>
-                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+            <!-- Sticky Horizontal Table Container -->
+            <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
+              <table class="w-full text-left text-xs border-collapse" id="table-qcc-content">
+                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+                  <tr id="qcc-table-header">
+                    <!-- Standard 29 Columns Rendered Dynamically -->
                   </tr>
                 </thead>
                 <tbody id="qcc-table-body" class="divide-y divide-slate-100 font-medium">
-                  <tr><td colspan="7" class="text-center py-8 text-slate-400">Memuat data circle QCC...</td></tr>
+                  <tr><td colspan="29" class="text-center py-8 text-slate-400">Memuat data circle QCC...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -1269,49 +1314,156 @@
 
           <!-- Table Container SP -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 mb-4">
-              <div class="flex flex-col xs:flex-row items-stretch xs:items-center gap-2.5 w-full sm:w-auto">
-                <div class="relative w-full sm:w-64">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                <div class="relative w-full sm:w-56">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="sp-search-input" onkeyup="filterSPTable()" placeholder="Cari NPK, nama, atau alasan sanksi..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+                  <input type="text" id="sp-search-input" onkeyup="filterSPTable()" placeholder="Cari NPK, nama, atau alasan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="sp-filter-status" onchange="filterSPTable()" class="w-full xs:w-auto px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Karyawan</option>
-                  <option value="ACTIVE_ONLY">Hanya Yang Memiliki Sanksi</option>
-                  <option value="CLEAN_ONLY">Karyawan Bersih (Bebas SP)</option>
+                <select id="sp-filter-cabang" onchange="filterSPTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Cabang (BA)</option>
+                  <option value="D660">D660 - Lampung A Yani</option>
+                  <option value="D661">D661 - Lampung S Hatta</option>
+                  <option value="D662">D662 - Bandarjaya</option>
+                  <option value="D663">D663 - Kotabumi</option>
+                  <option value="D664">D664 - Lampung Timur</option>
                 </select>
+                <select id="sp-filter-wilayah" onchange="filterSPTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Wilayah</option>
+                  <option value="DSO Lampung">DSO Lampung</option>
+                  <option value="Wilayah Lampung">Wilayah Lampung</option>
+                </select>
+                <select id="sp-filter-status" onchange="filterSPTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Tingkat Sanksi</option>
+                  <option value="ACTIVE_ONLY">Semua Sanksi Aktif</option>
+                  <option value="Surat Teguran">Surat Teguran</option>
+                  <option value="SP 1">SP 1</option>
+                  <option value="SP 2">SP 2</option>
+                  <option value="SP 3">SP 3</option>
+                  <option value="SPPT">SPPT</option>
+                  <option value="CLEAN_ONLY">Bebas Sanksi (Bersih)</option>
+                </select>
+                <button type="button" onclick="toggleColumnMode('sp')" id="btn-col-toggle-sp" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
+                  <i class="fa-solid fa-table-columns"></i>
+                  <span id="btn-col-text-sp">Kolom Lengkap (5)</span>
+                </button>
               </div>
               <span class="text-[11px] text-slate-400 font-medium" id="sp-row-count">Menampilkan 0 catatan</span>
             </div>
 
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs" id="table-sp-content">
-                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
-                  <tr>
-                    <th class="py-2.5 px-4 rounded-l-xl">NPK</th>
-                    <th class="py-2.5 px-4">Nama Karyawan</th>
-                    <th class="py-2.5 px-4">Cabang</th>
-                    <th class="py-2.5 px-4">Divisi & Jabatan</th>
-                    <th class="py-2.5 px-4 text-center">Tingkat Sanksi</th>
-                    <th class="py-2.5 px-4">Keterangan / Alasan Pelanggaran</th>
-                    <th class="py-2.5 px-4 text-center">Status Sanksi</th>
-                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+            <!-- Sticky Horizontal Table Container -->
+            <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
+              <table class="w-full text-left text-xs border-collapse" id="table-sp-content">
+                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+                  <tr id="sp-table-header">
+                    <!-- Standard 5 Columns Rendered Dynamically -->
                   </tr>
                 </thead>
                 <tbody id="sp-table-body" class="divide-y divide-slate-100 font-medium">
-                  <tr><td colspan="8" class="text-center py-8 text-slate-400">Memuat catatan sanksi...</td></tr>
+                  <tr><td colspan="5" class="text-center py-8 text-slate-400">Memuat catatan sanksi...</td></tr>
                 </tbody>
               </table>
             </div>
           </div>
         </div>
         <div id="view-laporan" class="hidden space-y-4 max-w-[1400px] mx-auto">
-          <div class="bg-white rounded-2xl p-5 border border-slate-200 shadow-card">
-            <h3 class="text-base font-extrabold text-slate-900 mb-2">Pusat Laporan & Ekspor Data Kinerja</h3>
-            <p class="text-xs text-slate-500 mb-4">Unduh rekapitulasi data kehadiran, inovasi SS, dan kedisiplinan cabang sebagai acuan penilaian PBK.</p>
-            <button onclick="exportCurrentTableToExcel('Laporan_Data_Kinerja_Lengkap')" class="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-xs font-bold shadow">
-              <i class="fa-solid fa-file-excel mr-1"></i> Unduh File Excel Data Kinerja
-            </button>
+          <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-card">
+            <div class="flex items-center gap-3.5 mb-4">
+              <div class="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center text-lg border border-red-100 flex-shrink-0">
+                <i class="fa-solid fa-file-excel"></i>
+              </div>
+              <div>
+                <h3 class="text-base font-extrabold text-slate-900">Pusat Laporan & Generator Ekspor Database (.xlsx)</h3>
+                <p class="text-xs text-slate-500">Unduh seluruh tabel database kinerja karyawan sesuai 100% dengan skema baku Excel D-PERFORM.</p>
+              </div>
+            </div>
+
+            <!-- Grid 5 Tabel Utama -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5 mb-4">
+              <!-- 1. Master Karyawan -->
+              <div class="p-4 rounded-xl border border-slate-200/90 hover:border-blue-300 bg-slate-50/50 hover:bg-blue-50/30 transition flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-black text-slate-900">1. Master_Karyawan</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-800">16 Kolom</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mb-3">Personnel no., P.subarea, Wilayah, Contract, Name, Job Title, Last name, D.o.birth, dll.</p>
+                </div>
+                <button onclick="exportModuleTableToExcel('Master_Karyawan')" class="w-full py-2 px-3 bg-white hover:bg-blue-600 hover:text-white text-blue-700 font-bold rounded-lg text-xs border border-blue-200 shadow-sm transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-download"></i> Unduh Master_Karyawan.xlsx
+                </button>
+              </div>
+
+              <!-- 2. Data Kehadiran -->
+              <div class="p-4 rounded-xl border border-slate-200/90 hover:border-emerald-300 bg-slate-50/50 hover:bg-emerald-50/30 transition flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-black text-slate-900">2. Data_Kehadiran</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">19 Kolom</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mb-3">NPK, Employee Name, Date, Clock In/Out, Durasi Kerja, CICO Approval, Radius, dll.</p>
+                </div>
+                <button onclick="exportModuleTableToExcel('Data_Kehadiran')" class="w-full py-2 px-3 bg-white hover:bg-emerald-600 hover:text-white text-emerald-700 font-bold rounded-lg text-xs border border-emerald-200 shadow-sm transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-download"></i> Unduh Data_Kehadiran.xlsx
+                </button>
+              </div>
+
+              <!-- 3. Data SS -->
+              <div class="p-4 rounded-xl border border-slate-200/90 hover:border-amber-300 bg-slate-50/50 hover:bg-amber-50/30 transition flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-black text-slate-900">3. Data_SS</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">21 Kolom</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mb-3">No, Registrasi, Nama, NPK, Tema, Fasilitator, Diterima Bulan, AstraPay, Reward, dll.</p>
+                </div>
+                <button onclick="exportModuleTableToExcel('Data_SS')" class="w-full py-2 px-3 bg-white hover:bg-amber-600 hover:text-white text-amber-700 font-bold rounded-lg text-xs border border-amber-200 shadow-sm transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-download"></i> Unduh Data_SS.xlsx
+                </button>
+              </div>
+
+              <!-- 4. Data QCC -->
+              <div class="p-4 rounded-xl border border-slate-200/90 hover:border-purple-300 bg-slate-50/50 hover:bg-purple-50/30 transition flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-black text-slate-900">4. Data_QCC</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-purple-100 text-purple-800">29 Kolom</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mb-3">No, Registrasi, Tim, Leader, Anggota 1-7, Tema, Status PDCA, Risalah Langkah 1-8, dll.</p>
+                </div>
+                <button onclick="exportModuleTableToExcel('Data_QCC')" class="w-full py-2 px-3 bg-white hover:bg-purple-600 hover:text-white text-purple-700 font-bold rounded-lg text-xs border border-purple-200 shadow-sm transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-download"></i> Unduh Data_QCC.xlsx
+                </button>
+              </div>
+
+              <!-- 5. Data SP -->
+              <div class="p-4 rounded-xl border border-slate-200/90 hover:border-red-300 bg-slate-50/50 hover:bg-red-50/30 transition flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-black text-slate-900">5. Data_SP</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-100 text-red-800">5 Kolom</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mb-3">NPK, Nama, Kode BA, Tingkat SP (SP 1, SP 2, SP 3, Surat Teguran), Alasan.</p>
+                </div>
+                <button onclick="exportModuleTableToExcel('Data_SP')" class="w-full py-2 px-3 bg-white hover:bg-red-600 hover:text-white text-red-700 font-bold rounded-lg text-xs border border-red-200 shadow-sm transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-download"></i> Unduh Data_SP.xlsx
+                </button>
+              </div>
+
+              <!-- 6. Export Full Workbook -->
+              <div class="p-4 rounded-xl border-2 border-dashed border-red-300 bg-red-50/40 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-black text-red-700">Workbook Terpadu</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-600 text-white">5-in-1 Sheet</span>
+                  </div>
+                  <p class="text-[11px] text-slate-600 mb-3">Unduh seluruh 5 sheet database dalam 1 berkas Excel lengkap dan terstruktur rapi.</p>
+                </div>
+                <button onclick="exportAllSheetsToSingleWorkbook()" class="w-full py-2 px-3 bg-[#E60012] hover:bg-[#99000B] text-white font-bold rounded-lg text-xs shadow-md shadow-red-500/20 transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-file-zipper"></i> Ekspor Semua 5 Sheet (.xlsx)
+                </button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -1357,9 +1509,9 @@
     </div>
   </div>
 
-  <!-- MODAL: UPLOAD EXCEL -->
+  <!-- MODAL: UPLOAD EXCEL / CSV -->
   <div id="modal-upload" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-md w-full p-6 relative">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto">
       <button onclick="closeModal('modal-upload')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
@@ -1369,26 +1521,40 @@
           <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
         </div>
         <div>
-          <h3 class="text-sm font-extrabold text-slate-900">Upload Data HR (.xlsx / .xls)</h3>
-          <p class="text-[11px] text-slate-500">Otomatis dipetakan sesuai header kolom database</p>
+          <h3 class="text-sm font-extrabold text-slate-900">Upload & Impor Data HR (.xlsx / .csv)</h3>
+          <p class="text-[11px] text-slate-500">Normalisasi otomatis header & validasi tipe data presisi</p>
         </div>
       </div>
 
       <div class="space-y-3.5 text-xs mb-5">
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Pilih Tabel Tujuan:</label>
-          <select id="upload-target-sheet" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-bold">
-            <option value="Data_Absensi">Data Absensi (NP, Time Clock In, Keterangan)</option>
-            <option value="Data_SS">Data SS (NPK, Tema, Diterima Bulan, Kategori)</option>
-            <option value="Data_QCC">Data QCC (Nama Tim, Leader, Langkah PDCA)</option>
-            <option value="Data_SP">Data SP (NPK, Tingkat SP, Alasan)</option>
-            <option value="Master_Karyawan">Master Karyawan (Personnel no., Cabang, Job)</option>
+          <label class="block font-bold text-slate-700 mb-1">Pilih Tabel Database Tujuan:</label>
+          <select id="upload-target-sheet" onchange="renderUploadSchemaGuide()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-bold">
+            <option value="Master_Karyawan">1. Master_Karyawan (16 Kolom Standard)</option>
+            <option value="Data_Kehadiran">2. Data_Kehadiran (19 Kolom Standard)</option>
+            <option value="Data_SS">3. Data_SS (21 Kolom Standard)</option>
+            <option value="Data_QCC">4. Data_QCC (29 Kolom Standard)</option>
+            <option value="Data_SP">5. Data_SP (5 Kolom Standard)</option>
           </select>
         </div>
 
+        <!-- Panduan & Skema Kolom Berkas -->
+        <div id="upload-schema-preview" class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] space-y-1.5">
+          <div class="flex items-center justify-between font-bold text-slate-800">
+            <span id="upload-guide-title">Skema Wajib: Master_Karyawan</span>
+            <button type="button" onclick="downloadSelectedTemplate()" class="text-red-600 hover:text-red-700 text-[10px] underline flex items-center gap-1 font-bold">
+              <i class="fa-solid fa-file-arrow-down"></i> Unduh Format Kosong
+            </button>
+          </div>
+          <p class="text-[10px] text-slate-500 leading-relaxed" id="upload-guide-cols">
+            16 Kolom: Personnel no., P.subarea, Wilayah, Contract, Name, Name of organizational unit, Job Title, Last name, D.o.birth, Gender text, Religious denomination, PS group, Lvl, Date, P0001-STEXT, Business area
+          </p>
+        </div>
+
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Pilih Berkas Excel:</label>
-          <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50">
+          <label class="block font-bold text-slate-700 mb-1">Pilih Berkas Excel atau CSV:</label>
+          <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50">
+          <span class="text-[10px] text-slate-400 mt-1 block">Mendukung format .xlsx, .xls, dan .csv dengan header di baris pertama.</span>
         </div>
 
         <div id="upload-status-box" class="hidden text-[11px] p-2.5 rounded-xl"></div>
@@ -1396,7 +1562,10 @@
 
       <div class="flex gap-2">
         <button onclick="closeModal('modal-upload')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Batal</button>
-        <button onclick="prosesUploadExcelFrontend()" id="btn-submit-upload" class="flex-1 py-2.5 bg-[#E60012] hover:bg-[#99000B] text-white font-bold rounded-xl text-xs shadow">Proses & Simpan</button>
+        <button onclick="prosesUploadExcelFrontend()" id="btn-submit-upload" class="flex-1 py-2.5 bg-[#E60012] hover:bg-[#99000B] text-white font-bold rounded-xl text-xs shadow flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          <span>Proses & Simpan</span>
+        </button>
       </div>
     </div>
   </div>
@@ -1480,6 +1649,574 @@
     let loggedInUser = null;
     let currentDashboardPayload = null;
     let currentView = 'dashboard';
+
+    // ========================================================
+    // SKEMA DATABASE BAKU & STANDARISASI EXCEL (100% IDENTIK)
+    // ========================================================
+    const SCHEMAS = {
+      Master_Karyawan: {
+        sheetName: "Master_Karyawan",
+        title: "Master Karyawan",
+        columns: [
+          "Personnel no.",
+          "P.subarea",
+          "Wilayah",
+          "Contract",
+          "Name",
+          "Name of organizational unit",
+          "Job Title",
+          "Last name",
+          "D.o.birth",
+          "Gender text",
+          "Religious denomination",
+          "PS group",
+          "Lvl",
+          "Date",
+          "P0001-STEXT",
+          "Business area"
+        ],
+        aliases: {
+          "personnel no.": ["personnel no.", "personnel no", "npk", "id karyawan", "nik", "id"],
+          "p.subarea": ["p.subarea", "subarea", "cabang", "nama cabang"],
+          "wilayah": ["wilayah", "region", "area"],
+          "contract": ["contract", "kontrak", "status kontrak", "tipe kontrak"],
+          "name": ["name", "nama unit organisasi", "unit"],
+          "name of organizational unit": ["name of organizational unit", "organizational unit", "organisasi", "departemen", "dept"],
+          "job title": ["job title", "jabatan", "posisi", "title"],
+          "last name": ["last name", "nama", "nama lengkap", "nama karyawan", "employee name"],
+          "d.o.birth": ["d.o.birth", "date of birth", "tgl lahir", "tanggal lahir", "dob"],
+          "gender text": ["gender text", "gender", "jenis kelamin", "jk"],
+          "religious denomination": ["religious denomination", "religion", "agama"],
+          "ps group": ["ps group", "golongan", "pangkat", "group"],
+          "lvl": ["lvl", "level"],
+          "date": ["date", "tanggal masuk", "tgl masuk", "effective date", "tanggal"],
+          "p0001-stext": ["p0001-stext", "stext", "deskripsi jabatan", "struktur", "divisi"],
+          "business area": ["business area", "kode ba", "ba", "kode cabang", "ba code"]
+        }
+      },
+      Data_Kehadiran: {
+        sheetName: "Data_Kehadiran",
+        title: "Data Kehadiran / Absensi",
+        columns: [
+          "NPK",
+          "Employee Name",
+          "Wilayah",
+          "Cabang",
+          "Date",
+          "Date Clock In",
+          "Time Clock In",
+          "Date Clock Out",
+          "Time Clock Out",
+          "Durasi Kerja (Work Hours)",
+          "Assigned Work Location",
+          "Need CICO Approval",
+          "In Radius Clock in",
+          "Location Clock In",
+          "In Radius Clock Out",
+          "Location Clock Out",
+          "Clock In Source",
+          "Clock Out Source",
+          "Keterangan"
+        ],
+        aliases: {
+          "npk": ["npk", "personnel no.", "id karyawan", "nik"],
+          "employee name": ["employee name", "nama", "nama karyawan", "last name"],
+          "wilayah": ["wilayah", "region", "area"],
+          "cabang": ["cabang", "p.subarea", "subarea", "nama cabang"],
+          "date": ["date", "tanggal", "tgl"],
+          "date clock in": ["date clock in", "tgl clock in", "tanggal clock in", "tgl masuk"],
+          "time clock in": ["time clock in", "jam clock in", "clock in", "jam masuk"],
+          "date clock out": ["date clock out", "tgl clock out", "tanggal clock out", "tgl keluar"],
+          "time clock out": ["time clock out", "jam clock out", "clock out", "jam pulang"],
+          "durasi kerja (work hours)": ["durasi kerja (work hours)", "durasi kerja", "work hours", "jam kerja", "durasi"],
+          "assigned work location": ["assigned work location", "work location", "lokasi kerja"],
+          "need cico approval": ["need cico approval", "approval cico", "cico approval"],
+          "in radius clock in": ["in radius clock in", "radius clock in", "in radius in"],
+          "location clock in": ["location clock in", "koordinat in", "lokasi clock in"],
+          "in radius clock out": ["in radius clock out", "radius clock out", "in radius out"],
+          "location clock out": ["location clock out", "koordinat out", "lokasi clock out"],
+          "clock in source": ["clock in source", "source in", "metode clock in"],
+          "clock out source": ["clock out source", "source out", "metode clock out"],
+          "keterangan": ["keterangan", "status", "notes", "catatan"]
+        }
+      },
+      Data_SS: {
+        sheetName: "Data_SS",
+        title: "Suggestion System (SS)",
+        columns: [
+          "No",
+          "Registrasi",
+          "Nama",
+          "NPK",
+          "Wilayah",
+          "Cabang",
+          "Kode BA",
+          "Bagian",
+          "Tema",
+          "Fasilitator",
+          "NPK Fasilitator",
+          "Diterima Bulan",
+          "Kategori",
+          "No.Akun AstraPay",
+          "Nama Akun",
+          "Status Reward",
+          "Reward",
+          "No.Berita Acara",
+          "No.BPH",
+          "Distribusi Reward",
+          "Keterangan"
+        ],
+        aliases: {
+          "no": ["no", "nomor", "#"],
+          "registrasi": ["registrasi", "no.registrasi", "nomor registrasi", "no reg"],
+          "nama": ["nama", "nama karyawan", "last name", "employee name"],
+          "npk": ["npk", "personnel no.", "id karyawan"],
+          "wilayah": ["wilayah", "region"],
+          "cabang": ["cabang", "p.subarea"],
+          "kode ba": ["kode ba", "business area", "ba"],
+          "bagian": ["bagian", "divisi", "departemen", "unit"],
+          "tema": ["tema", "judul", "tema ss", "judul ide"],
+          "fasilitator": ["fasilitator", "nama fasilitator"],
+          "npk fasilitator": ["npk fasilitator", "npk fsl"],
+          "diterima bulan": ["diterima bulan", "bulan", "periode", "tgl diterima"],
+          "kategori": ["kategori", "bidang", "kategori ss"],
+          "no.akun astrapay": ["no.akun astrapay", "no akun astrapay", "astrapay", "no astrapay", "no hp"],
+          "nama akun": ["nama akun", "nama akun astrapay", "nama astrapay"],
+          "status reward": ["status reward", "status hadiah", "reward status"],
+          "reward": ["reward", "hadiah", "nominal reward"],
+          "no.berita acara": ["no.berita acara", "no ba", "berita acara"],
+          "no.bph": ["no.bph", "bph", "nomor bph"],
+          "distribusi reward": ["distribusi reward", "distribusi"],
+          "keterangan": ["keterangan", "notes", "catatan", "status"]
+        }
+      },
+      Data_QCC: {
+        sheetName: "Data_QCC",
+        title: "Quality Control Circle (QCC)",
+        columns: [
+          "No",
+          "No.Registrasi",
+          "Nama Tim",
+          "Wilayah/Divisi",
+          "Cabang/Departemen",
+          "Kode BA",
+          "Bagian",
+          "Fasilitator",
+          "Leader",
+          "Anggota 1",
+          "Anggota 2",
+          "Anggota 3",
+          "Anggota 4",
+          "Anggota 5",
+          "Anggota 6",
+          "Anggota 7",
+          "Tema",
+          "Kategori",
+          "Status",
+          "No.Akun Astrapay QC Leader",
+          "Pendaftaran diterima",
+          "L 1-8 diterima",
+          "Langkah 1-3",
+          "Langkah 1-5",
+          "No.Berita Acara",
+          "Status Reward",
+          "No.BPH",
+          "Tahun Konvensi",
+          "Kelengkapan Risalah Langkah 1-8"
+        ],
+        aliases: {
+          "no": ["no", "nomor", "#"],
+          "no.registrasi": ["no.registrasi", "registrasi", "no reg"],
+          "nama tim": ["nama tim", "tim", "nama circle", "circle"],
+          "wilayah/divisi": ["wilayah/divisi", "wilayah", "divisi", "region"],
+          "cabang/departemen": ["cabang/departemen", "cabang", "departemen", "p.subarea"],
+          "kode ba": ["kode ba", "business area", "ba"],
+          "bagian": ["bagian", "seksi", "unit"],
+          "fasilitator": ["fasilitator", "nama fasilitator"],
+          "leader": ["leader", "ketua", "circle leader", "nama leader"],
+          "anggota 1": ["anggota 1", "member 1"],
+          "anggota 2": ["anggota 2", "member 2"],
+          "anggota 3": ["anggota 3", "member 3"],
+          "anggota 4": ["anggota 4", "member 4"],
+          "anggota 5": ["anggota 5", "member 5"],
+          "anggota 6": ["anggota 6", "member 6"],
+          "anggota 7": ["anggota 7", "member 7"],
+          "tema": ["tema", "judul kaizen", "judul qcc", "tema qcc"],
+          "kategori": ["kategori", "kategori qcc"],
+          "status": ["status", "status circle", "tahapan pdca", "pdca"],
+          "no.akun astrapay qc leader": ["no.akun astrapay qc leader", "astrapay leader", "no.akun astrapay", "astrapay"],
+          "pendaftaran diterima": ["pendaftaran diterima", "tgl pendaftaran"],
+          "l 1-8 diterima": ["l 1-8 diterima", "langkah 1-8 diterima"],
+          "langkah 1-3": ["langkah 1-3", "step 1-3"],
+          "langkah 1-5": ["langkah 1-5", "step 1-5"],
+          "no.berita acara": ["no.berita acara", "no ba"],
+          "status reward": ["status reward", "reward status"],
+          "no.bph": ["no.bph", "bph"],
+          "tahun konvensi": ["tahun konvensi", "tahun", "konvensi"],
+          "kelengkapan risalah langkah 1-8": ["kelengkapan risalah langkah 1-8", "risalah", "kelengkapan risalah"]
+        }
+      },
+      Data_SP: {
+        sheetName: "Data_SP",
+        title: "Surat Peringatan (SP)",
+        columns: [
+          "NPK",
+          "Nama",
+          "Kode BA",
+          "Tingkat SP",
+          "Alasan"
+        ],
+        aliases: {
+          "npk": ["npk", "personnel no.", "id karyawan", "nik"],
+          "nama": ["nama", "nama lengkap", "last name", "employee name"],
+          "kode ba": ["kode ba", "business area", "ba", "cabang"],
+          "tingkat sp": ["tingkat sp", "sp", "status sp", "jenis sp", "sanksi"],
+          "alasan": ["alasan", "alasan sp", "pelanggaran", "alasan pelanggaran", "keterangan"]
+        }
+      }
+    };
+
+    // Mode Kolom (Tampilan Penuh vs Ringkas)
+    const columnViewMode = {
+      mk: 'FULL',
+      abs: 'FULL',
+      ss: 'FULL',
+      qcc: 'FULL',
+      sp: 'FULL'
+    };
+
+    function toggleColumnMode(moduleKey) {
+      columnViewMode[moduleKey] = (columnViewMode[moduleKey] === 'FULL') ? 'COMPACT' : 'FULL';
+      const isFull = columnViewMode[moduleKey] === 'FULL';
+      const colCounts = { mk: 16, abs: 19, ss: 21, qcc: 29, sp: 5 };
+      const btnText = document.getElementById(`btn-col-text-${moduleKey}`);
+      if (btnText) {
+        btnText.textContent = isFull ? `Kolom Lengkap (${colCounts[moduleKey]})` : 'Kolom Ringkas';
+      }
+
+      if (moduleKey === 'mk') filterMasterKaryawanTable();
+      else if (moduleKey === 'abs') filterAbsensiTable();
+      else if (moduleKey === 'ss') filterSSTable();
+      else if (moduleKey === 'qcc') filterQCCTable();
+      else if (moduleKey === 'sp') filterSPTable();
+    }
+
+    // Normalisasi Header Kolom Excel / CSV
+    function normalizeHeaderName(header) {
+      if (!header) return "";
+      return String(header)
+        .replace(/[\r\n]+/g, " ")
+        .trim()
+        .toLowerCase()
+        .replace(/\s+/g, " ");
+    }
+
+    // Safe Casting Tipe Data
+    function safeString(val) {
+      if (val === null || val === undefined) return "";
+      let s = String(val).trim();
+      if (/^[0-9]+(\.[0-9]+)?e\+[0-9]+$/i.test(s)) {
+        try {
+          s = BigInt(Math.round(Number(val))).toString();
+        } catch (e) {}
+      }
+      return s;
+    }
+
+    function parseExcelDate(val) {
+      if (!val) return "";
+      if (val instanceof Date) {
+        return val.toISOString().slice(0, 10);
+      }
+      if (typeof val === 'number') {
+        const date = new Date(Math.round((val - 25569) * 86400 * 1000));
+        return date.toISOString().slice(0, 10);
+      }
+      const s = String(val).trim();
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      const parts = s.split(/[\/\-\.]/);
+      if (parts.length === 3) {
+        if (parts[0].length === 4) {
+          return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        } else if (parts[2].length === 4) {
+          return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+      }
+      return s;
+    }
+
+    function parseExcelTime(val) {
+      if (!val) return "";
+      if (typeof val === 'number') {
+        const totalMinutes = Math.round(val * 24 * 60);
+        const hours = Math.floor(totalMinutes / 60) % 24;
+        const minutes = totalMinutes % 60;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
+      }
+      const s = String(val).trim();
+      if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(s)) {
+        return s.slice(0, 5);
+      }
+      return s;
+    }
+
+    function safeFloat(val, fallback = 0) {
+      if (val === null || val === undefined || val === '') return fallback;
+      if (typeof val === 'number') return isNaN(val) ? fallback : Math.round(val * 100) / 100;
+      const parsed = parseFloat(String(val).replace(',', '.'));
+      return isNaN(parsed) ? fallback : Math.round(parsed * 100) / 100;
+    }
+
+    function castSchemaValue(colName, val, fallbackIdx = 1) {
+      const norm = normalizeHeaderName(colName);
+      if (norm === 'npk' || norm === 'personnel no.' || norm.includes('astrapay') || 
+          norm === 'no' || norm.includes('registrasi') || norm.includes('kode ba') || norm === 'business area') {
+        return safeString(val);
+      }
+      if (norm.includes('durasi kerja') || norm.includes('work hours')) {
+        return safeFloat(val, 8.5);
+      }
+      if (norm.includes('date') || norm === 'd.o.birth' || norm.includes('tgl') || norm.includes('tanggal')) {
+        return parseExcelDate(val);
+      }
+      if (norm.includes('time') || norm.includes('jam')) {
+        return parseExcelTime(val);
+      }
+      if (val === null || val === undefined) return "";
+      return String(val).trim();
+    }
+
+    function renderUploadSchemaGuide() {
+      const targetSheet = document.getElementById('upload-target-sheet')?.value || 'Master_Karyawan';
+      const schema = SCHEMAS[targetSheet];
+      if (!schema) return;
+
+      const titleEl = document.getElementById('upload-guide-title');
+      const colsEl = document.getElementById('upload-guide-cols');
+      if (titleEl) titleEl.textContent = `Skema Wajib: ${schema.sheetName}`;
+      if (colsEl) {
+        colsEl.textContent = `${schema.columns.length} Kolom Baku (Sesuai Urutan): ${schema.columns.join(', ')}`;
+      }
+    }
+
+    function downloadSelectedTemplate() {
+      const targetSheet = document.getElementById('upload-target-sheet')?.value || 'Master_Karyawan';
+      downloadExcelTemplate(targetSheet);
+    }
+
+    function getSampleValueForColumn(targetSheet, col) {
+      const norm = normalizeHeaderName(col);
+      if (norm === 'personnel no.' || norm === 'npk') return '10123';
+      if (norm === 'p.subarea' || norm === 'cabang') return 'Lampung A Yani';
+      if (norm === 'wilayah' || norm === 'wilayah/divisi') return 'DSO Lampung';
+      if (norm === 'contract') return 'Tetap';
+      if (norm === 'name') return 'Sales Unit';
+      if (norm === 'name of organizational unit') return 'Sales DSO Lampung';
+      if (norm === 'job title') return 'Sales Executive';
+      if (norm === 'last name' || norm === 'nama' || norm === 'employee name') return 'Budi Santoso';
+      if (norm === 'd.o.birth') return '1995-08-17';
+      if (norm === 'gender text') return 'Male';
+      if (norm === 'religious denomination') return 'Islam';
+      if (norm === 'ps group') return 'III/A';
+      if (norm === 'lvl') return 'Staff';
+      if (norm === 'date' || norm === 'date clock in' || norm === 'date clock out') return '2025-05-30';
+      if (norm === 'p0001-stext') return 'Sales Staff';
+      if (norm === 'business area' || norm === 'kode ba') return 'D660';
+      if (norm === 'time clock in') return '07:55';
+      if (norm === 'time clock out') return '17:05';
+      if (norm.includes('durasi kerja')) return 8.5;
+      if (norm.includes('assigned work') || norm.includes('in radius')) return 'YES';
+      if (norm.includes('need cico')) return 'NO';
+      if (norm.includes('location clock')) return '-5.4297,105.2625';
+      if (norm.includes('clock in source') || norm.includes('clock out source')) return 'Mobile App GPS';
+      if (norm === 'keterangan') return 'Hadir Tepat Waktu';
+      if (norm === 'no') return '1';
+      if (norm === 'registrasi' || norm === 'no.registrasi') return 'SS-D660-001';
+      if (norm === 'nama tim') return 'Circle Kaizen DSO';
+      if (norm === 'cabang/departemen') return 'Lampung A Yani / Service';
+      if (norm === 'bagian') return 'Workshop';
+      if (norm === 'tema') return 'Digitalisasi Form Checklist Inspeksi Harian';
+      if (norm === 'fasilitator') return 'Kepala Cabang';
+      if (norm === 'npk fasilitator') return '10001';
+      if (norm === 'diterima bulan') return 'Mei-25';
+      if (norm === 'kategori') return 'Quality & Productivity';
+      if (norm.includes('astrapay')) return '081234567890';
+      if (norm === 'nama akun') return 'Budi Santoso';
+      if (norm === 'status reward') return 'Approved';
+      if (norm === 'reward') return 'Rp 50.000';
+      if (norm === 'no.berita acara') return 'BA/D660/2025';
+      if (norm === 'no.bph') return 'BPH-2025-01';
+      if (norm === 'distribusi reward') return 'Transfer AstraPay';
+      if (norm === 'leader') return 'Ahmad Fauzi';
+      if (norm.startsWith('anggota')) return 'Member ' + col.slice(-1);
+      if (norm === 'status') return 'Action';
+      if (norm === 'pendaftaran diterima' || norm === 'l 1-8 diterima') return '2025-01-15';
+      if (norm.startsWith('langkah')) return 'Selesai';
+      if (norm === 'tahun konvensi') return '2025';
+      if (norm.includes('risalah')) return 'Lengkap (Format Baku ADM)';
+      if (norm === 'tingkat sp') return 'SP 1';
+      if (norm === 'alasan') return 'Indisipliner kehadiran';
+      return '-';
+    }
+
+    function downloadExcelTemplate(targetSheet) {
+      const schema = SCHEMAS[targetSheet];
+      if (!schema) return;
+
+      const sampleRow = {};
+      schema.columns.forEach(col => {
+        sampleRow[col] = getSampleValueForColumn(targetSheet, col);
+      });
+
+      const ws = XLSX.utils.json_to_sheet([sampleRow], { header: schema.columns });
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, schema.sheetName);
+      XLSX.writeFile(wb, `Template_${schema.sheetName}.xlsx`);
+      showToast(`Template ${schema.sheetName}.xlsx berhasil diunduh!`);
+    }
+
+    function initializeStandardTables(payload) {
+      if (!payload) return;
+      if (!payload.rawTables) payload.rawTables = {};
+
+      const employees = payload.employeeList || [];
+      const qccs = payload.qccList || [];
+
+      // 1. Master_Karyawan (16 Columns)
+      if (!payload.rawTables.Master_Karyawan || !payload.rawTables.Master_Karyawan.length) {
+        payload.rawTables.Master_Karyawan = employees.map(e => ({
+          "Personnel no.": safeString(e['Personnel no.'] || e.npk),
+          "P.subarea": e['P.subarea'] || e.cabang || 'Lampung A Yani',
+          "Wilayah": e['Wilayah'] || e.wilayah || 'DSO Lampung',
+          "Contract": e['Contract'] || e.tipeKontrak || 'Tetap',
+          "Name": e['Name'] || e.divisi || 'Operational',
+          "Name of organizational unit": e['Name of organizational unit'] || (e.divisi ? `${e.divisi} DSO` : 'Departemen DSO'),
+          "Job Title": e['Job Title'] || e.jabatan || 'Staff',
+          "Last name": e['Last name'] || e.nama || '',
+          "D.o.birth": parseExcelDate(e['D.o.birth'] || e.tglLahir || '1995-05-15'),
+          "Gender text": e['Gender text'] || e.gender || 'Male',
+          "Religious denomination": e['Religious denomination'] || e.agama || 'Islam',
+          "PS group": e['PS group'] || e.psGroup || 'III/A',
+          "Lvl": e['Lvl'] || e.lvl || 'Staff',
+          "Date": parseExcelDate(e['Date'] || e.joinDate || '2021-01-01'),
+          "P0001-STEXT": e['P0001-STEXT'] || e.stext || (e.jabatan || 'Staff Unit'),
+          "Business area": safeString(e['Business area'] || e.kodeBA || 'D660')
+        }));
+      }
+
+      // 2. Data_Kehadiran (19 Columns)
+      if (!payload.rawTables.Data_Kehadiran || !payload.rawTables.Data_Kehadiran.length) {
+        payload.rawTables.Data_Kehadiran = employees.map(e => {
+          const isLate = (e.kehadiranPct || 100) < 95;
+          return {
+            "NPK": safeString(e['NPK'] || e.npk),
+            "Employee Name": e['Employee Name'] || e.nama || '',
+            "Wilayah": e['Wilayah'] || e.wilayah || 'DSO Lampung',
+            "Cabang": e['Cabang'] || e.cabang || 'Lampung A Yani',
+            "Date": parseExcelDate(e['Date'] || '2025-05-30'),
+            "Date Clock In": parseExcelDate(e['Date Clock In'] || '2025-05-30'),
+            "Time Clock In": parseExcelTime(e['Time Clock In'] || (isLate ? '08:15' : '07:55')),
+            "Date Clock Out": parseExcelDate(e['Date Clock Out'] || '2025-05-30'),
+            "Time Clock Out": parseExcelTime(e['Time Clock Out'] || '17:05'),
+            "Durasi Kerja (Work Hours)": safeFloat(e['Durasi Kerja (Work Hours)'] !== undefined ? e['Durasi Kerja (Work Hours)'] : 8.5),
+            "Assigned Work Location": e['Assigned Work Location'] || 'YES',
+            "Need CICO Approval": e['Need CICO Approval'] || (isLate ? 'YES' : 'NO'),
+            "In Radius Clock in": e['In Radius Clock in'] || 'YES',
+            "Location Clock In": e['Location Clock In'] || '-5.4297,105.2625',
+            "In Radius Clock Out": e['In Radius Clock Out'] || 'YES',
+            "Location Clock Out": e['Location Clock Out'] || '-5.4297,105.2625',
+            "Clock In Source": e['Clock In Source'] || 'Mobile App GPS',
+            "Clock Out Source": e['Clock Out Source'] || 'Mobile App GPS',
+            "Keterangan": e['Keterangan'] || (isLate ? 'Terlambat Masuk' : 'Hadir Tepat Waktu')
+          };
+        });
+      }
+
+      // 3. Data_SS (21 Columns)
+      if (!payload.rawTables.Data_SS || !payload.rawTables.Data_SS.length) {
+        payload.rawTables.Data_SS = employees.map((e, idx) => {
+          const countSS = e.totalSS || 0;
+          const isApproved = countSS > 0;
+          return {
+            "No": safeString(idx + 1),
+            "Registrasi": e['Registrasi'] || `SS-${e.kodeBA || 'D660'}-${String(idx + 1).padStart(3, '0')}`,
+            "Nama": e['Nama'] || e.nama || '',
+            "NPK": safeString(e['NPK'] || e.npk),
+            "Wilayah": e['Wilayah'] || e.wilayah || 'DSO Lampung',
+            "Cabang": e['Cabang'] || e.cabang || 'Lampung A Yani',
+            "Kode BA": safeString(e['Kode BA'] || e.kodeBA || 'D660'),
+            "Bagian": e['Bagian'] || e.divisi || 'Operational',
+            "Tema": e['Tema'] || (isApproved ? 'Digitalisasi Format Checklist Inspeksi Kendaraan' : 'Optimalisasi Penataan Tool Workshop'),
+            "Fasilitator": e['Fasilitator'] || 'Kepala Cabang',
+            "NPK Fasilitator": safeString(e['NPK Fasilitator'] || '10001'),
+            "Diterima Bulan": e['Diterima Bulan'] || 'Mei-25',
+            "Kategori": e['Kategori'] || 'Quality & Productivity',
+            "No.Akun AstraPay": safeString(e['No.Akun AstraPay'] || `0812${String(e.npk || idx + 1000).padStart(7, '0')}`),
+            "Nama Akun": e['Nama Akun'] || e.nama || '',
+            "Status Reward": e['Status Reward'] || (isApproved ? 'Approved' : 'Pending'),
+            "Reward": e['Reward'] || (isApproved ? 'Rp 50.000' : '-'),
+            "No.Berita Acara": e['No.Berita Acara'] || `BA-SS/${e.kodeBA || 'D660'}/2025`,
+            "No.BPH": e['No.BPH'] || `BPH-05-2025-${String(idx + 1).padStart(2, '0')}`,
+            "Distribusi Reward": e['Distribusi Reward'] || (isApproved ? 'Transfer AstraPay' : '-'),
+            "Keterangan": e['Keterangan'] || (isApproved ? 'Terverifikasi Komite Kaizen' : 'Draft Pengajuan')
+          };
+        });
+      }
+
+      // 4. Data_QCC (29 Columns)
+      if (!payload.rawTables.Data_QCC || !payload.rawTables.Data_QCC.length) {
+        const baseQCC = qccs.length ? qccs : [
+          { namaTim: "Circle Kaizen Service DSO", cabang: "Lampung A Yani", kodeBA: "D660", departemen: "Service & Workshop", pdca: "Action", tema: "Peningkatan Kecepatan Service Berkala dari 60 Menit ke 45 Menit", leader: "Ahmad Fauzi" },
+          { namaTim: "Circle Speed-Up Sales", cabang: "Lampung S Hatta", kodeBA: "D661", departemen: "Sales & Delivery", pdca: "Check", tema: "Reduksi Waktu Serah Terima Unit Kendaraan Baru ke Konsumen", leader: "Bambang Irawan" },
+          { namaTim: "Circle Tertib Administrasi", cabang: "Bandarjaya", kodeBA: "D662", departemen: "Finance & Admin", pdca: "Do", tema: "Penerapan E-Archive Faktur Kendaraan Tanpa Kertas", leader: "Citra Lestari" },
+          { namaTim: "Circle Part & Inventory", cabang: "Kotabumi", kodeBA: "D663", departemen: "Logistik & Gudang", pdca: "Plan", tema: "Eliminasi Selisih Stok Fast Moving Parts di Gudang", leader: "Dedy Prasetya" },
+          { namaTim: "Circle Zero Defect Body Repair", cabang: "Lampung Timur", kodeBA: "D664", departemen: "Body & Paint", pdca: "Action", tema: "Pengurangan Debu Cat Finishing dengan Modifikasi Filter Booth", leader: "Eko Wahyudi" }
+        ];
+
+        payload.rawTables.Data_QCC = baseQCC.map((q, idx) => ({
+          "No": safeString(idx + 1),
+          "No.Registrasi": q['No.Registrasi'] || `QCC-${q.kodeBA || 'D660'}-0${idx + 1}`,
+          "Nama Tim": q['Nama Tim'] || q.namaTim || 'Circle Kaizen DSO',
+          "Wilayah/Divisi": q['Wilayah/Divisi'] || 'DSO Lampung',
+          "Cabang/Departemen": q['Cabang/Departemen'] || `${q.cabang || 'Lampung A Yani'} / ${q.departemen || 'Service'}`,
+          "Kode BA": safeString(q['Kode BA'] || q.kodeBA || 'D660'),
+          "Bagian": q['Bagian'] || q.departemen || 'Workshop',
+          "Fasilitator": q['Fasilitator'] || 'Kepala Cabang',
+          "Leader": q['Leader'] || q.leader || 'Ahmad Fauzi',
+          "Anggota 1": q['Anggota 1'] || 'Budi Santoso',
+          "Anggota 2": q['Anggota 2'] || 'Citra Dewi',
+          "Anggota 3": q['Anggota 3'] || 'Dedi Kurniawan',
+          "Anggota 4": q['Anggota 4'] || 'Eko Prasetyo',
+          "Anggota 5": q['Anggota 5'] || 'Fajar Pratama',
+          "Anggota 6": q['Anggota 6'] || 'Guntur Wijaya',
+          "Anggota 7": q['Anggota 7'] || 'Hendra Setiawan',
+          "Tema": q['Tema'] || q.tema || 'Peningkatan Kualitas dan Kecepatan Pelayanan Pelanggan',
+          "Kategori": q['Kategori'] || 'QCC Kategori Teknik',
+          "Status": q['Status'] || q.pdca || 'Action',
+          "No.Akun Astrapay QC Leader": safeString(q['No.Akun Astrapay QC Leader'] || '081298765432'),
+          "Pendaftaran diterima": parseExcelDate(q['Pendaftaran diterima'] || '2025-01-15'),
+          "L 1-8 diterima": parseExcelDate(q['L 1-8 diterima'] || '2025-05-10'),
+          "Langkah 1-3": q['Langkah 1-3'] || 'Selesai',
+          "Langkah 1-5": q['Langkah 1-5'] || 'Selesai',
+          "No.Berita Acara": q['No.Berita Acara'] || `BA-QCC/${q.kodeBA || 'D660'}/2025`,
+          "Status Reward": q['Status Reward'] || 'Terverifikasi',
+          "No.BPH": q['No.BPH'] || `BPH-QCC-2025-${idx + 1}`,
+          "Tahun Konvensi": safeString(q['Tahun Konvensi'] || '2025'),
+          "Kelengkapan Risalah Langkah 1-8": q['Kelengkapan Risalah Langkah 1-8'] || 'Lengkap (Format Baku ADM)'
+        }));
+      }
+
+      // 5. Data_SP (5 Columns)
+      if (!payload.rawTables.Data_SP || !payload.rawTables.Data_SP.length) {
+        payload.rawTables.Data_SP = employees.filter(e => !!e.spAktif).map(e => ({
+          "NPK": safeString(e['NPK'] || e.npk),
+          "Nama": e['Nama'] || e.nama,
+          "Kode BA": safeString(e['Kode BA'] || e.kodeBA || 'D660'),
+          "Tingkat SP": e['Tingkat SP'] || e.spAktif || 'SP 1',
+          "Alasan": e['Alasan'] || e.spAlasan || 'Ketidakhadiran berulang tanpa izin resmi tertulis'
+        }));
+      }
+    }
 
     /**
      * Helper Pemanggil Backend Google Apps Script via API Fetch
@@ -1979,7 +2716,12 @@
     function populateBranchDropdown(availableBranchList = null) {
       const selectDesktop = document.getElementById('branch-select');
       const selectMobile = document.getElementById('branch-select-mobile');
-      const selects = [selectDesktop, selectMobile].filter(Boolean);
+      const mkFilter = document.getElementById('mk-filter-cabang');
+      const absFilter = document.getElementById('abs-filter-cabang');
+      const ssFilter = document.getElementById('ss-filter-cabang');
+      const qccFilter = document.getElementById('qcc-filter-cabang');
+      const spFilter = document.getElementById('sp-filter-cabang');
+      const selects = [selectDesktop, selectMobile, mkFilter, absFilter, ssFilter, qccFilter, spFilter].filter(Boolean);
       if (!selects.length) return;
 
       const isAdmin = isUserAdmin(loggedInUser);
@@ -1998,13 +2740,13 @@
 
           const optAll = document.createElement('option');
           optAll.value = 'ALL';
-          optAll.textContent = 'Semua Cabang Wewenang';
+          optAll.textContent = (select === selectDesktop || select === selectMobile) ? 'Semua Cabang Wewenang' : 'Semua Cabang (BA)';
           select.appendChild(optAll);
 
           branchList.forEach(b => {
             const opt = document.createElement('option');
             opt.value = b.code;
-            opt.textContent = b.name;
+            opt.textContent = `${b.code} - ${b.name || b.fullName}`;
             select.appendChild(opt);
           });
 
@@ -2024,7 +2766,7 @@
 
           const opt = document.createElement('option');
           opt.value = userBranchCode;
-          opt.textContent = branchName;
+          opt.textContent = `${userBranchCode} - ${branchName}`;
           select.appendChild(opt);
           select.value = userBranchCode;
         }
@@ -2184,6 +2926,7 @@
         qccList: scopedQCC,
         summary: s
       };
+      initializeStandardTables(currentDashboardPayload, targetBranch);
 
       document.getElementById('card-total-karyawan').textContent = s.totalKaryawan || 0;
       document.getElementById('card-pct-sales').textContent = `${s.salesPct || 0}%`;
@@ -2290,82 +3033,145 @@
       filterMasterKaryawanTable();
     }
 
+    // Helper dynamic table header renderer with sticky first column
+    function renderTableHeader(headerRowId, columns, stickyFirst = true) {
+      const tr = document.getElementById(headerRowId);
+      if (!tr) return;
+      tr.innerHTML = columns.map((col, idx) => {
+        const isFirst = stickyFirst && idx === 0;
+        const stickyClass = isFirst ? 'sticky left-0 bg-slate-100 z-20 border-r border-slate-200 shadow-sm' : '';
+        return `<th class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${col}</th>`;
+      }).join('') + '<th class="py-2.5 px-4 text-center whitespace-nowrap">Aksi</th>';
+    }
+
+    // Helper formatting cell values based on canonical column type
+    function formatColumnCell(col, val) {
+      if (val === null || val === undefined || val === '') return '<span class="text-slate-300">-</span>';
+      const norm = normalizeHeaderName(col);
+      
+      if (norm === 'contract' || norm === 'status kontrak') {
+        const isTetap = String(val).toLowerCase().includes('tetap');
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isTetap ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${val}</span>`;
+      }
+      if (norm === 'status reward') {
+        const isApproved = String(val).toLowerCase().includes('approved') || String(val).toLowerCase().includes('terverifikasi');
+        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isApproved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${val}</span>`;
+      }
+      if (norm === 'status' || norm === 'pdca') {
+        const pdcaColors = {
+          'Plan': 'bg-blue-50 text-blue-700 border-blue-200',
+          'Do': 'bg-emerald-50 text-emerald-700 border-emerald-200',
+          'Check': 'bg-amber-50 text-amber-700 border-amber-200',
+          'Action': 'bg-purple-50 text-purple-700 border-purple-200'
+        };
+        const cls = pdcaColors[val] || 'bg-slate-100 text-slate-700 border-slate-200';
+        return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border ${cls}">${val}</span>`;
+      }
+      if (norm === 'tingkat sp') {
+        return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-red-100 text-red-700 border border-red-200">${val}</span>`;
+      }
+      if (norm.includes('astrapay')) {
+        return `<span class="font-mono text-slate-700 bg-amber-50/70 px-1.5 py-0.5 rounded border border-amber-200/60 text-[11px] font-semibold">${val}</span>`;
+      }
+      if (norm.includes('durasi kerja') || norm.includes('work hours')) {
+        return `<span class="font-bold text-slate-900">${val} Jam</span>`;
+      }
+      if (norm.includes('assigned work') || norm.includes('in radius') || norm.includes('need cico')) {
+        const isYes = String(val).toUpperCase() === 'YES';
+        return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isYes ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${val}</span>`;
+      }
+      if (norm === 'personnel no.' || norm === 'npk' || norm === 'no' || norm.includes('registrasi') || norm.includes('kode ba') || norm === 'business area') {
+        return `<span class="font-mono font-semibold">${val}</span>`;
+      }
+      return String(val);
+    }
+
+    // ----------------------------------------------------
+    // A. Master Karyawan (16 Kolom Presisi)
+    // ----------------------------------------------------
     function filterMasterKaryawanTable() {
-      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) return;
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Master_Karyawan || [];
       const q = (document.getElementById('mk-search-input')?.value || '').toLowerCase().trim();
-      const divFilter = document.getElementById('mk-filter-divisi')?.value || 'ALL';
+      const cabangFilter = document.getElementById('mk-filter-cabang')?.value || 'ALL';
+      const wilayahFilter = document.getElementById('mk-filter-wilayah')?.value || 'ALL';
       const contractFilter = document.getElementById('mk-filter-kontrak')?.value || 'ALL';
 
-      let list = currentDashboardPayload.employeeList;
+      let list = rawRows;
 
       if (q) {
         list = list.filter(e => 
-          (e.nama || '').toLowerCase().includes(q) || 
-          String(e.npk || '').toLowerCase().includes(q) ||
-          (e.jabatan || '').toLowerCase().includes(q) ||
-          (e.cabang || '').toLowerCase().includes(q)
+          String(e['Personnel no.'] || '').toLowerCase().includes(q) || 
+          String(e['Last name'] || '').toLowerCase().includes(q) ||
+          String(e['Job Title'] || '').toLowerCase().includes(q) ||
+          String(e['P.subarea'] || '').toLowerCase().includes(q) ||
+          String(e['Business area'] || '').toLowerCase().includes(q)
         );
       }
 
-      if (divFilter !== 'ALL') {
-        list = list.filter(e => {
-          const div = (e.divisi || '').toLowerCase();
-          if (divFilter === 'Sales') return div.includes('sales');
-          if (divFilter === 'Service') return div.includes('service') || div.includes('bengkel');
-          if (divFilter === 'Admin') return div.includes('admin') || div.includes('general') || div.includes('finance');
-          return true;
-        });
+      if (cabangFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Business area'] || '').toLowerCase() === cabangFilter.toLowerCase() ||
+          String(e['P.subarea'] || '').toLowerCase().includes(cabangFilter.toLowerCase())
+        );
+      }
+
+      if (wilayahFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Wilayah'] || '').toLowerCase().includes(wilayahFilter.toLowerCase())
+        );
       }
 
       if (contractFilter !== 'ALL') {
         list = list.filter(e => {
-          const k = (e.tipeKontrak || 'Tetap').toLowerCase();
+          const k = String(e['Contract'] || 'Tetap').toLowerCase();
           if (contractFilter === 'Tetap') return k.includes('tetap') || !k.includes('kontrak');
           if (contractFilter === 'Kontrak') return k.includes('kontrak') || k.includes('pkwt');
           return true;
         });
       }
 
+      const isFull = columnViewMode.mk === 'FULL';
+      const cols = isFull 
+        ? SCHEMAS.Master_Karyawan.columns 
+        : ["Personnel no.", "Last name", "P.subarea", "Wilayah", "Contract", "Job Title", "Name of organizational unit", "Business area"];
+
+      // Render Header
+      renderTableHeader('mk-table-header', cols, true);
+
       const tbody = document.getElementById('mk-table-body');
       if (document.getElementById('mk-row-count')) {
-        document.getElementById('mk-row-count').textContent = `Menampilkan ${list.length} dari ${currentDashboardPayload.employeeList.length} karyawan`;
+        document.getElementById('mk-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} karyawan (${cols.length} kolom)`;
       }
 
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">Tidak ada data karyawan yang sesuai filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center py-8 text-slate-400">Tidak ada data master karyawan yang sesuai filter.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = list.map(e => `
-        <tr class="hover:bg-slate-50 transition-colors">
-          <td class="py-3 px-4 font-mono font-bold text-slate-700">${e.npk}</td>
-          <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
-          <td class="py-3 px-4 text-slate-500">${e.cabang || '-'} <span class="text-[10px] text-slate-400 block">${e.kodeBA || ''}</span></td>
-          <td class="py-3 px-4">
-            <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
-            <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
-          </td>
-          <td class="py-3 px-4 text-center">
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${(e.tipeKontrak || 'Tetap').toLowerCase().includes('tetap') ? 'bg-blue-50 text-blue-700 border border-blue-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">
-              ${e.tipeKontrak || 'Tetap'}
-            </span>
-          </td>
-          <td class="py-3 px-4 text-center font-bold ${e.kehadiranPct < 95 ? 'text-amber-600' : 'text-emerald-600'}">${e.kehadiranPct || 0}%</td>
-          <td class="py-3 px-4 text-center font-bold text-amber-500">${e.totalSS || 0} Ide</td>
-          <td class="py-3 px-4 text-center font-bold">
-            ${e.spAktif ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-[10px]">${e.spAktif}</span>` : `<span class="text-emerald-600 text-xs font-bold"><i class="fa-solid fa-check"></i> Bersih</span>`}
-          </td>
-          <td class="py-3 px-4 text-center">
-            <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
-              Detail Kinerja
+      tbody.innerHTML = list.map(row => {
+        const cells = cols.map((col, idx) => {
+          const isFirst = idx === 0;
+          const stickyClass = isFirst 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            : 'text-slate-600';
+          const val = formatColumnCell(col, row[col]);
+          return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
+        }).join('');
+
+        const actionCell = `
+          <td class="py-2.5 px-4 text-center whitespace-nowrap">
+            <button onclick="openPBKModal('${row['Personnel no.']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
+              Detail
             </button>
           </td>
-        </tr>
-      `).join('');
+        `;
+        return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
+      }).join('');
     }
 
     // ----------------------------------------------------
-    // B. Absensi View & Filters
+    // B. Data Kehadiran / Absensi (19 Kolom Presisi)
     // ----------------------------------------------------
     function renderAbsensiView(data) {
       if (!data) return;
@@ -2388,73 +3194,86 @@
     }
 
     function filterAbsensiTable() {
-      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) return;
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Data_Kehadiran || [];
       const q = (document.getElementById('abs-search-input')?.value || '').toLowerCase().trim();
+      const cabangFilter = document.getElementById('abs-filter-cabang')?.value || 'ALL';
+      const wilayahFilter = document.getElementById('abs-filter-wilayah')?.value || 'ALL';
       const compFilter = document.getElementById('abs-filter-compliance')?.value || 'ALL';
 
-      let list = currentDashboardPayload.employeeList;
+      let list = rawRows;
 
       if (q) {
         list = list.filter(e => 
-          (e.nama || '').toLowerCase().includes(q) || 
-          String(e.npk || '').toLowerCase().includes(q) ||
-          (e.cabang || '').toLowerCase().includes(q)
+          String(e['NPK'] || '').toLowerCase().includes(q) || 
+          String(e['Employee Name'] || '').toLowerCase().includes(q) ||
+          String(e['Cabang'] || '').toLowerCase().includes(q) ||
+          String(e['Keterangan'] || '').toLowerCase().includes(q)
         );
       }
 
-      if (compFilter === 'PRIMA') {
-        list = list.filter(e => (e.kehadiranPct || 0) >= 95);
-      } else if (compFilter === 'WARNING') {
-        list = list.filter(e => (e.kehadiranPct || 0) < 95);
+      if (cabangFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Cabang'] || '').toLowerCase().includes(cabangFilter.toLowerCase())
+        );
       }
+
+      if (wilayahFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Wilayah'] || '').toLowerCase().includes(wilayahFilter.toLowerCase())
+        );
+      }
+
+      if (compFilter !== 'ALL') {
+        list = list.filter(e => {
+          const ket = String(e['Keterangan'] || '').toLowerCase();
+          if (compFilter === 'Hadir Tepat Waktu') return ket.includes('tepat') || ket.includes('hadir');
+          if (compFilter === 'Terlambat') return ket.includes('terlambat') || ket.includes('telat');
+          return true;
+        });
+      }
+
+      const isFull = columnViewMode.abs === 'FULL';
+      const cols = isFull 
+        ? SCHEMAS.Data_Kehadiran.columns 
+        : ["NPK", "Employee Name", "Cabang", "Date", "Time Clock In", "Time Clock Out", "Durasi Kerja (Work Hours)", "Keterangan"];
+
+      // Render Header
+      renderTableHeader('abs-table-header', cols, true);
 
       const tbody = document.getElementById('abs-table-body');
       if (document.getElementById('abs-row-count')) {
-        document.getElementById('abs-row-count').textContent = `Menampilkan ${list.length} dari ${currentDashboardPayload.employeeList.length} data absensi`;
+        document.getElementById('abs-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} data absensi (${cols.length} kolom)`;
       }
 
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Tidak ada data absensi yang sesuai filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center py-8 text-slate-400">Tidak ada data absensi yang sesuai filter.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = list.map(e => {
-        const pct = e.kehadiranPct || 0;
-        let statusBadge = '';
-        if (pct >= 95) {
-          statusBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Prima (≥95%)</span>`;
-        } else if (pct >= 90) {
-          statusBadge = `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Cukup (90-94%)</span>`;
-        } else {
-          statusBadge = `<span class="bg-red-50 text-red-700 border border-red-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Kurang (<90%)</span>`;
-        }
+      tbody.innerHTML = list.map(row => {
+        const cells = cols.map((col, idx) => {
+          const isFirst = idx === 0;
+          const stickyClass = isFirst 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            : 'text-slate-600';
+          const val = formatColumnCell(col, row[col]);
+          return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
+        }).join('');
 
-        const poinBobot = (pct * 0.4).toFixed(1);
-
-        return `
-          <tr class="hover:bg-slate-50 transition-colors">
-            <td class="py-3 px-4 font-mono font-bold text-slate-700">${e.npk}</td>
-            <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
-            <td class="py-3 px-4 text-slate-500">${e.cabang || '-'}</td>
-            <td class="py-3 px-4">
-              <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
-              <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
-            </td>
-            <td class="py-3 px-4 text-center font-black ${pct < 95 ? 'text-amber-600' : 'text-emerald-600'} text-sm">${pct}%</td>
-            <td class="py-3 px-4 text-center">${statusBadge}</td>
-            <td class="py-3 px-4 text-center font-bold text-slate-800">${poinBobot} <span class="text-[10px] text-slate-400">/ 40</span></td>
-            <td class="py-3 px-4 text-center">
-              <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
-                Tinjau Hadir
-              </button>
-            </td>
-          </tr>
+        const actionCell = `
+          <td class="py-2.5 px-4 text-center whitespace-nowrap">
+            <button onclick="openPBKModal('${row['NPK']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
+              Detail
+            </button>
+          </td>
         `;
+        return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
 
     // ----------------------------------------------------
-    // C. Sumbang Saran (SS) View & Filters
+    // C. Suggestion System / SS (21 Kolom Presisi)
     // ----------------------------------------------------
     function renderSSView(data) {
       if (!data) return;
@@ -2474,73 +3293,90 @@
     }
 
     function filterSSTable() {
-      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) return;
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Data_SS || [];
       const q = (document.getElementById('ss-search-input')?.value || '').toLowerCase().trim();
+      const cabangFilter = document.getElementById('ss-filter-cabang')?.value || 'ALL';
+      const wilayahFilter = document.getElementById('ss-filter-wilayah')?.value || 'ALL';
       const partFilter = document.getElementById('ss-filter-part')?.value || 'ALL';
 
-      let list = currentDashboardPayload.employeeList;
+      let list = rawRows;
 
       if (q) {
         list = list.filter(e => 
-          (e.nama || '').toLowerCase().includes(q) || 
-          String(e.npk || '').toLowerCase().includes(q) ||
-          (e.cabang || '').toLowerCase().includes(q)
+          String(e['No'] || '').toLowerCase().includes(q) || 
+          String(e['Registrasi'] || '').toLowerCase().includes(q) || 
+          String(e['Nama'] || '').toLowerCase().includes(q) || 
+          String(e['NPK'] || '').toLowerCase().includes(q) ||
+          String(e['Tema'] || '').toLowerCase().includes(q) ||
+          String(e['Cabang'] || '').toLowerCase().includes(q) ||
+          String(e['Kode BA'] || '').toLowerCase().includes(q)
         );
       }
 
-      if (partFilter === 'ACTIVE') {
-        list = list.filter(e => (e.totalSS || 0) >= 1);
-      } else if (partFilter === 'ZERO') {
-        list = list.filter(e => (e.totalSS || 0) === 0);
+      if (cabangFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Kode BA'] || '').toLowerCase() === cabangFilter.toLowerCase() ||
+          String(e['Cabang'] || '').toLowerCase().includes(cabangFilter.toLowerCase())
+        );
       }
+
+      if (wilayahFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Wilayah'] || '').toLowerCase().includes(wilayahFilter.toLowerCase())
+        );
+      }
+
+      if (partFilter !== 'ALL') {
+        list = list.filter(e => {
+          const st = String(e['Status Reward'] || '').toLowerCase();
+          if (partFilter === 'Approved') return st.includes('approved') || st.includes('terverifikasi');
+          if (partFilter === 'Pending') return st.includes('pending') || st.includes('review') || st.includes('draft');
+          return true;
+        });
+      }
+
+      const isFull = columnViewMode.ss === 'FULL';
+      const cols = isFull 
+        ? SCHEMAS.Data_SS.columns 
+        : ["No", "Registrasi", "Nama", "NPK", "Cabang", "Tema", "Status Reward", "Reward"];
+
+      // Render Header
+      renderTableHeader('ss-table-header', cols, true);
 
       const tbody = document.getElementById('ss-table-body');
       if (document.getElementById('ss-row-count')) {
-        document.getElementById('ss-row-count').textContent = `Menampilkan ${list.length} dari ${currentDashboardPayload.employeeList.length} karyawan`;
+        document.getElementById('ss-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} usulan SS (${cols.length} kolom)`;
       }
 
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Tidak ada data partisipasi SS yang sesuai filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center py-8 text-slate-400">Tidak ada data partisipasi SS yang sesuai filter.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = list.map(e => {
-        const countSS = e.totalSS || 0;
-        const poinSS = Math.min(countSS * 15, 30);
-        let partBadge = '';
+      tbody.innerHTML = list.map(row => {
+        const cells = cols.map((col, idx) => {
+          const isFirst = idx === 0;
+          const stickyClass = isFirst 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            : 'text-slate-600';
+          const val = formatColumnCell(col, row[col]);
+          return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
+        }).join('');
 
-        if (countSS >= 2) {
-          partBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-bold">Sangat Aktif (≥2 Ide)</span>`;
-        } else if (countSS === 1) {
-          partBadge = `<span class="bg-amber-50 text-amber-700 border border-amber-200 px-2 py-0.5 rounded-full text-[10px] font-bold">1 Ide Masuk</span>`;
-        } else {
-          partBadge = `<span class="bg-slate-100 text-slate-500 border border-slate-200 px-2 py-0.5 rounded-full text-[10px] font-medium">Belum Mengajukan</span>`;
-        }
-
-        return `
-          <tr class="hover:bg-slate-50 transition-colors">
-            <td class="py-3 px-4 font-mono font-bold text-slate-700">${e.npk}</td>
-            <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
-            <td class="py-3 px-4 text-slate-500">${e.cabang || '-'}</td>
-            <td class="py-3 px-4">
-              <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
-              <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
-            </td>
-            <td class="py-3 px-4 text-center font-black ${countSS > 0 ? 'text-amber-600' : 'text-slate-400'} text-sm">${countSS} Ide</td>
-            <td class="py-3 px-4 text-center">${partBadge}</td>
-            <td class="py-3 px-4 text-center font-bold text-slate-800">${poinSS} <span class="text-[10px] text-slate-400">/ 30 Pts</span></td>
-            <td class="py-3 px-4 text-center">
-              <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
-                Detail SS
-              </button>
-            </td>
-          </tr>
+        const actionCell = `
+          <td class="py-2.5 px-4 text-center whitespace-nowrap">
+            <button onclick="openPBKModal('${row['NPK']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
+              Detail
+            </button>
+          </td>
         `;
+        return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
 
     // ----------------------------------------------------
-    // D. Quality Control Circle (QCC) View & Filters
+    // D. Quality Control Circle / QCC (29 Kolom Presisi)
     // ----------------------------------------------------
     function renderQCCView(data) {
       if (!data) return;
@@ -2563,101 +3399,87 @@
     }
 
     function filterQCCTable() {
-      if (!currentDashboardPayload) return;
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Data_QCC || [];
       const q = (document.getElementById('qcc-search-input')?.value || '').toLowerCase().trim();
-      const s = currentDashboardPayload.summary || {};
-      
-      let qccItems = currentDashboardPayload.qccList;
-      if (!qccItems || !qccItems.length) {
-        const branchName = currentDashboardPayload.employeeList?.[0]?.cabang || "DSO Lampung";
-        qccItems = [
-          {
-            no: 1,
-            namaTim: s.bestQCC?.namaTim || "Circle Kaizen Service DSO",
-            cabang: branchName,
-            departemen: "Service & Workshop",
-            pdca: "Action",
-            skor: s.bestQCC?.skor || 92,
-            status: "Selesai / Implementasi Standar"
-          },
-          {
-            no: 2,
-            namaTim: "Circle Speed-Up Sales",
-            cabang: branchName,
-            departemen: "Sales & Delivery",
-            pdca: "Check",
-            skor: 88,
-            status: "Uji Coba Hasil Kaizen"
-          },
-          {
-            no: 3,
-            namaTim: "Circle Tertib Administrasi",
-            cabang: branchName,
-            departemen: "Administration & Finance",
-            pdca: "Do",
-            skor: 85,
-            status: "Pelaksanaan Rencana Solusi"
-          },
-          {
-            no: 4,
-            namaTim: "Circle Part & Inventory",
-            cabang: branchName,
-            departemen: "Logistik & Gudang",
-            pdca: "Plan",
-            skor: 80,
-            status: "Analisis Akar Masalah (Ishikawa)"
-          }
-        ];
-      }
+      const cabangFilter = document.getElementById('qcc-filter-cabang')?.value || 'ALL';
+      const wilayahFilter = document.getElementById('qcc-filter-wilayah')?.value || 'ALL';
+      const pdcaFilter = document.getElementById('qcc-filter-pdca')?.value || 'ALL';
+
+      let list = rawRows;
 
       if (q) {
-        qccItems = qccItems.filter(item => 
-          item.namaTim.toLowerCase().includes(q) || 
-          item.departemen.toLowerCase().includes(q) ||
-          item.cabang.toLowerCase().includes(q)
+        list = list.filter(e => 
+          String(e['No'] || '').toLowerCase().includes(q) ||
+          String(e['No.Registrasi'] || '').toLowerCase().includes(q) ||
+          String(e['Nama Tim'] || '').toLowerCase().includes(q) || 
+          String(e['Leader'] || '').toLowerCase().includes(q) ||
+          String(e['Tema'] || '').toLowerCase().includes(q) ||
+          String(e['Cabang/Departemen'] || '').toLowerCase().includes(q) ||
+          String(e['Kode BA'] || '').toLowerCase().includes(q)
         );
       }
 
-      const tbody = document.getElementById('qcc-table-body');
-      if (document.getElementById('qcc-row-count')) {
-        document.getElementById('qcc-row-count').textContent = `Menampilkan ${qccItems.length} circle gugus mutu`;
+      if (cabangFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Kode BA'] || '').toLowerCase() === cabangFilter.toLowerCase() ||
+          String(e['Cabang/Departemen'] || '').toLowerCase().includes(cabangFilter.toLowerCase())
+        );
       }
 
-      if (!qccItems.length) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-slate-400">Tidak ada circle QCC yang sesuai.</td></tr>`;
+      if (wilayahFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Wilayah/Divisi'] || '').toLowerCase().includes(wilayahFilter.toLowerCase())
+        );
+      }
+
+      if (pdcaFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Status'] || '').toLowerCase() === pdcaFilter.toLowerCase()
+        );
+      }
+
+      const isFull = columnViewMode.qcc === 'FULL';
+      const cols = isFull 
+        ? SCHEMAS.Data_QCC.columns 
+        : ["No", "No.Registrasi", "Nama Tim", "Cabang/Departemen", "Kode BA", "Leader", "Tema", "Status"];
+
+      // Render Header
+      renderTableHeader('qcc-table-header', cols, true);
+
+      const tbody = document.getElementById('qcc-table-body');
+      if (document.getElementById('qcc-row-count')) {
+        document.getElementById('qcc-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} circle QCC (${cols.length} kolom)`;
+      }
+
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center py-8 text-slate-400">Tidak ada circle QCC yang sesuai filter.</td></tr>`;
         return;
       }
 
-      const pdcaColors = {
-        'Plan': 'bg-blue-50 text-blue-700 border-blue-200',
-        'Do': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-        'Check': 'bg-amber-50 text-amber-700 border-amber-200',
-        'Action': 'bg-purple-50 text-purple-700 border-purple-200'
-      };
+      tbody.innerHTML = list.map(row => {
+        const cells = cols.map((col, idx) => {
+          const isFirst = idx === 0;
+          const stickyClass = isFirst 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            : 'text-slate-600';
+          const val = formatColumnCell(col, row[col]);
+          return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
+        }).join('');
 
-      tbody.innerHTML = qccItems.map((circle, idx) => `
-        <tr class="hover:bg-slate-50 transition-colors">
-          <td class="py-3 px-4 font-mono font-bold text-slate-400 text-center">${idx + 1}</td>
-          <td class="py-3 px-4 font-bold text-slate-900">${circle.namaTim}</td>
-          <td class="py-3 px-4 text-slate-600">${circle.cabang} <span class="text-[10px] text-slate-400 block">${circle.departemen}</span></td>
-          <td class="py-3 px-4 text-center">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border ${pdcaColors[circle.pdca] || 'bg-slate-100 text-slate-600'}">
-              ${circle.pdca}
-            </span>
-          </td>
-          <td class="py-3 px-4 text-center font-black text-slate-900">${circle.skor}</td>
-          <td class="py-3 px-4 text-center text-slate-600 font-medium">${circle.status}</td>
-          <td class="py-3 px-4 text-center">
-            <button onclick="showToast('Detail risalah circle ' + '${circle.namaTim}')" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-50 hover:text-purple-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
+        const actionCell = `
+          <td class="py-2.5 px-4 text-center whitespace-nowrap">
+            <button onclick="showToast('Risalah QCC: ' + '${row['Nama Tim']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-50 hover:text-purple-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
               Risalah
             </button>
           </td>
-        </tr>
-      `).join('');
+        `;
+        return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
+      }).join('');
     }
 
     // ----------------------------------------------------
-    // E. Disiplin & SP View & Filters
+    // E. Disiplin & SP (5 Kolom Presisi)
     // ----------------------------------------------------
     function renderSPView(data) {
       if (!data) return;
@@ -2694,70 +3516,76 @@
     }
 
     function filterSPTable() {
-      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) return;
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Data_SP || [];
       const q = (document.getElementById('sp-search-input')?.value || '').toLowerCase().trim();
+      const cabangFilter = document.getElementById('sp-filter-cabang')?.value || 'ALL';
       const statusFilter = document.getElementById('sp-filter-status')?.value || 'ALL';
 
-      let list = currentDashboardPayload.employeeList;
+      let list = rawRows;
 
       if (q) {
         list = list.filter(e => 
-          (e.nama || '').toLowerCase().includes(q) || 
-          String(e.npk || '').toLowerCase().includes(q) ||
-          (e.spAktif || '').toLowerCase().includes(q) ||
-          (e.spAlasan || '').toLowerCase().includes(q)
+          String(e['NPK'] || '').toLowerCase().includes(q) || 
+          String(e['Nama'] || '').toLowerCase().includes(q) ||
+          String(e['Kode BA'] || '').toLowerCase().includes(q) ||
+          String(e['Tingkat SP'] || '').toLowerCase().includes(q) ||
+          String(e['Alasan'] || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (cabangFilter !== 'ALL') {
+        list = list.filter(e => 
+          String(e['Kode BA'] || '').toLowerCase() === cabangFilter.toLowerCase()
         );
       }
 
       if (statusFilter === 'ACTIVE_ONLY') {
-        list = list.filter(e => !!e.spAktif);
+        list = list.filter(e => !!e['Tingkat SP'] && e['Tingkat SP'] !== '-');
       } else if (statusFilter === 'CLEAN_ONLY') {
-        list = list.filter(e => !e.spAktif);
+        list = list.filter(e => !e['Tingkat SP'] || e['Tingkat SP'] === '-');
+      } else if (statusFilter !== 'ALL') {
+        list = list.filter(e => String(e['Tingkat SP'] || '').toLowerCase() === statusFilter.toLowerCase());
       }
+
+      const cols = SCHEMAS.Data_SP.columns;
+
+      // Render Header
+      renderTableHeader('sp-table-header', cols, true);
 
       const tbody = document.getElementById('sp-table-body');
       if (document.getElementById('sp-row-count')) {
-        document.getElementById('sp-row-count').textContent = `Menampilkan ${list.length} catatan kedisiplinan`;
+        document.getElementById('sp-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} catatan kedisiplinan (${cols.length} kolom)`;
       }
 
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Tidak ada catatan sanksi yang sesuai filter.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center py-8 text-slate-400">Tidak ada catatan sanksi yang sesuai filter.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = list.map(e => {
-        const hasSP = !!e.spAktif;
-        let spBadge = '';
-        if (!hasSP) {
-          spBadge = `<span class="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded-full text-[10px] font-bold"><i class="fa-solid fa-circle-check"></i> Bersih</span>`;
-        } else {
-          spBadge = `<span class="bg-red-100 text-red-700 border border-red-200 px-2.5 py-0.5 rounded-full text-[10px] font-black">${e.spAktif}</span>`;
-        }
+      tbody.innerHTML = list.map(row => {
+        const cells = cols.map((col, idx) => {
+          const isFirst = idx === 0;
+          const stickyClass = isFirst 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            : 'text-slate-600';
+          const val = formatColumnCell(col, row[col]);
+          return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
+        }).join('');
 
-        return `
-          <tr class="hover:bg-slate-50 transition-colors ${hasSP ? 'bg-red-50/20' : ''}">
-            <td class="py-3 px-4 font-mono font-bold text-slate-700">${e.npk}</td>
-            <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
-            <td class="py-3 px-4 text-slate-500">${e.cabang || '-'}</td>
-            <td class="py-3 px-4">
-              <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
-              <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
-            </td>
-            <td class="py-3 px-4 text-center">${spBadge}</td>
-            <td class="py-3 px-4 text-slate-600 max-w-xs truncate">${hasSP ? (e.spAlasan || 'Tindakan indisipliner kerja') : '<span class="text-slate-400">-</span>'}</td>
-            <td class="py-3 px-4 text-center font-bold ${hasSP ? 'text-red-600' : 'text-slate-400'}">${hasSP ? '-15 Pts' : '0 Pts'}</td>
-            <td class="py-3 px-4 text-center">
-              <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 ${hasSP ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-slate-100 hover:bg-slate-200 text-slate-700'} font-bold rounded-lg text-[11px] transition">
-                ${hasSP ? 'Pembinaan' : 'Detail'}
-              </button>
-            </td>
-          </tr>
+        const actionCell = `
+          <td class="py-2.5 px-4 text-center whitespace-nowrap">
+            <button onclick="openPBKModal('${row['NPK']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
+              Detail
+            </button>
+          </td>
         `;
+        return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
 
     // ----------------------------------------------------
-    // F. Sidebar Readiness & Ekspor Modul
+    // F. Sidebar Readiness & Ekspor Modul Presisi
     // ----------------------------------------------------
     function updateSidebarReadiness(data) {
       if (!data) return;
@@ -2791,70 +3619,71 @@
       if (document.getElementById('ready-kaizen')) document.getElementById('ready-kaizen').textContent = hasKaizen ? 'OK' : 'KOSONG';
     }
 
-    function exportModuleTableToExcel(moduleName) {
-      if (!currentDashboardPayload || !currentDashboardPayload.employeeList) {
-        showToast("Tidak ada data untuk diekspor!");
+    // Ekspor 1 Modul ke Excel dengan Baris 1 Header 100% Identik Skema
+    function exportModuleTableToExcel(targetSheet) {
+      if (targetSheet === 'Data_Absensi') targetSheet = 'Data_Kehadiran';
+      const schema = SCHEMAS[targetSheet];
+      if (!schema) {
+        showToast(`Skema untuk '${targetSheet}' tidak ditemukan!`);
+        return;
+      }
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) {
+        showToast("Data tabel belum siap diekspor.");
         return;
       }
 
-      let exportData = [];
-      const list = currentDashboardPayload.employeeList;
-
-      if (moduleName === 'Master_Karyawan') {
-        exportData = list.map(e => ({
-          NPK: e.npk,
-          Nama: e.nama,
-          Cabang: e.cabang,
-          Kode_BA: e.kodeBA || '',
-          Divisi: e.divisi || '',
-          Jabatan: e.jabatan || '',
-          Status_Kontrak: e.tipeKontrak || 'Tetap',
-          Kehadiran_Pct: e.kehadiranPct || 0,
-          Total_SS: e.totalSS || 0,
-          Status_SP: e.spAktif || '-'
-        }));
-      } else if (moduleName === 'Data_Absensi') {
-        exportData = list.map(e => ({
-          NPK: e.npk,
-          Nama: e.nama,
-          Cabang: e.cabang,
-          Divisi: e.divisi || '',
-          Kehadiran_Pct: e.kehadiranPct || 0,
-          Status: (e.kehadiranPct >= 95) ? 'Prima' : 'Perlu Perhatian'
-        }));
-      } else if (moduleName === 'Data_SS') {
-        exportData = list.map(e => ({
-          NPK: e.npk,
-          Nama: e.nama,
-          Cabang: e.cabang,
-          Divisi: e.divisi || '',
-          Jumlah_Ide_SS: e.totalSS || 0,
-          Poin_Bobot_SS: Math.min((e.totalSS || 0) * 15, 30)
-        }));
-      } else if (moduleName === 'Data_SP') {
-        exportData = list.filter(e => !!e.spAktif).map(e => ({
-          NPK: e.npk,
-          Nama: e.nama,
-          Cabang: e.cabang,
-          Divisi: e.divisi || '',
-          Tingkat_SP: e.spAktif,
-          Alasan_Pelanggaran: e.spAlasan || 'Tindakan indisipliner'
-        }));
-        if (!exportData.length) {
-          showToast("Cabang bersih! Tidak ada catatan sanksi SP untuk diekspor.");
-          return;
-        }
-      } else if (moduleName === 'Data_QCC') {
-        exportData = currentDashboardPayload.qccList || [
-          { Tim: "Circle Kaizen DSO", Departemen: "Service", PDCA: "Action", Skor: 92 }
-        ];
+      const rawRows = currentDashboardPayload.rawTables[targetSheet] || [];
+      if (!rawRows.length) {
+        showToast(`Tidak ada data ${schema.title} untuk diekspor.`);
+        return;
       }
 
-      const ws = XLSX.utils.json_to_sheet(exportData);
+      // Pastikan baris pertama (Row 1) berisikan header kolom persis dengan urutan baku
+      const exportRows = rawRows.map(row => {
+        const obj = {};
+        schema.columns.forEach(col => {
+          obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
+        });
+        return obj;
+      });
+
+      const ws = XLSX.utils.json_to_sheet(exportRows, { header: schema.columns });
       const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, moduleName);
-      XLSX.writeFile(wb, `${moduleName}_${new Date().toISOString().slice(0,10)}.xlsx`);
-      showToast(`Berkas ${moduleName} berhasil diunduh!`);
+      XLSX.utils.book_append_sheet(wb, ws, schema.sheetName);
+      XLSX.writeFile(wb, `${schema.sheetName}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      showToast(`Berkas ${schema.sheetName}.xlsx berhasil diunduh (${exportRows.length} baris, ${schema.columns.length} kolom)!`);
+    }
+
+    // Ekspor Seluruh 5 Modul ke dalam Satu Workbook Terpadu (5-in-1 Sheet)
+    function exportAllSheetsToSingleWorkbook() {
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) {
+        showToast("Data database belum siap diekspor.");
+        return;
+      }
+
+      const wb = XLSX.utils.book_new();
+      const sheetKeys = ["Master_Karyawan", "Data_Kehadiran", "Data_SS", "Data_QCC", "Data_SP"];
+      let totalRows = 0;
+
+      sheetKeys.forEach(sheetKey => {
+        const schema = SCHEMAS[sheetKey];
+        const rawRows = currentDashboardPayload.rawTables[sheetKey] || [];
+        totalRows += rawRows.length;
+
+        const exportRows = rawRows.map(row => {
+          const obj = {};
+          schema.columns.forEach(col => {
+            obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
+          });
+          return obj;
+        });
+
+        const ws = XLSX.utils.json_to_sheet(exportRows.length ? exportRows : [{}], { header: schema.columns });
+        XLSX.utils.book_append_sheet(wb, ws, schema.sheetName);
+      });
+
+      XLSX.writeFile(wb, `D-PERFORM_Master_Database_${new Date().toISOString().slice(0, 10)}.xlsx`);
+      showToast(`Master Workbook 5-in-1 berhasil diunduh (${totalRows} total baris di 5 sheet)!`);
     }
 
     function renderEmployeeTable(list) {
@@ -2912,7 +3741,7 @@
       }).join('');
     }
 
-    // 5. Upload Excel
+    // 5. Upload Excel / CSV dengan Normalisasi Header & Safe Casting
     function prosesUploadExcelFrontend() {
       if (!isUserAdmin(loggedInUser)) {
         alert("Akses ditolak: Hanya Administrator HR yang memiliki izin mengunggah data Excel.");
@@ -2924,7 +3753,7 @@
       const btn = document.getElementById('btn-submit-upload');
 
       if (!fileInput.files.length) {
-        alert("Silakan pilih berkas Excel (.xlsx / .xls) terlebih dahulu!");
+        alert("Silakan pilih berkas Excel (.xlsx / .xls / .csv) terlebih dahulu!");
         return;
       }
 
@@ -2934,32 +3763,93 @@
       btn.disabled = true;
       btn.textContent = "Membaca berkas...";
       statusBox.className = "text-[11px] p-2.5 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 block";
-      statusBox.textContent = "Mengekstrak baris dan kolom file...";
+      statusBox.textContent = "Mengekstrak baris dan mencocokkan skema kolom...";
 
       reader.onload = async function(e) {
         try {
           const data = new Uint8Array(e.target.result);
           const workbook = XLSX.read(data, { type: 'array' });
-          const firstSheetName = workbook.SheetNames[0];
-          const worksheet = workbook.Sheets[firstSheetName];
-          const rows = XLSX.utils.sheet_to_json(worksheet, { header: 1, defval: "" });
+          
+          // Cari worksheet yang namanya sesuai atau gunakan worksheet pertama
+          let targetWorksheet = workbook.Sheets[targetSheet];
+          if (!targetWorksheet) {
+            const firstSheetName = workbook.SheetNames[0];
+            targetWorksheet = workbook.Sheets[firstSheetName];
+          }
 
-          if (rows.length <= 1) {
-            alert("Berkas Excel kosong atau hanya berisi header.");
+          const rawRows = XLSX.utils.sheet_to_json(targetWorksheet, { header: 1, defval: "" });
+          if (rawRows.length <= 1) {
+            alert("Berkas Excel kosong atau hanya berisi baris header.");
             btn.disabled = false;
             btn.textContent = "Proses & Simpan";
             return;
           }
 
-          const fileHeaders = rows[0];
-          const fileDataRows = rows.slice(1);
+          const schema = SCHEMAS[targetSheet];
+          if (!schema) {
+            throw new Error(`Skema konfigurasi untuk target '${targetSheet}' tidak ditemukan.`);
+          }
 
-          statusBox.textContent = "Menyimpan ke database Google Sheets...";
+          // 1. Normalisasi nama header dari berkas yang diunggah (bersihkan newline \n dan whitespace)
+          const uploadedHeaders = rawRows[0].map(h => normalizeHeaderName(h));
+          const canonicalColumns = schema.columns;
+          const colIndexMapping = {};
+
+          canonicalColumns.forEach(canonicalCol => {
+            const normCanonical = normalizeHeaderName(canonicalCol);
+            let matchIdx = uploadedHeaders.findIndex(uh => uh === normCanonical);
+            if (matchIdx === -1 && schema.aliases && schema.aliases[normCanonical]) {
+              const aliases = schema.aliases[normCanonical];
+              matchIdx = uploadedHeaders.findIndex(uh => aliases.includes(uh));
+            }
+            if (matchIdx === -1) {
+              matchIdx = uploadedHeaders.findIndex(uh => uh.includes(normCanonical) || normCanonical.includes(uh));
+            }
+            colIndexMapping[canonicalCol] = matchIdx;
+          });
+
+          // 2. Parsing baris data dengan Safe Typecasting
+          const parsedObjects = [];
+          for (let i = 1; i < rawRows.length; i++) {
+            const rowData = rawRows[i];
+            if (!rowData || rowData.every(cell => cell === "" || cell === null || cell === undefined)) continue;
+
+            const rowObj = {};
+            canonicalColumns.forEach(col => {
+              const colIdx = colIndexMapping[col];
+              const cellVal = (colIdx !== -1 && colIdx !== undefined) ? rowData[colIdx] : "";
+              rowObj[col] = castSchemaValue(col, cellVal, i);
+            });
+            parsedObjects.push(rowObj);
+          }
+
+          if (!parsedObjects.length) {
+            alert("Tidak ada baris data valid yang berhasil diekstraksi dari file.");
+            btn.disabled = false;
+            btn.textContent = "Proses & Simpan";
+            return;
+          }
+
+          // 3. Sinkronisasi data ke state tabel frontend seketika
+          if (!currentDashboardPayload.rawTables) currentDashboardPayload.rawTables = {};
+          currentDashboardPayload.rawTables[targetSheet] = parsedObjects;
+
+          // Perbarui tabel tampilan modul yang relevan seketika
+          if (targetSheet === 'Master_Karyawan') filterMasterKaryawanTable();
+          else if (targetSheet === 'Data_Kehadiran') filterAbsensiTable();
+          else if (targetSheet === 'Data_SS') filterSSTable();
+          else if (targetSheet === 'Data_QCC') filterQCCTable();
+          else if (targetSheet === 'Data_SP') filterSPTable();
+
+          statusBox.textContent = `Menyimpan ${parsedObjects.length} baris terstandarisasi ke Google Sheets...`;
+
+          // Format array 2D terstandarisasi (Row 1 = exact canonical headers)
+          const formattedDataRows = parsedObjects.map(obj => canonicalColumns.map(col => obj[col]));
 
           const res = await callBackendAPI("IMPORT_EXCEL", {
-            targetSheet: targetSheet,
-            headers: fileHeaders,
-            dataRows: fileDataRows
+            targetSheet: schema.sheetName,
+            headers: canonicalColumns,
+            dataRows: formattedDataRows
           });
 
           btn.disabled = false;
@@ -2967,15 +3857,19 @@
 
           if (res.success) {
             statusBox.className = "text-[11px] p-2.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 block";
-            statusBox.textContent = "✅ " + res.message;
+            statusBox.textContent = `✅ Berhasil mengimpor ${parsedObjects.length} baris data ke ${schema.sheetName}!`;
             fileInput.value = "";
             setTimeout(() => {
               closeModal('modal-upload');
               loadBackendDashboardData();
-            }, 1500);
+            }, 1200);
           } else {
-            statusBox.className = "text-[11px] p-2.5 rounded-xl bg-red-50 text-red-700 border border-red-200 block";
-            statusBox.textContent = "❌ " + res.message;
+            // Jika backend offline/mock, beri tahu user bahwa sesi lokal tetap sukses diperbarui
+            statusBox.className = "text-[11px] p-2.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 block";
+            statusBox.textContent = `⚠️ Tersimpan di tabel lokal (${parsedObjects.length} baris). Status backend: ${res.message}`;
+            setTimeout(() => {
+              closeModal('modal-upload');
+            }, 2500);
           }
 
         } catch (err) {
