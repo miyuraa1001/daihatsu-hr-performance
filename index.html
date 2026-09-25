@@ -1675,6 +1675,69 @@
     </div>
   </div>
 
+  <!-- MODAL: EDIT ROW DATA (KHUSUS ADMIN) -->
+  <div id="modal-edit-row" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+    <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-2xl shadow-2xl border border-slate-100 relative my-auto max-h-[90vh] flex flex-col">
+      <button onclick="closeModal('modal-edit-row')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100 flex-shrink-0">
+        <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg border border-amber-200 flex-shrink-0">
+          <i class="fa-solid fa-pen-to-square"></i>
+        </div>
+        <div class="min-w-0">
+          <h3 class="text-sm sm:text-base font-extrabold text-slate-900" id="modal-edit-title">Edit Baris Data</h3>
+          <p class="text-[11px] text-slate-500 font-medium truncate" id="modal-edit-subtitle">Perubahan akan langsung tersimpan dan disinkronkan ke basis data.</p>
+        </div>
+      </div>
+
+      <!-- Form Inputs Container (Scrollable) -->
+      <form id="form-edit-row" onsubmit="handleSaveRowEdit(event)" class="overflow-y-auto pr-1 space-y-3 flex-1">
+        <input type="hidden" id="edit-row-sheet">
+        <input type="hidden" id="edit-row-index">
+        <div id="edit-row-fields-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+          <!-- Dynamically populated fields -->
+        </div>
+      </form>
+
+      <!-- Action Buttons -->
+      <div class="flex items-center justify-end gap-2.5 pt-4 mt-4 border-t border-slate-100 flex-shrink-0">
+        <button type="button" onclick="closeModal('modal-edit-row')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+          Batal
+        </button>
+        <button type="button" onclick="submitEditRowForm()" id="btn-save-edit-row" class="px-5 py-2.5 bg-[#E60012] hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i>
+          <span>Simpan Perubahan</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: KONFIRMASI HAPUS ROW (KHUSUS ADMIN) -->
+  <div id="modal-delete-row" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl p-6 w-full max-w-sm shadow-2xl border border-slate-100 text-center relative">
+      <div class="w-14 h-14 bg-red-100/70 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl border border-red-200">
+        <i class="fa-solid fa-trash-can"></i>
+      </div>
+      <h3 class="text-base font-extrabold text-slate-900 mb-1" id="modal-delete-title">Hapus Baris Data?</h3>
+      <p class="text-xs text-slate-500 mb-5 leading-relaxed" id="modal-delete-desc">
+        Apakah Anda yakin ingin menghapus data ini? Tindakan ini akan menghapus data dari sistem dan memperbarui Google Sheets secara permanen.
+      </p>
+      <input type="hidden" id="delete-row-sheet">
+      <input type="hidden" id="delete-row-index">
+      <div class="flex gap-2.5">
+        <button type="button" onclick="closeModal('modal-delete-row')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+          Batal
+        </button>
+        <button type="button" onclick="handleConfirmDeleteRow()" id="btn-confirm-delete-row" class="flex-1 py-2.5 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-trash-can text-[11px]"></i>
+          <span>Ya, Hapus</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- TOAST CONTAINER -->
   <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-3 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none text-xs">
     <i class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
@@ -3311,6 +3374,361 @@
       return String(val);
     }
 
+    // ========================================================
+    // SINKRONISASI DATABASE & CRUD ROW DATA (KHUSUS ADMIN)
+    // ========================================================
+    async function syncSheetToBackend(targetSheet) {
+      const schema = SCHEMAS[targetSheet];
+      if (!schema) return { success: false, message: 'Skema tabel tidak ditemukan.' };
+      const rawRows = (currentDashboardPayload?.rawTables && currentDashboardPayload.rawTables[targetSheet]) || [];
+      const canonicalColumns = schema.columns;
+      const formattedDataRows = rawRows.map(obj => canonicalColumns.map(col => (obj[col] !== undefined && obj[col] !== null) ? obj[col] : ''));
+
+      return await callBackendAPI("IMPORT_EXCEL", {
+        targetSheet: schema.sheetName,
+        headers: canonicalColumns,
+        dataRows: formattedDataRows
+      });
+    }
+
+    function renderRowActionCell(sheetName, rowIndex, row) {
+      const isAdmin = isUserAdmin(loggedInUser);
+
+      let detailBtn = '';
+      if (sheetName === 'Data_QCC') {
+        const rawTeam = String(row['Nama Tim'] || 'Tim QCC');
+        const safeTeam = rawTeam.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        detailBtn = `
+          <button type="button" onclick="showToast('Risalah QCC: ' + '${safeTeam}')" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-50 hover:text-purple-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
+            Risalah
+          </button>
+        `;
+      } else {
+        const npkVal = String(row['Personnel no.'] || row['NPK'] || '').replace(/'/g, "\\'");
+        detailBtn = `
+          <button type="button" onclick="openPBKModal('${npkVal}')" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
+            Detail
+          </button>
+        `;
+      }
+
+      if (!isAdmin) {
+        return `<td class="py-2.5 px-4 text-center whitespace-nowrap">${detailBtn}</td>`;
+      }
+
+      return `
+        <td class="py-2.5 px-4 text-center whitespace-nowrap">
+          <div class="inline-flex items-center gap-1.5 justify-center">
+            ${detailBtn}
+            <button type="button" onclick="openEditRowModal('${sheetName}', ${rowIndex})" title="Edit Baris (Admin)" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-lg text-[11px] border border-amber-200 transition inline-flex items-center gap-1 shadow-xs">
+              <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+              <span>Edit</span>
+            </button>
+            <button type="button" onclick="openDeleteRowModal('${sheetName}', ${rowIndex})" title="Hapus Baris (Admin)" class="px-2 py-1 bg-red-50 hover:bg-red-100 text-red-700 font-bold rounded-lg text-[11px] border border-red-200 transition inline-flex items-center gap-1 shadow-xs">
+              <i class="fa-solid fa-trash text-[10px]"></i>
+              <span>Hapus</span>
+            </button>
+          </div>
+        </td>
+      `;
+    }
+
+    function openEditRowModal(sheetName, rowIndex) {
+      if (!isUserAdmin(loggedInUser)) {
+        showToast("Akses ditolak: Hanya Admin yang memiliki wewenang mengedit data.");
+        return;
+      }
+      const schema = SCHEMAS[sheetName];
+      if (!schema || !currentDashboardPayload?.rawTables?.[sheetName]) return;
+      const row = currentDashboardPayload.rawTables[sheetName][rowIndex];
+      if (!row) return;
+
+      document.getElementById('edit-row-sheet').value = sheetName;
+      document.getElementById('edit-row-index').value = rowIndex;
+
+      const titleEl = document.getElementById('modal-edit-title');
+      const subtitleEl = document.getElementById('modal-edit-subtitle');
+      if (titleEl) titleEl.textContent = `Edit Baris: ${schema.title}`;
+      if (subtitleEl) {
+        const ident = row['Personnel no.'] || row['NPK'] || row['No'] || `Baris ke-${rowIndex + 1}`;
+        const name = row['Last name'] || row['Nama'] || row['Nama Tim'] || row['Employee Name'] || '';
+        subtitleEl.textContent = `${ident}${name ? ' • ' + name : ''} (Perubahan akan langsung disinkronkan ke basis data)`;
+      }
+
+      const container = document.getElementById('edit-row-fields-grid');
+      container.innerHTML = schema.columns.map(col => {
+        const val = (row[col] !== undefined && row[col] !== null) ? String(row[col]) : '';
+        const norm = normalizeHeaderName(col);
+        
+        let inputHtml = '';
+        if (norm === 'contract') {
+          const isTetap = isTetapContract(val);
+          inputHtml = `
+            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
+              <option value="Tetap" ${isTetap ? 'selected' : ''}>Tetap</option>
+              <option value="PKWT" ${!isTetap ? 'selected' : ''}>PKWT (Kontrak)</option>
+            </select>
+          `;
+        } else if (norm === 'gender text') {
+          const isMale = val.toLowerCase().includes('male') || val.toLowerCase().includes('laki');
+          inputHtml = `
+            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
+              <option value="Male" ${isMale ? 'selected' : ''}>Male</option>
+              <option value="Female" ${!isMale ? 'selected' : ''}>Female</option>
+            </select>
+          `;
+        } else if (norm === 'tingkat sp') {
+          inputHtml = `
+            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
+              <option value="-" ${(!val || val === '-') ? 'selected' : ''}>- (Tidak Ada SP)</option>
+              <option value="Teguran Lisan" ${val === 'Teguran Lisan' ? 'selected' : ''}>Teguran Lisan</option>
+              <option value="SP 1" ${val === 'SP 1' ? 'selected' : ''}>SP 1</option>
+              <option value="SP 2" ${val === 'SP 2' ? 'selected' : ''}>SP 2</option>
+              <option value="SP 3" ${val === 'SP 3' ? 'selected' : ''}>SP 3</option>
+              <option value="SPPT" ${val === 'SPPT' ? 'selected' : ''}>SPPT</option>
+            </select>
+          `;
+        } else if (norm === 'status' && sheetName === 'Data_QCC') {
+          inputHtml = `
+            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
+              <option value="Plan" ${val.toLowerCase() === 'plan' ? 'selected' : ''}>Plan</option>
+              <option value="Do" ${val.toLowerCase() === 'do' ? 'selected' : ''}>Do</option>
+              <option value="Check" ${val.toLowerCase() === 'check' ? 'selected' : ''}>Check</option>
+              <option value="Action" ${val.toLowerCase() === 'action' ? 'selected' : ''}>Action</option>
+            </select>
+          `;
+        } else if (norm.includes('date') || norm === 'd.o.birth' || norm.includes('tgl') || norm.includes('tanggal')) {
+          inputHtml = `<input type="date" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+        } else if (norm.includes('time') || norm.includes('jam')) {
+          inputHtml = `<input type="time" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+        } else if (norm.includes('durasi kerja') || norm.includes('work hours')) {
+          inputHtml = `<input type="number" step="0.1" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+        } else {
+          const escapedVal = val.replace(/"/g, '&quot;');
+          inputHtml = `<input type="text" name="${col}" value="${escapedVal}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+        }
+
+        return `
+          <div>
+            <label class="block text-[11px] font-bold text-slate-700 mb-1">${col}</label>
+            ${inputHtml}
+          </div>
+        `;
+      }).join('');
+
+      document.getElementById('modal-edit-row').classList.remove('hidden');
+    }
+
+    function submitEditRowForm() {
+      const form = document.getElementById('form-edit-row');
+      if (form) {
+        if (typeof form.requestSubmit === 'function') {
+          form.requestSubmit();
+        } else {
+          form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        }
+      }
+    }
+
+    async function handleSaveRowEdit(event) {
+      if (event) event.preventDefault();
+      if (!isUserAdmin(loggedInUser)) {
+        showToast("Akses ditolak: Hanya Admin yang dapat menyimpan perubahan.");
+        return;
+      }
+
+      const sheetName = document.getElementById('edit-row-sheet').value;
+      const rowIndex = parseInt(document.getElementById('edit-row-index').value, 10);
+      const schema = SCHEMAS[sheetName];
+      if (!schema || !currentDashboardPayload?.rawTables?.[sheetName]) return;
+      const targetRow = currentDashboardPayload.rawTables[sheetName][rowIndex];
+      if (!targetRow) return;
+
+      const btnSave = document.getElementById('btn-save-edit-row');
+      const originalBtnHtml = btnSave ? btnSave.innerHTML : '';
+      if (btnSave) {
+        btnSave.disabled = true;
+        btnSave.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i><span>Menyimpan...</span>`;
+      }
+
+      const form = document.getElementById('form-edit-row');
+      const formData = new FormData(form);
+
+      schema.columns.forEach(col => {
+        const val = formData.get(col);
+        if (val !== null && val !== undefined) {
+          targetRow[col] = castSchemaValue(col, val, rowIndex + 1);
+        }
+      });
+
+      // Sinkronkan ke modul terkait
+      if (sheetName === 'Master_Karyawan') {
+        const npk = safeString(targetRow['Personnel no.']);
+        const emp = (currentDashboardPayload.employeeList || []).find(e => safeString(e.npk || e['Personnel no.']) === npk);
+        if (emp) {
+          emp.nama = targetRow['Last name'] || emp.nama;
+          emp.cabang = targetRow['P.subarea'] || emp.cabang;
+          emp.wilayah = targetRow['Wilayah'] || emp.wilayah;
+          emp.kodeBA = safeString(targetRow['Business area'] || emp.kodeBA);
+          emp.divisi = targetRow['Name'] || emp.divisi;
+          emp.jabatan = targetRow['Job Title'] || emp.jabatan;
+          emp.tipeKontrak = targetRow['Contract'] || emp.tipeKontrak;
+          emp['Contract'] = targetRow['Contract'];
+          emp.joinDate = targetRow['Date'] || emp.joinDate;
+          emp.tglLahir = targetRow['D.o.birth'] || emp.tglLahir;
+          emp.gender = targetRow['Gender text'] || emp.gender;
+          emp.agama = targetRow['Religious denomination'] || emp.agama;
+          emp.psGroup = targetRow['PS group'] || emp.psGroup;
+          emp.lvl = targetRow['Lvl'] || emp.lvl;
+          emp.stext = targetRow['P0001-STEXT'] || emp.stext;
+        }
+        currentDashboardPayload.summary = computeBranchSummary(
+          currentDashboardPayload.employeeList,
+          currentDashboardPayload.qccList,
+          currentDashboardPayload.summary
+        );
+        renderMasterKaryawanView(currentDashboardPayload);
+      } else if (sheetName === 'Data_Kehadiran') {
+        renderAbsensiView(currentDashboardPayload);
+      } else if (sheetName === 'Data_SS') {
+        renderSSView(currentDashboardPayload);
+      } else if (sheetName === 'Data_QCC') {
+        renderQCCView(currentDashboardPayload);
+      } else if (sheetName === 'Data_SP') {
+        const npk = safeString(targetRow['NPK']);
+        const emp = (currentDashboardPayload.employeeList || []).find(e => safeString(e.npk || e['Personnel no.']) === npk);
+        if (emp) {
+          emp.spAktif = (targetRow['Tingkat SP'] && targetRow['Tingkat SP'] !== '-') ? targetRow['Tingkat SP'] : '';
+          emp.spAlasan = targetRow['Alasan'] || '';
+        }
+        currentDashboardPayload.summary = computeBranchSummary(
+          currentDashboardPayload.employeeList,
+          currentDashboardPayload.qccList,
+          currentDashboardPayload.summary
+        );
+        renderSPView(currentDashboardPayload);
+      }
+
+      closeModal('modal-edit-row');
+      showToast("Menyinkronkan perubahan ke basis data Google Sheets...");
+
+      try {
+        const res = await syncSheetToBackend(sheetName);
+        if (res.success) {
+          showToast(`✅ Perubahan ${schema.title} berhasil disinkronkan ke Google Sheets!`);
+        } else {
+          showToast(`⚠️ Data diperbarui di aplikasi, status sync: ${res.message || 'Offline'}`);
+        }
+      } catch (err) {
+        showToast(`⚠️ Data diperbarui di aplikasi, gagal sinkron: ${err.message}`);
+      } finally {
+        if (btnSave) {
+          btnSave.disabled = false;
+          btnSave.innerHTML = originalBtnHtml;
+        }
+      }
+    }
+
+    function openDeleteRowModal(sheetName, rowIndex) {
+      if (!isUserAdmin(loggedInUser)) {
+        showToast("Akses ditolak: Hanya Admin yang dapat menghapus data.");
+        return;
+      }
+      const schema = SCHEMAS[sheetName];
+      if (!schema || !currentDashboardPayload?.rawTables?.[sheetName]) return;
+      const row = currentDashboardPayload.rawTables[sheetName][rowIndex];
+      if (!row) return;
+
+      document.getElementById('delete-row-sheet').value = sheetName;
+      document.getElementById('delete-row-index').value = rowIndex;
+
+      const descEl = document.getElementById('modal-delete-desc');
+      const ident = row['Personnel no.'] || row['NPK'] || row['No'] || `Baris ke-${rowIndex + 1}`;
+      const name = row['Last name'] || row['Nama'] || row['Nama Tim'] || row['Employee Name'] || '';
+      if (descEl) {
+        descEl.textContent = `Apakah Anda yakin ingin menghapus data "${ident}${name ? ' - ' + name : ''}" dari ${schema.title}? Tindakan ini akan menghapus data dari aplikasi dan disinkronkan ke Google Sheets secara permanen.`;
+      }
+
+      document.getElementById('modal-delete-row').classList.remove('hidden');
+    }
+
+    async function handleConfirmDeleteRow() {
+      if (!isUserAdmin(loggedInUser)) {
+        showToast("Akses ditolak: Hanya Admin yang dapat menghapus data.");
+        return;
+      }
+
+      const sheetName = document.getElementById('delete-row-sheet').value;
+      const rowIndex = parseInt(document.getElementById('delete-row-index').value, 10);
+      const schema = SCHEMAS[sheetName];
+      if (!schema || !currentDashboardPayload?.rawTables?.[sheetName]) return;
+      const targetRow = currentDashboardPayload.rawTables[sheetName][rowIndex];
+      if (!targetRow) return;
+
+      const btnDelete = document.getElementById('btn-confirm-delete-row');
+      const originalBtnHtml = btnDelete ? btnDelete.innerHTML : '';
+      if (btnDelete) {
+        btnDelete.disabled = true;
+        btnDelete.innerHTML = `<i class="fa-solid fa-circle-notch animate-spin"></i><span>Menghapus...</span>`;
+      }
+
+      const npk = safeString(targetRow['Personnel no.'] || targetRow['NPK']);
+
+      // Hapus dari rawTables
+      currentDashboardPayload.rawTables[sheetName].splice(rowIndex, 1);
+
+      if (sheetName === 'Master_Karyawan') {
+        if (npk && currentDashboardPayload.employeeList) {
+          currentDashboardPayload.employeeList = currentDashboardPayload.employeeList.filter(e => safeString(e.npk || e['Personnel no.']) !== npk);
+        }
+        currentDashboardPayload.summary = computeBranchSummary(
+          currentDashboardPayload.employeeList,
+          currentDashboardPayload.qccList,
+          currentDashboardPayload.summary
+        );
+        renderMasterKaryawanView(currentDashboardPayload);
+      } else if (sheetName === 'Data_Kehadiran') {
+        renderAbsensiView(currentDashboardPayload);
+      } else if (sheetName === 'Data_SS') {
+        renderSSView(currentDashboardPayload);
+      } else if (sheetName === 'Data_QCC') {
+        renderQCCView(currentDashboardPayload);
+      } else if (sheetName === 'Data_SP') {
+        if (npk && currentDashboardPayload.employeeList) {
+          const emp = currentDashboardPayload.employeeList.find(e => safeString(e.npk || e['Personnel no.']) === npk);
+          if (emp) {
+            emp.spAktif = '';
+            emp.spAlasan = '';
+          }
+        }
+        currentDashboardPayload.summary = computeBranchSummary(
+          currentDashboardPayload.employeeList,
+          currentDashboardPayload.qccList,
+          currentDashboardPayload.summary
+        );
+        renderSPView(currentDashboardPayload);
+      }
+
+      closeModal('modal-delete-row');
+      showToast("Menyinkronkan penghapusan data ke basis data Google Sheets...");
+
+      try {
+        const res = await syncSheetToBackend(sheetName);
+        if (res.success) {
+          showToast(`✅ Data berhasil dihapus dan disinkronkan ke Google Sheets!`);
+        } else {
+          showToast(`⚠️ Data terhapus di aplikasi, status sync: ${res.message || 'Offline'}`);
+        }
+      } catch (err) {
+        showToast(`⚠️ Data terhapus di aplikasi, gagal sinkron: ${err.message}`);
+      } finally {
+        if (btnDelete) {
+          btnDelete.disabled = false;
+          btnDelete.innerHTML = originalBtnHtml;
+        }
+      }
+    }
+
     // ----------------------------------------------------
     // A. Master Karyawan (16 Kolom Presisi)
     // ----------------------------------------------------
@@ -3369,13 +3787,8 @@
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
-        const actionCell = `
-          <td class="py-2.5 px-4 text-center whitespace-nowrap">
-            <button onclick="openPBKModal('${row['Personnel no.']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
-              Detail
-            </button>
-          </td>
-        `;
+        const realIdx = rawRows.indexOf(row);
+        const actionCell = renderRowActionCell('Master_Karyawan', realIdx, row);
         return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
@@ -3457,13 +3870,8 @@
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
-        const actionCell = `
-          <td class="py-2.5 px-4 text-center whitespace-nowrap">
-            <button onclick="openPBKModal('${row['NPK']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
-              Detail
-            </button>
-          </td>
-        `;
+        const realIdx = rawRows.indexOf(row);
+        const actionCell = renderRowActionCell('Data_Kehadiran', realIdx, row);
         return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
@@ -3545,13 +3953,8 @@
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
-        const actionCell = `
-          <td class="py-2.5 px-4 text-center whitespace-nowrap">
-            <button onclick="openPBKModal('${row['NPK']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-amber-50 hover:text-amber-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
-              Detail
-            </button>
-          </td>
-        `;
+        const realIdx = rawRows.indexOf(row);
+        const actionCell = renderRowActionCell('Data_SS', realIdx, row);
         return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
@@ -3633,13 +4036,8 @@
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
-        const actionCell = `
-          <td class="py-2.5 px-4 text-center whitespace-nowrap">
-            <button onclick="showToast('Risalah QCC: ' + '${row['Nama Tim']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-50 hover:text-purple-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
-              Risalah
-            </button>
-          </td>
-        `;
+        const realIdx = rawRows.indexOf(row);
+        const actionCell = renderRowActionCell('Data_QCC', realIdx, row);
         return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
@@ -3733,13 +4131,8 @@
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
-        const actionCell = `
-          <td class="py-2.5 px-4 text-center whitespace-nowrap">
-            <button onclick="openPBKModal('${row['NPK']}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
-              Detail
-            </button>
-          </td>
-        `;
+        const realIdx = rawRows.indexOf(row);
+        const actionCell = renderRowActionCell('Data_SP', realIdx, row);
         return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
