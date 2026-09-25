@@ -160,6 +160,17 @@
           <span class="text-[10px] text-slate-400 mt-1 block">Gunakan 6 digit tanggal lahir (DDMMYY) untuk Kacab/Karyawan atau password Admin</span>
         </div>
 
+        <div class="flex items-center justify-between pt-0.5">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input 
+              type="checkbox" 
+              id="remember-me" 
+              class="w-4 h-4 rounded border-slate-300 text-red-600 focus:ring-red-500 accent-[#E60012] cursor-pointer"
+            >
+            <span class="text-xs font-semibold text-slate-600 hover:text-slate-800">Ingat Saya</span>
+          </label>
+        </div>
+
         <div id="login-error-msg" class="hidden text-[11px] font-bold text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-100 text-center"></div>
 
         <button type="submit" id="btn-login" class="w-full py-3 bg-[#E60012] hover:bg-[#99000B] text-white font-black text-xs rounded-xl shadow-lg shadow-red-200 transition flex items-center justify-center gap-2">
@@ -168,8 +179,8 @@
         </button>
       </form>
       
-      <div class="mt-6 pt-4 border-t border-slate-100 text-center text-[10px] text-slate-400">
-        Akses terbatas untuk Kepala Cabang, Kepala Bengkel, dan Tim HR DSO.
+      <div class="mt-6 pt-4 border-t border-slate-100 text-center text-[11px] text-slate-400">
+        &copy; 2026 PT Astra Daihatsu Motor. All rights reserved.
       </div>
     </div>
   </div>
@@ -1512,6 +1523,8 @@
       }
     }
 
+    const AUTH_STORAGE_KEY = 'dperform_auth_session';
+
     // 1. Submit Login
     async function handleLoginSubmit(e) {
       e.preventDefault();
@@ -1532,6 +1545,27 @@
 
       if (res.success) {
         loggedInUser = res.user;
+
+        // Fitur Ingat Saya: simpan sesi dan kredensial agar saat reload langsung masuk
+        const rememberMe = document.getElementById('remember-me')?.checked;
+        if (rememberMe) {
+          try {
+            localStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify({
+              user: res.user,
+              username: u,
+              password: p,
+              remember: true,
+              savedAt: new Date().toISOString()
+            }));
+          } catch (storageErr) {
+            console.warn("Gagal menyimpan preferensi Ingat Saya ke localStorage:", storageErr);
+          }
+        } else {
+          try {
+            localStorage.removeItem(AUTH_STORAGE_KEY);
+          } catch (storageErr) {}
+        }
+
         initAuthenticatedApp();
       } else {
         errEl.textContent = res.message || 'NPK atau Tanggal Lahir (DDMMYY) salah!';
@@ -1858,13 +1892,48 @@
 
     function executeLogout() {
       closeModal('modal-logout');
+      try {
+        localStorage.removeItem(AUTH_STORAGE_KEY);
+      } catch (e) {}
       loggedInUser = null;
       currentDashboardPayload = null;
       document.getElementById('app-screen').classList.add('hidden');
       document.getElementById('login-screen').classList.remove('hidden');
       document.getElementById('login-password').value = '';
+      const rememberCheckbox = document.getElementById('remember-me');
+      if (rememberCheckbox) {
+        rememberCheckbox.checked = false;
+      }
       if (typeof showToast === 'function') {
         showToast("Anda telah berhasil keluar dari sistem.");
+      }
+    }
+
+    /**
+     * Memeriksa dan memulihkan sesi login saat halaman dimuat / direload jika 'Ingat Saya' aktif
+     */
+    function checkAutoLogin() {
+      try {
+        const raw = localStorage.getItem(AUTH_STORAGE_KEY);
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        if (saved && saved.remember) {
+          if (document.getElementById('login-username') && saved.username) {
+            document.getElementById('login-username').value = saved.username;
+          }
+          if (document.getElementById('login-password') && saved.password) {
+            document.getElementById('login-password').value = saved.password;
+          }
+          if (document.getElementById('remember-me')) {
+            document.getElementById('remember-me').checked = true;
+          }
+          if (saved.user) {
+            loggedInUser = saved.user;
+            initAuthenticatedApp();
+          }
+        }
+      } catch (err) {
+        console.warn("Gagal memulihkan sesi login otomatis:", err);
       }
     }
 
@@ -3054,6 +3123,13 @@
         document.getElementById('sidebar').classList.add('-translate-x-full');
         document.getElementById('mobile-sidebar-overlay').classList.add('hidden');
       }
+    }
+
+    // Auto-login saat halaman dimuat / direload jika 'Ingat Saya' aktif
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', checkAutoLogin);
+    } else {
+      checkAutoLogin();
     }
   </script>
 </body>
