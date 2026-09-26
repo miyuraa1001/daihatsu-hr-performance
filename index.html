@@ -2602,6 +2602,10 @@
         const dt = findDate(row);
         if (dt) return dt;
       }
+      if (normTarget === 'd.o.birth' || normTarget === 'tgl lahir' || normTarget === 'tanggal lahir' || normTarget === 'dob') {
+        const dob = findDOBirth(row);
+        if (dob) return dob;
+      }
       if (normTarget === 'p0001-stext') {
         const st = findP0001STEXT(row);
         if (st) return st;
@@ -2724,19 +2728,35 @@
 
     function formatDatabaseDate(val) {
       if (!val) return "";
+      if (val instanceof Date && !isNaN(val)) {
+        const d = String(val.getDate()).padStart(2, '0');
+        const m = String(val.getMonth() + 1).padStart(2, '0');
+        const y = val.getFullYear();
+        return `${d}.${m}.${y}`;
+      }
       const s = String(val).trim();
+      if (!s) return "";
+      // Format 6 digit DDMMYY (misal password login / format tglLahir sistem HR Astra)
+      if (/^\d{6}$/.test(s)) {
+        const d = s.slice(0, 2);
+        const m = s.slice(2, 4);
+        const yy = parseInt(s.slice(4, 6), 10);
+        const y = yy > 50 ? (1900 + yy) : (2000 + yy);
+        return `${d}.${m}.${y}`;
+      }
+      // Format 8 digit DDMMYYYY (misal 15051995)
+      if (/^\d{8}$/.test(s)) {
+        const d = s.slice(0, 2);
+        const m = s.slice(2, 4);
+        const y = s.slice(4, 8);
+        return `${d}.${m}.${y}`;
+      }
       if (/^\d{2}[\.\/\-]\d{2}[\.\/\-]\d{4}$/.test(s)) {
         return s.replace(/[\/\-]/g, '.');
       }
       if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
         const parts = s.slice(0, 10).split('-');
         return `${parts[2]}.${parts[1]}.${parts[0]}`;
-      }
-      if (val instanceof Date && !isNaN(val)) {
-        const d = String(val.getDate()).padStart(2, '0');
-        const m = String(val.getMonth() + 1).padStart(2, '0');
-        const y = val.getFullYear();
-        return `${d}.${m}.${y}`;
       }
       if (typeof val === 'number') {
         const date = new Date(Math.round((val - 25569) * 86400 * 1000));
@@ -2750,6 +2770,38 @@
       return s;
     }
 
+    function findDOBirth(e, idx) {
+      if (e) {
+        const candidates = [
+          'D.o.birth', 'd.o.birth', 'DOB', 'dob', 'D.O.Birth',
+          'tglLahir', 'tgl_lahir', 'tanggalLahir', 'tanggal_lahir',
+          'birthDate', 'birth_date', 'dateOfBirth', 'date_of_birth'
+        ];
+        for (const k of candidates) {
+          if (e[k] !== undefined && e[k] !== null) {
+            const val = String(e[k]).trim();
+            if (val !== '' && val !== '1995-05-15') {
+              return formatDatabaseDate(e[k]);
+            }
+          }
+        }
+        for (const k of Object.keys(e)) {
+          const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
+          if (norm === 'dobirth' || norm === 'dob' || norm === 'tgllahir' || norm === 'tanggallahir' || norm === 'birthdate' || norm === 'dateofbirth') {
+            const val = String(e[k] || '').trim();
+            if (val !== '' && val !== '1995-05-15') {
+              return formatDatabaseDate(e[k]);
+            }
+          }
+        }
+      }
+
+      const known = matchKnownDatabaseEntry(e, idx);
+      if (known && known.dob) return formatDatabaseDate(known.dob);
+
+      return "";
+    }
+
     // TABEL REFERENSI DATA MASTER DATABASE GOOGLE SHEETS / SAP (100% SESUAI SPREADSHEET ASLI)
     const KNOWN_MASTER_DATABASE_ROWS = [
       {
@@ -2757,49 +2809,49 @@
         lvl: "",
         date: "01.04.1997",
         p0001Stext: "DSO GL Service Lampung A Yani",
-        matchers: ["10123", "gl service", "foreman", "lampung a yani service", "ai foreman"]
+        matchers: ["10123", "gl service", "ai foreman"]
       },
       {
         psGroup: "4",
         lvl: "",
         date: "01.09.1999",
         p0001Stext: "DSO Kacab Bandar Jaya",
-        matchers: ["kacab bandar jaya", "branch head", "bandarjaya", "bandar jaya", "ai branch head"]
+        matchers: ["kacab bandar jaya", "branch head bandarjaya", "ai branch head", "kacab bandarjaya"]
       },
       {
         psGroup: "3",
         lvl: "",
         date: "01.03.2001",
         p0001Stext: "DSO SA Lampung A Yani",
-        matchers: ["sa lampung a yani", "service advisor", "sa lampung", "ai service advisor"]
+        matchers: ["sa lampung a yani", "service advisor lampung", "ai service advisor"]
       },
       {
         psGroup: "4",
         lvl: "",
         date: "20.03.2001",
         p0001Stext: "DSO Kacab Prabumulih",
-        matchers: ["kacab prabumulih", "prabumulih"]
+        matchers: ["kacab prabumulih", "branch head prabumulih"]
       },
       {
         psGroup: "4",
         lvl: "",
         date: "01.06.2001",
         p0001Stext: "DSO Kacab Plb Veteran",
-        matchers: ["kacab plb veteran", "plb veteran", "veteran", "palembang veteran"]
+        matchers: ["kacab plb veteran", "branch head veteran", "kacab veteran"]
       },
       {
         psGroup: "4",
         lvl: "",
         date: "01.09.2001",
         p0001Stext: "DSO Area Service Coordinator Sumbagsel",
-        matchers: ["area service coordinator", "coordinator sumbagsel", "sumbagsel", "service coordinator"]
+        matchers: ["area service coordinator", "coordinator sumbagsel"]
       },
       {
         psGroup: "3",
         lvl: "",
         date: "01.12.2001",
         p0001Stext: "DSO SA Jambi",
-        matchers: ["sa jambi", "jambi"]
+        matchers: ["sa jambi", "service advisor jambi"]
       }
     ];
 
@@ -2979,7 +3031,7 @@
             "Name of organizational unit": e['Name of organizational unit'] || (e.divisi ? `${e.divisi} DSO` : 'Departemen DSO'),
             "Job Title": e['Job Title'] || e.jabatan || 'Staff',
             "Last name": e['Last name'] || e.nama || '',
-            "D.o.birth": parseExcelDate(e['D.o.birth'] || e.tglLahir || '1995-05-15'),
+            "D.o.birth": findDOBirth(e, idx),
             "Gender text": e['Gender text'] || e.gender || 'Male',
             "Religious denomination": e['Religious denomination'] || e.agama || 'Islam',
             "PS group": findPSGroup(e, idx),
@@ -2996,6 +3048,9 @@
           if (emp) {
             emp['Contract'] = row['Contract'] || 'Tetap';
             emp.tipeKontrak = row['Contract'] || 'Tetap';
+          }
+          if (!row['D.o.birth'] || row['D.o.birth'] === '1995-05-15') {
+            row['D.o.birth'] = findDOBirth(row, idx) || findDOBirth(emp, idx);
           }
           if (row['PS group'] === undefined || row['PS group'] === null || String(row['PS group']).trim() === '' || row['PS group'] === 'III/A') {
             row['PS group'] = findPSGroup(row, idx) || findPSGroup(emp, idx);
@@ -4748,6 +4803,9 @@
         const isYes = String(val).toUpperCase() === 'YES';
         return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isYes ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${val}</span>`;
       }
+      if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob' || norm === 'date' || norm === 'tanggal' || norm === 'tgl') {
+        return formatDatabaseDate(val);
+      }
       if (norm === 'personnel no.' || norm === 'npk' || norm === 'no' || norm.includes('registrasi') || norm.includes('kode ba') || norm === 'business area') {
         return `<span class="font-mono font-semibold">${val}</span>`;
       }
@@ -5160,7 +5218,8 @@
             String(e['Business area'] || e.kodeBA || '').toLowerCase().includes(q) ||
             String(e['P0001-STEXT'] || findP0001STEXT(e, targetIdx) || '').toLowerCase().includes(q) ||
             String(e['PS group'] || findPSGroup(e, targetIdx) || '').toLowerCase().includes(q) ||
-            String(e['Date'] || findDate(e, targetIdx) || '').toLowerCase().includes(q);
+            String(e['Date'] || findDate(e, targetIdx) || '').toLowerCase().includes(q) ||
+            String(e['D.o.birth'] || findDOBirth(e, targetIdx) || '').toLowerCase().includes(q);
         });
       }
 
@@ -5205,6 +5264,9 @@
             ? row[col] 
             : getRowCellValue(row, col, SCHEMAS.Master_Karyawan);
 
+          if ((cellRaw === undefined || cellRaw === null || cellRaw === '' || cellRaw === '1995-05-15') && (col === 'D.o.birth' || col === 'Tanggal Lahir')) {
+            cellRaw = findDOBirth(row, targetIdx);
+          }
           if ((cellRaw === undefined || cellRaw === null || cellRaw === '') && col === 'PS group') {
             cellRaw = findPSGroup(row, targetIdx);
           }
