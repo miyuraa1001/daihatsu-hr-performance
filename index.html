@@ -1924,6 +1924,157 @@
     </div>
   </div>
 
+  <!-- MODAL: DETAIL SUGGESTION SYSTEM (SS / KAIZEN) -->
+  <div id="modal-ss-detail" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-ss-detail')">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full p-5 sm:p-6 relative my-auto max-h-[92vh] flex flex-col animate-fade-in">
+      <button onclick="closeModal('modal-ss-detail')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <!-- 1. Header: Identitas Pengusul & Registrasi Ide -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3.5 border-b border-slate-100 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-xl border border-amber-200 shadow-2xs flex-shrink-0" id="ss-modal-avatar">
+            <i class="fa-solid fa-lightbulb"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="text-base sm:text-lg font-black text-slate-900 leading-tight" id="ss-modal-emp-name">Nama Pengusul SS</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-100 text-amber-800 border border-amber-200" id="ss-modal-category">Suggestion System</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium mt-0.5" id="ss-modal-meta">
+              NPK: - • Cabang: - • Kode BA: - • Bagian: -
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 flex-wrap self-start sm:self-center">
+          <span class="px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-[10px] font-bold" id="ss-modal-period">
+            Bulan: -
+          </span>
+          <span class="px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-[10px] font-bold" id="ss-modal-status-badge">
+            Status: Approved
+          </span>
+        </div>
+      </div>
+
+      <!-- Scrollable Content Body -->
+      <div class="overflow-y-auto space-y-4 pr-1 text-xs">
+        
+        <!-- 2. Tema & Judul Ide Kaizen -->
+        <div class="bg-gradient-to-r from-amber-50/80 via-orange-50/40 to-amber-50/60 p-3.5 rounded-2xl border border-amber-200/90 shadow-2xs">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-extrabold text-amber-800 uppercase tracking-wider block flex items-center gap-1.5">
+              <i class="fa-solid fa-lightbulb text-amber-600"></i> Tema / Usulan Perbaikan (SS Idea)
+            </span>
+            <span class="text-[10px] font-bold text-slate-500" id="ss-modal-reg-no">Reg: -</span>
+          </div>
+          <p class="text-xs sm:text-sm font-bold text-slate-900 leading-relaxed" id="ss-modal-theme">
+            -
+          </p>
+          <div class="mt-2.5 pt-2 border-t border-amber-200/60 text-[11px] text-slate-600 font-medium" id="ss-modal-desc-box">
+            <span class="font-bold text-slate-700">Keterangan / Uraian:</span>
+            <span id="ss-modal-desc" class="block mt-0.5 text-slate-600">-</span>
+          </div>
+        </div>
+
+        <!-- 3. Personalia Pengusul & Fasilitator -->
+        <div class="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block mb-2.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-user-gear text-slate-600"></i> Data Inovator & Pembimbing Kaizen
+          </span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <!-- Inovator Card -->
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200/90 flex items-center gap-2.5 shadow-2xs">
+              <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs border border-blue-200 flex-shrink-0">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Inovator / Pengusul</span>
+                <span class="text-xs font-black text-slate-800 truncate block" id="ss-modal-emp-fullname">-</span>
+                <span class="text-[9px] text-slate-500 font-semibold block" id="ss-modal-emp-npk">NPK: -</span>
+              </div>
+            </div>
+
+            <!-- Fasilitator Card -->
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200/90 flex items-center gap-2.5 shadow-2xs">
+              <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center text-xs border border-purple-200 flex-shrink-0">
+                <i class="fa-solid fa-user-tie"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Fasilitator Pembimbing</span>
+                <span class="text-xs font-black text-slate-800 truncate block" id="ss-modal-facilitator">-</span>
+                <span class="text-[9px] text-slate-500 font-semibold block" id="ss-modal-facilitator-npk">NPK: -</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Status Reward & Akun AstraPay -->
+        <div class="bg-emerald-50/70 p-3.5 rounded-2xl border border-emerald-200/80 shadow-2xs">
+          <span class="text-[10px] font-extrabold text-emerald-800 uppercase tracking-wider block mb-2.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-gift text-emerald-600"></i> Status Reward & Penyaluran Insentif
+          </span>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center mb-2.5">
+            <div class="bg-white p-2 rounded-xl border border-emerald-200/80 shadow-2xs">
+              <span class="text-[9px] font-bold text-slate-400 block uppercase">Nilai Reward</span>
+              <span class="text-xs sm:text-sm font-black text-emerald-800 block mt-0.5 truncate" id="ss-modal-reward-val">-</span>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-emerald-200/80 shadow-2xs">
+              <span class="text-[9px] font-bold text-slate-400 block uppercase">Status Verifikasi</span>
+              <span class="text-xs font-black text-emerald-700 block mt-0.5 truncate" id="ss-modal-reward-status">-</span>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-emerald-200/80 shadow-2xs">
+              <span class="text-[9px] font-bold text-slate-400 block uppercase">No. Akun AstraPay</span>
+              <span class="text-xs font-black text-slate-800 block mt-0.5 truncate" id="ss-modal-astrapay-no">-</span>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-emerald-200/80 shadow-2xs">
+              <span class="text-[9px] font-bold text-slate-400 block uppercase">Nama Akun</span>
+              <span class="text-xs font-black text-slate-800 block mt-0.5 truncate" id="ss-modal-astrapay-name">-</span>
+            </div>
+          </div>
+
+          <div class="bg-white px-3 py-2 rounded-xl border border-emerald-200/70 text-[10px] text-slate-600 flex items-center justify-between">
+            <span class="text-slate-400 font-medium">Distribusi Reward:</span>
+            <span class="font-bold text-slate-800" id="ss-modal-distribusi">-</span>
+          </div>
+        </div>
+
+        <!-- 5. Administrasi & Legalitas Dokumen Kaizen -->
+        <div class="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block mb-2 flex items-center gap-1.5">
+            <i class="fa-solid fa-file-circle-check text-slate-600"></i> Administrasi & Legalitas Dokumen SS
+          </span>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[10px]">
+            <div class="bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-600 flex justify-between">
+              <span class="text-slate-400 font-medium">No. Berita Acara:</span>
+              <span class="font-bold text-slate-800" id="ss-modal-no-ba">-</span>
+            </div>
+            <div class="bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-600 flex justify-between">
+              <span class="text-slate-400 font-medium">No. BPH:</span>
+              <span class="font-bold text-slate-800" id="ss-modal-no-bph">-</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3.5 border-t border-slate-100 flex-shrink-0 mt-3">
+        <div class="flex items-center gap-1.5 text-slate-400 text-[10px]">
+          <i class="fa-solid fa-certificate text-amber-600"></i>
+          <span>Data terdaftar pada Komite Kaizen & Inovasi Astra Daihatsu Motor (ADM)</span>
+        </div>
+        <button type="button" onclick="closeModal('modal-ss-detail')" class="w-full sm:w-auto px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
+          Tutup Detail SS
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- MODAL: EDIT ROW DATA (KHUSUS ADMIN) -->
   <div id="modal-edit-row" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-2xl shadow-2xl border border-slate-100 relative my-auto max-h-[90vh] flex flex-col">
@@ -4281,6 +4432,15 @@
             <i class="fa-solid fa-file-lines text-[10px]"></i> Risalah
           </button>
         `;
+      } else if (sheetName === 'Data_SS') {
+        const regNo = String(row['Registrasi'] || row['No.Registrasi'] || '');
+        const npkVal = String(row['NPK'] || row['Personnel no.'] || '').replace(/'/g, "\\'");
+        const safeReg = regNo.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        detailBtn = `
+          <button type="button" onclick="openSSDetailModal(${rowIndex}, '${safeReg || npkVal}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-lg text-[11px] border border-amber-200 transition inline-flex items-center gap-1 shadow-2xs">
+            <i class="fa-solid fa-lightbulb text-[10px]"></i> Detail SS
+          </button>
+        `;
       } else {
         const npkVal = String(row['Personnel no.'] || row['NPK'] || '').replace(/'/g, "\\'");
         detailBtn = `
@@ -5487,6 +5647,78 @@
 
       // Tampilkan modal
       const modal = document.getElementById('modal-qcc-risalah');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function openSSDetailModal(rowIndex, fallbackKey = '') {
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Data_SS || [];
+      let row = rawRows[rowIndex];
+      if (!row && fallbackKey) {
+        row = rawRows.find(r => 
+          String(r['Registrasi'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase() ||
+          String(r['NPK'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase() ||
+          String(r['Nama'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase()
+        );
+      }
+      if (!row) {
+        showToast("Data usulan SS tidak ditemukan.");
+        return;
+      }
+
+      // 1. Identitas Inovator
+      const empName = row['Nama'] || 'Karyawan Inovator';
+      const npkVal = row['NPK'] || '-';
+      document.getElementById('ss-modal-emp-name').textContent = empName;
+      document.getElementById('ss-modal-emp-fullname').textContent = empName;
+      document.getElementById('ss-modal-emp-npk').textContent = `NPK: ${npkVal}`;
+      document.getElementById('ss-modal-category').textContent = row['Kategori'] || 'Suggestion System';
+      document.getElementById('ss-modal-period').textContent = `Bulan: ${row['Diterima Bulan'] || '-'}`;
+
+      const cab = row['Cabang'] || '-';
+      const ba = row['Kode BA'] || '-';
+      const sec = row['Bagian'] || '-';
+      const reg = row['Registrasi'] || '-';
+      document.getElementById('ss-modal-meta').textContent = `NPK: ${npkVal} • Cabang: ${cab} • Kode BA: ${ba} • Bagian: ${sec}`;
+      document.getElementById('ss-modal-reg-no').textContent = `Reg: ${reg}`;
+
+      // Status Badge
+      const statusReward = row['Status Reward'] || 'Terverifikasi';
+      const statusBadge = document.getElementById('ss-modal-status-badge');
+      if (statusBadge) {
+        statusBadge.textContent = `Status: ${statusReward}`;
+        const sNorm = String(statusReward).toLowerCase();
+        if (sNorm.includes('approved') || sNorm.includes('terverifikasi') || sNorm.includes('selesai')) {
+          statusBadge.className = 'px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-[10px] font-bold';
+        } else if (sNorm.includes('pending') || sNorm.includes('review') || sNorm.includes('evaluasi')) {
+          statusBadge.className = 'px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-[10px] font-bold';
+        } else {
+          statusBadge.className = 'px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold';
+        }
+      }
+
+      // 2. Tema & Keterangan
+      document.getElementById('ss-modal-theme').textContent = row['Tema'] || 'Belum ada deskripsi tema inovasi.';
+      const descVal = row['Keterangan'] || '-';
+      document.getElementById('ss-modal-desc').textContent = descVal;
+
+      // 3. Fasilitator
+      document.getElementById('ss-modal-facilitator').textContent = row['Fasilitator'] || '-';
+      document.getElementById('ss-modal-facilitator-npk').textContent = `NPK: ${row['NPK Fasilitator'] || '-'}`;
+
+      // 4. Reward & AstraPay
+      document.getElementById('ss-modal-reward-val').textContent = row['Reward'] || '-';
+      document.getElementById('ss-modal-reward-status').textContent = statusReward;
+      document.getElementById('ss-modal-astrapay-no').textContent = row['No.Akun AstraPay'] || '-';
+      document.getElementById('ss-modal-astrapay-name').textContent = row['Nama Akun'] || '-';
+      document.getElementById('ss-modal-distribusi').textContent = row['Distribusi Reward'] || 'Penyaluran via Akun AstraPay Pengusul';
+
+      // 5. Administrasi
+      document.getElementById('ss-modal-no-ba').textContent = row['No.Berita Acara'] || '-';
+      document.getElementById('ss-modal-no-bph').textContent = row['No.BPH'] || '-';
+
+      // Buka modal
+      const modal = document.getElementById('modal-ss-detail');
       if (modal) modal.classList.remove('hidden');
     }
 
