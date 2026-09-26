@@ -432,282 +432,308 @@
             </div>
           </div>
 
-          <!-- 5 KPI CARDS (BAGI 2 PRESISI DI DEDIKASIKAN 2 KOLOM) -->
+          <!-- 5 KPI CARDS (HIGH-CONTRAST & SYNCHRONIZED METRICS) -->
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-4 w-full">
           
             <!-- CARD 1: MASTER KARYAWAN -->
-            <div onclick="switchView('master-karyawan')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-blue-300 transition cursor-pointer min-w-0">
+            <div onclick="switchView('master-karyawan')" class="bg-white rounded-2xl p-4 sm:p-4.5 border border-slate-200/90 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-blue-400 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-sm border border-blue-100 flex-shrink-0">
-                    <i class="fa-solid fa-user-group"></i>
+                  <div class="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm border border-blue-200 shadow-2xs flex-shrink-0">
+                    <i class="fa-solid fa-users"></i>
                   </div>
                   <div class="text-right">
-                    <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider block">1. Master Karyawan</span>
-                    <span class="text-[9px] text-slate-400">Kekuatan Tim</span>
+                    <span class="text-[10px] font-extrabold text-blue-700 uppercase tracking-wider block">1. Master Karyawan</span>
+                    <span class="text-[9px] text-slate-400 font-medium">Kekuatan Tim Cabang</span>
                   </div>
                 </div>
                 <div class="mb-3">
-                  <div class="flex items-baseline gap-1">
-                    <span class="text-3xl font-black text-slate-900" id="card-total-karyawan">0</span>
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="card-total-karyawan">0</span>
                     <span class="text-xs font-bold text-slate-500">Karyawan Aktif</span>
                   </div>
                 </div>
                 <div class="pt-2.5 border-t border-slate-100">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Komposisi Divisi</span>
+                  <span class="text-[10px] font-bold text-slate-500 uppercase tracking-wider block mb-2">Komposisi Divisi (Name)</span>
                   <div class="flex items-center gap-3">
                     <div class="relative w-12 h-12 flex-shrink-0">
-                      <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 36 36">
-                        <circle cx="18" cy="18" r="14" fill="none" stroke="#E2E8F0" stroke-width="4"></circle>
-                        <circle id="donut-slice-sales" cx="18" cy="18" r="14" fill="none" stroke="#2563EB" stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                        <circle id="donut-slice-service" cx="18" cy="18" r="14" fill="none" stroke="#10B981" stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
-                        <circle id="donut-slice-admin" cx="18" cy="18" r="14" fill="none" stroke="#F59E0B" stroke-width="4" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                      <svg class="w-12 h-12 transform -rotate-90 drop-shadow-xs" viewBox="0 0 36 36">
+                        <circle cx="18" cy="18" r="14" fill="none" stroke="#E2E8F0" stroke-width="4.5"></circle>
+                        <circle id="donut-slice-sales" cx="18" cy="18" r="14" fill="none" stroke="#2563EB" stroke-width="4.5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                        <circle id="donut-slice-service" cx="18" cy="18" r="14" fill="none" stroke="#10B981" stroke-width="4.5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
+                        <circle id="donut-slice-admin" cx="18" cy="18" r="14" fill="none" stroke="#F59E0B" stroke-width="4.5" stroke-dasharray="0 100" stroke-dashoffset="0"></circle>
                       </svg>
                     </div>
-                    <div class="space-y-0.5 text-[10px] flex-1 min-w-0">
-                      <div class="flex items-center justify-between text-slate-600">
-                        <span class="flex items-center gap-1 truncate"><span class="w-2 h-2 rounded-full bg-blue-600 flex-shrink-0"></span> Sales</span>
-                        <span class="font-bold text-slate-900" id="card-pct-sales">0%</span>
+                    <div class="space-y-1 text-[10px] flex-1 min-w-0">
+                      <div class="flex items-center justify-between text-slate-700 font-medium bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">
+                        <span class="flex items-center gap-1.5 truncate"><span class="w-2.5 h-2.5 rounded-full bg-blue-600 flex-shrink-0 shadow-2xs"></span> Sales</span>
+                        <span class="font-extrabold text-blue-800" id="card-pct-sales">0%</span>
                       </div>
-                      <div class="flex items-center justify-between text-slate-600">
-                        <span class="flex items-center gap-1 truncate"><span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span> Bengkel</span>
-                        <span class="font-bold text-slate-900" id="card-pct-service">0%</span>
+                      <div class="flex items-center justify-between text-slate-700 font-medium bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">
+                        <span class="flex items-center gap-1.5 truncate"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0 shadow-2xs"></span> Bengkel</span>
+                        <span class="font-extrabold text-emerald-800" id="card-pct-service">0%</span>
                       </div>
-                      <div class="flex items-center justify-between text-slate-600">
-                        <span class="flex items-center gap-1 truncate"><span class="w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"></span> Admin</span>
-                        <span class="font-bold text-slate-900" id="card-pct-admin">0%</span>
+                      <div class="flex items-center justify-between text-slate-700 font-medium bg-slate-50 px-2 py-0.5 rounded-lg border border-slate-100">
+                        <span class="flex items-center gap-1.5 truncate"><span class="w-2.5 h-2.5 rounded-full bg-amber-500 flex-shrink-0 shadow-2xs"></span> Admin & Lainnya</span>
+                        <span class="font-extrabold text-amber-800" id="card-pct-admin">0%</span>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
+
+              <!-- Status Kepegawaian (5 Kategori Baku Lengkap & Kontras) -->
               <div class="pt-3 border-t border-slate-100 mt-3 text-[10px]">
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Status Kepegawaian (Contract)</span>
-                <div class="grid grid-cols-2 gap-2" id="dashboard-contract-group-list">
-                  <div class="flex flex-col items-center justify-center p-2 rounded-xl bg-blue-50/60 border border-blue-100 text-center hover:bg-blue-50 transition shadow-2xs">
-                    <span class="w-7 h-7 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-xs mb-1 border border-blue-200 shadow-2xs">
-                      <i class="fa-solid fa-user-check"></i>
-                    </span>
-                    <span class="text-[10px] font-bold text-slate-600 block mb-0.5">Tetap</span>
-                    <span class="text-xs font-black text-slate-900 leading-tight" id="card-tetap-val">0 Orang</span>
-                    <span class="mt-1 px-1.5 py-0.5 rounded-md text-[9px] font-black bg-blue-100 text-blue-700 border border-blue-200" id="card-tetap-pct">0%</span>
-                    <span class="hidden" id="card-tetap-count">0</span>
-                  </div>
-                  <div class="flex flex-col items-center justify-center p-2 rounded-xl bg-amber-50/60 border border-amber-100 text-center hover:bg-amber-50 transition shadow-2xs">
-                    <span class="w-7 h-7 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center text-xs mb-1 border border-amber-200 shadow-2xs">
-                      <i class="fa-solid fa-user-clock"></i>
-                    </span>
-                    <span class="text-[10px] font-bold text-slate-600 block mb-0.5">PKWT</span>
-                    <span class="text-xs font-black text-slate-900 leading-tight" id="card-kontrak-val">0 Orang</span>
-                    <span class="mt-1 px-1.5 py-0.5 rounded-md text-[9px] font-black bg-amber-100 text-amber-700 border border-amber-200" id="card-kontrak-pct">0%</span>
-                    <span class="hidden" id="card-kontrak-count">0</span>
-                  </div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[9px] font-bold text-slate-500 uppercase tracking-wider block">Status Kepegawaian (Contract)</span>
+                  <span class="text-[9px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-1.5 py-0.2 rounded-full flex items-center gap-1">
+                    <i class="fa-solid fa-shield-halved text-[8px]"></i> 5 Kategori
+                  </span>
+                </div>
+                <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-1.5" id="dashboard-contract-group-list">
+                  <!-- Populated dynamically by JS -->
+                </div>
+                <!-- Hidden fallback holders for backward compatibility -->
+                <div class="hidden">
+                  <span id="card-tetap-val">0 Orang</span>
+                  <span id="card-tetap-pct">0%</span>
+                  <span id="card-tetap-count">0</span>
+                  <span id="card-kontrak-val">0 Orang</span>
+                  <span id="card-kontrak-pct">0%</span>
+                  <span id="card-kontrak-count">0</span>
                 </div>
               </div>
             </div>
           
             <!-- CARD 2: ABSENSI & DISIPLIN -->
-            <div onclick="switchView('absensi')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-emerald-300 transition cursor-pointer min-w-0">
+            <div onclick="switchView('absensi')" class="bg-white rounded-2xl p-4 sm:p-4.5 border border-slate-200/90 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-emerald-400 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm border border-emerald-100 flex-shrink-0">
+                  <div class="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold text-sm border border-emerald-200 shadow-2xs flex-shrink-0">
                     <i class="fa-solid fa-calendar-check"></i>
                   </div>
                   <div class="text-right">
-                    <span class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">2. Absensi & Disiplin</span>
-                    <span class="text-[9px] text-slate-400">Attendance Rate</span>
+                    <span class="text-[10px] font-extrabold text-emerald-700 uppercase tracking-wider block">2. Absensi & Disiplin</span>
+                    <span class="text-[9px] text-slate-400 font-medium">Tingkat Kehadiran Kerja</span>
                   </div>
                 </div>
                 <div class="mb-2">
                   <div class="flex items-baseline gap-1">
-                    <span class="text-3xl font-black text-slate-900" id="card-kehadiran-rate">0.0<span class="text-2xl font-bold">%</span></span>
+                    <span class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="card-kehadiran-rate">0.0<span class="text-2xl font-bold">%</span></span>
                   </div>
-                  <span class="text-[10px] font-bold text-slate-400 block">Tingkat Kehadiran</span>
+                  <span class="text-[10px] font-bold text-slate-500 block mt-1">Rata-rata Tingkat Kehadiran</span>
                 </div>
-                <div class="my-2 py-1 bg-emerald-50/50 rounded-lg p-2 border border-emerald-100/50">
-                  <svg class="w-full h-8 text-emerald-500 overflow-visible" viewBox="0 0 100 25" preserveAspectRatio="none">
+                
+                <!-- Sparkline Trend Chart -->
+                <div class="my-2 py-1.5 bg-emerald-50/70 rounded-xl px-2.5 border border-emerald-200/60 shadow-2xs">
+                  <svg class="w-full h-8 text-emerald-600 overflow-visible" viewBox="0 0 100 25" preserveAspectRatio="none">
                     <path d="M0 20 Q 20 8, 35 15 T 65 10 T 100 5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
-                    <circle cx="100" cy="5" r="3" fill="#059669"/>
+                    <circle cx="100" cy="5" r="3.5" fill="#059669" stroke="#ffffff" stroke-width="1.5"/>
                   </svg>
                 </div>
+                
+                <!-- Stat Boxes Alpha & Telat (High Contrast) -->
                 <div class="grid grid-cols-2 gap-2 mt-2">
-                  <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 text-center">
-                    <span class="text-[9px] text-slate-400 block font-medium">Alpha / Mangkir</span>
-                    <span class="text-base font-extrabold text-red-600" id="card-alpha-count">0</span>
-                    <span class="text-[9px] text-slate-400 block">Kasus</span>
+                  <div class="bg-red-50/90 p-2 rounded-xl border border-red-200 text-center shadow-2xs">
+                    <span class="text-[9px] text-red-600 block font-bold uppercase tracking-wider">Alpha / Mangkir</span>
+                    <span class="text-lg font-black text-red-700 leading-tight block my-0.5" id="card-alpha-count">0</span>
+                    <span class="text-[9px] text-red-500 font-semibold block">Kasus Terdaftar</span>
                   </div>
-                  <div class="bg-slate-50 p-2 rounded-xl border border-slate-100 text-center">
-                    <span class="text-[9px] text-slate-400 block font-medium">Sering Telat</span>
-                    <span class="text-base font-extrabold text-amber-600" id="card-telat-count">0</span>
-                    <span class="text-[9px] text-slate-400 block">Karyawan</span>
+                  <div class="bg-amber-50/90 p-2 rounded-xl border border-amber-200 text-center shadow-2xs">
+                    <span class="text-[9px] text-amber-700 block font-bold uppercase tracking-wider">Sering Telat</span>
+                    <span class="text-lg font-black text-amber-800 leading-tight block my-0.5" id="card-telat-count">0</span>
+                    <span class="text-[9px] text-amber-600 font-semibold block">Karyawan Terindikasi</span>
                   </div>
                 </div>
               </div>
-              <div class="mt-3 bg-emerald-50 p-2 rounded-xl border border-emerald-100 text-center" id="card-attendance-badge">
-                <span class="text-[10px] font-extrabold text-emerald-700 block">SANGAT BAIK</span>
-                <span class="text-[9px] text-emerald-600">Target &ge; 95%</span>
+              
+              <!-- Dynamic Attendance Badge -->
+              <div class="mt-3 bg-emerald-50 p-2 rounded-xl border border-emerald-200 text-center shadow-2xs" id="card-attendance-badge">
+                <span class="text-[10px] font-extrabold text-emerald-800 block flex items-center justify-center gap-1">
+                  <i class="fa-solid fa-circle-check text-emerald-600"></i> SANGAT BAIK
+                </span>
+                <span class="text-[9px] text-emerald-700 font-semibold block mt-0.5">Target Kehadiran &ge; 95%</span>
               </div>
             </div>
           
             <!-- CARD 3: SUMBANG SARAN (SS) -->
-            <div onclick="switchView('ss')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-amber-300 transition cursor-pointer min-w-0">
+            <div onclick="switchView('ss')" class="bg-white rounded-2xl p-4 sm:p-4.5 border border-slate-200/90 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-amber-400 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-sm border border-amber-100 flex-shrink-0">
+                  <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center font-bold text-sm border border-amber-200 shadow-2xs flex-shrink-0">
                     <i class="fa-solid fa-lightbulb"></i>
                   </div>
                   <div class="text-right">
-                    <span class="text-[10px] font-bold text-amber-600 uppercase tracking-wider block">3. Suggestion System (SS)</span>
-                    <span class="text-[9px] text-slate-400">Inovasi & Keterlibatan</span>
+                    <span class="text-[10px] font-extrabold text-amber-700 uppercase tracking-wider block">3. Suggestion System (SS)</span>
+                    <span class="text-[9px] text-slate-400 font-medium">Inovasi & Keterlibatan Kaizen</span>
                   </div>
                 </div>
                 <div class="mb-2">
-                  <div class="flex items-baseline gap-1">
-                    <span class="text-3xl font-black text-slate-900" id="card-ss-total">0</span>
-                    <span class="text-base font-bold text-slate-400" id="card-ss-target-denom">/ 0</span>
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="card-ss-total">0</span>
+                    <span class="text-sm font-bold text-slate-400" id="card-ss-target-denom">/ 0</span>
+                    <span class="text-xs font-bold text-slate-500">Ide Masuk</span>
                   </div>
-                  <span class="text-[10px] font-bold text-slate-400 block">Ide SS Masuk (Target Bulanan)</span>
+                  <span class="text-[10px] font-bold text-slate-500 block mt-1">Pencapaian Target Bulanan</span>
                 </div>
-                <div class="my-2">
-                  <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
-                    <div id="card-ss-progress-bar" class="bg-amber-500 h-2.5 rounded-full transition-all duration-500" style="width: 0%"></div>
+                
+                <!-- Target Progress Bar -->
+                <div class="my-2.5">
+                  <div class="w-full bg-slate-100 rounded-full h-2 overflow-hidden shadow-inner">
+                    <div id="card-ss-progress-bar" class="bg-gradient-to-r from-amber-500 to-amber-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
                   </div>
-                  <div class="flex justify-between items-center text-[9px] text-slate-400 mt-1">
-                    <span>Target Bulanan</span>
-                    <span class="font-bold text-amber-600" id="card-ss-target-pct">0%</span>
+                  <div class="flex justify-between items-center text-[9px] text-slate-500 font-medium mt-1">
+                    <span>Realisasi Target Cabang</span>
+                    <span class="font-extrabold text-amber-800 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200" id="card-ss-target-pct">0%</span>
                   </div>
                 </div>
-                <div class="pt-2 border-t border-slate-100">
-                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Partisipasi Karyawan</span>
-                  <span class="text-xl font-black text-slate-900" id="card-ss-part-pct">0%</span>
-                  <p class="text-[9px] text-slate-500 mt-0.5" id="card-ss-part-text">Inisiatif Kaizen cabang berjalan optimal</p>
+                
+                <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <div>
+                    <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Partisipasi Staf</span>
+                    <span class="text-xl font-black text-slate-900" id="card-ss-part-pct">0%</span>
+                  </div>
+                  <p class="text-[9px] text-slate-500 font-medium max-w-[150px] text-right leading-tight" id="card-ss-part-text">Inisiatif Kaizen cabang berjalan optimal</p>
                 </div>
               </div>
+              
+              <!-- Status Evaluasi Ide Boxes -->
               <div class="pt-2.5 border-t border-slate-100 mt-2 text-[10px]">
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status SS</span>
-                <div class="flex items-center justify-between">
-                  <div>
-                    <span class="text-slate-400 block text-[9px]">Implemented</span>
-                    <span class="font-bold text-emerald-600" id="card-ss-implemented">0 Ide</span>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Status Evaluasi Ide Kaizen</span>
+                <div class="grid grid-cols-2 gap-2 text-center">
+                  <div class="bg-emerald-50/90 border border-emerald-200 rounded-xl p-1.5 shadow-2xs">
+                    <span class="text-[9px] font-bold text-emerald-700 block uppercase">Implemented</span>
+                    <span class="text-sm font-black text-emerald-900" id="card-ss-implemented">0 Ide</span>
                   </div>
-                  <div class="text-right">
-                    <span class="text-slate-400 block text-[9px]">Evaluasi</span>
-                    <span class="font-bold text-amber-600" id="card-ss-evaluasi">0 Ide</span>
+                  <div class="bg-amber-50/90 border border-amber-200 rounded-xl p-1.5 shadow-2xs">
+                    <span class="text-[9px] font-bold text-amber-700 block uppercase">Dalam Evaluasi</span>
+                    <span class="text-sm font-black text-amber-900" id="card-ss-evaluasi">0 Ide</span>
                   </div>
                 </div>
               </div>
             </div>
           
             <!-- CARD 4: QCC / MUTU -->
-            <div onclick="switchView('qcc')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-purple-300 transition cursor-pointer min-w-0">
+            <div onclick="switchView('qcc')" class="bg-white rounded-2xl p-4 sm:p-4.5 border border-slate-200/90 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-purple-400 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold text-sm border border-purple-100 flex-shrink-0">
+                  <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center font-bold text-sm border border-purple-200 shadow-2xs flex-shrink-0">
                     <i class="fa-solid fa-users-gear"></i>
                   </div>
                   <div class="text-right">
-                    <span class="text-[10px] font-bold text-purple-600 uppercase tracking-wider block">4. Quality Control Circle (QCC)</span>
-                    <span class="text-[9px] text-slate-400">Kolaborasi & Problem Solving</span>
+                    <span class="text-[10px] font-extrabold text-purple-700 uppercase tracking-wider block">4. Quality Control Circle</span>
+                    <span class="text-[9px] text-slate-400 font-medium">Kolaborasi & Problem Solving</span>
                   </div>
                 </div>
                 <div class="mb-2">
-                  <div class="flex items-baseline gap-1">
-                    <span class="text-3xl font-black text-slate-900" id="card-qcc-total">0</span>
-                    <span class="text-xs font-bold text-slate-500">Circle</span>
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="card-qcc-total">0</span>
+                    <span class="text-xs font-bold text-slate-500">Circle Proyek</span>
                   </div>
-                  <span class="text-[10px] font-bold text-slate-400 block">Proyek QCC Aktif</span>
+                  <span class="text-[10px] font-bold text-slate-500 block mt-1">Gugus Kendali Mutu Aktif</span>
                 </div>
+                
+                <!-- PDCA Stage Pills (Vibrant & High Contrast) -->
                 <div class="pt-2 border-t border-slate-100">
                   <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Tahapan Proyek (PDCA)</span>
-                  <div class="grid grid-cols-4 gap-1 text-center">
-                    <div class="bg-blue-50 rounded-lg p-1 border border-blue-100">
-                      <span class="text-[8px] font-bold text-blue-600 block">Plan</span>
-                      <span class="text-xs font-extrabold text-blue-800" id="card-pdca-plan">0</span>
+                  <div class="grid grid-cols-4 gap-1.5 text-center">
+                    <div class="bg-blue-50/90 rounded-xl p-1.5 border border-blue-200 shadow-2xs">
+                      <span class="text-[9px] font-bold text-blue-700 block">Plan</span>
+                      <span class="text-sm font-black text-blue-900" id="card-pdca-plan">0</span>
                     </div>
-                    <div class="bg-emerald-50 rounded-lg p-1 border border-emerald-100">
-                      <span class="text-[8px] font-bold text-emerald-600 block">Do</span>
-                      <span class="text-xs font-extrabold text-emerald-800" id="card-pdca-do">0</span>
+                    <div class="bg-emerald-50/90 rounded-xl p-1.5 border border-emerald-200 shadow-2xs">
+                      <span class="text-[9px] font-bold text-emerald-700 block">Do</span>
+                      <span class="text-sm font-black text-emerald-900" id="card-pdca-do">0</span>
                     </div>
-                    <div class="bg-amber-50 rounded-lg p-1 border border-amber-100">
-                      <span class="text-[8px] font-bold text-amber-600 block">Check</span>
-                      <span class="text-xs font-extrabold text-amber-800" id="card-pdca-check">0</span>
+                    <div class="bg-amber-50/90 rounded-xl p-1.5 border border-amber-200 shadow-2xs">
+                      <span class="text-[9px] font-bold text-amber-700 block">Check</span>
+                      <span class="text-sm font-black text-amber-900" id="card-pdca-check">0</span>
                     </div>
-                    <div class="bg-red-50 rounded-lg p-1 border border-red-100">
-                      <span class="text-[8px] font-bold text-red-600 block">Action</span>
-                      <span class="text-xs font-extrabold text-red-800" id="card-pdca-action">0</span>
+                    <div class="bg-purple-50/90 rounded-xl p-1.5 border border-purple-200 shadow-2xs">
+                      <span class="text-[9px] font-bold text-purple-700 block">Action</span>
+                      <span class="text-sm font-black text-purple-900" id="card-pdca-action">0</span>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="mt-3 bg-purple-50/80 p-2.5 rounded-xl border border-purple-100 flex items-center gap-2">
-                <div class="w-6 h-6 rounded-lg bg-purple-200/70 text-purple-700 flex items-center justify-center text-xs flex-shrink-0">
+              
+              <!-- Best Circle Award Box -->
+              <div class="mt-3 bg-gradient-to-r from-purple-50 via-indigo-50/50 to-purple-50 p-2.5 rounded-xl border border-purple-200 flex items-center gap-2.5 shadow-2xs">
+                <div class="w-7 h-7 rounded-lg bg-amber-100 text-amber-700 flex items-center justify-center text-xs flex-shrink-0 border border-amber-200 shadow-2xs">
                   <i class="fa-solid fa-trophy"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                  <span class="text-[8px] font-bold text-purple-500 uppercase tracking-wider block">Predikat Terbaik Bulan Ini</span>
-                  <p class="text-[10px] font-bold text-purple-900 truncate" id="card-qcc-best-team">-</p>
-                  <span class="text-[9px] text-purple-700 font-semibold block" id="card-qcc-best-score">Poin: -</span>
+                  <span class="text-[8px] font-bold text-purple-600 uppercase tracking-wider block">Predikat Terbaik Bulan Ini</span>
+                  <p class="text-[11px] font-black text-purple-900 truncate" id="card-qcc-best-team">-</p>
+                  <span class="text-[9px] text-purple-700 font-bold block" id="card-qcc-best-score">Poin: -</span>
                 </div>
               </div>
             </div>
           
-            <!-- CARD 5: CATATAN DISIPLIN / SP (MENGAMBIL 2 KOLOM PENUH AGAR LEBIH PRESISI DI BARIS BARU) -->
-            <div onclick="switchView('sp')" class="md:col-span-2 lg:col-span-2 xl:col-span-2 bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-red-300 transition cursor-pointer min-w-0">
+            <!-- CARD 5: SURAT PERINGATAN (SP) - FULL ROW WIDTH WITH HIGH-CONTRAST SANKSI PILLS -->
+            <div onclick="switchView('sp')" class="md:col-span-2 lg:col-span-2 xl:col-span-2 bg-white rounded-2xl p-4 sm:p-4.5 border border-slate-200/90 shadow-card flex flex-col justify-between hover:shadow-card-hover hover:border-red-400 transition cursor-pointer min-w-0">
               <div>
                 <div class="flex items-center justify-between mb-3">
-                  <div class="w-9 h-9 rounded-xl bg-red-50 text-red-600 flex items-center justify-center font-bold text-sm border border-red-100 flex-shrink-0">
+                  <div class="w-9 h-9 rounded-xl bg-red-100 text-red-700 flex items-center justify-center font-bold text-sm border border-red-200 shadow-2xs flex-shrink-0">
                     <i class="fa-solid fa-shield-halved"></i>
                   </div>
                   <div class="text-right">
-                    <span class="text-[10px] font-bold text-red-600 uppercase tracking-wider block">5. Surat Peringatan (SP)</span>
-                    <span class="text-[9px] text-slate-400">Risk & Compliance</span>
+                    <span class="text-[10px] font-extrabold text-red-700 uppercase tracking-wider block">5. Surat Peringatan (SP)</span>
+                    <span class="text-[9px] text-slate-400 font-medium">Risk & Compliance Karyawan</span>
                   </div>
                 </div>
                 <div class="mb-2">
-                  <div class="flex items-baseline gap-1">
-                    <span class="text-3xl font-black text-slate-900" id="card-sp-total">0</span>
-                    <span class="text-xs font-bold text-slate-500">Kasus</span>
+                  <div class="flex items-baseline gap-1.5">
+                    <span class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="card-sp-total">0</span>
+                    <span class="text-xs font-bold text-slate-500">Kasus Sanksi Aktif</span>
                   </div>
-                  <span class="text-[10px] font-bold text-slate-400 block">Sanksi / SP Aktif</span>
+                  <span class="text-[10px] font-bold text-slate-500 block mt-1">Status Disiplin Karyawan Terdaftar</span>
                 </div>
                 
-                <!-- SUB CARD STATISTIK SANKSI (RESPONSIVE) -->
+                <!-- 5 Kategori Sanksi Disiplin (High Contrast) -->
                 <div class="pt-2 border-t border-slate-100">
+                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Rincian Tingkat Sanksi</span>
                   <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-2 text-center">
                     <!-- Teguran -->
-                    <div class="bg-blue-50/80 rounded-xl p-2 border border-blue-200/80">
-                      <span class="text-[9px] font-bold text-blue-700 block truncate" title="Surat Teguran">Teguran</span>
-                      <span class="text-sm font-black text-blue-800" id="card-teguran-count">0</span>
+                    <div class="bg-blue-50/90 rounded-xl p-2 border border-blue-200 shadow-2xs">
+                      <span class="text-[10px] font-bold text-blue-700 block truncate" title="Surat Teguran">Teguran</span>
+                      <span class="text-base font-black text-blue-900 block my-0.5" id="card-teguran-count">0</span>
+                      <span class="text-[8px] text-blue-600 font-semibold">Kasus</span>
                     </div>
                     <!-- SP1 -->
-                    <div class="bg-amber-50/80 rounded-xl p-2 border border-amber-200/80">
-                      <span class="text-[9px] font-bold text-amber-700 block truncate">SP1</span>
-                      <span class="text-sm font-black text-amber-800" id="card-sp1-count">0</span>
+                    <div class="bg-amber-50/90 rounded-xl p-2 border border-amber-200 shadow-2xs">
+                      <span class="text-[10px] font-bold text-amber-700 block truncate">SP 1</span>
+                      <span class="text-base font-black text-amber-900 block my-0.5" id="card-sp1-count">0</span>
+                      <span class="text-[8px] text-amber-600 font-semibold">Kasus</span>
                     </div>
                     <!-- SP2 -->
-                    <div class="bg-orange-50/80 rounded-xl p-2 border border-orange-200/80">
-                      <span class="text-[9px] font-bold text-orange-700 block truncate">SP2</span>
-                      <span class="text-sm font-black text-orange-800" id="card-sp2-count">0</span>
+                    <div class="bg-orange-50/90 rounded-xl p-2 border border-orange-200 shadow-2xs">
+                      <span class="text-[10px] font-bold text-orange-700 block truncate">SP 2</span>
+                      <span class="text-base font-black text-orange-900 block my-0.5" id="card-sp2-count">0</span>
+                      <span class="text-[8px] text-orange-600 font-semibold">Kasus</span>
                     </div>
                     <!-- SP3 -->
-                    <div class="bg-red-50/80 rounded-xl p-2 border border-red-200/80">
-                      <span class="text-[9px] font-bold text-red-700 block truncate">SP3</span>
-                      <span class="text-sm font-black text-red-800" id="card-sp3-count">0</span>
+                    <div class="bg-red-50/90 rounded-xl p-2 border border-red-200 shadow-2xs">
+                      <span class="text-[10px] font-bold text-red-700 block truncate">SP 3</span>
+                      <span class="text-base font-black text-red-900 block my-0.5" id="card-sp3-count">0</span>
+                      <span class="text-[8px] text-red-600 font-semibold">Kasus</span>
                     </div>
                     <!-- SPPT -->
-                    <div class="bg-purple-50/80 rounded-xl p-2 border border-purple-200/80 col-span-2 xs:col-span-1 sm:col-span-1">
-                      <span class="text-[9px] font-bold text-purple-700 block truncate" title="SPPT">SPPT</span>
-                      <span class="text-sm font-black text-purple-800" id="card-sppt-count">0</span>
+                    <div class="bg-purple-50/90 rounded-xl p-2 border border-purple-200 shadow-2xs col-span-2 xs:col-span-1 sm:col-span-1">
+                      <span class="text-[10px] font-bold text-purple-700 block truncate" title="SPPT">SPPT</span>
+                      <span class="text-base font-black text-purple-900 block my-0.5" id="card-sppt-count">0</span>
+                      <span class="text-[8px] text-purple-600 font-semibold">Kasus</span>
                     </div>
                   </div>
                 </div>
               </div>
             
-              <div id="card-sp-alert-box" class="mt-3 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 text-center">
-                <p class="text-[11px] font-extrabold text-emerald-700 flex items-center justify-center gap-1">
-                  <i class="fa-solid fa-circle-check"></i> CLEAR BRANCH
+              <!-- Dynamic Alert Box (Clear Branch vs Sanksi Aktif) -->
+              <div id="card-sp-alert-box" class="mt-3 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 text-center shadow-2xs">
+                <p class="text-[11px] font-extrabold text-emerald-800 flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-circle-check text-emerald-600"></i> CLEAR BRANCH (Bebas Sanksi)
                 </p>
-                <p class="text-[9px] text-emerald-600 mt-0.5 leading-tight">Seluruh karyawan bersih tanpa sanksi</p>
+                <p class="text-[9px] text-emerald-700 font-semibold mt-0.5 leading-tight">Seluruh staf cabang tertib tanpa sanksi aktif</p>
               </div>
             </div>
 
@@ -2698,7 +2724,7 @@
     /**
      * Hitung ulang metrik agregasi ringkasan (summary) sesuai cabang yang diisolasi
      */
-    function computeBranchSummary(employees, qccList = [], fallbackSummary = {}) {
+    function computeBranchSummary(employees, qccList = [], fallbackSummary = {}, rawData = null) {
       const totalKaryawan = employees.length;
 
       const salesCount = employees.filter(e => (e.divisi || '').toLowerCase().includes('sales')).length;
@@ -2715,14 +2741,20 @@
       const servicePct = totalKaryawan ? Math.round((serviceCount / totalKaryawan) * 100) : 0;
       const adminPct = totalKaryawan ? Math.max(0, 100 - salesPct - servicePct) : 0;
 
-      const countTetap = employees.filter(e => {
-        const c = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap';
-        return isTetapContract(c);
-      }).length;
-      const countPKWT = employees.filter(e => {
-        const c = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian;
-        return isPKWTContract(c);
-      }).length;
+      // 5 Kategori Baku Status Kepegawaian (Contract)
+      const contractGroupMap = {};
+      STANDARD_CONTRACT_CATEGORIES.forEach(cat => {
+        contractGroupMap[cat] = 0;
+      });
+
+      employees.forEach(e => {
+        const raw = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap / Permanent';
+        const norm = normalizeContractCategory(raw);
+        contractGroupMap[norm] = (contractGroupMap[norm] || 0) + 1;
+      });
+
+      const countTetap = contractGroupMap['Tetap / Permanent'] || 0;
+      const countPKWT = contractGroupMap['Kontrak / PKWT'] || 0;
 
       const totalAttendance = employees.reduce((sum, e) => sum + (Number(e.kehadiranPct) || 0), 0);
       const avgAttendance = totalKaryawan ? (totalAttendance / totalKaryawan).toFixed(1) : 0;
@@ -2737,21 +2769,61 @@
       const countImplementedSS = employees.reduce((sum, e) => sum + (Number(e.implementedSS) || ((e.totalSS || 0) >= 2 ? 1 : 0)), 0);
       const countEvaluasiSS = Math.max(0, totalSS - countImplementedSS);
 
-      const countTeguran = employees.filter(e => String(e.spAktif || '').toUpperCase().includes('TEGURAN')).length;
-      const countSP1 = employees.filter(e => {
-        const sp = String(e.spAktif || '').toUpperCase();
-        return sp === 'SP 1' || sp === 'SP1';
-      }).length;
-      const countSP2 = employees.filter(e => {
-        const sp = String(e.spAktif || '').toUpperCase();
-        return sp === 'SP 2' || sp === 'SP2';
-      }).length;
-      const countSP3 = employees.filter(e => {
-        const sp = String(e.spAktif || '').toUpperCase();
-        return sp === 'SP 3' || sp === 'SP3';
-      }).length;
-      const countSPPT = employees.filter(e => String(e.spAktif || '').toUpperCase().includes('SPPT')).length;
-      const totalSP = countTeguran + countSP1 + countSP2 + countSP3 + countSPPT;
+      // Hitung Surat Peringatan (SP)
+      let countTeguran = 0;
+      let countSP1 = 0;
+      let countSP2 = 0;
+      let countSP3 = 0;
+      let countSPPT = 0;
+
+      const payloadObj = rawData || currentDashboardPayload;
+      const rawSPRows = (payloadObj && payloadObj.rawTables && Array.isArray(payloadObj.rawTables.Data_SP))
+        ? payloadObj.rawTables.Data_SP
+        : [];
+
+      if (rawSPRows.length > 0) {
+        const branchEmployeesNpk = new Set(employees.map(e => String(e.npk || e['Personnel No.'] || e['Personnel no.'] || '').trim().toLowerCase()).filter(Boolean));
+        const relevantSP = branchEmployeesNpk.size > 0 
+          ? rawSPRows.filter(r => {
+              const npk = String(r['Personnel No.'] || r['Personnel no.'] || r['NPK'] || r.npk || '').trim().toLowerCase();
+              return branchEmployeesNpk.has(npk);
+            })
+          : rawSPRows;
+
+        relevantSP.forEach(r => {
+          const sp = String(r['Tingkat SP'] || r['Jenis Sanksi'] || r['Status SP'] || r.tingkat || r.status || '').toUpperCase();
+          if (sp.includes('TEGURAN')) countTeguran++;
+          else if (sp.includes('SP 1') || sp.includes('SP1')) countSP1++;
+          else if (sp.includes('SP 2') || sp.includes('SP2')) countSP2++;
+          else if (sp.includes('SP 3') || sp.includes('SP3')) countSP3++;
+          else if (sp.includes('SPPT')) countSPPT++;
+        });
+      } else {
+        countTeguran = employees.filter(e => String(e.spAktif || '').toUpperCase().includes('TEGURAN')).length;
+        countSP1 = employees.filter(e => {
+          const sp = String(e.spAktif || '').toUpperCase();
+          return sp === 'SP 1' || sp === 'SP1';
+        }).length;
+        countSP2 = employees.filter(e => {
+          const sp = String(e.spAktif || '').toUpperCase();
+          return sp === 'SP 2' || sp === 'SP2';
+        }).length;
+        countSP3 = employees.filter(e => {
+          const sp = String(e.spAktif || '').toUpperCase();
+          return sp === 'SP 3' || sp === 'SP3';
+        }).length;
+        countSPPT = employees.filter(e => String(e.spAktif || '').toUpperCase().includes('SPPT')).length;
+      }
+
+      let totalSP = countTeguran + countSP1 + countSP2 + countSP3 + countSPPT;
+      if (totalSP === 0 && fallbackSummary.totalSP && employees.length === 0) {
+        totalSP = fallbackSummary.totalSP || 0;
+        countTeguran = fallbackSummary.countTeguran || 0;
+        countSP1 = fallbackSummary.countSP1 || 0;
+        countSP2 = fallbackSummary.countSP2 || 0;
+        countSP3 = fallbackSummary.countSP3 || 0;
+        countSPPT = fallbackSummary.countSPPT || 0;
+      }
 
       const totalQCCCircles = qccList.length || (fallbackSummary.totalQCCCircles || 0);
       const pdcaCount = fallbackSummary.pdcaCount || { Plan: 1, Do: 1, Check: 1, Action: 1 };
@@ -2764,6 +2836,7 @@
         adminPct,
         countTetap,
         countPKWT,
+        contractGroupMap,
         avgAttendance,
         totalAlpha,
         totalSeringTelat,
@@ -3075,9 +3148,19 @@
       // 3. Hitung metrik agregasi (summary) khusus cabang yang diakses
       let s;
       if (targetBranch === 'ALL' && data.summary && isAdmin) {
-        s = data.summary;
+        s = { ...data.summary };
+        if (!s.contractGroupMap || Object.keys(s.contractGroupMap).length === 0) {
+          const cMap = {};
+          STANDARD_CONTRACT_CATEGORIES.forEach(cat => { cMap[cat] = 0; });
+          scopedEmployees.forEach(e => {
+            const c = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap / Permanent';
+            const norm = normalizeContractCategory(c);
+            cMap[norm] = (cMap[norm] || 0) + 1;
+          });
+          s.contractGroupMap = cMap;
+        }
       } else {
-        s = computeBranchSummary(scopedEmployees, scopedQCC, data.summary || {});
+        s = computeBranchSummary(scopedEmployees, scopedQCC, data.summary || {}, data);
       }
 
       // Simpan payload scoped ke state global agar tabel dan ekspor hanya berisi data yang berhak diakses
@@ -3089,6 +3172,7 @@
       };
       initializeStandardTables(currentDashboardPayload, targetBranch);
 
+      // Card 1: Master Karyawan
       document.getElementById('card-total-karyawan').textContent = s.totalKaryawan || 0;
       document.getElementById('card-pct-sales').textContent = `${s.salesPct || 0}%`;
       document.getElementById('card-pct-service').textContent = `${s.servicePct || 0}%`;
@@ -3101,6 +3185,41 @@
       if (document.getElementById('card-kontrak-pct')) document.getElementById('card-kontrak-pct').textContent = `${pkwtPct}%`;
       if (document.getElementById('card-tetap-count')) document.getElementById('card-tetap-count').textContent = `${s.countTetap || 0} (${tetapPct}%)`;
       if (document.getElementById('card-kontrak-count')) document.getElementById('card-kontrak-count').textContent = `${s.countPKWT || 0} (${pkwtPct}%)`;
+
+      // Render 5 Kategori Status Kepegawaian di Card 1 Dashboard
+      const contractContainer = document.getElementById('dashboard-contract-group-list');
+      if (contractContainer) {
+        const cMap = s.contractGroupMap || {};
+        const standardCats = STANDARD_CONTRACT_CATEGORIES;
+        const totalEmp = s.totalKaryawan || 1;
+        contractContainer.innerHTML = standardCats.map((grpName, index) => {
+          const count = cMap[grpName] || 0;
+          const meta = getContractMeta(grpName);
+          const pct = Math.round((count / totalEmp) * 100);
+          const isFifth = (index === 4) ? 'col-span-2 xs:col-span-1' : '';
+          return `
+            <div class="flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:shadow-xs ${meta.cardHover} transition text-center min-w-0 shadow-2xs ${isFifth}">
+              <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg ${meta.iconBg} flex items-center justify-center text-[10px] sm:text-xs mb-1 border ${meta.iconBorder} shadow-2xs flex-shrink-0">
+                <i class="${meta.icon}"></i>
+              </div>
+              <div class="w-full px-0.5 mb-0.5">
+                <div class="text-[9px] sm:text-[10px] font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
+                  ${meta.displayName}
+                </div>
+                <div class="text-[8px] font-medium text-slate-400 leading-tight truncate" title="${meta.subName}">
+                  ${meta.subName}
+                </div>
+              </div>
+              <div class="text-[11px] sm:text-xs font-black text-slate-900 leading-tight my-0.5">
+                ${count} <span class="text-[8px] font-medium text-slate-400">Org</span>
+              </div>
+              <span class="px-1 py-0.2 rounded text-[8px] sm:text-[9px] font-black ${meta.badgeBg} border">
+                ${pct}%
+              </span>
+            </div>
+          `;
+        }).join('');
+      }
 
       const cSales = document.getElementById('donut-slice-sales');
       const cSvc = document.getElementById('donut-slice-service');
@@ -3119,19 +3238,72 @@
         cAdm.setAttribute('stroke-dashoffset', `${admOffset}`);
       }
 
+      // Card 2: Absensi & Disiplin
       document.getElementById('card-kehadiran-rate').innerHTML = `${s.avgAttendance || 0}<span class="text-2xl font-bold">%</span>`;
       document.getElementById('card-alpha-count').textContent = s.totalAlpha || 0;
       document.getElementById('card-telat-count').textContent = s.totalSeringTelat || 0;
 
+      const attBadge = document.getElementById('card-attendance-badge');
+      if (attBadge) {
+        const numAtt = parseFloat(s.avgAttendance) || 0;
+        if (numAtt >= 95) {
+          attBadge.className = "mt-3 bg-emerald-50 p-2 rounded-xl border border-emerald-200 text-center shadow-2xs";
+          attBadge.innerHTML = `
+            <span class="text-[10px] font-extrabold text-emerald-800 block flex items-center justify-center gap-1">
+              <i class="fa-solid fa-circle-check text-emerald-600"></i> SANGAT BAIK
+            </span>
+            <span class="text-[9px] text-emerald-700 font-semibold block mt-0.5">Target Kehadiran &ge; 95% Terpenuhi</span>
+          `;
+        } else if (numAtt >= 90) {
+          attBadge.className = "mt-3 bg-amber-50 p-2 rounded-xl border border-amber-200 text-center shadow-2xs";
+          attBadge.innerHTML = `
+            <span class="text-[10px] font-extrabold text-amber-800 block flex items-center justify-center gap-1">
+              <i class="fa-solid fa-circle-exclamation text-amber-600"></i> CUKUP BAIK
+            </span>
+            <span class="text-[9px] text-amber-700 font-semibold block mt-0.5">Tingkat Kehadiran 90% - 94.9%</span>
+          `;
+        } else {
+          attBadge.className = "mt-3 bg-red-50 p-2 rounded-xl border border-red-200 text-center shadow-2xs";
+          attBadge.innerHTML = `
+            <span class="text-[10px] font-extrabold text-red-800 block flex items-center justify-center gap-1">
+              <i class="fa-solid fa-triangle-exclamation text-red-600"></i> PERLU PERHATIAN
+            </span>
+            <span class="text-[9px] text-red-700 font-semibold block mt-0.5">Tingkat Kehadiran di bawah standar 90%</span>
+          `;
+        }
+      }
+
+      // Card 3: Suggestion System (SS)
       document.getElementById('card-ss-total').textContent = s.totalSS || 0;
       document.getElementById('card-ss-target-denom').textContent = `/ ${s.targetSS || 0}`;
       const ssPct = (s.targetSS > 0) ? Math.min(Math.round(((s.totalSS || 0) / s.targetSS) * 100), 100) : 0;
-      if (document.getElementById('card-ss-progress-bar')) document.getElementById('card-ss-progress-bar').style.width = `${ssPct}%`;
+      if (document.getElementById('card-ss-progress-bar')) {
+        const bar = document.getElementById('card-ss-progress-bar');
+        bar.style.width = `${ssPct}%`;
+        if (ssPct >= 100) {
+          bar.className = "bg-gradient-to-r from-emerald-500 to-emerald-600 h-2 rounded-full transition-all duration-500";
+        } else if (ssPct >= 50) {
+          bar.className = "bg-gradient-to-r from-amber-500 to-amber-600 h-2 rounded-full transition-all duration-500";
+        } else {
+          bar.className = "bg-gradient-to-r from-red-500 to-amber-500 h-2 rounded-full transition-all duration-500";
+        }
+      }
       if (document.getElementById('card-ss-target-pct')) document.getElementById('card-ss-target-pct').textContent = `${ssPct}%`;
       if (document.getElementById('card-ss-part-pct')) document.getElementById('card-ss-part-pct').textContent = `${s.ssParticipationRate || 0}%`;
+      if (document.getElementById('card-ss-part-text')) {
+        const part = s.ssParticipationRate || 0;
+        if (part >= 80) {
+          document.getElementById('card-ss-part-text').textContent = "Partisipasi sangat tinggi, budaya Kaizen aktif";
+        } else if (part >= 50) {
+          document.getElementById('card-ss-part-text').textContent = "Partisipasi stabil, dorong ide dari seluruh staf";
+        } else {
+          document.getElementById('card-ss-part-text').textContent = "Partisipasi perlu ditingkatkan kembali";
+        }
+      }
       if (document.getElementById('card-ss-implemented')) document.getElementById('card-ss-implemented').textContent = `${s.countImplementedSS || 0} Ide`;
       if (document.getElementById('card-ss-evaluasi')) document.getElementById('card-ss-evaluasi').textContent = `${s.countEvaluasiSS || 0} Ide`;
 
+      // Card 4: QCC
       if (document.getElementById('card-qcc-total')) document.getElementById('card-qcc-total').textContent = s.totalQCCCircles || 0;
       if (s.pdcaCount) {
         if (document.getElementById('card-pdca-plan')) document.getElementById('card-pdca-plan').textContent = s.pdcaCount.Plan || 0;
@@ -3147,12 +3319,34 @@
         if (document.getElementById('card-qcc-best-score')) document.getElementById('card-qcc-best-score').textContent = "Poin: -";
       }
 
+      // Card 5: SP (Surat Peringatan)
       document.getElementById('card-sp-total').textContent = s.totalSP || 0;
       if (document.getElementById('card-teguran-count')) document.getElementById('card-teguran-count').textContent = s.countTeguran || 0;
       if (document.getElementById('card-sp1-count')) document.getElementById('card-sp1-count').textContent = s.countSP1 || 0;
       if (document.getElementById('card-sp2-count')) document.getElementById('card-sp2-count').textContent = s.countSP2 || 0;
       if (document.getElementById('card-sp3-count')) document.getElementById('card-sp3-count').textContent = s.countSP3 || 0;
       if (document.getElementById('card-sppt-count')) document.getElementById('card-sppt-count').textContent = s.countSPPT || 0;
+
+      const spAlertBox = document.getElementById('card-sp-alert-box');
+      if (spAlertBox) {
+        if ((s.totalSP || 0) === 0) {
+          spAlertBox.className = "mt-3 bg-emerald-50 p-2.5 rounded-xl border border-emerald-200 text-center shadow-2xs";
+          spAlertBox.innerHTML = `
+            <p class="text-[11px] font-extrabold text-emerald-800 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-circle-check text-emerald-600"></i> CLEAR BRANCH (Bebas Sanksi)
+            </p>
+            <p class="text-[9px] text-emerald-700 font-semibold mt-0.5 leading-tight">Seluruh staf cabang tertib tanpa sanksi aktif</p>
+          `;
+        } else {
+          spAlertBox.className = "mt-3 bg-red-50 p-2.5 rounded-xl border border-red-200 text-center shadow-2xs";
+          spAlertBox.innerHTML = `
+            <p class="text-[11px] font-extrabold text-red-800 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation text-red-600"></i> ${s.totalSP} KASUS SANKSI AKTIF
+            </p>
+            <p class="text-[9px] text-red-700 font-semibold mt-0.5 leading-tight">Perlu tindak lanjut pembinaan & monitoring kedisiplinan</p>
+          `;
+        }
+      }
 
       renderEmployeeTable(scopedEmployees);
       renderPBKTable(scopedEmployees);
