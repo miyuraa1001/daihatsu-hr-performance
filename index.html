@@ -2513,6 +2513,90 @@
       return normalizeContractCategory(val) === 'Kontrak / PKWT';
     }
 
+    /**
+     * Helper universal untuk membaca nilai kolom dari objek database secara presisi tanpa mutasi.
+     * Mendukung alias kolom, variasi case-insensitive, camelCase/snake_case tanpa mengubah data asli.
+     */
+    function getRowCellValue(row, colName, schema = null) {
+      if (!row || typeof row !== 'object') return "";
+
+      // 1. Direct key match (jika bernilai valid)
+      if (row[colName] !== undefined && row[colName] !== null) {
+        const valStr = String(row[colName]).trim();
+        if (valStr !== '') return row[colName];
+      }
+
+      const normTarget = normalizeHeaderName(colName);
+      const keys = Object.keys(row);
+
+      // 2. Case-insensitive key match pada key aktual di baris data
+      for (const k of keys) {
+        if (normalizeHeaderName(k) === normTarget) {
+          const v = row[k];
+          if (v !== undefined && v !== null && String(v).trim() !== '') {
+            return v;
+          }
+        }
+      }
+
+      // 3. Cek skema aliases jika ada
+      const activeSchema = schema || (SCHEMAS.Master_Karyawan.columns.includes(colName) ? SCHEMAS.Master_Karyawan : null);
+      const aliases = activeSchema?.aliases?.[normTarget] || SCHEMAS.Master_Karyawan.aliases[normTarget] || [];
+      for (const alias of aliases) {
+        if (row[alias] !== undefined && row[alias] !== null && String(row[alias]).trim() !== '') {
+          return row[alias];
+        }
+        const normAlias = normalizeHeaderName(alias);
+        for (const k of keys) {
+          if (normalizeHeaderName(k) === normAlias) {
+            const v = row[k];
+            if (v !== undefined && v !== null && String(v).trim() !== '') {
+              return v;
+            }
+          }
+        }
+      }
+
+      // 4. Fallback ke camelCase / snake_case umum database
+      const fallbackMap = {
+        'personnel no.': ['npk', 'nik', 'id', 'personnelNo', 'personnel_no', 'idKaryawan', 'id_karyawan'],
+        'last name': ['nama', 'namaKaryawan', 'nama_karyawan', 'employeeName', 'employee_name', 'name', 'namaLengkap', 'nama_lengkap'],
+        'p.subarea': ['cabang', 'pSubarea', 'p_subarea', 'namaCabang', 'nama_cabang', 'subarea'],
+        'wilayah': ['wilayah', 'region', 'area'],
+        'contract': ['contract', 'tipeKontrak', 'tipe_kontrak', 'statusKontrak', 'status_kontrak', 'statusKepegawaian', 'status_kepegawaian'],
+        'name': ['divisi', 'name', 'unit', 'divisiName', 'namaDivisi', 'nama_divisi'],
+        'name of organizational unit': ['dept', 'departemen', 'orgUnit', 'organizationalUnit', 'namaDepartemen', 'nama_departemen'],
+        'job title': ['jabatan', 'jobTitle', 'job_title', 'posisi', 'role'],
+        'd.o.birth': ['tglLahir', 'tgl_lahir', 'dob', 'birthDate', 'dateOfBirth', 'tanggalLahir', 'tanggal_lahir'],
+        'gender text': ['gender', 'jenisKelamin', 'jenis_kelamin', 'jk', 'sex'],
+        'religious denomination': ['agama', 'religion', 'religiousDenomination'],
+        'ps group': ['psGroup', 'ps_group', 'golongan', 'pangkat'],
+        'lvl': ['lvl', 'level'],
+        'date': ['joinDate', 'join_date', 'tglMasuk', 'tgl_masuk', 'effectiveDate', 'tanggal'],
+        'p0001-stext': ['stext', 'jabatan', 'deskripsiJabatan', 'posisi'],
+        'business area': ['kodeBA', 'kode_ba', 'ba', 'businessArea', 'business_area', 'kodeCabang', 'kode_cabang']
+      };
+
+      const fallbackKeys = fallbackMap[normTarget] || [];
+      for (const fbKey of fallbackKeys) {
+        if (row[fbKey] !== undefined && row[fbKey] !== null && String(row[fbKey]).trim() !== '') {
+          return row[fbKey];
+        }
+        const normFb = normalizeHeaderName(fbKey);
+        for (const k of keys) {
+          if (normalizeHeaderName(k) === normFb) {
+            const v = row[k];
+            if (v !== undefined && v !== null && String(v).trim() !== '') {
+              return v;
+            }
+          }
+        }
+      }
+
+      // 5. Jika tidak ditemukan, kembalikan nilai direct (bisa berupa "" atau undefined/null)
+      return (row[colName] !== undefined && row[colName] !== null) ? row[colName] : "";
+    }
+
     function castSchemaValue(colName, val, fallbackIdx = 1) {
       const norm = normalizeHeaderName(colName);
       if (norm === 'npk' || norm === 'personnel no.' || norm.includes('astrapay') || 
@@ -2628,39 +2712,34 @@
       const employees = payload.employeeList || [];
       const qccs = payload.qccList || [];
 
-      // 1. Master_Karyawan (16 Columns)
+      // 1. Master_Karyawan (16 Columns - 100% Identik Data Database)
       if (!payload.rawTables.Master_Karyawan || !payload.rawTables.Master_Karyawan.length) {
         payload.rawTables.Master_Karyawan = employees.map(e => {
-          const contractVal = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap';
-          e['Contract'] = contractVal;
-          e.tipeKontrak = contractVal;
-          return {
-            "Personnel no.": safeString(e['Personnel no.'] || e.npk),
-            "P.subarea": e['P.subarea'] || e.cabang || 'Lampung A Yani',
-            "Wilayah": e['Wilayah'] || e.wilayah || 'DSO Lampung',
-            "Contract": contractVal,
-            "Name": e['Name'] || e.divisi || 'Operational',
-            "Name of organizational unit": e['Name of organizational unit'] || (e.divisi ? `${e.divisi} DSO` : 'Departemen DSO'),
-            "Job Title": e['Job Title'] || e.jabatan || 'Staff',
-            "Last name": e['Last name'] || e.nama || '',
-            "D.o.birth": parseExcelDate(e['D.o.birth'] || e.tglLahir || '1995-05-15'),
-            "Gender text": e['Gender text'] || e.gender || 'Male',
-            "Religious denomination": e['Religious denomination'] || e.agama || 'Islam',
-            "PS group": e['PS group'] || e.psGroup || 'III/A',
-            "Lvl": e['Lvl'] || e.lvl || 'Staff',
-            "Date": parseExcelDate(e['Date'] || e.joinDate || '2021-01-01'),
-            "P0001-STEXT": e['P0001-STEXT'] || e.stext || (e.jabatan || 'Staff Unit'),
-            "Business area": safeString(e['Business area'] || e.kodeBA || 'D660')
-          };
+          // Pertahankan semua properti asli dari database
+          const row = { ...e };
+          // Petakan kolom kanonik dari properti/alias aktual tanpa menyisipkan data palsu/default
+          SCHEMAS.Master_Karyawan.columns.forEach(col => {
+            if (row[col] === undefined || row[col] === null || String(row[col]).trim() === '') {
+              const val = getRowCellValue(e, col, SCHEMAS.Master_Karyawan);
+              if (val !== undefined && val !== null && String(val).trim() !== '') {
+                row[col] = val;
+              }
+            }
+          });
+          return row;
         });
       } else {
-        payload.rawTables.Master_Karyawan.forEach(row => {
-          const npk = safeString(row['Personnel no.']);
-          const emp = employees.find(e => safeString(e.npk || e['Personnel no.']) === npk);
-          if (emp) {
-            emp['Contract'] = row['Contract'] || 'Tetap';
-            emp.tipeKontrak = row['Contract'] || 'Tetap';
-          }
+        payload.rawTables.Master_Karyawan = payload.rawTables.Master_Karyawan.map(row => {
+          const preserved = { ...row };
+          SCHEMAS.Master_Karyawan.columns.forEach(col => {
+            if (preserved[col] === undefined || preserved[col] === null || String(preserved[col]).trim() === '') {
+              const val = getRowCellValue(row, col, SCHEMAS.Master_Karyawan);
+              if (val !== undefined && val !== null && String(val).trim() !== '') {
+                preserved[col] = val;
+              }
+            }
+          });
+          return preserved;
         });
       }
 
@@ -4083,27 +4162,32 @@
       const list = data.employeeList || [];
       const rawRows = currentDashboardPayload?.rawTables?.Master_Karyawan || [];
 
-      const totalEmployees = rawRows.length || list.length || s.totalKaryawan || 0;
+      const isAdmin = isUserAdmin(loggedInUser);
+      const activeBranchVal = document.getElementById('branch-select')?.value || 'ALL';
+      const targetBranch = isAdmin ? activeBranchVal : getUserBranchCode(loggedInUser);
+
+      let sourceList = rawRows.length > 0 ? rawRows : list;
+      if (targetBranch !== 'ALL') {
+        sourceList = sourceList.filter(r => matchBranch(r, targetBranch));
+      }
+
+      const totalEmployees = sourceList.length || s.totalKaryawan || 0;
 
       // 1. Total Karyawan Card
       if (document.getElementById('mk-card-total')) {
         document.getElementById('mk-card-total').textContent = totalEmployees;
       }
       
-      const isAdmin = isUserAdmin(loggedInUser);
-      const activeBranchVal = document.getElementById('branch-select')?.value || 'ALL';
       let branchDesc = '';
       if (isAdmin && activeBranchVal === 'ALL') {
         branchDesc = 'Wilayah DSO Lampung (Semua Cabang)';
       } else {
         const info = resolveBranchInfo(activeBranchVal !== 'ALL' ? activeBranchVal : getUserBranchCode(loggedInUser));
-        branchDesc = `Cabang ${info ? info.name : (list[0]?.cabang || 'Aktif')}`;
+        branchDesc = `Cabang ${info ? info.name : (sourceList[0]?.cabang || sourceList[0]?.['P.subarea'] || 'Aktif')}`;
       }
       if (document.getElementById('mk-card-branch-desc')) {
         document.getElementById('mk-card-branch-desc').textContent = branchDesc;
       }
-
-      const sourceList = rawRows.length > 0 ? rawRows : list;
 
       // 2. Status Kepegawaian (Contract Insight) - Berdasarkan Kolom Contract
       const contractGroupMap = {};
@@ -4112,7 +4196,7 @@
       });
 
       sourceList.forEach(r => {
-        let rawVal = (r['Contract'] || r.Contract || r.contract || r.tipeKontrak || 'Tetap / Permanent').trim();
+        let rawVal = String(getRowCellValue(r, 'Contract', SCHEMAS.Master_Karyawan) || 'Tetap / Permanent').trim();
         let groupKey = normalizeContractCategory(rawVal);
         contractGroupMap[groupKey] = (contractGroupMap[groupKey] || 0) + 1;
       });
@@ -4174,7 +4258,7 @@
       // 3. Distribusi Divisi (Organisasi) - Berdasarkan Kolom Name (Semua masuk kelompok)
       const divisionMap = {};
       sourceList.forEach(r => {
-        let rawDiv = (r['Name'] || r['Name of organizational unit'] || r.divisi || '').trim();
+        let rawDiv = (getRowCellValue(r, 'Name', SCHEMAS.Master_Karyawan) || getRowCellValue(r, 'Name of organizational unit', SCHEMAS.Master_Karyawan) || r.divisi || '').trim();
         if (!rawDiv || rawDiv === '-' || rawDiv === 'undefined') rawDiv = 'Unit Operasional';
         divisionMap[rawDiv] = (divisionMap[rawDiv] || 0) + 1;
       });
@@ -4237,7 +4321,7 @@
       // 4. Distribusi Jabatan (Job Title) - Berdasarkan Kolom Job Title (Semua masuk kelompok)
       const jobMap = {};
       sourceList.forEach(r => {
-        let jt = (r['Job Title'] || r.jabatan || '').trim();
+        let jt = (getRowCellValue(r, 'Job Title', SCHEMAS.Master_Karyawan) || r.jabatan || '').trim();
         if (!jt || jt === '-' || jt === 'undefined') jt = 'Staff Unit';
         jobMap[jt] = (jobMap[jt] || 0) + 1;
       });
@@ -4326,7 +4410,7 @@
       const standardNormalized = new Set(STANDARD_CONTRACT_CATEGORIES.map(c => normalizeContractCategory(c).toLowerCase()));
       const extraSet = new Set();
       rawRows.forEach(r => {
-        const v = (r['Contract'] || '').trim();
+        const v = String(getRowCellValue(r, 'Contract', SCHEMAS.Master_Karyawan) || '').trim();
         if (v) {
           const norm = normalizeContractCategory(v).toLowerCase();
           if (!standardNormalized.has(norm)) {
@@ -4442,7 +4526,7 @@
           </button>
         `;
       } else {
-        const npkVal = String(row['Personnel no.'] || row['NPK'] || '').replace(/'/g, "\\'");
+        const npkVal = String(getRowCellValue(row, 'Personnel no.', SCHEMAS.Master_Karyawan) || row['Personnel no.'] || row['NPK'] || '').replace(/'/g, "\\'");
         detailBtn = `
           <button type="button" onclick="openPBKModal('${npkVal}')" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
             Detail
@@ -4488,14 +4572,14 @@
       const subtitleEl = document.getElementById('modal-edit-subtitle');
       if (titleEl) titleEl.textContent = `Edit Baris: ${schema.title}`;
       if (subtitleEl) {
-        const ident = row['Personnel no.'] || row['NPK'] || row['No'] || `Baris ke-${rowIndex + 1}`;
-        const name = row['Last name'] || row['Nama'] || row['Nama Tim'] || row['Employee Name'] || '';
+        const ident = getRowCellValue(row, 'Personnel no.', schema) || getRowCellValue(row, 'NPK', schema) || row['No'] || `Baris ke-${rowIndex + 1}`;
+        const name = getRowCellValue(row, 'Last name', schema) || getRowCellValue(row, 'Nama', schema) || row['Nama Tim'] || row['Employee Name'] || '';
         subtitleEl.textContent = `${ident}${name ? ' • ' + name : ''} (Perubahan akan langsung disinkronkan ke basis data)`;
       }
 
       const container = document.getElementById('edit-row-fields-grid');
       container.innerHTML = schema.columns.map(col => {
-        const val = (row[col] !== undefined && row[col] !== null) ? String(row[col]) : '';
+        const val = String(getRowCellValue(row, col, schema) || '');
         const norm = normalizeHeaderName(col);
         
         let inputHtml = '';
@@ -4684,8 +4768,8 @@
       document.getElementById('delete-row-index').value = rowIndex;
 
       const descEl = document.getElementById('modal-delete-desc');
-      const ident = row['Personnel no.'] || row['NPK'] || row['No'] || `Baris ke-${rowIndex + 1}`;
-      const name = row['Last name'] || row['Nama'] || row['Nama Tim'] || row['Employee Name'] || '';
+      const ident = getRowCellValue(row, 'Personnel no.', schema) || getRowCellValue(row, 'NPK', schema) || row['No'] || `Baris ke-${rowIndex + 1}`;
+      const name = getRowCellValue(row, 'Last name', schema) || getRowCellValue(row, 'Nama', schema) || row['Nama Tim'] || row['Employee Name'] || '';
       if (descEl) {
         descEl.textContent = `Apakah Anda yakin ingin menghapus data "${ident}${name ? ' - ' + name : ''}" dari ${schema.title}? Tindakan ini akan menghapus data dari aplikasi dan disinkronkan ke Google Sheets secara permanen.`;
       }
@@ -4771,46 +4855,82 @@
     }
 
     // ----------------------------------------------------
-    // A. Master Karyawan (16 Kolom Presisi)
+    // A. Master Karyawan (16 Kolom Presisi - Identik Database)
     // ----------------------------------------------------
     function filterMasterKaryawanTable() {
-      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
-      const rawRows = currentDashboardPayload.rawTables.Master_Karyawan || [];
+      if (!currentDashboardPayload) return;
+      if (!currentDashboardPayload.rawTables) currentDashboardPayload.rawTables = {};
+
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+      const targetBranch = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
+
+      let rawRows = currentDashboardPayload.rawTables.Master_Karyawan || [];
+      if (!rawRows.length && currentDashboardPayload.employeeList) {
+        rawRows = currentDashboardPayload.employeeList;
+      }
+
       const q = (document.getElementById('mk-search-input')?.value || '').toLowerCase().trim();
       const contractFilter = document.getElementById('mk-filter-kontrak')?.value || 'ALL';
 
       let list = rawRows;
 
-      if (q) {
-        list = list.filter(e => 
-          String(e['Personnel no.'] || '').toLowerCase().includes(q) || 
-          String(e['Last name'] || '').toLowerCase().includes(q) ||
-          String(e['Job Title'] || '').toLowerCase().includes(q) ||
-          String(e['P.subarea'] || '').toLowerCase().includes(q) ||
-          String(e['Business area'] || '').toLowerCase().includes(q)
-        );
+      // 1. Filter cabang sesuai hak akses user atau pilihan dropdown cabang admin
+      if (targetBranch !== 'ALL') {
+        list = list.filter(e => matchBranch(e, targetBranch));
       }
 
+      // 2. Filter pencarian teks bebas (mencakup semua nilai kolom database)
+      if (q) {
+        list = list.filter(e => {
+          return Object.values(e).some(val => val !== null && val !== undefined && String(val).toLowerCase().includes(q));
+        });
+      }
+
+      // 3. Filter status kepegawaian / kontrak
       if (contractFilter !== 'ALL') {
         const targetNorm = normalizeContractCategory(contractFilter).toLowerCase();
         list = list.filter(e => {
-          const raw = String(e['Contract'] || 'Tetap / Permanent').trim();
+          const rawVal = getRowCellValue(e, 'Contract', SCHEMAS.Master_Karyawan);
+          const raw = String(rawVal || '').trim();
+          if (!raw) return false;
           const rawNorm = normalizeContractCategory(raw).toLowerCase();
           return rawNorm === targetNorm || raw.toLowerCase() === contractFilter.toLowerCase();
         });
       }
 
       const isFull = columnViewMode.mk === 'FULL';
-      const cols = isFull 
-        ? SCHEMAS.Master_Karyawan.columns 
+      let cols = isFull 
+        ? [...SCHEMAS.Master_Karyawan.columns] 
         : ["Personnel no.", "Last name", "P.subarea", "Wilayah", "Contract", "Job Title", "Name of organizational unit", "Business area"];
+
+      // Jika mode kolom lengkap, tampilkan juga kolom kustom dari database (jika ada) tanpa duplikasi
+      if (isFull && list.length > 0) {
+        const standardNormSet = new Set(SCHEMAS.Master_Karyawan.columns.map(c => normalizeHeaderName(c)));
+        Object.values(SCHEMAS.Master_Karyawan.aliases).flat().forEach(a => standardNormSet.add(normalizeHeaderName(a)));
+        const ignoredKeys = new Set(['_id', '__v', 'id', 'password', 'token', 'raw', 'statuskontrak', 'tipekontrak', 'statuskepegawaian', 'status_kontrak', 'tipe_kontrak']);
+
+        const extraCols = [];
+        list.forEach(r => {
+          Object.keys(r).forEach(k => {
+            const normK = normalizeHeaderName(k);
+            if (!standardNormSet.has(normK) && !ignoredKeys.has(normK) && !extraCols.includes(k)) {
+              extraCols.push(k);
+            }
+          });
+        });
+        if (extraCols.length > 0) {
+          cols = [...cols, ...extraCols];
+        }
+      }
 
       // Render Header
       renderTableHeader('mk-table-header', cols, true);
 
       const tbody = document.getElementById('mk-table-body');
+      const branchScopedTotal = (targetBranch !== 'ALL') ? rawRows.filter(r => matchBranch(r, targetBranch)).length : rawRows.length;
       if (document.getElementById('mk-row-count')) {
-        document.getElementById('mk-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} karyawan (${cols.length} kolom)`;
+        document.getElementById('mk-row-count').textContent = `Menampilkan ${list.length} dari ${branchScopedTotal} karyawan (${cols.length} kolom)`;
       }
 
       if (!list.length) {
@@ -4824,12 +4944,13 @@
           const stickyClass = isFirst 
             ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
             : 'text-slate-600';
-          const val = formatColumnCell(col, row[col]);
+          const cellRaw = getRowCellValue(row, col, SCHEMAS.Master_Karyawan);
+          const val = formatColumnCell(col, cellRaw);
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
         const realIdx = rawRows.indexOf(row);
-        const actionCell = renderRowActionCell('Master_Karyawan', realIdx, row);
+        const actionCell = renderRowActionCell('Master_Karyawan', realIdx !== -1 ? realIdx : 0, row);
         return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
@@ -5527,15 +5648,25 @@
     // 7. Modal & UI Helpers
     function openPBKModal(npk) {
       if (!currentDashboardPayload) return;
-      const emp = currentDashboardPayload.employeeList.find(e => String(e.npk) === String(npk));
+      const emp = (currentDashboardPayload.employeeList || []).find(e => 
+        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === String(npk).trim()
+      ) || (currentDashboardPayload.rawTables?.Master_Karyawan || []).find(e =>
+        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === String(npk).trim()
+      );
       if (!emp) return;
 
-      document.getElementById('modal-emp-avatar').textContent = emp.nama.slice(0,2).toUpperCase();
-      document.getElementById('modal-emp-name').textContent = emp.nama;
-      document.getElementById('modal-emp-role').textContent = `NPK: ${emp.npk} • ${emp.jabatan || emp.divisi} • Cabang ${emp.cabang}`;
-      document.getElementById('modal-emp-hadir').textContent = `${emp.kehadiranPct}%`;
-      document.getElementById('modal-emp-ss').textContent = `${emp.totalSS} Ide`;
-      document.getElementById('modal-emp-kontrak').textContent = emp['Contract'] || emp.Contract || emp.contract || emp.tipeKontrak || 'Tetap';
+      const empNama = getRowCellValue(emp, 'Last name', SCHEMAS.Master_Karyawan) || emp.nama || 'Karyawan';
+      const empNpk = getRowCellValue(emp, 'Personnel no.', SCHEMAS.Master_Karyawan) || emp.npk || npk;
+      const empCabang = getRowCellValue(emp, 'P.subarea', SCHEMAS.Master_Karyawan) || emp.cabang || '-';
+      const empJabatan = getRowCellValue(emp, 'Job Title', SCHEMAS.Master_Karyawan) || emp.jabatan || emp.divisi || '-';
+      const empContract = getRowCellValue(emp, 'Contract', SCHEMAS.Master_Karyawan) || emp.tipeKontrak || 'Tetap';
+
+      document.getElementById('modal-emp-avatar').textContent = empNama.slice(0,2).toUpperCase();
+      document.getElementById('modal-emp-name').textContent = empNama;
+      document.getElementById('modal-emp-role').textContent = `NPK: ${empNpk} • ${empJabatan} • Cabang ${empCabang}`;
+      document.getElementById('modal-emp-hadir').textContent = `${emp.kehadiranPct || 100}%`;
+      document.getElementById('modal-emp-ss').textContent = `${emp.totalSS || 0} Ide`;
+      document.getElementById('modal-emp-kontrak').textContent = empContract;
       document.getElementById('modal-emp-sp').textContent = emp.spAktif || 'Bersih';
 
       const notesEl = document.getElementById('modal-emp-notes');
