@@ -807,125 +807,138 @@
           </div>
 
           <!-- Cards Summary Master Karyawan -->
-          <!-- Cards Summary Master Karyawan -->
-          <!-- Top 3 Insight KPI Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
-            <!-- CARD 1: TOTAL KARYAWAN -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
+          <!-- Summary Header Master Karyawan: Total & Verifikasi -->
+          <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
+            <div class="flex items-center gap-3">
+              <span class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+                <i class="fa-solid fa-users"></i>
+              </span>
               <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Karyawan</span>
-                  <span class="w-7 h-7 rounded-xl bg-slate-100 text-slate-600 flex items-center justify-center text-xs"><i class="fa-solid fa-users"></i></span>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-xl sm:text-2xl font-black text-slate-900 leading-none" id="mk-card-total">0</span>
+                  <span class="text-xs font-bold text-slate-600">Total Karyawan Terdaftar</span>
                 </div>
-                <div class="flex items-baseline gap-1.5 my-1">
-                  <span class="text-3xl font-black text-slate-900" id="mk-card-total">0</span>
-                  <span class="text-xs font-bold text-slate-500">Orang</span>
-                </div>
-                <p class="text-[11px] text-slate-500 font-medium truncate mt-0.5" id="mk-card-branch-desc">Semua cabang terdaftar</p>
-              </div>
-              <div class="pt-2.5 border-t border-slate-100 mt-2 flex items-center justify-between text-[10px]">
-                <span class="text-emerald-700 font-bold bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full flex items-center gap-1">
-                  <i class="fa-solid fa-circle-check text-[9px]"></i> Data Terverifikasi
-                </span>
-                <span class="text-slate-400 font-mono text-[9px]">DSO Lampung</span>
+                <p class="text-[11px] text-slate-400 font-medium mt-0.5" id="mk-card-branch-desc">Semua cabang terdaftar</p>
               </div>
             </div>
-
-            <!-- CARD 2: DISTRIBUSI DIVISI (1 KPI Terpadu) -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Distribusi Divisi</span>
-                  <span class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs"><i class="fa-solid fa-sitemap"></i></span>
-                </div>
-                <!-- Kelompok Divisi: Icon, Jumlah, Persen -->
-                <div class="space-y-1.5">
-                  <!-- Sales -->
-                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-blue-50/40 transition">
-                    <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-6 h-6 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-[10px] flex-shrink-0">
-                        <i class="fa-solid fa-car"></i>
-                      </span>
-                      <span class="text-[11px] font-bold text-slate-700 truncate">Sales</span>
-                    </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                      <span class="text-xs font-black text-slate-900"><span id="mk-card-sales-val">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
-                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-blue-100 text-blue-700 border border-blue-200" id="mk-card-sales-pct">0%</span>
-                    </div>
-                  </div>
-                  <!-- Service / Bengkel -->
-                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-emerald-50/40 transition">
-                    <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-6 h-6 rounded-lg bg-emerald-100 text-emerald-600 flex items-center justify-center text-[10px] flex-shrink-0">
-                        <i class="fa-solid fa-wrench"></i>
-                      </span>
-                      <span class="text-[11px] font-bold text-slate-700 truncate">Bengkel (Svc)</span>
-                    </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                      <span class="text-xs font-black text-slate-900"><span id="mk-card-service-val">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
-                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-emerald-100 text-emerald-700 border border-emerald-200" id="mk-card-service-pct">0%</span>
-                    </div>
-                  </div>
-                  <!-- Admin & Lainnya -->
-                  <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-purple-50/40 transition">
-                    <div class="flex items-center gap-2 min-w-0">
-                      <span class="w-6 h-6 rounded-lg bg-purple-100 text-purple-600 flex items-center justify-center text-[10px] flex-shrink-0">
-                        <i class="fa-solid fa-building"></i>
-                      </span>
-                      <span class="text-[11px] font-bold text-slate-700 truncate">Admin & Umum</span>
-                    </div>
-                    <div class="flex items-center gap-2 flex-shrink-0">
-                      <span class="text-xs font-black text-slate-900"><span id="mk-card-admin-val">0</span> <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
-                      <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black bg-purple-100 text-purple-700 border border-purple-200" id="mk-card-admin-pct">0%</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <!-- CARD 3: INSIGHT JOB TITLE (JABATAN) -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Top Job Title (Jabatan)</span>
-                  <span class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs"><i class="fa-solid fa-id-badge"></i></span>
-                </div>
-                <!-- Kelompok Job Title: Icon per Job Title, Jumlah, Persen -->
-                <div class="space-y-1.5" id="mk-jobtitle-group-list">
-                  <div class="text-center py-4 text-slate-400 text-xs">Memuat data jabatan...</div>
-                </div>
-              </div>
+            <div class="flex items-center gap-2 self-start sm:self-auto">
+              <span class="text-emerald-700 font-bold bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1.5 text-[10px]">
+                <i class="fa-solid fa-circle-check text-[9px]"></i> Data Terverifikasi DSO Lampung
+              </span>
             </div>
           </div>
 
-          <!-- CARD 4: STATUS KEPEGAWAIAN (CONTRACT) - FULL-WIDTH RESPONSIVE CARD -->
-          <div class="mt-3.5 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3.5 pb-2.5 border-b border-slate-100">
-              <div class="flex items-center gap-2.5">
-                <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm border border-amber-200/60 shadow-2xs">
-                  <i class="fa-solid fa-file-contract"></i>
-                </span>
-                <div>
-                  <h4 class="text-xs sm:text-sm font-bold text-slate-800">Status Kepegawaian (Contract)</h4>
-                  <p class="text-[11px] text-slate-500 font-medium">Distribusi seluruh status ikatan kerja karyawan</p>
+          <!-- KPI Insight Tabs / Filter -->
+          <div class="flex flex-wrap items-center gap-1.5 mb-3">
+            <button type="button" onclick="switchMkKpiView('all')" id="mk-kpi-tab-all" class="mk-kpi-tab px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-900 text-white transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+              <i class="fa-solid fa-layer-group text-[10px]"></i> Semua Insight
+            </button>
+            <button type="button" onclick="switchMkKpiView('contract')" id="mk-kpi-tab-contract" class="mk-kpi-tab px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+              <i class="fa-solid fa-file-contract text-amber-500 text-[10px]"></i> Status Kepegawaian (Contract)
+            </button>
+            <button type="button" onclick="switchMkKpiView('division')" id="mk-kpi-tab-division" class="mk-kpi-tab px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+              <i class="fa-solid fa-sitemap text-blue-500 text-[10px]"></i> Distribusi Divisi (Name)
+            </button>
+            <button type="button" onclick="switchMkKpiView('job')" id="mk-kpi-tab-job" class="mk-kpi-tab px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer shadow-xs">
+              <i class="fa-solid fa-id-badge text-indigo-500 text-[10px]"></i> Jabatan (Job Title)
+            </button>
+          </div>
+
+          <!-- 3 KPI INSIGHT CARDS -->
+          <div class="space-y-3 mb-4">
+            <!-- CARD 1: STATUS KEPEGAWAIAN (CONTRACT) -->
+            <div id="mk-kpi-card-contract" class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/80 shadow-card">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2.5 pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs border border-amber-200/60 shadow-2xs">
+                    <i class="fa-solid fa-file-contract"></i>
+                  </span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-800">Status Kepegawaian (Contract)</h4>
+                    <p class="text-[10px] text-slate-400 font-medium">Berdasarkan Kolom Contract</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 self-start sm:self-auto">
+                  <span class="text-[9px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full flex items-center gap-1" id="mk-contract-badge-count">
+                    <i class="fa-solid fa-shield-halved text-[8px]"></i> 5 Kategori Baku
+                  </span>
                 </div>
               </div>
-              <div class="flex items-center gap-2 self-start sm:self-auto">
-                <span class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full flex items-center gap-1.5">
-                  <i class="fa-solid fa-shield-halved text-[9px]"></i> 5 Kategori Baku
-                </span>
+
+              <!-- Kelompok Status Kepegawaian Items: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen -->
+              <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-2.5" id="mk-contract-group-list">
+                <!-- Dynamically populated from database/filter -->
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="pt-2.5 mt-2.5 border-t border-slate-100" id="mk-contract-bar-wrapper">
+                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex shadow-inner" id="mk-contract-bar-segments">
+                  <!-- Progress bar segments -->
+                </div>
               </div>
             </div>
 
-            <!-- Kelompok Status Kepegawaian: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3" id="mk-contract-group-list">
-              <!-- Dynamically populated from database/filter -->
+            <!-- CARD 2: DISTRIBUSI DIVISI (KOLOM NAME) -->
+            <div id="mk-kpi-card-division" class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/80 shadow-card">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2.5 pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs border border-blue-200/60 shadow-2xs">
+                    <i class="fa-solid fa-sitemap"></i>
+                  </span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-800">Distribusi Divisi / Organisasi</h4>
+                    <p class="text-[10px] text-slate-400 font-medium">Berdasarkan Kolom Name</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 self-start sm:self-auto">
+                  <span class="text-[9px] font-bold text-blue-800 bg-blue-50 border border-blue-200 px-2 py-0.5 rounded-full flex items-center gap-1" id="mk-division-badge-count">
+                    <i class="fa-solid fa-layer-group text-[8px]"></i> Kelompok Divisi
+                  </span>
+                </div>
+              </div>
+
+              <!-- Kelompok Divisi Items: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen -->
+              <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 sm:gap-2.5" id="mk-division-group-list">
+                <!-- Dynamically populated from database/filter -->
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="pt-2.5 mt-2.5 border-t border-slate-100" id="mk-division-bar-wrapper">
+                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex shadow-inner" id="mk-division-bar-segments">
+                  <!-- Progress bar segments -->
+                </div>
+              </div>
             </div>
 
-            <!-- Dual-color Visual Ratio Progress Bar -->
-            <div class="pt-3 mt-3 border-t border-slate-100" id="mk-contract-bar-wrapper">
-              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex shadow-inner" id="mk-contract-bar-segments">
-                <!-- Progress bar segments -->
+            <!-- CARD 3: DISTRIBUSI JABATAN (KOLOM JOB TITLE) -->
+            <div id="mk-kpi-card-job" class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/80 shadow-card">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2.5 pb-2 border-b border-slate-100">
+                <div class="flex items-center gap-2">
+                  <span class="w-7 h-7 rounded-lg bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs border border-indigo-200/60 shadow-2xs">
+                    <i class="fa-solid fa-id-badge"></i>
+                  </span>
+                  <div>
+                    <h4 class="text-xs font-bold text-slate-800">Distribusi Jabatan (Job Title)</h4>
+                    <p class="text-[10px] text-slate-400 font-medium">Berdasarkan Kolom Job Title</p>
+                  </div>
+                </div>
+                <div class="flex items-center gap-2 self-start sm:self-auto">
+                  <span class="text-[9px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full flex items-center gap-1" id="mk-jobtitle-badge-count">
+                    <i class="fa-solid fa-id-card text-[8px]"></i> Kelompok Jabatan
+                  </span>
+                </div>
+              </div>
+
+              <!-- Kelompok Job Title Items: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen -->
+              <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-8 gap-2 sm:gap-2.5" id="mk-jobtitle-group-list">
+                <!-- Dynamically populated from database/filter -->
+              </div>
+
+              <!-- Progress Bar -->
+              <div class="pt-2.5 mt-2.5 border-t border-slate-100" id="mk-jobtitle-bar-wrapper">
+                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex shadow-inner" id="mk-jobtitle-bar-segments">
+                  <!-- Progress bar segments -->
+                </div>
               </div>
             </div>
           </div>
@@ -3156,31 +3169,266 @@
     // ----------------------------------------------------
     // A. Master Karyawan View & Filters
     // ----------------------------------------------------
-    // Helper metadata ikon dan warna untuk masing-masing Job Title
+    // Helper tab switcher KPI Insight Master Karyawan
+    function switchMkKpiView(tab) {
+      const cards = {
+        contract: document.getElementById('mk-kpi-card-contract'),
+        division: document.getElementById('mk-kpi-card-division'),
+        job: document.getElementById('mk-kpi-card-job')
+      };
+      const tabs = {
+        all: document.getElementById('mk-kpi-tab-all'),
+        contract: document.getElementById('mk-kpi-tab-contract'),
+        division: document.getElementById('mk-kpi-tab-division'),
+        job: document.getElementById('mk-kpi-tab-job')
+      };
+
+      Object.keys(tabs).forEach(k => {
+        if (tabs[k]) {
+          tabs[k].className = 'mk-kpi-tab px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer shadow-xs';
+        }
+      });
+      if (tabs[tab]) {
+        tabs[tab].className = 'mk-kpi-tab px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-900 text-white transition flex items-center gap-1.5 cursor-pointer shadow-xs';
+      }
+
+      if (tab === 'all') {
+        if (cards.contract) cards.contract.style.display = 'block';
+        if (cards.division) cards.division.style.display = 'block';
+        if (cards.job) cards.job.style.display = 'block';
+      } else {
+        if (cards.contract) cards.contract.style.display = tab === 'contract' ? 'block' : 'none';
+        if (cards.division) cards.division.style.display = tab === 'division' ? 'block' : 'none';
+        if (cards.job) cards.job.style.display = tab === 'job' ? 'block' : 'none';
+      }
+    }
+
+    // Helper metadata ikon dan warna untuk masing-masing Divisi / Organisasi (Kolom Name)
+    function getDivisionMeta(divName) {
+      const d = String(divName || '').toLowerCase().trim();
+      if (d.includes('sales') || d.includes('marketing') || d.includes('wiraniaga')) {
+        return {
+          displayName: divName || 'Sales',
+          icon: 'fa-solid fa-car-side',
+          iconBg: 'bg-blue-100 text-blue-600',
+          iconBorder: 'border-blue-200',
+          badgeBg: 'bg-blue-100 text-blue-700 border-blue-200',
+          cardHover: 'hover:bg-blue-50/70 hover:border-blue-200',
+          barColor: 'bg-blue-600'
+        };
+      }
+      if (d.includes('service') || d.includes('bengkel') || d.includes('workshop') || d.includes('mekanik') || d.includes('perbaikan')) {
+        return {
+          displayName: divName || 'Bengkel (Service)',
+          icon: 'fa-solid fa-wrench',
+          iconBg: 'bg-emerald-100 text-emerald-600',
+          iconBorder: 'border-emerald-200',
+          badgeBg: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+          cardHover: 'hover:bg-emerald-50/70 hover:border-emerald-200',
+          barColor: 'bg-emerald-600'
+        };
+      }
+      if (d.includes('part') || d.includes('sparepart') || d.includes('gudang') || d.includes('logistik')) {
+        return {
+          displayName: divName || 'Sparepart & Logistik',
+          icon: 'fa-solid fa-boxes-stacked',
+          iconBg: 'bg-amber-100 text-amber-600',
+          iconBorder: 'border-amber-200',
+          badgeBg: 'bg-amber-100 text-amber-700 border-amber-200',
+          cardHover: 'hover:bg-amber-50/70 hover:border-amber-200',
+          barColor: 'bg-amber-500'
+        };
+      }
+      if (d.includes('finance') || d.includes('akunting') || d.includes('accounting') || d.includes('kasir') || d.includes('keuangan')) {
+        return {
+          displayName: divName || 'Finance & Accounting',
+          icon: 'fa-solid fa-calculator',
+          iconBg: 'bg-teal-100 text-teal-600',
+          iconBorder: 'border-teal-200',
+          badgeBg: 'bg-teal-100 text-teal-700 border-teal-200',
+          cardHover: 'hover:bg-teal-50/70 hover:border-teal-200',
+          barColor: 'bg-teal-600'
+        };
+      }
+      if (d.includes('admin') || d.includes('administrasi') || d.includes('ga') || d.includes('general')) {
+        return {
+          displayName: divName || 'Admin & Umum',
+          icon: 'fa-solid fa-building',
+          iconBg: 'bg-purple-100 text-purple-600',
+          iconBorder: 'border-purple-200',
+          badgeBg: 'bg-purple-100 text-purple-700 border-purple-200',
+          cardHover: 'hover:bg-purple-50/70 hover:border-purple-200',
+          barColor: 'bg-purple-600'
+        };
+      }
+      if (d.includes('hr') || d.includes('hc') || d.includes('human') || d.includes('personalia')) {
+        return {
+          displayName: divName || 'HR & Personalia',
+          icon: 'fa-solid fa-users-gear',
+          iconBg: 'bg-rose-100 text-rose-600',
+          iconBorder: 'border-rose-200',
+          badgeBg: 'bg-rose-100 text-rose-700 border-rose-200',
+          cardHover: 'hover:bg-rose-50/70 hover:border-rose-200',
+          barColor: 'bg-rose-500'
+        };
+      }
+      if (d.includes('it') || d.includes('mis') || d.includes('sistem')) {
+        return {
+          displayName: divName || 'IT & MIS',
+          icon: 'fa-solid fa-laptop-code',
+          iconBg: 'bg-cyan-100 text-cyan-600',
+          iconBorder: 'border-cyan-200',
+          badgeBg: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+          cardHover: 'hover:bg-cyan-50/70 hover:border-cyan-200',
+          barColor: 'bg-cyan-600'
+        };
+      }
+
+      // Dynamic fallback rotation
+      const palette = [
+        { icon: 'fa-solid fa-sitemap', bg: 'indigo', bar: 'bg-indigo-600' },
+        { icon: 'fa-solid fa-briefcase', bg: 'sky', bar: 'bg-sky-600' },
+        { icon: 'fa-solid fa-layer-group', bg: 'violet', bar: 'bg-violet-600' },
+        { icon: 'fa-solid fa-chart-pie', bg: 'emerald', bar: 'bg-emerald-600' },
+        { icon: 'fa-solid fa-folder-tree', bg: 'orange', bar: 'bg-orange-600' }
+      ];
+      let hash = 0;
+      for (let i = 0; i < d.length; i++) hash = (hash + d.charCodeAt(i)) % palette.length;
+      const p = palette[hash];
+      return {
+        displayName: divName || 'Unit Operasional',
+        icon: p.icon,
+        iconBg: `bg-${p.bg}-100 text-${p.bg}-600`,
+        iconBorder: `border-${p.bg}-200`,
+        badgeBg: `bg-${p.bg}-100 text-${p.bg}-700 border-${p.bg}-200`,
+        cardHover: `hover:bg-${p.bg}-50/70 hover:border-${p.bg}-200`,
+        barColor: p.bar
+      };
+    }
+
+    // Helper metadata ikon dan warna untuk masing-masing Job Title (Kolom Job Title)
     function getJobTitleMeta(jobTitle) {
-      const t = String(jobTitle || '').toLowerCase();
-      if (t.includes('sales') || t.includes('marketing') || t.includes('wiraniaga')) {
-        return { icon: 'fa-solid fa-user-tie', color: 'text-blue-600', bg: 'bg-blue-100 text-blue-700 border-blue-200' };
+      const t = String(jobTitle || '').toLowerCase().trim();
+      if (t.includes('sales') || t.includes('wiraniaga') || t.includes('marketing') || t.includes('counter')) {
+        return {
+          displayName: jobTitle || 'Sales Executive',
+          icon: 'fa-solid fa-user-tie',
+          iconBg: 'bg-blue-100 text-blue-600',
+          iconBorder: 'border-blue-200',
+          badgeBg: 'bg-blue-100 text-blue-700 border-blue-200',
+          cardHover: 'hover:bg-blue-50/70 hover:border-blue-200',
+          barColor: 'bg-blue-600'
+        };
       }
-      if (t.includes('mekanik') || t.includes('teknisi') || t.includes('mechanic') || t.includes('service')) {
-        return { icon: 'fa-solid fa-screwdriver-wrench', color: 'text-emerald-600', bg: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
+      if (t.includes('mekanik') || t.includes('teknisi') || t.includes('mechanic')) {
+        return {
+          displayName: jobTitle || 'Mekanik / Teknisi',
+          icon: 'fa-solid fa-screwdriver-wrench',
+          iconBg: 'bg-emerald-100 text-emerald-600',
+          iconBorder: 'border-emerald-200',
+          badgeBg: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+          cardHover: 'hover:bg-emerald-50/70 hover:border-emerald-200',
+          barColor: 'bg-emerald-600'
+        };
       }
-      if (t.includes('advisor') || t.includes('sa') || t.includes('customer') || t.includes('front')) {
-        return { icon: 'fa-solid fa-headset', color: 'text-cyan-600', bg: 'bg-cyan-100 text-cyan-700 border-cyan-200' };
+      if (t.includes('advisor') || t.includes(' sa ') || t.startsWith('sa') || t.includes('service advisor') || t.includes('customer service') || t.includes('cro')) {
+        return {
+          displayName: jobTitle || 'Service Advisor',
+          icon: 'fa-solid fa-headset',
+          iconBg: 'bg-cyan-100 text-cyan-600',
+          iconBorder: 'border-cyan-200',
+          badgeBg: 'bg-cyan-100 text-cyan-700 border-cyan-200',
+          cardHover: 'hover:bg-cyan-50/70 hover:border-cyan-200',
+          barColor: 'bg-cyan-600'
+        };
       }
-      if (t.includes('foreman') || t.includes('lead') || t.includes('spv') || t.includes('supervisor') || t.includes('head')) {
-        return { icon: 'fa-solid fa-user-gear', color: 'text-amber-600', bg: 'bg-amber-100 text-amber-700 border-amber-200' };
+      if (t.includes('foreman') || t.includes('leader') || t.includes('kepala regu') || t.includes('team lead')) {
+        return {
+          displayName: jobTitle || 'Foreman',
+          icon: 'fa-solid fa-user-gear',
+          iconBg: 'bg-amber-100 text-amber-600',
+          iconBorder: 'border-amber-200',
+          badgeBg: 'bg-amber-100 text-amber-700 border-amber-200',
+          cardHover: 'hover:bg-amber-50/70 hover:border-amber-200',
+          barColor: 'bg-amber-500'
+        };
       }
-      if (t.includes('part') || t.includes('gudang') || t.includes('logistik')) {
-        return { icon: 'fa-solid fa-boxes-stacked', color: 'text-orange-600', bg: 'bg-orange-100 text-orange-700 border-orange-200' };
+      if (t.includes('spv') || t.includes('supervisor') || t.includes('head') || t.includes('manager') || t.includes('kepala') || t.includes('kabeng')) {
+        return {
+          displayName: jobTitle || 'Supervisor / Head',
+          icon: 'fa-solid fa-user-shield',
+          iconBg: 'bg-purple-100 text-purple-600',
+          iconBorder: 'border-purple-200',
+          badgeBg: 'bg-purple-100 text-purple-700 border-purple-200',
+          cardHover: 'hover:bg-purple-50/70 hover:border-purple-200',
+          barColor: 'bg-purple-600'
+        };
       }
-      if (t.includes('admin') || t.includes('finance') || t.includes('cashier') || t.includes('kasir') || t.includes('akunting')) {
-        return { icon: 'fa-solid fa-laptop-file', color: 'text-purple-600', bg: 'bg-purple-100 text-purple-700 border-purple-200' };
+      if (t.includes('part') || t.includes('gudang') || t.includes('logistik') || t.includes('inventory')) {
+        return {
+          displayName: jobTitle || 'Partman / Gudang',
+          icon: 'fa-solid fa-boxes-stacked',
+          iconBg: 'bg-orange-100 text-orange-600',
+          iconBorder: 'border-orange-200',
+          badgeBg: 'bg-orange-100 text-orange-700 border-orange-200',
+          cardHover: 'hover:bg-orange-50/70 hover:border-orange-200',
+          barColor: 'bg-orange-500'
+        };
+      }
+      if (t.includes('cashier') || t.includes('kasir') || t.includes('finance') || t.includes('akunting')) {
+        return {
+          displayName: jobTitle || 'Kasir / Finance',
+          icon: 'fa-solid fa-cash-register',
+          iconBg: 'bg-teal-100 text-teal-600',
+          iconBorder: 'border-teal-200',
+          badgeBg: 'bg-teal-100 text-teal-700 border-teal-200',
+          cardHover: 'hover:bg-teal-50/70 hover:border-teal-200',
+          barColor: 'bg-teal-600'
+        };
+      }
+      if (t.includes('admin') || t.includes('staff') || t.includes('administrasi')) {
+        return {
+          displayName: jobTitle || 'Admin Staff',
+          icon: 'fa-solid fa-laptop-file',
+          iconBg: 'bg-indigo-100 text-indigo-600',
+          iconBorder: 'border-indigo-200',
+          badgeBg: 'bg-indigo-100 text-indigo-700 border-indigo-200',
+          cardHover: 'hover:bg-indigo-50/70 hover:border-indigo-200',
+          barColor: 'bg-indigo-600'
+        };
       }
       if (t.includes('driver') || t.includes('supir') || t.includes('delivery')) {
-        return { icon: 'fa-solid fa-truck-fast', color: 'text-teal-600', bg: 'bg-teal-100 text-teal-700 border-teal-200' };
+        return {
+          displayName: jobTitle || 'Driver / Delivery',
+          icon: 'fa-solid fa-truck-fast',
+          iconBg: 'bg-slate-100 text-slate-700',
+          iconBorder: 'border-slate-300',
+          badgeBg: 'bg-slate-100 text-slate-700 border-slate-300',
+          cardHover: 'hover:bg-slate-50 hover:border-slate-300',
+          barColor: 'bg-slate-500'
+        };
       }
-      return { icon: 'fa-solid fa-id-badge', color: 'text-indigo-600', bg: 'bg-indigo-100 text-indigo-700 border-indigo-200' };
+
+      // Dynamic fallback rotation
+      const palette = [
+        { icon: 'fa-solid fa-id-badge', bg: 'violet', bar: 'bg-violet-600' },
+        { icon: 'fa-solid fa-user-check', bg: 'emerald', bar: 'bg-emerald-600' },
+        { icon: 'fa-solid fa-users', bg: 'sky', bar: 'bg-sky-600' },
+        { icon: 'fa-solid fa-circle-user', bg: 'rose', bar: 'bg-rose-600' },
+        { icon: 'fa-solid fa-id-card', bg: 'amber', bar: 'bg-amber-600' }
+      ];
+      let hash = 0;
+      for (let i = 0; i < t.length; i++) hash = (hash + t.charCodeAt(i)) % palette.length;
+      const p = palette[hash];
+      return {
+        displayName: jobTitle || 'Staff Unit',
+        icon: p.icon,
+        iconBg: `bg-${p.bg}-100 text-${p.bg}-600`,
+        iconBorder: `border-${p.bg}-200`,
+        badgeBg: `bg-${p.bg}-100 text-${p.bg}-700 border-${p.bg}-200`,
+        cardHover: `hover:bg-${p.bg}-50/70 hover:border-${p.bg}-200`,
+        barColor: p.bar
+      };
     }
 
     // Helper ikon dan warna 5 kategori baku status kepegawaian (Contract) DSO Lampung
@@ -3290,80 +3538,9 @@
         document.getElementById('mk-card-branch-desc').textContent = branchDesc;
       }
 
-      // 2. Satu KPI Terpadu: Distribusi Divisi (Kelompok: Icon, Jumlah, Persen)
-      let salesCount = 0;
-      let serviceCount = 0;
-      let adminCount = 0;
-
-      if (rawRows.length > 0) {
-        rawRows.forEach(r => {
-          const div = String(r['Name'] || r['Name of organizational unit'] || r.divisi || '').toLowerCase();
-          const title = String(r['Job Title'] || r.jabatan || '').toLowerCase();
-          if (div.includes('sales') || title.includes('sales')) {
-            salesCount++;
-          } else if (div.includes('service') || div.includes('bengkel') || title.includes('mekanik') || title.includes('teknisi') || title.includes('service') || title.includes('part')) {
-            serviceCount++;
-          } else {
-            adminCount++;
-          }
-        });
-      } else {
-        salesCount = list.filter(e => (e.divisi || '').toLowerCase().includes('sales')).length || Math.round((totalEmployees) * ((s.salesPct || 0) / 100));
-        serviceCount = list.filter(e => (e.divisi || '').toLowerCase().includes('service') || (e.divisi || '').toLowerCase().includes('bengkel')).length || Math.round((totalEmployees) * ((s.servicePct || 0) / 100));
-        adminCount = Math.max(0, totalEmployees - salesCount - serviceCount);
-      }
-
-      const totalDiv = salesCount + serviceCount + adminCount || totalEmployees || 1;
-      const salesPct = Math.round((salesCount / totalDiv) * 100);
-      const servicePct = Math.round((serviceCount / totalDiv) * 100);
-      const adminPct = Math.max(0, 100 - salesPct - servicePct);
-
-      if (document.getElementById('mk-card-sales-val')) document.getElementById('mk-card-sales-val').textContent = salesCount;
-      if (document.getElementById('mk-card-sales-pct')) document.getElementById('mk-card-sales-pct').textContent = `${salesPct}%`;
-      if (document.getElementById('mk-card-service-val')) document.getElementById('mk-card-service-val').textContent = serviceCount;
-      if (document.getElementById('mk-card-service-pct')) document.getElementById('mk-card-service-pct').textContent = `${servicePct}%`;
-      if (document.getElementById('mk-card-admin-val')) document.getElementById('mk-card-admin-val').textContent = adminCount;
-      if (document.getElementById('mk-card-admin-pct')) document.getElementById('mk-card-admin-pct').textContent = `${adminPct}%`;
-
-      // 3. Insight Job Title (Jabatan) - Render per grup: Icon, Jumlah, Persen
-      const jobMap = {};
       const sourceList = rawRows.length > 0 ? rawRows : list;
-      sourceList.forEach(r => {
-        let jt = (r['Job Title'] || r.jabatan || '').trim();
-        if (!jt || jt === '-' || jt === 'undefined') jt = 'Staff Unit';
-        jobMap[jt] = (jobMap[jt] || 0) + 1;
-      });
 
-      const sortedJobs = Object.entries(jobMap).sort((a, b) => b[1] - a[1]);
-      const topJobs = sortedJobs.slice(0, 3);
-      const jobListEl = document.getElementById('mk-jobtitle-group-list');
-      
-      if (jobListEl) {
-        if (topJobs.length === 0) {
-          jobListEl.innerHTML = `<div class="text-center py-4 text-slate-400 text-xs">Belum ada data jabatan</div>`;
-        } else {
-          jobListEl.innerHTML = topJobs.map(([jobName, count]) => {
-            const meta = getJobTitleMeta(jobName);
-            const pct = totalEmployees ? Math.round((count / totalEmployees) * 100) : 0;
-            return `
-              <div class="flex items-center justify-between p-1.5 rounded-xl bg-slate-50 border border-slate-100 hover:bg-indigo-50/40 transition">
-                <div class="flex items-center gap-2 min-w-0">
-                  <span class="w-6 h-6 rounded-lg bg-indigo-50 ${meta.color} flex items-center justify-center text-[10px] flex-shrink-0 border border-indigo-100/60">
-                    <i class="${meta.icon}"></i>
-                  </span>
-                  <span class="text-[11px] font-bold text-slate-700 truncate" title="${jobName}">${jobName}</span>
-                </div>
-                <div class="flex items-center gap-2 flex-shrink-0">
-                  <span class="text-xs font-black text-slate-900">${count} <span class="text-[10px] text-slate-400 font-semibold">Orang</span></span>
-                  <span class="px-1.5 py-0.5 rounded-md text-[10px] font-black ${meta.bg} border">${pct}%</span>
-                </div>
-              </div>
-            `;
-          }).join('');
-        }
-      }
-
-      // 4. Status Kepegawaian (Contract Insight) - 5 Kelompok Sesuai Database DSO Lampung
+      // 2. Status Kepegawaian (Contract Insight) - Berdasarkan Kolom Contract
       const contractGroupMap = {};
       STANDARD_CONTRACT_CATEGORIES.forEach(cat => {
         contractGroupMap[cat] = 0;
@@ -3387,30 +3564,29 @@
           const count = contractGroupMap[grpName] || 0;
           const meta = getContractMeta(grpName);
           const pct = totalContract ? Math.round((count / totalContract) * 100) : 0;
-          // Pada mobile (grid-cols-2), item ke-5 berada di baris ke-3, diposisikan seimbang di tengah
-          const isFifthOnMobile = (index === 4 && allCatsToRender.length === 5) ? 'col-span-2 sm:col-span-1 max-w-[240px] sm:max-w-none mx-auto w-full' : '';
+          const isFifthOnMobile = (index === 4 && allCatsToRender.length === 5) ? 'col-span-2 xs:col-span-1' : '';
 
           return `
-            <div class="flex flex-col items-center justify-between p-3 sm:p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/70 hover:shadow-sm ${meta.cardHover} transition text-center shadow-2xs ${isFifthOnMobile}">
-              <!-- 1. Icone (di atas) -->
-              <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${meta.iconBg} flex items-center justify-center text-sm sm:text-base mb-2 border ${meta.iconBorder} shadow-2xs flex-shrink-0">
+            <div class="flex flex-col items-center justify-between p-2 sm:p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70 hover:shadow-sm ${meta.cardHover} transition text-center shadow-2xs ${isFifthOnMobile}">
+              <!-- 1. Icon (di atas) -->
+              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${meta.iconBg} flex items-center justify-center text-xs mb-1.5 border ${meta.iconBorder} shadow-2xs flex-shrink-0">
                 <i class="${meta.icon}"></i>
               </div>
-              <!-- 2. Bawahnya Nama (Title & Subtitle rapi tanpa terpotong) -->
-              <div class="mb-2 w-full px-1">
-                <div class="text-xs sm:text-sm font-bold text-slate-800 leading-tight">
+              <!-- 2. Bawahnya Nama (Title & Subtitle rapi) -->
+              <div class="mb-1 w-full px-0.5">
+                <div class="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
                   ${meta.displayName}
                 </div>
-                <div class="text-[10px] sm:text-[11px] font-medium text-slate-400 leading-tight mt-0.5">
+                <div class="text-[9px] sm:text-[10px] font-medium text-slate-400 leading-tight truncate mt-0.5" title="${meta.subName}">
                   ${meta.subName}
                 </div>
               </div>
               <!-- 3. Bawahnya Angka -->
-              <div class="text-sm sm:text-base font-black text-slate-900 leading-tight mb-1.5">
-                ${count} <span class="text-[10px] sm:text-[11px] font-medium text-slate-400">Orang</span>
+              <div class="text-xs sm:text-sm font-black text-slate-900 leading-tight mb-1">
+                ${count} <span class="text-[9px] sm:text-[10px] font-medium text-slate-400">Orang</span>
               </div>
               <!-- 4. Truss Persen -->
-              <span class="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-black ${meta.badgeBg} border">
+              <span class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black ${meta.badgeBg} border">
                 ${pct}%
               </span>
             </div>
@@ -3418,14 +3594,141 @@
         }).join('');
       }
 
-      // Visual Ratio Progress Bar
-      const barContainer = document.getElementById('mk-contract-bar-segments');
-      if (barContainer) {
-        barContainer.innerHTML = STANDARD_CONTRACT_CATEGORIES.map(grpName => {
+      // Visual Ratio Progress Bar Contract
+      const contractBarContainer = document.getElementById('mk-contract-bar-segments');
+      if (contractBarContainer) {
+        contractBarContainer.innerHTML = STANDARD_CONTRACT_CATEGORIES.map(grpName => {
           const count = contractGroupMap[grpName] || 0;
           const meta = getContractMeta(grpName);
-          const pct = Math.round((count / totalContract) * 100);
+          const pct = totalContract ? Math.round((count / totalContract) * 100) : 0;
+          if (pct === 0) return '';
           return `<div class="${meta.barColor} h-full transition-all duration-500" style="width: ${pct}%" title="${meta.fullName}: ${count} Orang (${pct}%)"></div>`;
+        }).join('');
+      }
+
+      // 3. Distribusi Divisi (Organisasi) - Berdasarkan Kolom Name (Semua masuk kelompok)
+      const divisionMap = {};
+      sourceList.forEach(r => {
+        let rawDiv = (r['Name'] || r['Name of organizational unit'] || r.divisi || '').trim();
+        if (!rawDiv || rawDiv === '-' || rawDiv === 'undefined') rawDiv = 'Unit Operasional';
+        divisionMap[rawDiv] = (divisionMap[rawDiv] || 0) + 1;
+      });
+
+      const sortedDivs = Object.entries(divisionMap).sort((a, b) => b[1] - a[1]);
+      const totalDiv = Object.values(divisionMap).reduce((a, b) => a + b, 0) || totalEmployees || 1;
+      const divisionListEl = document.getElementById('mk-division-group-list');
+      const divBadgeEl = document.getElementById('mk-division-badge-count');
+      if (divBadgeEl) {
+        divBadgeEl.innerHTML = `<i class="fa-solid fa-layer-group text-[8px]"></i> ${sortedDivs.length} Kelompok Divisi`;
+      }
+
+      if (divisionListEl) {
+        if (sortedDivs.length === 0) {
+          divisionListEl.innerHTML = `<div class="col-span-full text-center py-3 text-slate-400 text-xs">Belum ada data divisi</div>`;
+        } else {
+          divisionListEl.innerHTML = sortedDivs.map(([divName, count]) => {
+            const meta = getDivisionMeta(divName);
+            const pct = totalDiv ? Math.round((count / totalDiv) * 100) : 0;
+            return `
+              <div class="flex flex-col items-center justify-between p-2 sm:p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70 hover:shadow-sm ${meta.cardHover} transition text-center shadow-2xs">
+                <!-- 1. Icon (di atas) -->
+                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${meta.iconBg} flex items-center justify-center text-xs mb-1.5 border ${meta.iconBorder} shadow-2xs flex-shrink-0">
+                  <i class="${meta.icon}"></i>
+                </div>
+                <!-- 2. Bawahnya Nama -->
+                <div class="mb-1 w-full px-0.5">
+                  <div class="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
+                    ${meta.displayName}
+                  </div>
+                  <div class="text-[9px] sm:text-[10px] font-medium text-slate-400 leading-tight truncate mt-0.5">
+                    Kolom Name
+                  </div>
+                </div>
+                <!-- 3. Bawahnya Angka -->
+                <div class="text-xs sm:text-sm font-black text-slate-900 leading-tight mb-1">
+                  ${count} <span class="text-[9px] sm:text-[10px] font-medium text-slate-400">Orang</span>
+                </div>
+                <!-- 4. Truss Persen -->
+                <span class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black ${meta.badgeBg} border">
+                  ${pct}%
+                </span>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Visual Ratio Progress Bar Divisi
+      const divBarContainer = document.getElementById('mk-division-bar-segments');
+      if (divBarContainer) {
+        divBarContainer.innerHTML = sortedDivs.map(([divName, count]) => {
+          const meta = getDivisionMeta(divName);
+          const pct = totalDiv ? Math.round((count / totalDiv) * 100) : 0;
+          if (pct === 0) return '';
+          return `<div class="${meta.barColor} h-full transition-all duration-500" style="width: ${pct}%" title="${divName}: ${count} Orang (${pct}%)"></div>`;
+        }).join('');
+      }
+
+      // 4. Distribusi Jabatan (Job Title) - Berdasarkan Kolom Job Title (Semua masuk kelompok)
+      const jobMap = {};
+      sourceList.forEach(r => {
+        let jt = (r['Job Title'] || r.jabatan || '').trim();
+        if (!jt || jt === '-' || jt === 'undefined') jt = 'Staff Unit';
+        jobMap[jt] = (jobMap[jt] || 0) + 1;
+      });
+
+      const sortedJobs = Object.entries(jobMap).sort((a, b) => b[1] - a[1]);
+      const totalJobs = Object.values(jobMap).reduce((a, b) => a + b, 0) || totalEmployees || 1;
+      const jobListEl = document.getElementById('mk-jobtitle-group-list');
+      const jobBadgeEl = document.getElementById('mk-jobtitle-badge-count');
+      if (jobBadgeEl) {
+        jobBadgeEl.innerHTML = `<i class="fa-solid fa-id-card text-[8px]"></i> ${sortedJobs.length} Kelompok Jabatan`;
+      }
+
+      if (jobListEl) {
+        if (sortedJobs.length === 0) {
+          jobListEl.innerHTML = `<div class="col-span-full text-center py-3 text-slate-400 text-xs">Belum ada data jabatan</div>`;
+        } else {
+          jobListEl.innerHTML = sortedJobs.map(([jobName, count]) => {
+            const meta = getJobTitleMeta(jobName);
+            const pct = totalJobs ? Math.round((count / totalJobs) * 100) : 0;
+            return `
+              <div class="flex flex-col items-center justify-between p-2 sm:p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70 hover:shadow-sm ${meta.cardHover} transition text-center shadow-2xs">
+                <!-- 1. Icon (di atas) -->
+                <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${meta.iconBg} flex items-center justify-center text-xs mb-1.5 border ${meta.iconBorder} shadow-2xs flex-shrink-0">
+                  <i class="${meta.icon}"></i>
+                </div>
+                <!-- 2. Bawahnya Nama -->
+                <div class="mb-1 w-full px-0.5">
+                  <div class="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
+                    ${meta.displayName}
+                  </div>
+                  <div class="text-[9px] sm:text-[10px] font-medium text-slate-400 leading-tight truncate mt-0.5">
+                    Kolom Job Title
+                  </div>
+                </div>
+                <!-- 3. Bawahnya Angka -->
+                <div class="text-xs sm:text-sm font-black text-slate-900 leading-tight mb-1">
+                  ${count} <span class="text-[9px] sm:text-[10px] font-medium text-slate-400">Orang</span>
+                </div>
+                <!-- 4. Truss Persen -->
+                <span class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black ${meta.badgeBg} border">
+                  ${pct}%
+                </span>
+              </div>
+            `;
+          }).join('');
+        }
+      }
+
+      // Visual Ratio Progress Bar Job Title
+      const jobBarContainer = document.getElementById('mk-jobtitle-bar-segments');
+      if (jobBarContainer) {
+        jobBarContainer.innerHTML = sortedJobs.map(([jobName, count]) => {
+          const meta = getJobTitleMeta(jobName);
+          const pct = totalJobs ? Math.round((count / totalJobs) * 100) : 0;
+          if (pct === 0) return '';
+          return `<div class="${meta.barColor} h-full transition-all duration-500" style="width: ${pct}%" title="${jobName}: ${count} Orang (${pct}%)"></div>`;
         }).join('');
       }
 
