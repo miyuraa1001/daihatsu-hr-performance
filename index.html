@@ -1704,6 +1704,226 @@
     </div>
   </div>
 
+  <!-- MODAL: DETAIL RISALAH QCC (8 LANGKAH PDCA & KELENGKAPAN DOKUMEN) -->
+  <div id="modal-qcc-risalah" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-qcc-risalah')">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-3xl w-full p-5 sm:p-6 relative my-auto max-h-[92vh] flex flex-col animate-fade-in">
+      <button onclick="closeModal('modal-qcc-risalah')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
+        <i class="fa-solid fa-xmark text-lg"></i>
+      </button>
+
+      <!-- 1. Header: Identitas Circle & Registrasi -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3.5 border-b border-slate-100 flex-shrink-0">
+        <div class="flex items-center gap-3">
+          <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-xl border border-purple-200 shadow-2xs flex-shrink-0" id="qcc-modal-avatar">
+            <i class="fa-solid fa-users-gear"></i>
+          </div>
+          <div class="min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="text-base sm:text-lg font-black text-slate-900 leading-tight" id="qcc-modal-team-name">Nama Tim Circle</h3>
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-purple-100 text-purple-800 border border-purple-200" id="qcc-modal-category">QCC</span>
+            </div>
+            <p class="text-[11px] text-slate-500 font-medium mt-0.5" id="qcc-modal-meta">
+              No. Reg: - • Cabang: - • Kode BA: -
+            </p>
+          </div>
+        </div>
+        <div class="flex items-center gap-1.5 flex-wrap self-start sm:self-center">
+          <span class="px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-[10px] font-bold" id="qcc-modal-year">
+            Tahun Konvensi: 2025
+          </span>
+          <span class="px-2.5 py-1 bg-blue-50 text-blue-800 border border-blue-200 rounded-full text-[10px] font-bold" id="qcc-modal-status-badge">
+            Status: Plan
+          </span>
+        </div>
+      </div>
+
+      <!-- Scrollable Content Body -->
+      <div class="overflow-y-auto space-y-4 pr-1 text-xs">
+        
+        <!-- 2. Tema Kaizen Proyek Inovasi -->
+        <div class="bg-gradient-to-r from-purple-50/70 via-indigo-50/30 to-purple-50/50 p-3.5 rounded-2xl border border-purple-200/80 shadow-2xs">
+          <div class="flex items-center justify-between mb-1">
+            <span class="text-[10px] font-extrabold text-purple-700 uppercase tracking-wider block flex items-center gap-1.5">
+              <i class="fa-solid fa-lightbulb"></i> Tema & Judul Perbaikan (Kaizen Topic)
+            </span>
+            <span class="text-[10px] font-bold text-slate-500" id="qcc-modal-reg-no">Reg: -</span>
+          </div>
+          <p class="text-xs sm:text-sm font-bold text-slate-800 leading-relaxed" id="qcc-modal-theme">
+            -
+          </p>
+        </div>
+
+        <!-- 3. Struktur Personel Circle (Fasilitator, Leader, Anggota) -->
+        <div class="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block mb-2.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-people-group text-slate-600"></i> Struktur Personalia Circle
+          </span>
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mb-3">
+            <!-- Fasilitator -->
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200/90 flex items-center gap-2.5 shadow-2xs">
+              <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs border border-blue-200 flex-shrink-0">
+                <i class="fa-solid fa-user-tie"></i>
+              </div>
+              <div class="min-w-0">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Fasilitator</span>
+                <span class="text-xs font-black text-slate-800 truncate block" id="qcc-modal-facilitator">-</span>
+              </div>
+            </div>
+
+            <!-- Leader -->
+            <div class="bg-white p-2.5 rounded-xl border border-slate-200/90 flex items-center gap-2.5 shadow-2xs">
+              <div class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs border border-amber-200 flex-shrink-0">
+                <i class="fa-solid fa-crown"></i>
+              </div>
+              <div class="min-w-0 flex-1">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Circle Leader</span>
+                <span class="text-xs font-black text-slate-800 truncate block" id="qcc-modal-leader">-</span>
+                <span class="text-[9px] text-slate-400 font-medium truncate block" id="qcc-modal-astrapay">AstraPay: -</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Anggota List -->
+          <div>
+            <span class="text-[10px] font-bold text-slate-500 block mb-1.5">Anggota Circle (Team Members):</span>
+            <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5" id="qcc-modal-members-list">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+        </div>
+
+        <!-- 4. Rekap 8 Langkah PDCA (Plan - Do - Check - Action) -->
+        <div class="bg-white p-3.5 rounded-2xl border border-slate-200/90 shadow-2xs">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-[10px] font-extrabold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+              <i class="fa-solid fa-arrows-spin text-purple-600"></i> Rekapitulasi 8 Langkah PDCA (Kaizen ADM)
+            </span>
+            <span class="text-[9px] font-bold text-purple-700 bg-purple-50 px-2 py-0.5 rounded-full border border-purple-200" id="qcc-modal-pdca-status-pill">
+              Tahap: Plan
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2.5">
+            <!-- TAHAP PLAN (Langkah 1 - 3) -->
+            <div class="p-2.5 rounded-xl bg-blue-50/70 border border-blue-200/80 shadow-2xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-black text-blue-900 uppercase flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-blue-600"></span> 1. PLAN (Langkah 1 - 3)
+                </span>
+                <span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-blue-100 text-blue-800 border border-blue-200" id="qcc-modal-l13-status">
+                  Selesai
+                </span>
+              </div>
+              <ul class="text-[10px] text-blue-900 space-y-1 font-medium pl-2">
+                <li>• <strong>Langkah 1:</strong> Menentukan Tema & Sasaran Perbaikan</li>
+                <li>• <strong>Langkah 2:</strong> Memahami Situasi & Menemukan Masalah</li>
+                <li>• <strong>Langkah 3:</strong> Menganalisis Akar Penyebab (Cause-Effect)</li>
+              </ul>
+            </div>
+
+            <!-- TAHAP DO (Langkah 4) -->
+            <div class="p-2.5 rounded-xl bg-emerald-50/70 border border-emerald-200/80 shadow-2xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-black text-emerald-900 uppercase flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-emerald-600"></span> 2. DO (Langkah 4)
+                </span>
+                <span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800 border border-emerald-200" id="qcc-modal-do-status">
+                  Dilaksanakan
+                </span>
+              </div>
+              <ul class="text-[10px] text-emerald-900 space-y-1 font-medium pl-2">
+                <li>• <strong>Langkah 4:</strong> Merencanakan & Menerapkan Solusi Penanggulangan Masalah</li>
+              </ul>
+            </div>
+
+            <!-- TAHAP CHECK (Langkah 5) -->
+            <div class="p-2.5 rounded-xl bg-amber-50/70 border border-amber-200/80 shadow-2xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-black text-amber-900 uppercase flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-amber-600"></span> 3. CHECK (Langkah 5)
+                </span>
+                <span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 border border-amber-200" id="qcc-modal-l15-status">
+                  Evaluasi Hasil
+                </span>
+              </div>
+              <ul class="text-[10px] text-amber-900 space-y-1 font-medium pl-2">
+                <li>• <strong>Langkah 5:</strong> Memeriksa Hasil & Evaluasi Capaian Target (QCDME)</li>
+              </ul>
+            </div>
+
+            <!-- TAHAP ACTION (Langkah 6 - 8) -->
+            <div class="p-2.5 rounded-xl bg-purple-50/70 border border-purple-200/80 shadow-2xs">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[10px] font-black text-purple-900 uppercase flex items-center gap-1">
+                  <span class="w-2 h-2 rounded-full bg-purple-600"></span> 4. ACTION (Langkah 6 - 8)
+                </span>
+                <span class="text-[9px] font-extrabold px-1.5 py-0.2 rounded bg-purple-100 text-purple-800 border border-purple-200" id="qcc-modal-l18-status">
+                  Dokumentasi & Konvensi
+                </span>
+              </div>
+              <ul class="text-[10px] text-purple-900 space-y-1 font-medium pl-2">
+                <li>• <strong>Langkah 6:</strong> Standarisasi Prosedur Baru (SOP/IK)</li>
+                <li>• <strong>Langkah 7:</strong> Menentukan Rencana & Tema Berikutnya</li>
+                <li>• <strong>Langkah 8:</strong> Laporan Risalah & Evaluasi Konvensi</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. Status Administrasi Dokumen & Konvensi Mutu -->
+        <div class="bg-slate-50/80 p-3.5 rounded-2xl border border-slate-200/80 shadow-2xs">
+          <span class="text-[10px] font-extrabold text-slate-500 uppercase tracking-wider block mb-2.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-file-circle-check text-slate-600"></i> Administrasi & Kelengkapan Berkas Risalah
+          </span>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-center">
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-2xs">
+              <span class="text-[9px] font-bold text-slate-400 block uppercase">Kelengkapan Risalah</span>
+              <span class="text-xs font-black text-purple-900 block mt-0.5 truncate" id="qcc-modal-doc-status">-</span>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-2xs">
+              <span class="text-[9px] font-bold text-slate-400 block uppercase">Pendaftaran Diterima</span>
+              <span class="text-xs font-black text-slate-800 block mt-0.5" id="qcc-modal-date-reg">-</span>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-2xs">
+              <span class="text-[9px] font-bold text-slate-400 block uppercase">Risalah 1-8 Diterima</span>
+              <span class="text-xs font-black text-slate-800 block mt-0.5" id="qcc-modal-date-risalah">-</span>
+            </div>
+            <div class="bg-white p-2 rounded-xl border border-slate-200 shadow-2xs">
+              <span class="text-[9px] font-bold text-slate-400 block uppercase">Status Reward</span>
+              <span class="text-xs font-black text-emerald-700 block mt-0.5 truncate" id="qcc-modal-reward-status">-</span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 text-[10px]">
+            <div class="bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-600 flex justify-between">
+              <span class="text-slate-400 font-medium">No. Berita Acara:</span>
+              <span class="font-bold text-slate-800" id="qcc-modal-no-ba">-</span>
+            </div>
+            <div class="bg-white px-2.5 py-1.5 rounded-lg border border-slate-200 text-slate-600 flex justify-between">
+              <span class="text-slate-400 font-medium">No. BPH:</span>
+              <span class="font-bold text-slate-800" id="qcc-modal-no-bph">-</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Footer Buttons -->
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-3.5 border-t border-slate-100 flex-shrink-0 mt-3">
+        <div class="flex items-center gap-1.5 text-slate-400 text-[10px]">
+          <i class="fa-solid fa-certificate text-purple-600"></i>
+          <span>Data terdaftar pada Sistem Konvensi Mutu Astra Daihatsu Motor (ADM)</span>
+        </div>
+        <button type="button" onclick="closeModal('modal-qcc-risalah')" class="w-full sm:w-auto px-5 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">
+          Tutup Risalah
+        </button>
+      </div>
+
+    </div>
+  </div>
+
   <!-- MODAL: EDIT ROW DATA (KHUSUS ADMIN) -->
   <div id="modal-edit-row" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-2xl shadow-2xl border border-slate-100 relative my-auto max-h-[90vh] flex flex-col">
@@ -4053,10 +4273,12 @@
       let detailBtn = '';
       if (sheetName === 'Data_QCC') {
         const rawTeam = String(row['Nama Tim'] || 'Tim QCC');
+        const regNo = String(row['No.Registrasi'] || '');
         const safeTeam = rawTeam.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+        const safeReg = regNo.replace(/'/g, "\\'").replace(/"/g, '&quot;');
         detailBtn = `
-          <button type="button" onclick="showToast('Risalah QCC: ' + '${safeTeam}')" class="px-2.5 py-1 bg-slate-100 hover:bg-purple-50 hover:text-purple-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
-            Risalah
+          <button type="button" onclick="openQCCRisalahModal(${rowIndex}, '${safeReg || safeTeam}')" class="px-2.5 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 font-bold rounded-lg text-[11px] border border-purple-200 transition inline-flex items-center gap-1 shadow-2xs">
+            <i class="fa-solid fa-file-lines text-[10px]"></i> Risalah
           </button>
         `;
       } else {
@@ -5164,6 +5386,108 @@
       }
 
       document.getElementById('modal-pbk-detail').classList.remove('hidden');
+    }
+
+    function openQCCRisalahModal(rowIndex, fallbackKey = '') {
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Data_QCC || [];
+      let row = rawRows[rowIndex];
+      if (!row && fallbackKey) {
+        row = rawRows.find(r => 
+          String(r['No.Registrasi'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase() ||
+          String(r['Nama Tim'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase()
+        );
+      }
+      if (!row) {
+        showToast("Data risalah QCC tidak ditemukan.");
+        return;
+      }
+
+      // 1. Identitas Circle
+      const teamName = row['Nama Tim'] || 'Tim Circle QCC';
+      document.getElementById('qcc-modal-team-name').textContent = teamName;
+      document.getElementById('qcc-modal-category').textContent = row['Kategori'] || 'QCC';
+      document.getElementById('qcc-modal-year').textContent = `Tahun Konvensi: ${row['Tahun Konvensi'] || '2025'}`;
+      
+      const cab = row['Cabang/Departemen'] || row['Cabang'] || '-';
+      const ba = row['Kode BA'] || '-';
+      const sec = row['Bagian'] || '-';
+      const reg = row['No.Registrasi'] || '-';
+      document.getElementById('qcc-modal-meta').textContent = `No. Reg: ${reg} • Cabang: ${cab} • Kode BA: ${ba} • Seksi/Bagian: ${sec}`;
+      document.getElementById('qcc-modal-reg-no').textContent = `Reg: ${reg}`;
+
+      // Status PDCA Badge
+      const statusPDCA = row['Status'] || 'Plan';
+      const statusBadge = document.getElementById('qcc-modal-status-badge');
+      if (statusBadge) {
+        statusBadge.textContent = `Status: ${statusPDCA}`;
+        const sNorm = String(statusPDCA).toLowerCase();
+        if (sNorm.includes('action')) {
+          statusBadge.className = 'px-2.5 py-1 bg-purple-50 text-purple-800 border border-purple-200 rounded-full text-[10px] font-bold';
+        } else if (sNorm.includes('check')) {
+          statusBadge.className = 'px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-[10px] font-bold';
+        } else if (sNorm.includes('do')) {
+          statusBadge.className = 'px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-[10px] font-bold';
+        } else {
+          statusBadge.className = 'px-2.5 py-1 bg-blue-50 text-blue-800 border border-blue-200 rounded-full text-[10px] font-bold';
+        }
+      }
+      if (document.getElementById('qcc-modal-pdca-status-pill')) {
+        document.getElementById('qcc-modal-pdca-status-pill').textContent = `Tahap: ${statusPDCA}`;
+      }
+
+      // 2. Tema Kaizen
+      document.getElementById('qcc-modal-theme').textContent = row['Tema'] || 'Belum ada deskripsi tema perbaikan.';
+
+      // 3. Personalia Circle
+      document.getElementById('qcc-modal-facilitator').textContent = row['Fasilitator'] || '-';
+      document.getElementById('qcc-modal-leader').textContent = row['Leader'] || '-';
+      document.getElementById('qcc-modal-astrapay').textContent = `AstraPay: ${row['No.Akun Astrapay QC Leader'] || '-'}`;
+
+      // Anggota 1 s/d 7
+      const membersContainer = document.getElementById('qcc-modal-members-list');
+      if (membersContainer) {
+        const members = [];
+        for (let i = 1; i <= 7; i++) {
+          const m = row[`Anggota ${i}`];
+          if (m && String(m).trim() && String(m).trim() !== '-') {
+            members.push({ num: i, name: String(m).trim() });
+          }
+        }
+        if (members.length > 0) {
+          membersContainer.innerHTML = members.map(m => `
+            <div class="bg-white px-2 py-1.5 rounded-lg border border-slate-200 flex items-center gap-1.5 truncate shadow-2xs">
+              <span class="w-4 h-4 rounded-full bg-purple-100 text-purple-700 flex items-center justify-center text-[8px] font-bold flex-shrink-0">
+                ${m.num}
+              </span>
+              <span class="text-[10px] font-bold text-slate-700 truncate" title="${m.name}">${m.name}</span>
+            </div>
+          `).join('');
+        } else {
+          membersContainer.innerHTML = `<span class="text-[10px] text-slate-400 italic col-span-full">Tidak ada daftar anggota tambahan.</span>`;
+        }
+      }
+
+      // 4. Rekap 8 Langkah PDCA Status
+      const l13Val = row['Langkah 1-3'] || 'Selesai';
+      const l15Val = row['Langkah 1-5'] || 'Sedang Berjalan';
+      const l18Val = row['Kelengkapan Risalah Langkah 1-8'] || 'Format Baku ADM';
+      if (document.getElementById('qcc-modal-l13-status')) document.getElementById('qcc-modal-l13-status').textContent = l13Val;
+      if (document.getElementById('qcc-modal-do-status')) document.getElementById('qcc-modal-do-status').textContent = String(statusPDCA).toLowerCase() === 'plan' ? 'Antrean' : 'Dilaksanakan';
+      if (document.getElementById('qcc-modal-l15-status')) document.getElementById('qcc-modal-l15-status').textContent = l15Val;
+      if (document.getElementById('qcc-modal-l18-status')) document.getElementById('qcc-modal-l18-status').textContent = l18Val;
+
+      // 5. Administrasi Berkas Risalah
+      document.getElementById('qcc-modal-doc-status').textContent = row['Kelengkapan Risalah Langkah 1-8'] || 'Lengkap';
+      document.getElementById('qcc-modal-date-reg').textContent = row['Pendaftaran diterima'] || '-';
+      document.getElementById('qcc-modal-date-risalah').textContent = row['L 1-8 diterima'] || '-';
+      document.getElementById('qcc-modal-reward-status').textContent = row['Status Reward'] || '-';
+      document.getElementById('qcc-modal-no-ba').textContent = row['No.Berita Acara'] || '-';
+      document.getElementById('qcc-modal-no-bph').textContent = row['No.BPH'] || '-';
+
+      // Tampilkan modal
+      const modal = document.getElementById('modal-qcc-risalah');
+      if (modal) modal.classList.remove('hidden');
     }
 
     function openUploadModal(sheetName) {
