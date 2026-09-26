@@ -807,8 +807,9 @@
           </div>
 
           <!-- Cards Summary Master Karyawan -->
-          <!-- 4 Insight KPI Cards -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+          <!-- Cards Summary Master Karyawan -->
+          <!-- Top 3 Insight KPI Cards -->
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3.5">
             <!-- CARD 1: TOTAL KARYAWAN -->
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
               <div>
@@ -895,24 +896,36 @@
                 </div>
               </div>
             </div>
+          </div>
 
-            <!-- CARD 4: STATUS KEPEGAWAIAN (CONTRACT) -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Status Kepegawaian (Contract)</span>
-                  <span class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs"><i class="fa-solid fa-file-contract"></i></span>
+          <!-- CARD 4: STATUS KEPEGAWAIAN (CONTRACT) - FULL-WIDTH RESPONSIVE CARD -->
+          <div class="mt-3.5 bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3.5 pb-2.5 border-b border-slate-100">
+              <div class="flex items-center gap-2.5">
+                <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm border border-amber-200/60 shadow-2xs">
+                  <i class="fa-solid fa-file-contract"></i>
+                </span>
+                <div>
+                  <h4 class="text-xs sm:text-sm font-bold text-slate-800">Status Kepegawaian (Contract)</h4>
+                  <p class="text-[11px] text-slate-500 font-medium">Distribusi seluruh status ikatan kerja karyawan</p>
                 </div>
-                <!-- Kelompok Status Kepegawaian: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen -->
-                <div class="grid grid-cols-2 gap-2" id="mk-contract-group-list">
-                  <!-- Dynamically populated from database/filter -->
-                </div>
-                <!-- Dual-color Visual Ratio Progress Bar -->
-                <div class="pt-2.5 mt-2 border-t border-slate-100" id="mk-contract-bar-wrapper">
-                  <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex" id="mk-contract-bar-segments">
-                    <!-- Progress bar segments -->
-                  </div>
-                </div>
+              </div>
+              <div class="flex items-center gap-2 self-start sm:self-auto">
+                <span class="text-[10px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                  <i class="fa-solid fa-shield-halved text-[9px]"></i> 5 Kategori Baku
+                </span>
+              </div>
+            </div>
+
+            <!-- Kelompok Status Kepegawaian: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen -->
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-3" id="mk-contract-group-list">
+              <!-- Dynamically populated from database/filter -->
+            </div>
+
+            <!-- Dual-color Visual Ratio Progress Bar -->
+            <div class="pt-3 mt-3 border-t border-slate-100" id="mk-contract-bar-wrapper">
+              <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden flex shadow-inner" id="mk-contract-bar-segments">
+                <!-- Progress bar segments -->
               </div>
             </div>
           </div>
@@ -3176,6 +3189,7 @@
       if (norm === 'Tetap / Permanent') {
         return {
           displayName: 'Tetap',
+          subName: 'Permanent',
           fullName: 'Tetap / Permanent',
           icon: 'fa-solid fa-user-check',
           iconBg: 'bg-blue-100 text-blue-600',
@@ -3187,7 +3201,8 @@
       }
       if (norm === 'Kontrak / PKWT') {
         return {
-          displayName: 'PKWT',
+          displayName: 'Kontrak',
+          subName: 'PKWT',
           fullName: 'Kontrak / PKWT',
           icon: 'fa-solid fa-user-clock',
           iconBg: 'bg-amber-100 text-amber-600',
@@ -3200,6 +3215,7 @@
       if (norm === 'Contracters') {
         return {
           displayName: 'Contracters',
+          subName: 'Mitra / Vendor',
           fullName: 'Contracters',
           icon: 'fa-solid fa-helmet-safety',
           iconBg: 'bg-purple-100 text-purple-600',
@@ -3212,6 +3228,7 @@
       if (norm === 'On probation') {
         return {
           displayName: 'Probation',
+          subName: 'Masa Percobaan',
           fullName: 'On probation',
           icon: 'fa-solid fa-user-gear',
           iconBg: 'bg-orange-100 text-orange-600',
@@ -3224,6 +3241,7 @@
       if (norm === 'Magang/Intern') {
         return {
           displayName: 'Magang',
+          subName: 'Internship',
           fullName: 'Magang / Intern',
           icon: 'fa-solid fa-graduation-cap',
           iconBg: 'bg-emerald-100 text-emerald-600',
@@ -3235,6 +3253,7 @@
       }
       return {
         displayName: contractName || 'Lainnya',
+        subName: 'Status Lain',
         fullName: contractName || 'Lainnya',
         icon: 'fa-solid fa-id-card-clip',
         iconBg: 'bg-slate-100 text-slate-600',
@@ -3360,55 +3379,43 @@
       const contractListEl = document.getElementById('mk-contract-group-list');
 
       if (contractListEl) {
-        // Susun 5 kategori: 3 di atas, 2 di bawah
-        const topRow = ['Tetap / Permanent', 'Kontrak / PKWT', 'Contracters'];
-        const bottomRow = ['On probation', 'Magang/Intern'];
-        const extraCats = Object.keys(contractGroupMap).filter(k => !STANDARD_CONTRACT_CATEGORIES.includes(k));
+        const standardCats = STANDARD_CONTRACT_CATEGORIES;
+        const extraCats = Object.keys(contractGroupMap).filter(k => !standardCats.includes(k) && contractGroupMap[k] > 0);
+        const allCatsToRender = [...standardCats, ...extraCats];
 
-        const renderItem = (grpName) => {
+        contractListEl.innerHTML = allCatsToRender.map((grpName, index) => {
           const count = contractGroupMap[grpName] || 0;
           const meta = getContractMeta(grpName);
-          const pct = Math.round((count / totalContract) * 100);
+          const pct = totalContract ? Math.round((count / totalContract) * 100) : 0;
+          // Pada mobile (grid-cols-2), item ke-5 berada di baris ke-3, diposisikan seimbang di tengah
+          const isFifthOnMobile = (index === 4 && allCatsToRender.length === 5) ? 'col-span-2 sm:col-span-1 max-w-[240px] sm:max-w-none mx-auto w-full' : '';
+
           return `
-            <div class="flex flex-col items-center justify-center p-2 rounded-xl bg-slate-50/90 border border-slate-100 ${meta.cardHover} transition text-center shadow-xs">
+            <div class="flex flex-col items-center justify-between p-3 sm:p-3.5 rounded-xl bg-slate-50/80 border border-slate-200/70 hover:shadow-sm ${meta.cardHover} transition text-center shadow-2xs ${isFifthOnMobile}">
               <!-- 1. Icone (di atas) -->
-              <div class="w-7 h-7 rounded-xl ${meta.iconBg} flex items-center justify-center text-xs mb-1 border ${meta.iconBorder} shadow-2xs">
+              <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${meta.iconBg} flex items-center justify-center text-sm sm:text-base mb-2 border ${meta.iconBorder} shadow-2xs flex-shrink-0">
                 <i class="${meta.icon}"></i>
               </div>
-              <!-- 2. Bawahnya Nama -->
-              <span class="text-[10px] font-bold text-slate-700 truncate block w-full leading-tight mb-0.5" title="${meta.fullName}">
-                ${meta.displayName}
-              </span>
+              <!-- 2. Bawahnya Nama (Title & Subtitle rapi tanpa terpotong) -->
+              <div class="mb-2 w-full px-1">
+                <div class="text-xs sm:text-sm font-bold text-slate-800 leading-tight">
+                  ${meta.displayName}
+                </div>
+                <div class="text-[10px] sm:text-[11px] font-medium text-slate-400 leading-tight mt-0.5">
+                  ${meta.subName}
+                </div>
+              </div>
               <!-- 3. Bawahnya Angka -->
-              <span class="text-xs font-black text-slate-900 leading-tight">
-                ${count} <span class="text-[9px] font-semibold text-slate-400">Orang</span>
-              </span>
+              <div class="text-sm sm:text-base font-black text-slate-900 leading-tight mb-1.5">
+                ${count} <span class="text-[10px] sm:text-[11px] font-medium text-slate-400">Orang</span>
+              </div>
               <!-- 4. Truss Persen -->
-              <span class="mt-1 px-1.5 py-0.5 rounded-md text-[9px] font-black ${meta.badgeBg} border">
+              <span class="px-2 py-0.5 rounded-md text-[10px] sm:text-xs font-black ${meta.badgeBg} border">
                 ${pct}%
               </span>
             </div>
           `;
-        };
-
-        let html = `
-          <div class="grid grid-cols-3 gap-1.5 mb-1.5">
-            ${topRow.map(cat => renderItem(cat)).join('')}
-          </div>
-          <div class="grid grid-cols-2 gap-1.5">
-            ${bottomRow.map(cat => renderItem(cat)).join('')}
-          </div>
-        `;
-
-        if (extraCats.length > 0) {
-          html += `
-            <div class="grid grid-cols-2 gap-1.5 mt-1.5">
-              ${extraCats.map(cat => renderItem(cat)).join('')}
-            </div>
-          `;
-        }
-
-        contractListEl.innerHTML = html;
+        }).join('');
       }
 
       // Visual Ratio Progress Bar
