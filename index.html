@@ -320,39 +320,71 @@
           </div>
 
           <!-- Right Desktop Controls (Hidden on Mobile) -->
-          <div class="hidden md:flex items-center gap-2.5 flex-shrink-0">
+          <div class="hidden md:flex items-center gap-2 flex-shrink-0">
             <!-- Dropdown Cabang Desktop (Elevated Modern Pill) -->
-            <div class="relative flex items-center bg-white border border-slate-200/90 hover:border-red-400 rounded-xl px-3 py-1.5 shadow-2xs hover:shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-red-500/20 focus-within:border-red-500 group">
-              <div class="w-6 h-6 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-[11px] mr-2 flex-shrink-0 group-hover:scale-105 transition-transform">
+            <div class="relative flex items-center bg-white border border-slate-200/90 hover:border-red-400 rounded-xl px-2.5 py-1.5 shadow-2xs hover:shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-red-500/20 focus-within:border-red-500 group">
+              <div class="w-6 h-6 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-[11px] mr-2 flex-shrink-0 group-hover:scale-105 transition-transform border border-red-100">
                 <i class="fa-solid fa-location-dot"></i>
               </div>
               <div class="flex flex-col text-left">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Cabang Wewenang</span>
                 <div class="flex items-center gap-1 mt-0.5">
-                  <select id="branch-select" onchange="handleBranchOrPeriodChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer max-w-[200px] truncate appearance-none pr-3.5">
+                  <select id="branch-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer max-w-[170px] truncate appearance-none pr-3.5">
                   </select>
                   <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5"></i>
                 </div>
               </div>
             </div>
 
-            <!-- Dropdown Periode Desktop (Elevated Modern Pill) -->
-            <div class="relative flex items-center bg-white border border-slate-200/90 hover:border-blue-400 rounded-xl px-3 py-1.5 shadow-2xs hover:shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 group">
-              <div class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[11px] mr-2 flex-shrink-0 group-hover:scale-105 transition-transform">
-                <i class="fa-regular fa-calendar-check"></i>
+            <!-- Dropdown Bulan Desktop (Elevated Modern Pill) -->
+            <div class="relative flex items-center bg-white border border-slate-200/90 hover:border-amber-400 rounded-xl px-2.5 py-1.5 shadow-2xs hover:shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-amber-500/20 focus-within:border-amber-500 group">
+              <div class="w-6 h-6 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-[11px] mr-2 flex-shrink-0 group-hover:scale-105 transition-transform border border-amber-100">
+                <i class="fa-regular fa-calendar"></i>
               </div>
               <div class="flex flex-col text-left">
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Periode Data</span>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Bulan</span>
                 <div class="flex items-center gap-1 mt-0.5">
-                  <select id="period-select" onchange="handleBranchOrPeriodChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none pr-3.5">
-                    <option value="Mei 2025" selected>Mei 2025</option>
-                    <option value="Juni 2025">Juni 2025</option>
-                    <option value="Semester 1 2025">Semester 1 2025</option>
+                  <select id="month-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none pr-3.5">
+                    <option value="ALL">Semua Bulan</option>
+                    <option value="Januari">Januari</option>
+                    <option value="Februari">Februari</option>
+                    <option value="Maret">Maret</option>
+                    <option value="April">April</option>
+                    <option value="Mei" selected>Mei</option>
+                    <option value="Juni">Juni</option>
+                    <option value="Juli">Juli</option>
+                    <option value="Agustus">Agustus</option>
+                    <option value="September">September</option>
+                    <option value="Oktober">Oktober</option>
+                    <option value="November">November</option>
+                    <option value="Desember">Desember</option>
                   </select>
                   <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5"></i>
                 </div>
               </div>
             </div>
+
+            <!-- Dropdown Tahun Desktop (Elevated Modern Pill) -->
+            <div class="relative flex items-center bg-white border border-slate-200/90 hover:border-blue-400 rounded-xl px-2.5 py-1.5 shadow-2xs hover:shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 group">
+              <div class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[11px] mr-2 flex-shrink-0 group-hover:scale-105 transition-transform border border-blue-100">
+                <i class="fa-solid fa-calendar-days"></i>
+              </div>
+              <div class="flex flex-col text-left">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Tahun</span>
+                <div class="flex items-center gap-1 mt-0.5">
+                  <select id="year-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none pr-3.5">
+                    <option value="ALL">Semua</option>
+                    <option value="2024">2024</option>
+                    <option value="2025" selected>2025</option>
+                    <option value="2026">2026</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5"></i>
+                </div>
+              </div>
+            </div>
+
+            <!-- Hidden input for backwards compatibility -->
+            <input type="hidden" id="period-select" value="Mei 2025">
 
             <!-- Profile Info Desktop -->
             <div class="flex items-center gap-2.5 bg-white border border-slate-200/90 rounded-xl py-1 px-2.5 shadow-2xs">
@@ -381,10 +413,10 @@
         </div>
 
         <!-- Mobile Filter Bar: Dedicated clean row on small screens -->
-        <div class="md:hidden px-3.5 py-2 bg-slate-50/95 border-t border-slate-200/80 flex items-center gap-2">
+        <div class="md:hidden px-3 py-2 bg-slate-50/95 border-t border-slate-200/80 flex items-center gap-1.5 overflow-x-auto scrollbar-none">
           <!-- Dropdown Cabang Mobile -->
-          <div class="flex-1 min-w-0 flex items-center bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-2xs">
-            <div class="w-5 h-5 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-[10px] mr-1.5 flex-shrink-0">
+          <div class="flex-1 min-w-[125px] flex items-center bg-white border border-slate-200 rounded-xl px-2 py-1.5 shadow-2xs">
+            <div class="w-5 h-5 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-[10px] mr-1.5 flex-shrink-0 border border-red-100">
               <i class="fa-solid fa-location-dot"></i>
             </div>
             <div class="flex-1 min-w-0 flex items-center justify-between">
@@ -394,18 +426,44 @@
             </div>
           </div>
 
-          <!-- Dropdown Periode Mobile -->
-          <div class="w-36 flex-shrink-0 flex items-center bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-2xs">
-            <div class="w-5 h-5 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] mr-1.5 flex-shrink-0">
-              <i class="fa-regular fa-calendar-check"></i>
+          <!-- Dropdown Bulan Mobile -->
+          <div class="w-24 flex-shrink-0 flex items-center bg-white border border-slate-200 rounded-xl px-2 py-1.5 shadow-2xs">
+            <div class="w-5 h-5 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-[10px] mr-1 flex-shrink-0 border border-amber-100">
+              <i class="fa-regular fa-calendar"></i>
             </div>
             <div class="flex-1 min-w-0 flex items-center justify-between">
-              <select id="period-select-mobile" onchange="syncPeriodChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-black text-slate-800 appearance-none pr-3 truncate">
-                <option value="Mei 2025" selected>Mei 2025</option>
-                <option value="Juni 2025">Juni 2025</option>
-                <option value="Semester 1 2025">Sem. 1 2025</option>
+              <select id="month-select-mobile" onchange="syncMonthChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-black text-slate-800 appearance-none pr-2.5 truncate">
+                <option value="ALL">Semua</option>
+                <option value="Januari">Jan</option>
+                <option value="Februari">Feb</option>
+                <option value="Maret">Mar</option>
+                <option value="April">Apr</option>
+                <option value="Mei" selected>Mei</option>
+                <option value="Juni">Jun</option>
+                <option value="Juli">Jul</option>
+                <option value="Agustus">Agu</option>
+                <option value="September">Sep</option>
+                <option value="Oktober">Okt</option>
+                <option value="November">Nov</option>
+                <option value="Desember">Des</option>
               </select>
-              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5 flex-shrink-0"></i>
+              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2 flex-shrink-0"></i>
+            </div>
+          </div>
+
+          <!-- Dropdown Tahun Mobile -->
+          <div class="w-20 flex-shrink-0 flex items-center bg-white border border-slate-200 rounded-xl px-2 py-1.5 shadow-2xs">
+            <div class="w-5 h-5 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] mr-1 flex-shrink-0 border border-blue-100">
+              <i class="fa-solid fa-calendar-days"></i>
+            </div>
+            <div class="flex-1 min-w-0 flex items-center justify-between">
+              <select id="year-select-mobile" onchange="syncYearChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-black text-slate-800 appearance-none pr-2.5 truncate">
+                <option value="ALL">Semua</option>
+                <option value="2024">2024</option>
+                <option value="2025" selected>2025</option>
+                <option value="2026">2026</option>
+              </select>
+              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2 flex-shrink-0"></i>
             </div>
           </div>
         </div>
@@ -4311,8 +4369,68 @@
       });
 
       populateBranchDropdown();
-      populatePeriodDropdown();
+      populateMonthAndYearDropdowns();
       loadBackendDashboardData();
+    }
+
+    // Helper untuk mencocokkan tanggal dengan Bulan dan Tahun
+    function matchDateMonthYear(dateVal, targetMonth, targetYear) {
+      if (!dateVal) return true;
+      if ((!targetMonth || targetMonth === 'ALL') && (!targetYear || targetYear === 'ALL')) return true;
+
+      const str = String(dateVal).trim();
+      if (!str || str === '-') return true;
+
+      const monthMap = {
+        'januari': 1, 'jan': 1, '01': 1, '1': 1,
+        'februari': 2, 'feb': 2, '02': 2, '2': 2,
+        'maret': 3, 'mar': 3, '03': 3, '3': 3,
+        'april': 4, 'apr': 4, '04': 4, '4': 4,
+        'mei': 5, 'may': 5, '05': 5, '5': 5,
+        'juni': 6, 'jun': 6, '06': 6, '6': 6,
+        'juli': 7, 'jul': 7, '07': 7, '7': 7,
+        'agustus': 8, 'agu': 8, 'agt': 8, 'aug': 8, '08': 8, '8': 8,
+        'september': 9, 'sep': 9, '09': 9, '9': 9,
+        'oktober': 10, 'okt': 10, 'oct': 10, '10': 10,
+        'november': 11, 'nov': 11, '11': 11,
+        'desember': 12, 'des': 12, 'dec': 12, '12': 12
+      };
+
+      const targetMonthNum = (targetMonth && targetMonth !== 'ALL') ? monthMap[String(targetMonth).toLowerCase()] : null;
+      const targetYearNum = (targetYear && targetYear !== 'ALL') ? parseInt(targetYear, 10) : null;
+
+      let itemYear = null;
+      let itemMonth = null;
+
+      const ymdMatch = str.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);
+      const dmyMatch = str.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);
+
+      if (ymdMatch) {
+        itemYear = parseInt(ymdMatch[1], 10);
+        itemMonth = parseInt(ymdMatch[2], 10);
+      } else if (dmyMatch) {
+        itemYear = parseInt(dmyMatch[3], 10);
+        itemMonth = parseInt(dmyMatch[2], 10);
+      } else {
+        const lower = str.toLowerCase();
+        for (const [mName, mNum] of Object.entries(monthMap)) {
+          if (lower.includes(mName)) {
+            itemMonth = mNum;
+            break;
+          }
+        }
+        const yrMatch = str.match(/(20\d{2})/);
+        if (yrMatch) itemYear = parseInt(yrMatch[1], 10);
+        else {
+          const yr2Match = str.match(/-(\d{2})$/);
+          if (yr2Match) itemYear = 2000 + parseInt(yr2Match[1], 10);
+        }
+      }
+
+      if (targetYearNum && itemYear && itemYear !== targetYearNum) return false;
+      if (targetMonthNum && itemMonth && itemMonth !== targetMonthNum) return false;
+
+      return true;
     }
 
     function syncAbsFilterCabang(val) {
@@ -4322,7 +4440,7 @@
       if (desktop) desktop.value = val;
       if (mobile) mobile.value = val;
       if (km) km.value = val;
-      handleBranchOrPeriodChange();
+      handleFilterChange();
     }
 
     function syncKMFilterCabang(val) {
@@ -4332,7 +4450,107 @@
       if (desktop) desktop.value = val;
       if (mobile) mobile.value = val;
       if (abs) abs.value = val;
-      handleBranchOrPeriodChange();
+      handleFilterChange();
+    }
+
+    function syncBranchChangeMobile(val) {
+      const desktop = document.getElementById('branch-select');
+      const abs = document.getElementById('abs-filter-cabang');
+      const km = document.getElementById('km-filter-cabang');
+      if (desktop) desktop.value = val;
+      if (abs) abs.value = val;
+      if (km) km.value = val;
+      handleFilterChange();
+    }
+
+    function syncMonthChangeMobile(val) {
+      const desktop = document.getElementById('month-select');
+      if (desktop) desktop.value = val;
+      handleFilterChange();
+    }
+
+    function syncYearChangeMobile(val) {
+      const desktop = document.getElementById('year-select');
+      if (desktop) desktop.value = val;
+      handleFilterChange();
+    }
+
+    function handleBranchOrPeriodChange() {
+      handleFilterChange();
+    }
+
+    function handleFilterChange() {
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+
+      let branch = 'ALL';
+      if (!isAdmin) {
+        branch = userBranchCode;
+      } else {
+        branch = document.getElementById('branch-select')?.value || 'ALL';
+      }
+
+      const month = document.getElementById('month-select')?.value || 'Mei';
+      const year = document.getElementById('year-select')?.value || '2025';
+
+      // Sinkronisasi mobile select
+      const mBranch = document.getElementById('branch-select-mobile');
+      if (mBranch && mBranch !== document.activeElement) mBranch.value = branch;
+
+      const mMonth = document.getElementById('month-select-mobile');
+      if (mMonth && mMonth !== document.activeElement) mMonth.value = month;
+
+      const mYear = document.getElementById('year-select-mobile');
+      if (mYear && mYear !== document.activeElement) mYear.value = year;
+
+      // Sinkronisasi table branch dropdowns
+      const absBranch = document.getElementById('abs-filter-cabang');
+      if (absBranch && absBranch !== document.activeElement) absBranch.value = branch;
+
+      const kmBranch = document.getElementById('km-filter-cabang');
+      if (kmBranch && kmBranch !== document.activeElement) kmBranch.value = branch;
+
+      // Sinkronisasi hidden legacy period select
+      const legacyPeriod = document.getElementById('period-select');
+      let pLabel = (month === 'ALL' && year === 'ALL') ? 'Semua Periode' : 
+                   (month === 'ALL') ? `Tahun ${year}` : 
+                   (year === 'ALL') ? `Bulan ${month}` : `${month} ${year}`;
+      if (legacyPeriod) legacyPeriod.value = pLabel;
+
+      const badge = document.getElementById('welcome-period-badge');
+      if (badge) badge.textContent = pLabel;
+
+      // Filter seketika secara responsif dari dataset master
+      if (window.masterFullPayload) {
+        renderAllDashboardData(window.masterFullPayload, branch, month, year);
+      } else if (window.fullUnscopedPayload) {
+        renderAllDashboardData(window.fullUnscopedPayload, branch, month, year);
+      }
+
+      // Ambil update backend di latar belakang jika online
+      loadBackendDashboardData(false);
+    }
+
+    /**
+     * Memastikan Master Store selalu menyimpan salinan lengkap seluruh tabel untuk semua cabang
+     */
+    function ensureMasterStore(data) {
+      if (!data) return;
+      if (!window.masterFullPayload || !window.masterFullPayload.rawTables || !window.masterFullPayload.rawTables.Data_Kehadiran) {
+        const fullCopy = JSON.parse(JSON.stringify(data));
+        initializeStandardTables(fullCopy);
+        window.masterFullPayload = fullCopy;
+        window.fullUnscopedPayload = fullCopy;
+      } else {
+        const existingCount = window.masterFullPayload.employeeList?.length || 0;
+        const newCount = data.employeeList?.length || 0;
+        if (newCount > existingCount) {
+          const fullCopy = JSON.parse(JSON.stringify(data));
+          initializeStandardTables(fullCopy);
+          window.masterFullPayload = fullCopy;
+          window.fullUnscopedPayload = fullCopy;
+        }
+      }
     }
 
     /**
@@ -4354,8 +4572,9 @@
       KNOWN_BRANCHES.forEach(b => baseMap.set(b.code, { code: b.code, name: b.name, fullName: b.fullName }));
 
       const candidateList = availableBranchList || 
+        (window.masterFullPayload ? extractBranchesFromData(window.masterFullPayload) : 
         (window.fullUnscopedPayload ? extractBranchesFromData(window.fullUnscopedPayload) : 
-        (currentDashboardPayload ? extractBranchesFromData(currentDashboardPayload) : []));
+        (currentDashboardPayload ? extractBranchesFromData(currentDashboardPayload) : [])));
 
       if (Array.isArray(candidateList)) {
         candidateList.forEach(b => {
@@ -4410,86 +4629,65 @@
     }
 
     /**
-     * Mengisi dropdown Periode (Bulan & Tahun) secara otomatis dari database
+     * Mengisi dropdown Bulan dan Tahun secara terpisah dan dinamis
      */
-    function populatePeriodDropdown(data = null) {
-      const selectDesktop = document.getElementById('period-select');
-      const selectMobile = document.getElementById('period-select-mobile');
-      const selects = [selectDesktop, selectMobile].filter(Boolean);
-      if (!selects.length) return;
+    function populateMonthAndYearDropdowns(data = null) {
+      const mSelects = [document.getElementById('month-select'), document.getElementById('month-select-mobile')].filter(Boolean);
+      const ySelects = [document.getElementById('year-select'), document.getElementById('year-select-mobile')].filter(Boolean);
 
-      const periods = extractPeriodsFromData(data);
-      const prevVal = selectDesktop.value || 'Mei 2025';
+      // 1. Ekstraksi Tahun
+      const detectedYears = new Set(['2024', '2025', '2026']);
+      const srcList = data?.employeeList || window.masterFullPayload?.employeeList || [];
+      srcList.forEach(e => {
+        const p = String(e.periode || e['Date'] || '');
+        const m = p.match(/(20\d{2})/);
+        if (m) detectedYears.add(m[1]);
+      });
+      const yearList = Array.from(detectedYears).sort();
 
-      selects.forEach(sel => {
-        sel.innerHTML = '';
-        periods.forEach(p => {
-          const opt = document.createElement('option');
-          opt.value = p;
-          opt.textContent = p;
-          sel.appendChild(opt);
+      ySelects.forEach(sel => {
+        const curVal = sel.value || '2025';
+        let opts = '<option value="ALL">Semua</option>';
+        yearList.forEach(yr => {
+          opts += `<option value="${yr}">${yr}</option>`;
         });
-
-        if (periods.includes(prevVal)) {
-          sel.value = prevVal;
-        } else if (periods.includes('Mei 2025')) {
-          sel.value = 'Mei 2025';
-        } else if (periods.length > 0) {
-          sel.value = periods[0];
-        }
+        sel.innerHTML = opts;
+        sel.value = yearList.includes(curVal) ? curVal : (yearList.includes('2025') ? '2025' : 'ALL');
       });
 
-      const activePeriod = selectDesktop.value;
-      const badge = document.getElementById('welcome-period-badge');
-      if (badge) badge.textContent = activePeriod;
+      // 2. Daftar 12 Bulan Baku Bahasa Indonesia
+      const months = [
+        { val: 'ALL', label: 'Semua Bulan' },
+        { val: 'Januari', label: 'Januari' },
+        { val: 'Februari', label: 'Februari' },
+        { val: 'Maret', label: 'Maret' },
+        { val: 'April', label: 'April' },
+        { val: 'Mei', label: 'Mei' },
+        { val: 'Juni', label: 'Juni' },
+        { val: 'Juli', label: 'Juli' },
+        { val: 'Agustus', label: 'Agustus' },
+        { val: 'September', label: 'September' },
+        { val: 'Oktober', label: 'Oktober' },
+        { val: 'November', label: 'November' },
+        { val: 'Desember', label: 'Desember' }
+      ];
+
+      mSelects.forEach(sel => {
+        const curVal = sel.value || 'Mei';
+        const isMobile = sel.id.includes('mobile');
+        let opts = '';
+        months.forEach(m => {
+          const lbl = isMobile && m.val !== 'ALL' ? m.label.substring(0, 3) : m.label;
+          opts += `<option value="${m.val}">${lbl}</option>`;
+        });
+        sel.innerHTML = opts;
+        sel.value = curVal;
+      });
     }
 
-    function syncBranchChangeMobile(val) {
-      const desktop = document.getElementById('branch-select');
-      if (desktop) desktop.value = val;
-      handleBranchOrPeriodChange();
-    }
-
-    function syncPeriodChangeMobile(val) {
-      const desktop = document.getElementById('period-select');
-      if (desktop) desktop.value = val;
-      handleBranchOrPeriodChange();
-    }
-
-    function handleBranchOrPeriodChange() {
-      const period = document.getElementById('period-select')?.value || 'Mei 2025';
-      const mPeriod = document.getElementById('period-select-mobile');
-      if (mPeriod && mPeriod !== document.activeElement) mPeriod.value = period;
-
-      const isAdmin = isUserAdmin(loggedInUser);
-      let branch = 'ALL';
-      if (!isAdmin) {
-        branch = getUserBranchCode(loggedInUser);
-      } else {
-        branch = document.getElementById('branch-select')?.value || 'ALL';
-      }
-
-      const mBranch = document.getElementById('branch-select-mobile');
-      if (mBranch && mBranch !== document.activeElement) mBranch.value = branch;
-
-      const absBranch = document.getElementById('abs-filter-cabang');
-      if (absBranch && absBranch !== document.activeElement) absBranch.value = branch;
-
-      const badge = document.getElementById('welcome-period-badge');
-      if (badge) badge.textContent = period;
-
-      // 1. Maintain master full copy in window.fullUnscopedPayload
-      if (!window.fullUnscopedPayload && currentDashboardPayload) {
-        window.fullUnscopedPayload = JSON.parse(JSON.stringify(currentDashboardPayload));
-      }
-
-      // 2. Instantly filter in-memory client-side data for immediate UI response
-      if (window.fullUnscopedPayload) {
-        renderAllDashboardData(window.fullUnscopedPayload, branch, period);
-      }
-
-      // 3. Request fresh filtered data from backend
-      loadBackendDashboardData(false);
+    // Fungsi kompatibilitas untuk pemanggil lama
+    function populatePeriodDropdown(data = null) {
+      populateMonthAndYearDropdowns(data);
     }
 
     // 3. Ambil Data Dashboard dengan Pengamanan Hak Akses
@@ -4499,7 +4697,12 @@
 
       // Jika user adalah Kacab, query mutlak diarahkan HANYA ke cabangnya
       const branchVal = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
-      const periodVal = document.getElementById('period-select')?.value || 'Mei 2025';
+      const monthVal = document.getElementById('month-select')?.value || 'Mei';
+      const yearVal = document.getElementById('year-select')?.value || '2025';
+      const periodVal = (monthVal === 'ALL' && yearVal === 'ALL') ? 'ALL' :
+                        (monthVal === 'ALL') ? `Tahun ${yearVal}` :
+                        (yearVal === 'ALL') ? monthVal : `${monthVal} ${yearVal}`;
+
       const loader = document.getElementById('loading-overlay');
       if (shouldShowLoader && loader) loader.classList.remove('hidden');
 
@@ -4512,49 +4715,44 @@
       if (loader) loader.classList.add('hidden');
 
       if (res && res.success && res.data) {
-        // If we fetched ALL branches, update window.fullUnscopedPayload
+        ensureMasterStore(res.data);
+
+        // Jika kita mengambil ALL branches, perbarui opsi cabang & periode secara dinamis
         if (branchVal === 'ALL') {
-          window.fullUnscopedPayload = JSON.parse(JSON.stringify(res.data));
           if (isAdmin) {
             const dynamicBranches = extractBranchesFromData(res.data);
             populateBranchDropdown(dynamicBranches);
           }
-          populatePeriodDropdown(res.data);
+          populateMonthAndYearDropdowns(res.data);
         }
 
-        renderAllDashboardData(res.data, branchVal, periodVal);
+        renderAllDashboardData(window.masterFullPayload || res.data, branchVal, monthVal, yearVal);
       } else {
-        // Fallback: If backend fails or is offline, keep client-side filtering active
-        if (window.fullUnscopedPayload) {
-          renderAllDashboardData(window.fullUnscopedPayload, branchVal, periodVal);
+        // Fallback: Jika backend offline/error, gunakan data master client-side
+        if (window.masterFullPayload) {
+          renderAllDashboardData(window.masterFullPayload, branchVal, monthVal, yearVal);
         }
       }
     }
 
     // 4. Render Metrik dengan Isolasi Data Kacab vs Admin
-    function renderAllDashboardData(data, targetBranchOverride = null, targetPeriodOverride = null) {
+    function renderAllDashboardData(data, targetBranchOverride = null, targetMonthOverride = null, targetYearOverride = null) {
       if (!data) return;
+
+      ensureMasterStore(data);
 
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
       const targetBranch = targetBranchOverride || (isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode);
-      const selectedPeriod = targetPeriodOverride || document.getElementById('period-select')?.value || 'Mei 2025';
+      const selectedMonth = targetMonthOverride || document.getElementById('month-select')?.value || 'Mei';
+      const selectedYear = targetYearOverride || document.getElementById('year-select')?.value || '2025';
 
-      // Always maintain master copy if on ALL
-      if (!window.fullUnscopedPayload && targetBranch === 'ALL') {
-        window.fullUnscopedPayload = JSON.parse(JSON.stringify(data));
-      }
+      // Selalu gunakan masterFullPayload sebagai sumber data baku tanpa terdistorsi
+      const master = window.masterFullPayload || window.fullUnscopedPayload || data;
+      let scopedEmployees = (master.employeeList || []).slice();
+      let scopedQCC = (master.qccList || []).slice();
 
-      let sourceData = data;
-      // If data is scoped but user requests different branch or ALL, prefer window.fullUnscopedPayload if available
-      if (window.fullUnscopedPayload && (!data.employeeList || data.employeeList.length < (window.fullUnscopedPayload.employeeList?.length || 0))) {
-        sourceData = window.fullUnscopedPayload;
-      }
-
-      let scopedEmployees = (sourceData.employeeList || []).slice();
-      let scopedQCC = (sourceData.qccList || []).slice();
-
-      const rawSource = sourceData.rawTables || {};
+      const rawSource = master.rawTables || {};
       const scopedRawTables = {
         Master_Karyawan: (rawSource.Master_Karyawan || []).slice(),
         Data_Kehadiran: (rawSource.Data_Kehadiran || []).slice(),
@@ -4579,45 +4777,44 @@
         scopedRawTables.Data_KM = scopedRawTables.Knowledge_management;
       }
 
-      // 2. Filter periode jika record karyawan memiliki label periode spesifik
-      if (selectedPeriod && scopedEmployees.some(e => e.periode)) {
+      // 2. Filter per Bulan & Tahun
+      if (selectedMonth !== 'ALL' || selectedYear !== 'ALL') {
         const periodFiltered = scopedEmployees.filter(e => {
           if (!e.periode) return true;
-          if (selectedPeriod.startsWith("Semester 1")) {
-            const sem1 = ["januari", "februari", "maret", "april", "mei", "juni"];
-            return sem1.some(m => e.periode.toLowerCase().includes(m));
-          } else if (selectedPeriod.startsWith("Semester 2")) {
-            const sem2 = ["juli", "agustus", "september", "oktober", "november", "desember"];
-            return sem2.some(m => e.periode.toLowerCase().includes(m));
-          }
-          return e.periode.toLowerCase().trim() === selectedPeriod.toLowerCase().trim();
+          return matchDateMonthYear(e.periode, selectedMonth, selectedYear);
         });
         if (periodFiltered.length > 0) {
           scopedEmployees = periodFiltered;
         }
+
+        scopedRawTables.Data_Kehadiran = scopedRawTables.Data_Kehadiran.filter(r => 
+          matchDateMonthYear(r['Date'] || r['Date Clock In'] || r['Date Clock Out'], selectedMonth, selectedYear)
+        );
+
+        scopedRawTables.Data_SS = scopedRawTables.Data_SS.filter(r => 
+          matchDateMonthYear(r['Diterima Bulan'] || r['Date'] || r['No.BPH'], selectedMonth, selectedYear)
+        );
+
+        scopedRawTables.Data_QCC = scopedRawTables.Data_QCC.filter(r => 
+          matchDateMonthYear(r['L 1-8 diterima'] || r['Pendaftaran diterima'] || r['No.BPH'], selectedMonth, selectedYear)
+        );
+
+        scopedRawTables.Data_SP = scopedRawTables.Data_SP.filter(r => 
+          matchDateMonthYear(r['Tanggal'] || r['Date'], selectedMonth, selectedYear)
+        );
+
+        scopedRawTables.Knowledge_management = scopedRawTables.Knowledge_management.filter(r => 
+          matchDateMonthYear(r['TANGGAL'] || r['Tanggal'], selectedMonth, selectedYear)
+        );
+        scopedRawTables.Data_KM = scopedRawTables.Knowledge_management;
       }
 
-      // 3. Hitung metrik agregasi (summary) khusus cabang yang diakses
-      let s;
-      if (targetBranch === 'ALL' && sourceData.summary && isAdmin) {
-        s = { ...sourceData.summary };
-        if (!s.contractGroupMap || Object.keys(s.contractGroupMap).length === 0) {
-          const cMap = {};
-          STANDARD_CONTRACT_CATEGORIES.forEach(cat => { cMap[cat] = 0; });
-          scopedEmployees.forEach(e => {
-            const c = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap / Permanent';
-            const norm = normalizeContractCategory(c);
-            cMap[norm] = (cMap[norm] || 0) + 1;
-          });
-          s.contractGroupMap = cMap;
-        }
-      } else {
-        s = computeBranchSummary(scopedEmployees, scopedQCC, sourceData.summary || {}, { ...sourceData, rawTables: scopedRawTables });
-      }
+      // 3. Hitung metrik agregasi khusus cabang dan periode aktif
+      const s = computeBranchSummary(scopedEmployees, scopedQCC, master.summary || {}, { ...master, rawTables: scopedRawTables });
 
-      // Simpan payload scoped ke state global agar tabel dan ekspor hanya berisi data yang berhak diakses
+      // Simpan payload scoped ke state global agar tabel dan ekspor presisi
       currentDashboardPayload = {
-        ...sourceData,
+        ...master,
         employeeList: scopedEmployees,
         qccList: scopedQCC,
         rawTables: scopedRawTables,
@@ -6175,9 +6372,15 @@
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
       const rawRows = currentDashboardPayload.rawTables.Data_SP || [];
       const q = (document.getElementById('sp-search-input')?.value || '').toLowerCase().trim();
-      const statusFilter = document.getElementById('sp-filter-status')?.value || 'ALL';
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+      const targetBranch = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
 
       let list = rawRows;
+
+      if (targetBranch !== 'ALL') {
+        list = list.filter(e => matchBranch(e, targetBranch));
+      }
 
       if (q) {
         list = list.filter(e => 
@@ -6255,26 +6458,11 @@
 
     function populateKMFilters() {
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
-      const rawRows = (currentDashboardPayload.rawTables.Knowledge_management || currentDashboardPayload.rawTables.Data_KM) || [];
 
       // Dropdown Kategori / Waktu
       const catSelect = document.getElementById('km-filter-kategori');
       if (catSelect) {
         catSelect.innerHTML = '<option value="ALL">Semua Dokumen</option>';
-      }
-
-      // Dropdown Cabang
-      const branchSelect = document.getElementById('km-filter-cabang');
-      if (branchSelect) {
-        const currentBranch = branchSelect.value || 'ALL';
-        const branches = Array.from(new Set(rawRows.map(r => String(r['Cabang'] || r['P.subarea'] || '').trim()).filter(Boolean))).sort();
-        let branchOpts = '<option value="ALL">Semua Cabang</option>';
-        branches.forEach(b => {
-          branchOpts += `<option value="${b}">${b}</option>`;
-        });
-        branchSelect.innerHTML = branchOpts;
-        const bOptsArr = Array.from(branchSelect.options).map(o => o.value);
-        branchSelect.value = bOptsArr.includes(currentBranch) ? currentBranch : 'ALL';
       }
     }
 
@@ -6286,6 +6474,10 @@
 
       let list = rawRows;
 
+      if (branchFilter !== 'ALL') {
+        list = list.filter(e => matchBranch(e, branchFilter));
+      }
+
       if (q) {
         list = list.filter(e => 
           String(e['NPK'] || '').toLowerCase().includes(q) || 
@@ -6294,10 +6486,6 @@
           String(e['TANGGAL'] || e['Tanggal'] || '').toLowerCase().includes(q) ||
           String(e['TIME'] || e['Time'] || '').toLowerCase().includes(q)
         );
-      }
-
-      if (branchFilter !== 'ALL') {
-        list = list.filter(e => String(e['Cabang'] || e['P.subarea'] || '').toLowerCase() === branchFilter.toLowerCase());
       }
 
       const isFull = columnViewMode.km === 'FULL';
