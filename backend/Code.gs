@@ -57,13 +57,38 @@ function responseJSON(data) {
  */
 function formatAppsScriptDate(val) {
   if (!val) return "";
-  if (val instanceof Date && !isNaN(val)) {
-    const d = String(val.getDate()).padStart(2, "0");
-    const m = String(val.getMonth() + 1).padStart(2, "0");
-    const y = val.getFullYear();
-    return `${d}.${m}.${y}`;
+  if (val instanceof Date && !isNaN(val.getTime())) {
+    try {
+      return Utilities.formatDate(val, "Asia/Jakarta", "dd.MM.yyyy");
+    } catch (e) {
+      const d = String(val.getDate()).padStart(2, "0");
+      const m = String(val.getMonth() + 1).padStart(2, "0");
+      const y = val.getFullYear();
+      return `${d}.${m}.${y}`;
+    }
   }
-  return String(val).trim();
+  if (typeof val === "number" && val > 30000 && val < 60000) {
+    const date = new Date(Math.round((val - 25569) * 86400 * 1000));
+    if (!isNaN(date.getTime())) {
+      try {
+        return Utilities.formatDate(date, "Asia/Jakarta", "dd.MM.yyyy");
+      } catch (e) {
+        const d = String(date.getDate()).padStart(2, "0");
+        const m = String(date.getMonth() + 1).padStart(2, "0");
+        return `${d}.${m}.${date.getFullYear()}`;
+      }
+    }
+  }
+  let s = String(val).trim();
+  if (s.includes("T") && s.endsWith("Z")) {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      try {
+        return Utilities.formatDate(d, "Asia/Jakarta", "dd.MM.yyyy");
+      } catch (e) {}
+    }
+  }
+  return s;
 }
 
 /**
@@ -71,13 +96,35 @@ function formatAppsScriptDate(val) {
  */
 function formatAppsScriptTime(val) {
   if (!val) return "";
-  if (val instanceof Date && !isNaN(val)) {
-    const h = String(val.getHours()).padStart(2, "0");
-    const m = String(val.getMinutes()).padStart(2, "0");
-    const s = String(val.getSeconds()).padStart(2, "0");
-    return (s === "00") ? `${h}:${m}` : `${h}:${m}:${s}`;
+  if (val instanceof Date && !isNaN(val.getTime())) {
+    try {
+      return Utilities.formatDate(val, "Asia/Jakarta", "HH:mm");
+    } catch (e) {
+      const h = String(val.getHours()).padStart(2, "0");
+      const m = String(val.getMinutes()).padStart(2, "0");
+      return `${h}:${m}`;
+    }
   }
-  return String(val).trim();
+  if (typeof val === "number" && val >= 0 && val < 1) {
+    const totalSec = Math.round(val * 86400);
+    const h = String(Math.floor(totalSec / 3600)).padStart(2, "0");
+    const m = String(Math.floor((totalSec % 3600) / 60)).padStart(2, "0");
+    return `${h}:${m}`;
+  }
+  let s = String(val).trim();
+  if (s.includes("T") && s.endsWith("Z")) {
+    const d = new Date(s);
+    if (!isNaN(d.getTime())) {
+      try {
+        return Utilities.formatDate(d, "Asia/Jakarta", "HH:mm");
+      } catch (e) {}
+    }
+  }
+  if (/^\d{1,2}[:\.]\d{2}([:\.]\d{2})?$/.test(s)) {
+    const parts = s.split(/[:\.]/);
+    return `${parts[0].padStart(2, "0")}:${parts[1].padStart(2, "0")}`;
+  }
+  return s;
 }
 
 /**
@@ -373,6 +420,91 @@ function getDashboardData(user, selectedBranch, selectedPeriod) {
       return assignedCodes.includes(item["Kode BA"]);
     });
 
+    // Filter & Format Presensi / Data_Kehadiran (Asumsi Jam Masuk 08.00 WIB)
+    const validAbs = rawAbs.map(item => {
+      const npk = String(getVal(item, "NPK", "Personnel no.", "ID Karyawan")).trim();
+      const emp = validEmployees.find(e => String(e.npk).trim() === npk);
+      const rawCabang = getVal(item, "Cabang", "Business area", "P.subarea");
+      const baCode = resolveBACode(rawCabang || (emp ? emp.kodeBA : ""));
+      const cabangName = DSO_BRANCH_MAP[baCode] ? DSO_BRANCH_MAP[baCode].name : (rawCabang || (emp ? emp.cabang : ""));
+
+      const tglRaw = getVal(item, "Date", "Tanggal", "Tgl");
+      const tglClockInRaw = getVal(item, "Date Clock In", "Tanggal Clock In");
+      const timeClockInRaw = getVal(item, "Time Clock In", "Clock In", "Time In", "Time");
+      const tglClockOutRaw = getVal(item, "Date Clock Out", "Tanggal Clock Out");
+      const timeClockOutRaw = getVal(item, "Time Clock Out", "Clock Out", "Time Out");
+
+      const tglFormatted = formatAppsScriptDate(tglRaw);
+      const tglClockInFormatted = formatAppsScriptDate(tglClockInRaw || tglRaw);
+      const timeClockInFormatted = formatAppsScriptTime(timeClockInRaw);
+      const tglClockOutFormatted = formatAppsScriptDate(tglClockOutRaw || tglRaw);
+      const timeClockOutFormatted = formatAppsScriptTime(timeClockOutRaw);
+
+      // Hitung Estimasi Keterlambatan (Asumsi jam masuk 08.00 WIB)
+      let estimasiTelatText = "Tepat Waktu";
+      let isLate = false;
+      let lateDiffMins = 0;
+
+      if (timeClockInFormatted && timeClockInFormatted !== "-" && timeClockInFormatted !== "") {
+        const timeParts = timeClockInFormatted.split(":");
+        if (timeParts.length >= 2) {
+          const h = parseInt(timeParts[0], 10);
+          const m = parseInt(timeParts[1], 10);
+          if (!isNaN(h) && !isNaN(m)) {
+            lateDiffMins = (h * 60 + m) - 480; // 08:00 = 480 menit
+            if (lateDiffMins > 0) {
+              isLate = true;
+              const lateHours = Math.floor(lateDiffMins / 60);
+              const lateMinutes = lateDiffMins % 60;
+              if (lateHours > 0 && lateMinutes > 0) {
+                estimasiTelatText = `Telat ${lateHours} Jam ${lateMinutes} Menit`;
+              } else if (lateHours > 0) {
+                estimasiTelatText = `Telat ${lateHours} Jam`;
+              } else {
+                estimasiTelatText = `Telat ${lateMinutes} Menit`;
+              }
+            }
+          }
+        }
+      }
+
+      const durasiRaw = getVal(item, "Durasi Kerja (Work Hours)", "Durasi Kerja", "Work Hours");
+      let durasiFormatted = durasiRaw;
+      if (typeof durasiRaw === "number") {
+        durasiFormatted = Math.round(durasiRaw * 10) / 10;
+      }
+
+      return {
+        ...item,
+        "NPK": npk,
+        "Employee Name": getVal(item, "Employee Name", "Nama", "Last name") || (emp ? emp.nama : "-"),
+        "Wilayah": getVal(item, "Wilayah", "Area") || "DSO Lampung",
+        "Cabang": cabangName || (emp ? emp.cabang : "DSO Lampung"),
+        "Date": tglFormatted,
+        "Date Clock In": tglClockInFormatted,
+        "Time Clock In": timeClockInFormatted,
+        "Estimasi Telat (Asumsi 08.00)": estimasiTelatText,
+        "Date Clock Out": tglClockOutFormatted,
+        "Time Clock Out": timeClockOutFormatted,
+        "Durasi Kerja (Work Hours)": durasiFormatted !== "" ? durasiFormatted : 8,
+        "Assigned Work Location": getVal(item, "Assigned Work Location") || "YES",
+        "Need CICO Approval": getVal(item, "Need CICO Approval") || (isLate ? "YES" : "NO"),
+        "In Radius Clock in": getVal(item, "In Radius Clock in") || "YES",
+        "Location Clock In": getVal(item, "Location Clock In") || "",
+        "In Radius Clock Out": getVal(item, "In Radius Clock Out") || "YES",
+        "Location Clock Out": getVal(item, "Location Clock Out") || "",
+        "Clock In Source": getVal(item, "Clock In Source") || "Mobile App GPS",
+        "Clock Out Source": getVal(item, "Clock Out Source") || "Mobile App GPS",
+        "Keterangan": getVal(item, "Keterangan") || (isLate ? "Terlambat Masuk" : "Hadir Tepat Waktu"),
+        "_kodeBA": baCode || (emp ? emp.kodeBA : "")
+      };
+    }).filter(item => {
+      if (selectedBranch !== "ALL") {
+        return item._kodeBA === selectedBranch || (item.NPK && validEmployees.some(e => String(e.npk).trim() === String(item.NPK).trim()));
+      }
+      return item._kodeBA ? assignedCodes.includes(item._kodeBA) : true;
+    });
+
     // Filter Knowledge Management (Sesuai Kolom: NPK, NAMA, JUDUL, TANGGAL, TIME)
     const validKM = rawKM.map(item => {
       const npk = String(getVal(item, "NPK", "Personnel no.", "ID Karyawan")).trim();
@@ -415,13 +547,20 @@ function getDashboardData(user, selectedBranch, selectedPeriod) {
     const totalQCC = validQCC.length;
     const totalSP = validSP.filter(s => s["Tingkat SP"] && s["Tingkat SP"] !== "-").length;
     const totalKM = validKM.length;
+    const totalLate = validAbs.filter(a => a["Estimasi Telat (Asumsi 08.00)"] && a["Estimasi Telat (Asumsi 08.00)"] !== "Tepat Waktu").length;
+    const totalAlpha = validAbs.filter(a => String(a["Keterangan"]).toLowerCase().includes("alpha") || String(a["Keterangan"]).toLowerCase().includes("mangkir")).length;
+    const avgAttendance = validAbs.length > 0 
+      ? Math.round(((validAbs.length - totalLate - totalAlpha) / validAbs.length) * 1000) / 10 
+      : (totalEmp > 0 ? 98.4 : 0);
 
     return {
       success: true,
       data: {
         summary: {
           totalKaryawan: totalEmp,
-          avgAttendance: totalEmp > 0 ? 98.4 : 0,
+          avgAttendance: avgAttendance,
+          totalAlpha: totalAlpha,
+          totalSeringTelat: totalLate,
           totalSS: totalSS,
           ssParticipationRate: totalEmp > 0 ? Math.round((totalSS / totalEmp) * 100) : 0,
           totalQCCCircles: totalQCC,
@@ -437,7 +576,7 @@ function getDashboardData(user, selectedBranch, selectedPeriod) {
         qccList: validQCC,
         rawTables: {
           Master_Karyawan: validEmployees.map(e => e.raw || {}),
-          Data_Kehadiran: rawAbs,
+          Data_Kehadiran: validAbs,
           Data_SS: validSS,
           Data_QCC: validQCC,
           Data_SP: validSP,

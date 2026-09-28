@@ -1042,12 +1042,14 @@
                 </div>
                 <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Keterangan</option>
-                  <option value="Hadir Tepat Waktu">Hadir Tepat Waktu</option>
-                  <option value="Terlambat">Terlambat</option>
+                  <option value="ON_TIME">Tepat Waktu (≤ 08.00)</option>
+                  <option value="LATE">Terlambat (> 08.00)</option>
+                  <option value="LATE_30">Telat > 30 Menit</option>
+                  <option value="LATE_60">Telat > 1 Jam</option>
                 </select>
                 <button type="button" onclick="toggleColumnMode('abs')" id="btn-col-toggle-abs" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
                   <i class="fa-solid fa-table-columns"></i>
-                  <span id="btn-col-text-abs">Kolom Lengkap (19)</span>
+                  <span id="btn-col-text-abs">Kolom Lengkap (20)</span>
                 </button>
               </div>
               <span class="text-[11px] text-slate-400 font-medium" id="abs-row-count">Menampilkan 0 data absensi</span>
@@ -2750,10 +2752,11 @@
     function toggleColumnMode(moduleKey) {
       columnViewMode[moduleKey] = (columnViewMode[moduleKey] === 'FULL') ? 'COMPACT' : 'FULL';
       const isFull = columnViewMode[moduleKey] === 'FULL';
-      const colCounts = { mk: 16, abs: 19, ss: 21, qcc: 29, sp: 5, km: 5 };
+      const colCounts = { mk: 16, abs: 20, ss: 21, qcc: 29, sp: 5, km: 5 };
+      const compactCounts = { mk: 6, abs: 9, ss: 8, qcc: 8, sp: 5, km: 5 };
       const btnText = document.getElementById(`btn-col-text-${moduleKey}`);
       if (btnText) {
-        btnText.textContent = isFull ? `Kolom Lengkap (${colCounts[moduleKey]})` : 'Kolom Ringkas (4)';
+        btnText.textContent = isFull ? `Kolom Lengkap (${colCounts[moduleKey]})` : `Kolom Ringkas (${compactCounts[moduleKey] || 4})`;
       }
 
       if (moduleKey === 'mk') filterMasterKaryawanTable();
@@ -3125,6 +3128,155 @@
         }
       }
       return s;
+    }
+
+    // Helper Perhitungan Estimasi Keterlambatan Absensi (Asumsi Jam Masuk 08.00 WIB)
+    function calculateLatenessInfo(timeVal, targetHour = 8, targetMinute = 0) {
+      if (timeVal === null || timeVal === undefined || timeVal === '' || timeVal === '-') {
+        return {
+          hasClockIn: false,
+          isLate: false,
+          diffMinutes: 0,
+          hours: 0,
+          minutes: 0,
+          timeFormatted: '-',
+          text: 'Tidak Clock In',
+          badgeClass: 'bg-slate-100 text-slate-500 border border-slate-200',
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200"><i class="fa-solid fa-minus text-[10px]"></i> Tidak Clock In</span>'
+        };
+      }
+
+      // Check if timeVal is already a text estimate from Code.gs (e.g. "Tepat Waktu", "Telat 15 Menit")
+      if (typeof timeVal === 'string' && (timeVal.startsWith('Tepat') || timeVal.startsWith('Telat'))) {
+        const isLate = timeVal.startsWith('Telat');
+        if (!isLate) {
+          return {
+            hasClockIn: true,
+            isLate: false,
+            diffMinutes: 0,
+            timeFormatted: '≤ 08:00',
+            text: 'Tepat Waktu',
+            badgeClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+            badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-circle-check text-[10px]"></i> Tepat Waktu</span>'
+          };
+        } else {
+          const isSevere = timeVal.includes('Jam') || (parseInt(timeVal.replace(/[^0-9]/g, '') || '0', 10) > 30);
+          const badgeClass = isSevere 
+            ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+            : 'bg-amber-50 text-amber-700 border border-amber-200';
+          const iconClass = isSevere ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-clock';
+          return {
+            hasClockIn: true,
+            isLate: true,
+            diffMinutes: isSevere ? 35 : 15,
+            timeFormatted: '> 08:00',
+            text: timeVal,
+            badgeClass: badgeClass,
+            badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}"><i class="${iconClass} text-[10px]"></i> ${timeVal}</span>`
+          };
+        }
+      }
+
+      let h = -1;
+      let m = -1;
+
+      if (timeVal instanceof Date && !isNaN(timeVal.getTime())) {
+        h = timeVal.getHours();
+        m = timeVal.getMinutes();
+      } else if (typeof timeVal === 'number' && timeVal >= 0 && timeVal < 1) {
+        const totalSec = Math.round(timeVal * 86400);
+        h = Math.floor(totalSec / 3600);
+        m = Math.floor((totalSec % 3600) / 60);
+      } else {
+        const s = String(timeVal).trim();
+        if (s.includes('T') && s.endsWith('Z')) {
+          const d = new Date(s);
+          if (!isNaN(d.getTime())) {
+            // Apps Script ISO string from 1899 epoch in UTC.
+            // In Asia/Jakarta (WIB = UTC+7):
+            const totalUtcMinutes = d.getUTCHours() * 60 + d.getUTCMinutes() + 420;
+            const wibMinutes = ((totalUtcMinutes % 1440) + 1440) % 1440;
+            h = Math.floor(wibMinutes / 60);
+            m = wibMinutes % 60;
+          }
+        } else {
+          const match = s.match(/(\d{1,2})[:\.](\d{2})/);
+          if (match) {
+            h = parseInt(match[1], 10);
+            m = parseInt(match[2], 10);
+          }
+        }
+      }
+
+      if (h === -1 || m === -1 || isNaN(h) || isNaN(m)) {
+        return {
+          hasClockIn: false,
+          isLate: false,
+          diffMinutes: 0,
+          hours: 0,
+          minutes: 0,
+          timeFormatted: String(timeVal),
+          text: 'Format Tidak Valid',
+          badgeClass: 'bg-slate-100 text-slate-500 border border-slate-200',
+          badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">${String(timeVal)}</span>`
+        };
+      }
+
+      const timeFormatted = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+      const totalClockInMinutes = h * 60 + m;
+      const targetMinutes = targetHour * 60 + targetMinute;
+      const diffMinutes = totalClockInMinutes - targetMinutes;
+
+      if (diffMinutes <= 0) {
+        return {
+          hasClockIn: true,
+          isLate: false,
+          diffMinutes: diffMinutes,
+          hours: h,
+          minutes: m,
+          timeFormatted: timeFormatted,
+          text: 'Tepat Waktu',
+          badgeClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
+          badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-circle-check text-[10px]"></i> Tepat Waktu</span>`
+        };
+      }
+
+      const lateHours = Math.floor(diffMinutes / 60);
+      const lateMins = diffMinutes % 60;
+      let text = '';
+      if (lateHours > 0 && lateMins > 0) {
+        text = `Telat ${lateHours} Jam ${lateMins} Menit`;
+      } else if (lateHours > 0) {
+        text = `Telat ${lateHours} Jam`;
+      } else {
+        text = `Telat ${lateMins} Menit`;
+      }
+
+      const isSevere = diffMinutes > 30 || lateHours > 0;
+      const badgeClass = isSevere 
+        ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+        : 'bg-amber-50 text-amber-700 border border-amber-200';
+      const iconClass = isSevere ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-clock';
+
+      return {
+        hasClockIn: true,
+        isLate: true,
+        diffMinutes: diffMinutes,
+        lateHours: lateHours,
+        lateMinutes: lateMins,
+        hours: h,
+        minutes: m,
+        timeFormatted: timeFormatted,
+        text: text,
+        badgeClass: badgeClass,
+        badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}"><i class="${iconClass} text-[10px]"></i> ${text}</span>`
+      };
+    }
+
+    function formatDatabaseTime(val) {
+      if (val === null || val === undefined || val === '' || val === '-') return '-';
+      const info = calculateLatenessInfo(val);
+      return info.hasClockIn ? info.timeFormatted : String(val);
     }
 
     function findDOBirth(e, idx) {
@@ -4985,8 +5137,16 @@
         const isYes = String(val).toUpperCase() === 'YES';
         return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isYes ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${val}</span>`;
       }
-      if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob' || norm === 'date' || norm === 'tanggal' || norm === 'tgl') {
+      if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob' || norm === 'date' || norm === 'tanggal' || norm === 'tgl' || norm.includes('date clock')) {
         return formatDatabaseDate(val);
+      }
+      if (norm.includes('time clock in') || norm.includes('time clock out') || norm === 'time' || norm === 'jam' || norm === 'time in' || norm === 'time out') {
+        const timeStr = formatDatabaseTime(val);
+        return `<span class="font-mono font-bold text-slate-800">${timeStr}</span>`;
+      }
+      if (norm.includes('estimasi telat') || norm.includes('keterlambatan')) {
+        const info = calculateLatenessInfo(val);
+        return info.badgeHtml;
       }
       if (norm === 'personnel no.' || norm === 'npk' || norm === 'no' || norm.includes('registrasi') || norm.includes('kode ba') || norm === 'business area') {
         return `<span class="font-mono font-semibold">${val}</span>`;
@@ -5484,19 +5644,48 @@
     }
 
     // ----------------------------------------------------
-    // B. Data Kehadiran / Absensi (19 Kolom Presisi)
+    // B. Data Kehadiran / Absensi (20 Kolom Presisi Termasuk Estimasi Telat)
     // ----------------------------------------------------
     function renderAbsensiView(data) {
       if (!data) return;
       const s = data.summary || {};
+      const rawRows = (data.rawTables && data.rawTables.Data_Kehadiran) || [];
 
-      if (document.getElementById('abs-card-rate')) document.getElementById('abs-card-rate').textContent = `${s.avgAttendance || 0}%`;
-      if (document.getElementById('abs-card-alpha')) document.getElementById('abs-card-alpha').textContent = s.totalAlpha || 0;
-      if (document.getElementById('abs-card-telat')) document.getElementById('abs-card-telat').textContent = s.totalSeringTelat || 0;
+      let totalAlpha = s.totalAlpha || 0;
+      let lateCount = 0;
+      let onTimeCount = 0;
+
+      if (rawRows.length > 0) {
+        let alphaCount = 0;
+        rawRows.forEach(r => {
+          const ket = String(r['Keterangan'] || '').toLowerCase();
+          const rawTime = r['Time Clock In'] || r['Clock In'] || r['Time'] || '';
+          const info = calculateLatenessInfo(rawTime);
+          if (ket.includes('alpha') || ket.includes('mangkir')) {
+            alphaCount++;
+          } else if (info.isLate || ket.includes('terlambat') || ket.includes('telat')) {
+            lateCount++;
+          } else if (info.hasClockIn) {
+            onTimeCount++;
+          }
+        });
+        if (alphaCount > 0 || totalAlpha === 0) totalAlpha = alphaCount;
+      }
+
+      const totalPresensi = rawRows.length;
+      const calcRate = totalPresensi > 0 
+        ? Math.round(((totalPresensi - lateCount - totalAlpha) / totalPresensi) * 1000) / 10 
+        : (s.avgAttendance || 0);
+
+      if (document.getElementById('abs-card-rate')) document.getElementById('abs-card-rate').textContent = `${calcRate}%`;
+      if (document.getElementById('abs-card-alpha')) document.getElementById('abs-card-alpha').textContent = totalAlpha;
+      if (document.getElementById('abs-card-telat')) {
+        document.getElementById('abs-card-telat').textContent = (s.totalSeringTelat !== undefined && s.totalSeringTelat !== null && s.totalSeringTelat > 0) ? s.totalSeringTelat : lateCount;
+      }
       
       const badgeContainer = document.getElementById('abs-card-status-badge');
       if (badgeContainer) {
-        if ((s.avgAttendance || 0) >= 95) {
+        if (calcRate >= 95) {
           badgeContainer.innerHTML = `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-black border border-emerald-200"><i class="fa-solid fa-circle-check"></i> DISIPLIN BAIK (≥95%)</span>`;
         } else {
           badgeContainer.innerHTML = `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-black border border-amber-200"><i class="fa-solid fa-triangle-exclamation"></i> PERLU EVALUASI (<95%)</span>`;
@@ -5519,23 +5708,38 @@
           String(e['NPK'] || '').toLowerCase().includes(q) || 
           String(e['Employee Name'] || '').toLowerCase().includes(q) ||
           String(e['Cabang'] || '').toLowerCase().includes(q) ||
-          String(e['Keterangan'] || '').toLowerCase().includes(q)
+          String(e['Keterangan'] || '').toLowerCase().includes(q) ||
+          String(e['Estimasi Telat (Asumsi 08.00)'] || '').toLowerCase().includes(q)
         );
       }
 
       if (compFilter !== 'ALL') {
         list = list.filter(e => {
+          const rawTime = e['Time Clock In'] || e['Clock In'] || e['Time'] || '';
+          const lateness = calculateLatenessInfo(rawTime);
           const ket = String(e['Keterangan'] || '').toLowerCase();
-          if (compFilter === 'Hadir Tepat Waktu') return ket.includes('tepat') || ket.includes('hadir');
-          if (compFilter === 'Terlambat') return ket.includes('terlambat') || ket.includes('telat');
+          const telatStr = String(e['Estimasi Telat (Asumsi 08.00)'] || '').toLowerCase();
+
+          if (compFilter === 'ON_TIME' || compFilter === 'Hadir Tepat Waktu') {
+            return (!lateness.isLate && lateness.hasClockIn) || ket.includes('tepat') || telatStr.includes('tepat');
+          }
+          if (compFilter === 'LATE' || compFilter === 'Terlambat') {
+            return lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || telatStr.includes('telat');
+          }
+          if (compFilter === 'LATE_30') {
+            return lateness.isLate && lateness.diffMinutes > 30;
+          }
+          if (compFilter === 'LATE_60') {
+            return lateness.isLate && lateness.diffMinutes > 60;
+          }
           return true;
         });
       }
 
       const isFull = columnViewMode.abs === 'FULL';
       const cols = isFull 
-        ? SCHEMAS.Data_Kehadiran.columns 
-        : ["NPK", "Employee Name", "Cabang", "Date", "Time Clock In", "Time Clock Out", "Durasi Kerja (Work Hours)", "Keterangan"];
+        ? [...SCHEMAS.Data_Kehadiran.columns.slice(0, 7), "Estimasi Telat (Asumsi 08.00)", ...SCHEMAS.Data_Kehadiran.columns.slice(7)]
+        : ["NPK", "Employee Name", "Cabang", "Date", "Time Clock In", "Estimasi Telat (Asumsi 08.00)", "Time Clock Out", "Durasi Kerja (Work Hours)", "Keterangan"];
 
       // Render Header
       renderTableHeader('abs-table-header', cols, true);
@@ -5556,7 +5760,16 @@
           const stickyClass = isFirst 
             ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
             : 'text-slate-600';
-          const val = formatColumnCell(col, row[col]);
+          
+          let val;
+          if (col === 'Estimasi Telat (Asumsi 08.00)') {
+            const rawTime = row['Time Clock In'] || row['Clock In'] || row['Time'] || '';
+            const existingEstimasi = row['Estimasi Telat (Asumsi 08.00)'];
+            const lateness = calculateLatenessInfo(existingEstimasi || rawTime);
+            val = lateness.badgeHtml;
+          } else {
+            val = formatColumnCell(col, row[col]);
+          }
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -6360,10 +6573,9 @@
       let telatCount = 0;
       absRows.forEach(r => {
         const ket = String(r['Keterangan'] || '').toLowerCase();
-        const clockIn = String(r['Time Clock In'] || r['Time'] || '').trim();
-        if (ket.includes('terlambat') || ket.includes('telat')) {
-          telatCount++;
-        } else if (clockIn && clockIn > '08:00' && clockIn !== '-') {
+        const clockIn = r['Time Clock In'] || r['Clock In'] || r['Time'] || '';
+        const lateness = calculateLatenessInfo(clockIn);
+        if (lateness.isLate || ket.includes('terlambat') || ket.includes('telat')) {
           telatCount++;
         }
       });
@@ -6489,10 +6701,11 @@
         let onTimeCount = 0;
         absRows.forEach(r => {
           const ket = String(r['Keterangan'] || '').toLowerCase();
-          const clockIn = String(r['Time Clock In'] || r['Time'] || '').trim();
-          if (ket.includes('terlambat') || ket.includes('telat') || (clockIn && clockIn > '08:00' && clockIn !== '-')) {
+          const clockIn = r['Time Clock In'] || r['Clock In'] || r['Time'] || '';
+          const lateness = calculateLatenessInfo(clockIn);
+          if (lateness.isLate || ket.includes('terlambat') || ket.includes('telat')) {
             telatCount++;
-          } else {
+          } else if (lateness.hasClockIn) {
             onTimeCount++;
           }
         });
@@ -6525,16 +6738,14 @@
 
         const tableRows = absRows.map((r, i) => {
           const tgl = formatDatabaseDate(r['Date'] || r['Tanggal']) || r['Date'] || '-';
-          const clockIn = r['Time Clock In'] || r['Clock In'] || '-';
-          const clockOut = r['Time Clock Out'] || r['Clock Out'] || '-';
+          const clockInRaw = r['Time Clock In'] || r['Clock In'] || '-';
+          const clockOutRaw = r['Time Clock Out'] || r['Clock Out'] || '-';
+          const lateness = calculateLatenessInfo(clockInRaw);
+          const clockIn = lateness.hasClockIn ? lateness.timeFormatted : clockInRaw;
+          const clockOut = formatDatabaseTime(clockOutRaw);
           const durasi = r['Durasi Kerja (Work Hours)'] || r['Durasi Kerja'] || '-';
           const lokasi = r['Assigned Work Location'] || r['Cabang'] || '-';
-          const ket = String(r['Keterangan'] || '').toLowerCase();
-          const isTelat = ket.includes('terlambat') || ket.includes('telat') || (clockIn && clockIn > '08:00' && clockIn !== '-');
-
-          const statusBadge = isTelat 
-            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 inline-flex items-center gap-1"><i class="fa-solid fa-clock"></i> Terlambat (${clockIn})</span>`
-            : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Tepat Waktu</span>`;
+          const statusBadge = lateness.badgeHtml;
 
           return `
             <tr class="hover:bg-slate-50 transition-colors">
