@@ -1729,16 +1729,17 @@
     </div>
   </div>
 
-  <!-- MODAL: DETAIL KINERJA KARYAWAN (ACUAN PBK) -->
-  <div id="modal-pbk-detail" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-xl w-full p-6 relative my-auto">
-      <button onclick="closeModal('modal-pbk-detail')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
+  <!-- MODAL: DETAIL KINERJA KARYAWAN (ACUAN PBK & DRILL-DOWN FORM) -->
+  <div id="modal-pbk-detail" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-pbk-detail')">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl sm:max-w-3xl w-full p-5 sm:p-6 relative my-auto max-h-[92vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+      <button onclick="closeModal('modal-pbk-detail')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+      <!-- Employee Header -->
+      <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 flex-shrink-0">
         <div class="flex items-center gap-3">
-          <div class="w-11 h-11 rounded-2xl bg-[#E60012] text-white flex items-center justify-center font-black text-base" id="modal-emp-avatar">
+          <div class="w-11 h-11 rounded-2xl bg-[#E60012] text-white flex items-center justify-center font-black text-base shadow-sm" id="modal-emp-avatar">
             DSO
           </div>
           <div>
@@ -1746,47 +1747,197 @@
             <p class="text-[11px] text-slate-500 font-medium" id="modal-emp-role">NPK: - • Cabang -</p>
           </div>
         </div>
-        <span class="px-2.5 py-1 bg-red-50 text-[#E60012] border border-red-100 rounded-full text-[10px] font-bold">
-          Data Acuan PBK
-        </span>
-      </div>
-
-      <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-4 text-center text-xs">
-        <div class="bg-emerald-50 p-2.5 rounded-2xl border border-emerald-100">
-          <span class="text-[9px] font-bold text-emerald-700 block uppercase">Kehadiran</span>
-          <span class="text-base font-extrabold text-emerald-800" id="modal-emp-hadir">0%</span>
-          <span class="text-[9px] text-emerald-600 block">Target ≥95%</span>
-        </div>
-        <div class="bg-amber-50 p-2.5 rounded-2xl border border-amber-100">
-          <span class="text-[9px] font-bold text-amber-700 block uppercase">Suggestion System</span>
-          <span class="text-base font-extrabold text-amber-800" id="modal-emp-ss">0 Ide</span>
-          <span class="text-[9px] text-amber-600 block">Inisiatif Kaizen</span>
-        </div>
-        <div class="bg-purple-50 p-2.5 rounded-2xl border border-purple-100">
-          <span class="text-[9px] font-bold text-purple-700 block uppercase">Contract</span>
-          <span class="text-xs font-extrabold text-purple-800" id="modal-emp-kontrak">Tetap</span>
-          <span class="text-[9px] text-purple-600 block">Status Kepegawaian</span>
-        </div>
-        <div class="bg-red-50 p-2.5 rounded-2xl border border-red-100">
-          <span class="text-[9px] font-bold text-red-700 block uppercase">Kedisiplinan</span>
-          <span class="text-xs font-extrabold text-red-700" id="modal-emp-sp">Bersih</span>
-          <span class="text-[9px] text-red-600 block">Status Sanksi</span>
-        </div>
-      </div>
-
-      <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 mb-4 text-xs text-slate-700 space-y-1.5">
-        <p><strong>Catatan Kedisiplinan:</strong> <span id="modal-emp-notes">Kehadiran baik tanpa catatan mangkir.</span></p>
-      </div>
-
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
-        <div>
-          <span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Status Validasi Data</span>
-          <span class="text-xs font-extrabold text-emerald-600 flex items-center gap-1.5 mt-0.5">
-            <i class="fa-solid fa-circle-check"></i> Terverifikasi Database HRD
+        <div class="flex items-center gap-2">
+          <span class="px-2.5 py-1 bg-red-50 text-[#E60012] border border-red-100 rounded-full text-[10px] font-bold">
+            Data Acuan PBK
           </span>
-          <span class="text-[10px] text-slate-400 block mt-0.5">*Penilaian akhir PBK dinilai langsung oleh Kepala Cabang pada lembar resmi</span>
         </div>
-        <button onclick="closeModal('modal-pbk-detail')" class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">Tutup Detail</button>
+      </div>
+
+      <!-- VIEW 1: SUMMARY CARDS (6 CARDS DENGAN DRILL-DOWN INTERAKTIF) -->
+      <div id="pbk-view-summary" class="space-y-4 overflow-y-auto pr-1 scrollbar-thin">
+        <div class="flex items-center justify-between">
+          <p class="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-pointer text-blue-600"></i> Klik card di bawah untuk membuka form data rincian:
+          </p>
+          <span class="text-[10px] text-slate-400 font-medium hidden sm:inline">6 Parameter Kinerja Terintegrasi</span>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3 text-xs">
+          <!-- 1. Card Kehadiran & Telat -->
+          <div onclick="openPBKDrilldown('kehadiran')" class="bg-gradient-to-br from-emerald-50/90 to-teal-50/90 hover:from-emerald-100/80 hover:to-teal-100/80 p-3 rounded-2xl border border-emerald-200/80 hover:border-emerald-400 shadow-2xs hover:shadow-md cursor-pointer transition-all duration-200 group text-left relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-extrabold text-emerald-800 uppercase tracking-wider flex items-center gap-1">
+                <i class="fa-regular fa-calendar-check text-emerald-600"></i> Kehadiran
+              </span>
+              <span class="text-[9px] font-bold text-emerald-600 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                Rincian <i class="fa-solid fa-chevron-right text-[8px]"></i>
+              </span>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xl sm:text-2xl font-black text-emerald-900" id="modal-emp-hadir">0%</span>
+                <span class="text-[10px] font-semibold text-emerald-700">Target ≥95%</span>
+              </div>
+              <div class="mt-1 flex items-center gap-1">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-200/70 text-emerald-900 border border-emerald-300/80" id="modal-emp-telat">0x Telat</span>
+              </div>
+            </div>
+            <span class="text-[9px] text-emerald-600 block mt-2 font-medium">Presensi & Jam Kerja &rarr;</span>
+          </div>
+
+          <!-- 2. Card Suggestion System (SS) -->
+          <div onclick="openPBKDrilldown('ss')" class="bg-gradient-to-br from-amber-50/90 to-orange-50/90 hover:from-amber-100/80 hover:to-orange-100/80 p-3 rounded-2xl border border-amber-200/80 hover:border-amber-400 shadow-2xs hover:shadow-md cursor-pointer transition-all duration-200 group text-left relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-extrabold text-amber-800 uppercase tracking-wider flex items-center gap-1">
+                <i class="fa-regular fa-lightbulb text-amber-600"></i> SS (Kaizen)
+              </span>
+              <span class="text-[9px] font-bold text-amber-600 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                Rincian <i class="fa-solid fa-chevron-right text-[8px]"></i>
+              </span>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xl sm:text-2xl font-black text-amber-900" id="modal-emp-ss">0 Ide</span>
+              </div>
+              <div class="mt-1 flex items-center gap-1">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-200/70 text-amber-900 border border-amber-300/80" id="modal-emp-ss-status">Inisiatif Kaizen</span>
+              </div>
+            </div>
+            <span class="text-[9px] text-amber-600 block mt-2 font-medium">Daftar Ide Perbaikan &rarr;</span>
+          </div>
+
+          <!-- 3. Card Quality Control Circle (QCC) [BARU] -->
+          <div onclick="openPBKDrilldown('qcc')" class="bg-gradient-to-br from-purple-50/90 to-indigo-50/90 hover:from-purple-100/80 hover:to-indigo-100/80 p-3 rounded-2xl border border-purple-200/80 hover:border-purple-400 shadow-2xs hover:shadow-md cursor-pointer transition-all duration-200 group text-left relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-extrabold text-purple-800 uppercase tracking-wider flex items-center gap-1">
+                <i class="fa-solid fa-users-gear text-purple-600"></i> QCC Circles
+              </span>
+              <span class="text-[9px] font-bold text-purple-600 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                Rincian <i class="fa-solid fa-chevron-right text-[8px]"></i>
+              </span>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xl sm:text-2xl font-black text-purple-900" id="modal-emp-qcc">0 Circle</span>
+              </div>
+              <div class="mt-1 flex items-center gap-1">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-purple-200/70 text-purple-900 border border-purple-300/80" id="modal-emp-qcc-role">Gugus Mutu</span>
+              </div>
+            </div>
+            <span class="text-[9px] text-purple-600 block mt-2 font-medium">Tim & Risalah PDCA &rarr;</span>
+          </div>
+
+          <!-- 4. Card Contract / Status Kepegawaian -->
+          <div onclick="openPBKDrilldown('contract')" class="bg-gradient-to-br from-blue-50/90 to-sky-50/90 hover:from-blue-100/80 hover:to-sky-100/80 p-3 rounded-2xl border border-blue-200/80 hover:border-blue-400 shadow-2xs hover:shadow-md cursor-pointer transition-all duration-200 group text-left relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-extrabold text-blue-800 uppercase tracking-wider flex items-center gap-1">
+                <i class="fa-solid fa-id-badge text-blue-600"></i> Kepegawaian
+              </span>
+              <span class="text-[9px] font-bold text-blue-600 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                Rincian <i class="fa-solid fa-chevron-right text-[8px]"></i>
+              </span>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-base sm:text-lg font-black text-blue-900 truncate block" id="modal-emp-kontrak">Tetap</span>
+              </div>
+              <div class="mt-1 flex items-center gap-1">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-blue-200/70 text-blue-900 border border-blue-300/80" id="modal-emp-contract-sub">Profil Master</span>
+              </div>
+            </div>
+            <span class="text-[9px] text-blue-600 block mt-2 font-medium">Data Lengkap Pegawai &rarr;</span>
+          </div>
+
+          <!-- 5. Card Kedisiplinan & SP -->
+          <div onclick="openPBKDrilldown('sp')" class="bg-gradient-to-br from-rose-50/90 to-red-50/90 hover:from-rose-100/80 hover:to-red-100/80 p-3 rounded-2xl border border-rose-200/80 hover:border-rose-400 shadow-2xs hover:shadow-md cursor-pointer transition-all duration-200 group text-left relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-extrabold text-rose-800 uppercase tracking-wider flex items-center gap-1">
+                <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> Kedisiplinan
+              </span>
+              <span class="text-[9px] font-bold text-rose-600 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                Rincian <i class="fa-solid fa-chevron-right text-[8px]"></i>
+              </span>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-base sm:text-lg font-black text-rose-900 truncate block" id="modal-emp-sp">Bersih</span>
+              </div>
+              <div class="mt-1 flex items-center gap-1">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-200/70 text-rose-900 border border-rose-300/80" id="modal-emp-sp-status">Sanksi Disiplin</span>
+              </div>
+            </div>
+            <span class="text-[9px] text-rose-600 block mt-2 font-medium">Riwayat Surat Peringatan &rarr;</span>
+          </div>
+
+          <!-- 6. Card Knowledge Management (KM) [BARU] -->
+          <div onclick="openPBKDrilldown('km')" class="bg-gradient-to-br from-cyan-50/90 to-sky-50/90 hover:from-cyan-100/80 hover:to-sky-100/80 p-3 rounded-2xl border border-cyan-200/80 hover:border-cyan-400 shadow-2xs hover:shadow-md cursor-pointer transition-all duration-200 group text-left relative overflow-hidden flex flex-col justify-between">
+            <div class="flex items-center justify-between mb-1.5">
+              <span class="text-[9px] font-extrabold text-cyan-800 uppercase tracking-wider flex items-center gap-1">
+                <i class="fa-solid fa-book-bookmark text-cyan-600"></i> Knowledge Mgmt
+              </span>
+              <span class="text-[9px] font-bold text-cyan-600 group-hover:translate-x-0.5 transition-transform flex items-center gap-0.5">
+                Rincian <i class="fa-solid fa-chevron-right text-[8px]"></i>
+              </span>
+            </div>
+            <div>
+              <div class="flex items-baseline gap-1.5">
+                <span class="text-xl sm:text-2xl font-black text-cyan-900" id="modal-emp-km">0 Dok</span>
+              </div>
+              <div class="mt-1 flex items-center gap-1">
+                <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-200/70 text-cyan-900 border border-cyan-300/80" id="modal-emp-km-status">Inovasi & Riset</span>
+              </div>
+            </div>
+            <span class="text-[9px] text-cyan-600 block mt-2 font-medium">Dokumen Pengetahuan &rarr;</span>
+          </div>
+        </div>
+
+        <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 text-xs text-slate-700 space-y-1.5">
+          <p><strong>Catatan Kedisiplinan & Integritas:</strong> <span id="modal-emp-notes">Kehadiran baik tanpa catatan mangkir.</span></p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
+          <div>
+            <span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Status Validasi Data</span>
+            <span class="text-xs font-extrabold text-emerald-600 flex items-center gap-1.5 mt-0.5">
+              <i class="fa-solid fa-circle-check"></i> Terverifikasi Database HRD DSO Lampung
+            </span>
+            <span class="text-[10px] text-slate-400 block mt-0.5">*Penilaian akhir PBK dinilai langsung oleh Kepala Cabang pada lembar resmi</span>
+          </div>
+          <button onclick="closeModal('modal-pbk-detail')" class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">Tutup Detail</button>
+        </div>
+      </div>
+
+      <!-- VIEW 2: DRILL-DOWN SUBPAGE (FORM / TABEL DATA RINCIAN) -->
+      <div id="pbk-view-drilldown" class="hidden space-y-3.5 overflow-hidden flex flex-col flex-1">
+        <!-- Drilldown Navigation Bar -->
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 flex-shrink-0">
+          <button onclick="showPBKSummaryView()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Ringkasan
+          </button>
+          <span id="pbk-drilldown-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold"></span>
+        </div>
+
+        <!-- Section Title & Subtitle -->
+        <div class="flex-shrink-0">
+          <h4 class="text-sm sm:text-base font-extrabold text-slate-900" id="pbk-drilldown-title">Judul Sub-Data</h4>
+          <p class="text-[11px] text-slate-500 font-medium" id="pbk-drilldown-subtitle">Deskripsi rincian data karyawan</p>
+        </div>
+
+        <!-- Dynamic Drilldown Content Area (Tables / Form) -->
+        <div id="pbk-drilldown-content" class="overflow-y-auto max-h-[50vh] pr-1 text-xs scrollbar-thin flex-1">
+          <!-- Populated dynamically by JavaScript -->
+        </div>
+
+        <!-- Drilldown Footer -->
+        <div class="flex items-center justify-between pt-3 border-t border-slate-100 flex-shrink-0 mt-auto">
+          <button onclick="showPBKSummaryView()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-left"></i> Kembali
+          </button>
+          <button onclick="closeModal('modal-pbk-detail')" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition">
+            Tutup
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -6172,12 +6323,23 @@
     }
 
     // 7. Modal & UI Helpers
+    let currentActivePBKNpk = null;
+
+    function showPBKSummaryView() {
+      const summaryView = document.getElementById('pbk-view-summary');
+      const drilldownView = document.getElementById('pbk-view-drilldown');
+      if (summaryView) summaryView.classList.remove('hidden');
+      if (drilldownView) drilldownView.classList.add('hidden');
+    }
+
     function openPBKModal(npk) {
       if (!currentDashboardPayload) return;
+      currentActivePBKNpk = String(npk).trim();
+
       const emp = (currentDashboardPayload.employeeList || []).find(e => 
-        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === String(npk).trim()
+        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === currentActivePBKNpk
       ) || (currentDashboardPayload.rawTables?.Master_Karyawan || []).find(e =>
-        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === String(npk).trim()
+        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === currentActivePBKNpk
       );
       if (!emp) return;
 
@@ -6187,22 +6349,534 @@
       const empJabatan = getRowCellValue(emp, 'Job Title', SCHEMAS.Master_Karyawan) || emp.jabatan || emp.divisi || '-';
       const empContract = getRowCellValue(emp, 'Contract', SCHEMAS.Master_Karyawan) || emp.tipeKontrak || 'Tetap';
 
-      document.getElementById('modal-emp-avatar').textContent = empNama.slice(0,2).toUpperCase();
+      document.getElementById('modal-emp-avatar').textContent = empNama.slice(0, 2).toUpperCase();
       document.getElementById('modal-emp-name').textContent = empNama;
       document.getElementById('modal-emp-role').textContent = `NPK: ${empNpk} • ${empJabatan} • Cabang ${empCabang}`;
-      document.getElementById('modal-emp-hadir').textContent = `${emp.kehadiranPct || 100}%`;
-      document.getElementById('modal-emp-ss').textContent = `${emp.totalSS || 0} Ide`;
-      document.getElementById('modal-emp-kontrak').textContent = empContract;
-      document.getElementById('modal-emp-sp').textContent = emp.spAktif || 'Bersih';
 
-      const notesEl = document.getElementById('modal-emp-notes');
-      if (notesEl) {
-        notesEl.textContent = emp.spAktif 
-          ? `Tercatat sanksi aktif ${emp.spAktif}: ${emp.spAlasan || 'Perlu pembinaan disiplin kerja.'}`
-          : `Disiplin kerja sangat baik. Tidak ada pelanggaran atau catatan sanksi.`;
+      // 1. Hitung Kehadiran & Telat
+      const absRows = (currentDashboardPayload.rawTables?.Data_Kehadiran || []).filter(r => 
+        safeString(r['NPK'] || r['Personnel no.']) === safeString(empNpk)
+      );
+      let telatCount = 0;
+      absRows.forEach(r => {
+        const ket = String(r['Keterangan'] || '').toLowerCase();
+        const clockIn = String(r['Time Clock In'] || r['Time'] || '').trim();
+        if (ket.includes('terlambat') || ket.includes('telat')) {
+          telatCount++;
+        } else if (clockIn && clockIn > '08:00' && clockIn !== '-') {
+          telatCount++;
+        }
+      });
+      if (emp.telat !== undefined && emp.telat !== null && telatCount === 0) {
+        telatCount = Number(emp.telat) || 0;
       }
 
+      const hadirPct = emp.kehadiranPct || (absRows.length > 0 ? Math.round(((absRows.length - telatCount) / absRows.length) * 100) : 98);
+      document.getElementById('modal-emp-hadir').textContent = `${hadirPct}%`;
+      const telatEl = document.getElementById('modal-emp-telat');
+      if (telatEl) {
+        telatEl.textContent = `${telatCount}x Telat`;
+        if (telatCount > 0) {
+          telatEl.className = "px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-200/90 text-amber-900 border border-amber-300";
+        } else {
+          telatEl.className = "px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-200/80 text-emerald-900 border border-emerald-300";
+        }
+      }
+
+      // 2. Hitung Suggestion System (SS)
+      const ssRows = (currentDashboardPayload.rawTables?.Data_SS || []).filter(r => 
+        safeString(r['NPK'] || r['Personnel no.']) === safeString(empNpk)
+      );
+      const ssCount = ssRows.length > 0 ? ssRows.length : (emp.totalSS || 0);
+      document.getElementById('modal-emp-ss').textContent = `${ssCount} Ide`;
+      if (document.getElementById('modal-emp-ss-status')) {
+        document.getElementById('modal-emp-ss-status').textContent = ssCount > 0 ? 'Aktif Kaizen' : 'Belum Submit';
+      }
+
+      // 3. Hitung QCC Circles
+      const qccRows = (currentDashboardPayload.rawTables?.Data_QCC || []).filter(r => {
+        const leaderNPK = safeString(r['NPK Leader'] || r['Leader NPK'] || r['Leader']);
+        const leaderName = String(r['Leader'] || '').toLowerCase();
+        const cleanName = empNama.toLowerCase();
+        if (leaderNPK === safeString(empNpk) || (cleanName && leaderName.includes(cleanName))) return true;
+        for (let i = 1; i <= 7; i++) {
+          const memberVal = String(r[`Anggota ${i}`] || '').toLowerCase();
+          if (memberVal && (memberVal.includes(safeString(empNpk)) || (cleanName && memberVal.includes(cleanName)))) {
+            return true;
+          }
+        }
+        return false;
+      });
+      document.getElementById('modal-emp-qcc').textContent = `${qccRows.length} Circle`;
+      if (document.getElementById('modal-emp-qcc-role')) {
+        document.getElementById('modal-emp-qcc-role').textContent = qccRows.length > 0 ? 'Terdaftar Tim' : 'Belum Ada';
+      }
+
+      // 4. Contract
+      document.getElementById('modal-emp-kontrak').textContent = empContract;
+
+      // 5. Kedisiplinan / SP
+      const spRows = (currentDashboardPayload.rawTables?.Data_SP || []).filter(r => 
+        safeString(r['NPK'] || r['Personnel no.']) === safeString(empNpk)
+      );
+      const spStatus = (spRows.length > 0 && spRows[0]['Tingkat SP'] && spRows[0]['Tingkat SP'] !== '-') 
+        ? spRows[0]['Tingkat SP'] 
+        : (emp.spAktif || 'Bersih');
+      document.getElementById('modal-emp-sp').textContent = spStatus;
+      if (document.getElementById('modal-emp-sp-status')) {
+        document.getElementById('modal-emp-sp-status').textContent = spStatus === 'Bersih' ? 'Nihil Sanksi' : 'Sanksi Aktif';
+      }
+
+      // 6. Knowledge Management (KM)
+      const kmRows = ((currentDashboardPayload.rawTables?.Knowledge_management || currentDashboardPayload.rawTables?.Data_KM) || []).filter(r => 
+        safeString(r['NPK'] || r['Personnel no.']) === safeString(empNpk)
+      );
+      document.getElementById('modal-emp-km').textContent = `${kmRows.length} Dok`;
+      if (document.getElementById('modal-emp-km-status')) {
+        document.getElementById('modal-emp-km-status').textContent = kmRows.length > 0 ? 'Kontributor KM' : 'Belum Terbit';
+      }
+
+      // Catatan
+      const notesEl = document.getElementById('modal-emp-notes');
+      if (notesEl) {
+        if (spStatus !== 'Bersih') {
+          notesEl.textContent = `Tercatat sanksi aktif ${spStatus}: ${emp.spAlasan || spRows[0]?.Alasan || 'Perlu pembinaan disiplin kerja berkala.'}`;
+        } else if (telatCount > 0) {
+          notesEl.textContent = `Disiplin kerja cukup baik. Terdapat ${telatCount}x catatan terlambat jam masuk kerja yang perlu diperbaiki.`;
+        } else {
+          notesEl.textContent = `Disiplin kerja sangat baik. Selalu tepat waktu tanpa pelanggaran atau catatan sanksi.`;
+        }
+      }
+
+      // Reset ke tampilan summary
+      showPBKSummaryView();
       document.getElementById('modal-pbk-detail').classList.remove('hidden');
+    }
+
+    function openPBKDrilldown(type) {
+      if (!currentDashboardPayload || !currentActivePBKNpk) return;
+      const emp = (currentDashboardPayload.employeeList || []).find(e => 
+        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === currentActivePBKNpk
+      ) || (currentDashboardPayload.rawTables?.Master_Karyawan || []).find(e =>
+        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === currentActivePBKNpk
+      );
+      if (!emp) return;
+
+      const empNama = getRowCellValue(emp, 'Last name', SCHEMAS.Master_Karyawan) || emp.nama || 'Karyawan';
+      const empNpk = getRowCellValue(emp, 'Personnel no.', SCHEMAS.Master_Karyawan) || emp.npk || currentActivePBKNpk;
+
+      const summaryView = document.getElementById('pbk-view-summary');
+      const drilldownView = document.getElementById('pbk-view-drilldown');
+      if (summaryView) summaryView.classList.add('hidden');
+      if (drilldownView) drilldownView.classList.remove('hidden');
+
+      const badgeEl = document.getElementById('pbk-drilldown-badge');
+      const titleEl = document.getElementById('pbk-drilldown-title');
+      const subEl = document.getElementById('pbk-drilldown-subtitle');
+      const contentEl = document.getElementById('pbk-drilldown-content');
+
+      if (type === 'kehadiran') {
+        badgeEl.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300";
+        badgeEl.textContent = "Data_Kehadiran";
+        titleEl.textContent = `Riwayat Presensi & Keterlambatan: ${empNama}`;
+        subEl.textContent = `Monitoring catatan clock in/out, waktu kerja, dan ketepatan waktu hadir (NPK: ${empNpk})`;
+
+        const absRows = (currentDashboardPayload.rawTables?.Data_Kehadiran || []).filter(r => 
+          safeString(r['NPK'] || r['Personnel no.']) === safeString(empNpk)
+        );
+
+        let telatCount = 0;
+        let onTimeCount = 0;
+        absRows.forEach(r => {
+          const ket = String(r['Keterangan'] || '').toLowerCase();
+          const clockIn = String(r['Time Clock In'] || r['Time'] || '').trim();
+          if (ket.includes('terlambat') || ket.includes('telat') || (clockIn && clockIn > '08:00' && clockIn !== '-')) {
+            telatCount++;
+          } else {
+            onTimeCount++;
+          }
+        });
+
+        const statBanner = `
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+            <div class="bg-emerald-50 p-2 rounded-xl border border-emerald-200 text-center">
+              <span class="text-[9px] font-bold text-emerald-700 block uppercase">Total Hari Presensi</span>
+              <span class="text-base font-extrabold text-emerald-900">${absRows.length} Hari</span>
+            </div>
+            <div class="bg-teal-50 p-2 rounded-xl border border-teal-200 text-center">
+              <span class="text-[9px] font-bold text-teal-700 block uppercase">Tepat Waktu</span>
+              <span class="text-base font-extrabold text-teal-900">${onTimeCount} Hari</span>
+            </div>
+            <div class="bg-amber-50 p-2 rounded-xl border border-amber-200 text-center">
+              <span class="text-[9px] font-bold text-amber-700 block uppercase">Terlambat Masuk</span>
+              <span class="text-base font-extrabold text-amber-900">${telatCount} Kali</span>
+            </div>
+            <div class="bg-blue-50 p-2 rounded-xl border border-blue-200 text-center">
+              <span class="text-[9px] font-bold text-blue-700 block uppercase">Target Jam Masuk</span>
+              <span class="text-base font-extrabold text-blue-900">08:00 WIB</span>
+            </div>
+          </div>
+        `;
+
+        if (!absRows.length) {
+          contentEl.innerHTML = `${statBanner}<div class="p-6 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-200">Belum ada catatan presensi harian di sheet Data_Kehadiran untuk karyawan ini.</div>`;
+          return;
+        }
+
+        const tableRows = absRows.map((r, i) => {
+          const tgl = formatDatabaseDate(r['Date'] || r['Tanggal']) || r['Date'] || '-';
+          const clockIn = r['Time Clock In'] || r['Clock In'] || '-';
+          const clockOut = r['Time Clock Out'] || r['Clock Out'] || '-';
+          const durasi = r['Durasi Kerja (Work Hours)'] || r['Durasi Kerja'] || '-';
+          const lokasi = r['Assigned Work Location'] || r['Cabang'] || '-';
+          const ket = String(r['Keterangan'] || '').toLowerCase();
+          const isTelat = ket.includes('terlambat') || ket.includes('telat') || (clockIn && clockIn > '08:00' && clockIn !== '-');
+
+          const statusBadge = isTelat 
+            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 inline-flex items-center gap-1"><i class="fa-solid fa-clock"></i> Terlambat (${clockIn})</span>`
+            : `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Tepat Waktu</span>`;
+
+          return `
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-2.5 px-3 font-semibold text-slate-800 whitespace-nowrap">${tgl}</td>
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-700 whitespace-nowrap">${clockIn}</td>
+              <td class="py-2.5 px-3 font-mono text-slate-600 whitespace-nowrap">${clockOut}</td>
+              <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${durasi}</td>
+              <td class="py-2.5 px-3 whitespace-nowrap">${statusBadge}</td>
+              <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${lokasi}</td>
+            </tr>
+          `;
+        }).join('');
+
+        contentEl.innerHTML = `
+          ${statBanner}
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3">Tanggal</th>
+                  <th class="py-2.5 px-3">Clock In</th>
+                  <th class="py-2.5 px-3">Clock Out</th>
+                  <th class="py-2.5 px-3">Durasi</th>
+                  <th class="py-2.5 px-3">Status Hadir</th>
+                  <th class="py-2.5 px-3">Lokasi Penugasan</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${tableRows}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (type === 'ss') {
+        badgeEl.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-300";
+        badgeEl.textContent = "Data_SS (Kaizen)";
+        titleEl.textContent = `Daftar Usulan Suggestion System: ${empNama}`;
+        subEl.textContent = `Partisipasi ide inovasi kerja dan perbaikan berkelanjutan (NPK: ${empNpk})`;
+
+        const ssRows = (currentDashboardPayload.rawTables?.Data_SS || []).filter(r => 
+          safeString(r['NPK'] || r['Personnel no.']) === safeString(empNpk)
+        );
+
+        if (!ssRows.length) {
+          contentEl.innerHTML = `<div class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-200">Belum ada ide Suggestion System yang diajukan oleh karyawan ini di sheet Data_SS.</div>`;
+          return;
+        }
+
+        const tableRows = ssRows.map((r, i) => {
+          const noReg = r['No.Registrasi'] || r['No Registrasi'] || `#${i+1}`;
+          const tema = r['Tema Ide'] || r['Tema'] || r['Judul'] || '-';
+          const fasilitator = r['Fasilitator'] || '-';
+          const bulan = r['Diterima Bulan'] || r['Bulan'] || '-';
+          const reward = r['Reward'] || r['Status Reward'] || 'Terdaftar';
+
+          return `
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-700 whitespace-nowrap">${noReg}</td>
+              <td class="py-2.5 px-3 font-semibold text-slate-900">${tema}</td>
+              <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${fasilitator}</td>
+              <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${bulan}</td>
+              <td class="py-2.5 px-3 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">${reward}</span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        contentEl.innerHTML = `
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3">No. Registrasi</th>
+                  <th class="py-2.5 px-3">Tema Ide Kaizen</th>
+                  <th class="py-2.5 px-3">Fasilitator</th>
+                  <th class="py-2.5 px-3">Bulan</th>
+                  <th class="py-2.5 px-3">Reward / Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${tableRows}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (type === 'qcc') {
+        badgeEl.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300";
+        badgeEl.textContent = "Data_QCC (PDCA)";
+        titleEl.textContent = `Keanggotaan Circle QCC: ${empNama}`;
+        subEl.textContent = `Keterlibatan dalam gugus kendali mutu dan risalah 8 langkah PDCA (NPK: ${empNpk})`;
+
+        const qccRows = (currentDashboardPayload.rawTables?.Data_QCC || []).filter(r => {
+          const leaderNPK = safeString(r['NPK Leader'] || r['Leader NPK'] || r['Leader']);
+          const leaderName = String(r['Leader'] || '').toLowerCase();
+          const cleanName = empNama.toLowerCase();
+          if (leaderNPK === safeString(empNpk) || (cleanName && leaderName.includes(cleanName))) return true;
+          for (let i = 1; i <= 7; i++) {
+            const memberVal = String(r[`Anggota ${i}`] || '').toLowerCase();
+            if (memberVal && (memberVal.includes(safeString(empNpk)) || (cleanName && memberVal.includes(cleanName)))) {
+              return true;
+            }
+          }
+          return false;
+        });
+
+        if (!qccRows.length) {
+          contentEl.innerHTML = `<div class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-200">Karyawan ini belum terdaftar sebagai Leader atau Anggota pada tim Quality Control Circle (QCC).</div>`;
+          return;
+        }
+
+        const tableRows = qccRows.map((r, i) => {
+          const noReg = r['No.Registrasi'] || r['No Registrasi'] || `#${i+1}`;
+          const namaTim = r['Nama Tim'] || 'Tim QCC';
+          const tema = r['Tema'] || '-';
+          const isLeader = safeString(r['NPK Leader'] || r['Leader NPK']) === safeString(empNpk) || String(r['Leader'] || '').toLowerCase().includes(empNama.toLowerCase());
+          const peran = isLeader 
+            ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-black bg-purple-100 text-purple-800 border border-purple-200">Circle Leader</span>`
+            : `<span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-slate-100 text-slate-700">Anggota</span>`;
+          const status = r['Status'] || r['Tahapan PDCA'] || 'Langkah 1-8 Selesai';
+
+          return `
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-2.5 px-3 font-mono font-bold text-slate-700 whitespace-nowrap">${noReg}</td>
+              <td class="py-2.5 px-3 font-bold text-slate-900 whitespace-nowrap">${namaTim}</td>
+              <td class="py-2.5 px-3 text-slate-700">${tema}</td>
+              <td class="py-2.5 px-3 whitespace-nowrap">${peran}</td>
+              <td class="py-2.5 px-3 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">${status}</span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        contentEl.innerHTML = `
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3">No. Reg</th>
+                  <th class="py-2.5 px-3">Nama Tim</th>
+                  <th class="py-2.5 px-3">Tema Perbaikan</th>
+                  <th class="py-2.5 px-3">Peran</th>
+                  <th class="py-2.5 px-3">Status PDCA</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${tableRows}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (type === 'contract') {
+        badgeEl.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300";
+        badgeEl.textContent = "Master_Karyawan";
+        titleEl.textContent = `Form Profil Lengkap Kepegawaian: ${empNama}`;
+        subEl.textContent = `Basis data resmi karyawan terdaftar di sistem PT Astra Daihatsu Motor (NPK: ${empNpk})`;
+
+        const unitOrg = getRowCellValue(emp, 'Name of organizational unit', SCHEMAS.Master_Karyawan) || emp.unit || emp.divisi || '-';
+        const jabatan = getRowCellValue(emp, 'Job Title', SCHEMAS.Master_Karyawan) || emp.jabatan || '-';
+        const cabang = getRowCellValue(emp, 'P.subarea', SCHEMAS.Master_Karyawan) || emp.cabang || '-';
+        const baCode = getRowCellValue(emp, 'Business area', SCHEMAS.Master_Karyawan) || emp.kodeBA || '-';
+        const contract = getRowCellValue(emp, 'Contract', SCHEMAS.Master_Karyawan) || emp.tipeKontrak || 'Tetap';
+        const joinDate = formatDatabaseDate(getRowCellValue(emp, 'Date', SCHEMAS.Master_Karyawan)) || emp.joinDate || '-';
+        const dob = formatDatabaseDate(getRowCellValue(emp, 'D.o.birth', SCHEMAS.Master_Karyawan)) || emp.dob || '-';
+        const gender = getRowCellValue(emp, 'Gender text', SCHEMAS.Master_Karyawan) || emp.gender || '-';
+        const agama = getRowCellValue(emp, 'Religious denomination', SCHEMAS.Master_Karyawan) || emp.agama || '-';
+        const psGroup = getRowCellValue(emp, 'PS group', SCHEMAS.Master_Karyawan) || emp.psGroup || '-';
+        const lvl = getRowCellValue(emp, 'Lvl', SCHEMAS.Master_Karyawan) || emp.lvl || '-';
+
+        contentEl.innerHTML = `
+          <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200 text-xs space-y-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">NPK / Personnel No.</span>
+                <span class="text-sm font-black text-slate-900 font-mono mt-0.5 block">${empNpk}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Nama Lengkap</span>
+                <span class="text-sm font-black text-slate-900 mt-0.5 block">${empNama}</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Kepegawaian</span>
+                <span class="text-xs font-black text-blue-700 mt-0.5 block">${contract}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Jabatan / Job Title</span>
+                <span class="text-xs font-extrabold text-slate-800 mt-0.5 block">${jabatan}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Unit Organisasi</span>
+                <span class="text-xs font-extrabold text-slate-800 mt-0.5 block">${unitOrg}</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Cabang / Subarea</span>
+                <span class="text-xs font-bold text-slate-800 mt-0.5 block">${cabang}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Kode Business Area</span>
+                <span class="text-xs font-bold text-slate-800 font-mono mt-0.5 block">${baCode}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Tanggal Masuk (Join)</span>
+                <span class="text-xs font-bold text-slate-800 mt-0.5 block">${joinDate}</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Tgl Lahir (D.o.b)</span>
+                <span class="text-xs font-semibold text-slate-800 mt-0.5 block">${dob}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Gender</span>
+                <span class="text-xs font-semibold text-slate-800 mt-0.5 block">${gender}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Agama</span>
+                <span class="text-xs font-semibold text-slate-800 mt-0.5 block">${agama}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Gol / Level</span>
+                <span class="text-xs font-semibold text-slate-800 mt-0.5 block">${psGroup} / ${lvl}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      } else if (type === 'sp') {
+        badgeEl.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800 border border-rose-300";
+        badgeEl.textContent = "Data_SP (Disiplin)";
+        titleEl.textContent = `Riwayat Kedisiplinan Kerja: ${empNama}`;
+        subEl.textContent = `Status surat peringatan dan kepatuhan tata tertib kerja (NPK: ${empNpk})`;
+
+        const spRows = (currentDashboardPayload.rawTables?.Data_SP || []).filter(r => 
+          safeString(r['NPK'] || r['Personnel no.']) === safeString(empNpk)
+        );
+
+        const hasActiveSP = spRows.some(r => r['Tingkat SP'] && r['Tingkat SP'] !== '-');
+
+        if (!hasActiveSP) {
+          contentEl.innerHTML = `
+            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center">
+              <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+              <h5 class="text-sm font-extrabold text-emerald-900">CLEAR - Bebas Sanksi Disiplin</h5>
+              <p class="text-xs text-emerald-700 mt-1 max-w-md mx-auto">
+                Karyawan memiliki reputasi disiplin yang sangat baik tanpa catatan sanksi (SP 1, SP 2, SP 3, atau Surat Teguran).
+              </p>
+            </div>
+          `;
+          return;
+        }
+
+        const tableRows = spRows.map((r, i) => `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-2.5 px-3 font-bold text-red-600 whitespace-nowrap">
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-red-100 text-red-800 border border-red-200">${r['Tingkat SP']}</span>
+            </td>
+            <td class="py-2.5 px-3 text-slate-800">${r['Alasan'] || 'Pelanggaran tata tertib kerja'}</td>
+            <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${r['Kode BA'] || '-'}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Sedang Berjalan</span>
+            </td>
+          </tr>
+        `).join('');
+
+        contentEl.innerHTML = `
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3">Tingkat Sanksi</th>
+                  <th class="py-2.5 px-3">Alasan / Pelanggaran</th>
+                  <th class="py-2.5 px-3">Cabang</th>
+                  <th class="py-2.5 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${tableRows}
+              </tbody>
+            </table>
+          </div>
+        `;
+      } else if (type === 'km') {
+        badgeEl.className = "px-2.5 py-1 rounded-full text-[10px] font-bold bg-cyan-100 text-cyan-800 border border-cyan-300";
+        badgeEl.textContent = "Knowledge_management";
+        titleEl.textContent = `Dokumen Knowledge Management: ${empNama}`;
+        subEl.textContent = `Kontribusi bank pengetahuan, panduan teknis, dan inovasi kerja (NPK: ${empNpk})`;
+
+        const kmRows = ((currentDashboardPayload.rawTables?.Knowledge_management || currentDashboardPayload.rawTables?.Data_KM) || []).filter(r => 
+          safeString(r['NPK'] || r['Personnel no.']) === safeString(empNpk)
+        );
+
+        if (!kmRows.length) {
+          contentEl.innerHTML = `<div class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-200">Karyawan ini belum menerbitkan artikel atau panduan di sheet Knowledge_management.</div>`;
+          return;
+        }
+
+        const tableRows = kmRows.map((r, i) => {
+          const judul = r['JUDUL'] || r['Judul'] || 'Panduan Knowledge Management';
+          const tgl = formatDatabaseDate(r['TANGGAL'] || r['Tanggal']) || r['TANGGAL'] || r['Tanggal'] || '-';
+          const time = r['TIME'] || r['Time'] || '-';
+
+          return `
+            <tr class="hover:bg-slate-50 transition-colors">
+              <td class="py-2.5 px-3 font-semibold text-slate-900">${judul}</td>
+              <td class="py-2.5 px-3 font-mono text-slate-700 whitespace-nowrap">${tgl}</td>
+              <td class="py-2.5 px-3 font-mono text-slate-600 whitespace-nowrap">${time}</td>
+              <td class="py-2.5 px-3 whitespace-nowrap">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 inline-flex items-center gap-1">
+                  <i class="fa-solid fa-circle-check text-[9px]"></i> Terverifikasi
+                </span>
+              </td>
+            </tr>
+          `;
+        }).join('');
+
+        contentEl.innerHTML = `
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
+            <table class="w-full text-left border-collapse text-xs">
+              <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
+                <tr>
+                  <th class="py-2.5 px-3">Judul Pengetahuan / Materi</th>
+                  <th class="py-2.5 px-3">Tanggal Terbit</th>
+                  <th class="py-2.5 px-3">Waktu (Time)</th>
+                  <th class="py-2.5 px-3">Status</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                ${tableRows}
+              </tbody>
+            </table>
+          </div>
+        `;
+      }
     }
 
     function openQCCRisalahModal(rowIndex, fallbackKey = '') {
