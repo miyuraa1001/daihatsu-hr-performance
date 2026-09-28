@@ -888,16 +888,9 @@
                 </div>
               </div>
 
-              <!-- Kelompok Status Kepegawaian Items: Mini Stat Cards -->
-              <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-1.5 sm:gap-2 lg:gap-2.5" id="mk-contract-group-list">
+              <!-- Kelompok Status Kepegawaian Items: 5 Baris di Mobile, 1 Baris di Desktop -->
+              <div class="grid grid-cols-1 sm:grid-cols-5 gap-1.5 sm:gap-2 lg:gap-2.5" id="mk-contract-group-list">
                 <!-- Dynamically populated from database/filter -->
-              </div>
-
-              <!-- Progress Bar -->
-              <div class="pt-2 mt-2 border-t border-slate-100" id="mk-contract-bar-wrapper">
-                <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex shadow-inner" id="mk-contract-bar-segments">
-                  <!-- Progress bar segments -->
-                </div>
               </div>
             </div>
 
@@ -4391,51 +4384,56 @@
         const extraCats = Object.keys(contractGroupMap).filter(k => !standardCats.includes(k) && contractGroupMap[k] > 0);
         const allCatsToRender = [...standardCats, ...extraCats];
 
-        contractListEl.innerHTML = allCatsToRender.map((grpName, index) => {
+        contractListEl.innerHTML = allCatsToRender.map(grpName => {
           const count = contractGroupMap[grpName] || 0;
           const meta = getContractMeta(grpName);
           const pct = totalContract ? Math.round((count / totalContract) * 100) : 0;
-          const isFifthOnMobile = (index === 4 && allCatsToRender.length === 5) ? 'col-span-2 xs:col-span-1' : '';
 
           return `
-            <div class="flex flex-col justify-between p-2 sm:p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs ${isFifthOnMobile}">
-              <!-- Top row: Icon (kiri) + Persen (kanan) -->
-              <div class="flex items-center justify-between w-full mb-1 sm:mb-1.5">
-                <div class="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-lg ${meta.iconBg} flex items-center justify-center text-[10px] sm:text-xs border ${meta.iconBorder} shadow-2xs flex-shrink-0">
+            <div class="flex items-center justify-between sm:flex-col sm:items-start sm:justify-between p-2.5 sm:p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs">
+              <!-- Top on Desktop / Left on Mobile -->
+              <div class="flex items-center gap-2.5 sm:w-full sm:justify-between sm:mb-1.5 min-w-0">
+                <div class="w-7 h-7 sm:w-6.5 sm:h-6.5 rounded-lg ${meta.iconBg} flex items-center justify-center text-xs border ${meta.iconBorder} shadow-2xs flex-shrink-0">
                   <i class="${meta.icon}"></i>
                 </div>
-                <span class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black ${meta.badgeBg} border">
+                <!-- Title & Subtitle on Mobile (inline with icon) -->
+                <div class="min-w-0 sm:hidden">
+                  <div class="text-xs font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
+                    ${meta.displayName}
+                  </div>
+                  <div class="text-[10px] font-medium text-slate-400 leading-tight truncate mt-0.5" title="${meta.subName}">
+                    ${meta.subName}
+                  </div>
+                </div>
+                <!-- Percentage Badge on Desktop (top right) -->
+                <span class="hidden sm:inline-flex px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black ${meta.badgeBg} border flex-shrink-0">
                   ${pct}%
                 </span>
               </div>
-              <!-- Middle: Nama (Title & Subtitle rapi) -->
-              <div class="w-full mb-1">
-                <div class="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
+
+              <!-- Title & Subtitle on Desktop (below icon) -->
+              <div class="hidden sm:block w-full mb-1 min-w-0">
+                <div class="text-xs font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
                   ${meta.displayName}
                 </div>
-                <div class="text-[9px] sm:text-[10px] font-medium text-slate-400 leading-tight truncate mt-0.5" title="${meta.subName}">
+                <div class="text-[9px] font-medium text-slate-400 leading-tight truncate mt-0.5" title="${meta.subName}">
                   ${meta.subName}
                 </div>
               </div>
-              <!-- Bottom: Angka & Satuan -->
-              <div class="flex items-baseline gap-1">
-                <span class="text-xs sm:text-sm lg:text-base font-black text-slate-900 leading-none">${count}</span>
-                <span class="text-[9px] sm:text-[10px] font-medium text-slate-400">Orang</span>
+
+              <!-- Bottom on Desktop / Right on Mobile -->
+              <div class="flex items-center gap-2 sm:w-full sm:justify-between flex-shrink-0">
+                <div class="flex items-baseline gap-1">
+                  <span class="text-sm sm:text-base font-black text-slate-900 leading-none">${count}</span>
+                  <span class="text-[10px] font-medium text-slate-400">Orang</span>
+                </div>
+                <!-- Percentage Badge on Mobile -->
+                <span class="inline-flex sm:hidden px-2 py-0.5 rounded text-[10px] font-black ${meta.badgeBg} border flex-shrink-0">
+                  ${pct}%
+                </span>
               </div>
             </div>
           `;
-        }).join('');
-      }
-
-      // Visual Ratio Progress Bar Contract
-      const contractBarContainer = document.getElementById('mk-contract-bar-segments');
-      if (contractBarContainer) {
-        contractBarContainer.innerHTML = STANDARD_CONTRACT_CATEGORIES.map(grpName => {
-          const count = contractGroupMap[grpName] || 0;
-          const meta = getContractMeta(grpName);
-          const pct = totalContract ? Math.round((count / totalContract) * 100) : 0;
-          if (pct === 0) return '';
-          return `<div class="${meta.barColor} h-full transition-all duration-500" style="width: ${pct}%" title="${meta.fullName}: ${count} Orang (${pct}%)"></div>`;
         }).join('');
       }
 
