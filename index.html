@@ -1076,43 +1076,118 @@
             </div>
           </div>
 
-          <!-- Cards Summary Absensi -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Rata-rata Kehadiran</span>
-              <div class="flex items-baseline gap-1">
-                <span class="text-2xl font-black text-slate-900" id="abs-card-rate">0.0%</span>
+          <!-- Cards Summary Absensi (5 Kategori Baku Monitoring HO & HRD) -->
+          <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+            <!-- 1. Total Presensi & Log -->
+            <div id="abs-kpi-card-all" onclick="quickFilterAbsensi('ALL')" title="Klik untuk tampilkan semua log presensi" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Total Presensi</span>
+                <div class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs border border-blue-100 flex-shrink-0 group-hover:scale-105 transition-transform">
+                  <i class="fa-solid fa-users-viewfinder"></i>
+                </div>
               </div>
-              <p class="text-[10px] text-emerald-600 font-bold mt-1">Standar Target &ge; 95%</p>
+              <div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xl sm:text-2xl font-black text-slate-900" id="abs-kpi-total">0</span>
+                  <span class="text-[11px] font-bold text-slate-400">Log</span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-semibold mt-0.5 truncate" id="abs-kpi-unique-emp">0 Karyawan Hadir</p>
+              </div>
+              <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[9px] font-bold text-slate-400">Database</span>
+                <span class="text-[9px] font-extrabold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-100">100% Tercatat</span>
+              </div>
             </div>
 
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Mangkir (Alpha)</span>
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-2xl font-black text-red-600" id="abs-card-alpha">0</span>
-                <span class="text-xs font-bold text-slate-500">Hari / Kasus</span>
+            <!-- 2. Tepat Waktu (≤ 08.00 WIB) -->
+            <div id="abs-kpi-card-ontime" onclick="quickFilterAbsensi('ON_TIME')" title="Klik untuk filter hanya check-in tepat waktu" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Tepat Waktu (≤08.00)</span>
+                <div class="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs border border-emerald-100 flex-shrink-0 group-hover:scale-105 transition-transform">
+                  <i class="fa-solid fa-circle-check"></i>
+                </div>
               </div>
-              <p class="text-[10px] text-slate-400 mt-1">Ketidakhadiran tanpa izin resmi</p>
+              <div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xl sm:text-2xl font-black text-emerald-600" id="abs-kpi-ontime-rate">0%</span>
+                  <span class="text-[11px] font-bold text-slate-400">Rate</span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-semibold mt-0.5 truncate" id="abs-kpi-ontime-count">0 Check-in Tepat Waktu</p>
+              </div>
+              <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[9px] font-bold text-slate-400">Kepatuhan</span>
+                <span class="text-[9px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200" id="abs-kpi-ontime-badge">Disiplin Baik</span>
+              </div>
             </div>
 
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Sering Terlambat</span>
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-2xl font-black text-amber-600" id="abs-card-telat">0</span>
-                <span class="text-xs font-bold text-slate-500">Karyawan</span>
+            <!-- 3. Terlambat Masuk (> 08.00 WIB) -->
+            <div id="abs-kpi-card-late" onclick="quickFilterAbsensi('LATE')" title="Klik untuk filter daftar karyawan telat" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-amber-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Terlambat (>08.00)</span>
+                <div class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs border border-amber-100 flex-shrink-0 group-hover:scale-105 transition-transform">
+                  <i class="fa-solid fa-clock-rotate-left"></i>
+                </div>
               </div>
-              <p class="text-[10px] text-slate-400 mt-1">Frekuensi clock-in lewat jam masuk</p>
+              <div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xl sm:text-2xl font-black text-amber-600" id="abs-kpi-late-count">0</span>
+                  <span class="text-[11px] font-bold text-slate-400">Kasus</span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-semibold mt-0.5 truncate" id="abs-kpi-late-avg">Rata-rata: 0 mnt</p>
+              </div>
+              <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[9px] font-bold text-slate-400">Telat Parah</span>
+                <span class="text-[9px] font-extrabold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-200" id="abs-kpi-late-severe">>30m: 0 | >1j: 0</span>
+              </div>
             </div>
 
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Status Disiplin Cabang</span>
-              <div class="mt-1" id="abs-card-status-badge">
-                <span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-black border border-emerald-200">
-                  <i class="fa-solid fa-circle-check"></i> DISIPLIN BAIK
-                </span>
+            <!-- 4. Rata-rata Jam Kerja -->
+            <div id="abs-kpi-card-hours" onclick="quickFilterAbsensi('UNDER_HOURS')" title="Klik untuk filter jam kerja kurang dari 8 jam" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Jam Kerja (Durasi)</span>
+                <div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs border border-indigo-100 flex-shrink-0 group-hover:scale-105 transition-transform">
+                  <i class="fa-solid fa-business-time"></i>
+                </div>
               </div>
-              <p class="text-[10px] text-slate-400 mt-1">Berdasarkan rasio absensi periode aktif</p>
+              <div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xl sm:text-2xl font-black text-indigo-600" id="abs-kpi-avg-hours">0.0</span>
+                  <span class="text-[11px] font-bold text-slate-400">Jam/Hari</span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-semibold mt-0.5 truncate" id="abs-kpi-under-hours">0 Karyawan < 8.0 Jam</p>
+              </div>
+              <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[9px] font-bold text-slate-400">Standar HO</span>
+                <span class="text-[9px] font-extrabold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-200" id="abs-kpi-hours-badge">Target ≥ 8.0 Jam</span>
+              </div>
             </div>
+
+            <!-- 5. Perlu Approval / CICO Anomali -->
+            <div id="abs-kpi-card-anomali" onclick="quickFilterAbsensi('NEED_APPROVAL')" title="Klik untuk filter presensi yang perlu persetujuan / di luar radius" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-rose-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between col-span-2 sm:col-span-2 md:col-span-1 lg:col-span-1">
+              <div class="flex items-center justify-between mb-1.5">
+                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Perlu Approval / CICO</span>
+                <div class="w-7 h-7 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xs border border-rose-100 flex-shrink-0 group-hover:scale-105 transition-transform">
+                  <i class="fa-solid fa-bell-concierge"></i>
+                </div>
+              </div>
+              <div>
+                <div class="flex items-baseline gap-1">
+                  <span class="text-xl sm:text-2xl font-black text-rose-600" id="abs-kpi-anomali-count">0</span>
+                  <span class="text-[11px] font-bold text-slate-400">Record</span>
+                </div>
+                <p class="text-[10px] text-slate-500 font-semibold mt-0.5 truncate" id="abs-kpi-anomali-desc">Luar Radius / Pending CICO</p>
+              </div>
+              <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-[9px] font-bold text-slate-400">Tindakan HRD</span>
+                <span class="text-[9px] font-extrabold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-200" id="abs-kpi-anomali-status">0 Menunggu</span>
+              </div>
+            </div>
+
+            <!-- Legacy fallback elements for safety -->
+            <span id="abs-card-rate" class="hidden"></span>
+            <span id="abs-card-alpha" class="hidden"></span>
+            <span id="abs-card-telat" class="hidden"></span>
+            <span id="abs-card-status-badge" class="hidden"></span>
           </div>
 
           <!-- Table Container Absensi -->
@@ -1134,7 +1209,7 @@
                   <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-3"></i>
                 </div>
 
-                <!-- Filter Keterlambatan -->
+                <!-- Filter Keterlambatan & Jam Kerja -->
                 <div class="relative flex items-center bg-slate-50/90 border border-slate-200 rounded-xl px-2.5 py-1.5 hover:border-amber-400 focus-within:ring-2 focus-within:ring-amber-500/20 focus-within:border-amber-500 focus-within:bg-white transition shadow-2xs">
                   <i class="fa-solid fa-clock text-amber-500 text-xs mr-1.5 flex-shrink-0"></i>
                   <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="text-xs bg-transparent font-bold text-slate-700 focus:outline-none cursor-pointer pr-4 appearance-none">
@@ -1143,6 +1218,8 @@
                     <option value="LATE">Terlambat (> 08.00)</option>
                     <option value="LATE_30">Telat > 30 Menit</option>
                     <option value="LATE_60">Telat > 1 Jam</option>
+                    <option value="UNDER_HOURS">Jam Kerja Kurang (< 8.0 Jam)</option>
+                    <option value="NEED_APPROVAL">Perlu Approval CICO / Luar Radius</option>
                   </select>
                   <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-3"></i>
                 </div>
@@ -6005,50 +6082,260 @@
     // ----------------------------------------------------
     function renderAbsensiView(data) {
       if (!data) return;
-      const s = data.summary || {};
-      const rawRows = (data.rawTables && data.rawTables.Data_Kehadiran) || [];
+      filterAbsensiTable();
+    }
 
-      let totalAlpha = s.totalAlpha || 0;
-      let lateCount = 0;
+    /**
+     * Memperbarui 5 Kategori KPI Absensi Monitoring HO & HRD secara 100% sinkron dengan data presensi aktif
+     */
+    function updateAbsensiKPICards(rows, activeFilter = 'ALL') {
+      const totalRows = rows.length;
+      const uniqueEmployees = new Set(
+        rows.map(r => safeString(r['NPK'] || r['Personnel no.'])).filter(Boolean)
+      ).size;
+
       let onTimeCount = 0;
+      let lateCount = 0;
+      let totalLateMinutes = 0;
+      let lateOver30 = 0;
+      let lateOver60 = 0;
 
-      if (rawRows.length > 0) {
-        let alphaCount = 0;
-        rawRows.forEach(r => {
-          const ket = String(r['Keterangan'] || '').toLowerCase();
-          const rawTime = r['Time Clock In'] || r['Clock In'] || r['Time'] || '';
-          const info = calculateLatenessInfo(rawTime);
-          if (ket.includes('alpha') || ket.includes('mangkir')) {
-            alphaCount++;
-          } else if (info.isLate || ket.includes('terlambat') || ket.includes('telat')) {
-            lateCount++;
-          } else if (info.hasClockIn) {
-            onTimeCount++;
+      let totalWorkHours = 0;
+      let validWorkHoursCount = 0;
+      let under8Count = 0;
+
+      let totalAnomali = 0;
+      let needApprovalCount = 0;
+      let outRadiusCount = 0;
+      let noClockOutCount = 0;
+
+      rows.forEach(r => {
+        // 1. Clock In & Lateness Analysis (Asumsi Masuk 08.00 WIB)
+        const rawTime = r['Time Clock In'] || r['Clock In'] || r['Time'] || '';
+        const existingEstimasi = r['Estimasi Telat (Asumsi 08.00)'];
+        const lateness = calculateLatenessInfo(existingEstimasi || rawTime);
+        const ket = String(r['Keterangan'] || '').toLowerCase();
+        const estStr = String(existingEstimasi || '').toLowerCase();
+
+        const isLate = lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || estStr.includes('telat');
+        const isOnTime = (!isLate && lateness.hasClockIn) || ket.includes('tepat') || estStr.includes('tepat');
+
+        if (isLate) {
+          lateCount++;
+          const mins = lateness.diffMinutes > 0 ? lateness.diffMinutes : 15;
+          totalLateMinutes += mins;
+          if (mins > 60 || (lateness.lateHours && lateness.lateHours >= 1)) {
+            lateOver60++;
+          } else if (mins > 30) {
+            lateOver30++;
           }
-        });
-        if (alphaCount > 0 || totalAlpha === 0) totalAlpha = alphaCount;
+        } else if (isOnTime) {
+          onTimeCount++;
+        }
+
+        // 2. Work Hours Analysis (Standar HO >= 8.0 Jam)
+        const whRaw = (r['Durasi Kerja (Work Hours)'] !== undefined && r['Durasi Kerja (Work Hours)'] !== null && r['Durasi Kerja (Work Hours)'] !== '') 
+          ? r['Durasi Kerja (Work Hours)'] 
+          : (r['Work Hours'] || r['Durasi Kerja']);
+        const wh = safeFloat(whRaw, 0);
+        if (wh > 0) {
+          totalWorkHours += wh;
+          validWorkHoursCount++;
+          if (wh < 8.0) under8Count++;
+        }
+
+        // 3. Anomali & Butuh Approval CICO
+        const needApp = String(r['Need CICO Approval'] || '').toUpperCase().trim() === 'YES';
+        const radIn = String(r['In Radius Clock in'] || '').toUpperCase().trim() === 'NO';
+        const radOut = String(r['In Radius Clock Out'] || '').toUpperCase().trim() === 'NO';
+        const noClockOut = lateness.hasClockIn && (!r['Time Clock Out'] || r['Time Clock Out'] === '-' || String(r['Time Clock Out']).trim() === '');
+
+        if (needApp || radIn || radOut || noClockOut) {
+          totalAnomali++;
+          if (needApp) needApprovalCount++;
+          if (radIn || radOut) outRadiusCount++;
+          if (noClockOut) noClockOutCount++;
+        }
+      });
+
+      const onTimeRate = (onTimeCount + lateCount) > 0 
+        ? Math.round((onTimeCount / (onTimeCount + lateCount)) * 1000) / 10 
+        : (totalRows > 0 ? 100 : 0);
+      const avgLate = lateCount > 0 ? Math.round(totalLateMinutes / lateCount) : 0;
+      const avgHours = validWorkHoursCount > 0 ? (totalWorkHours / validWorkHoursCount).toFixed(1) : (totalRows > 0 ? '8.0' : '0.0');
+
+      // Populate Card 1: Total Presensi
+      if (document.getElementById('abs-kpi-total')) {
+        document.getElementById('abs-kpi-total').textContent = totalRows.toLocaleString('id-ID');
+      }
+      if (document.getElementById('abs-kpi-unique-emp')) {
+        document.getElementById('abs-kpi-unique-emp').textContent = `${uniqueEmployees} Karyawan Hadir`;
       }
 
-      const totalPresensi = rawRows.length;
-      const calcRate = totalPresensi > 0 
-        ? Math.round(((totalPresensi - lateCount - totalAlpha) / totalPresensi) * 1000) / 10 
-        : (s.avgAttendance || 0);
-
-      if (document.getElementById('abs-card-rate')) document.getElementById('abs-card-rate').textContent = `${calcRate}%`;
-      if (document.getElementById('abs-card-alpha')) document.getElementById('abs-card-alpha').textContent = totalAlpha;
-      if (document.getElementById('abs-card-telat')) {
-        document.getElementById('abs-card-telat').textContent = (s.totalSeringTelat !== undefined && s.totalSeringTelat !== null && s.totalSeringTelat > 0) ? s.totalSeringTelat : lateCount;
+      // Populate Card 2: Tepat Waktu
+      if (document.getElementById('abs-kpi-ontime-rate')) {
+        document.getElementById('abs-kpi-ontime-rate').textContent = `${onTimeRate}%`;
       }
-      
-      const badgeContainer = document.getElementById('abs-card-status-badge');
-      if (badgeContainer) {
-        if (calcRate >= 95) {
-          badgeContainer.innerHTML = `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-black border border-emerald-200"><i class="fa-solid fa-circle-check"></i> DISIPLIN BAIK (≥95%)</span>`;
+      if (document.getElementById('abs-kpi-ontime-count')) {
+        document.getElementById('abs-kpi-ontime-count').textContent = `${onTimeCount} Check-in Tepat Waktu`;
+      }
+      const ontimeBadge = document.getElementById('abs-kpi-ontime-badge');
+      if (ontimeBadge) {
+        if (totalRows === 0) {
+          ontimeBadge.className = "text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md border border-slate-200";
+          ontimeBadge.textContent = "Belum Ada Data";
+        } else if (onTimeRate >= 95) {
+          ontimeBadge.className = "text-[9px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200";
+          ontimeBadge.textContent = "Disiplin Sangat Baik (≥95%)";
+        } else if (onTimeRate >= 90) {
+          ontimeBadge.className = "text-[9px] font-extrabold text-blue-700 bg-blue-50 px-1.5 py-0.5 rounded-md border border-blue-200";
+          ontimeBadge.textContent = "Disiplin Cukup (≥90%)";
         } else {
-          badgeContainer.innerHTML = `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-black border border-amber-200"><i class="fa-solid fa-triangle-exclamation"></i> PERLU EVALUASI (<95%)</span>`;
+          ontimeBadge.className = "text-[9px] font-extrabold text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded-md border border-amber-200";
+          ontimeBadge.textContent = "Perlu Evaluasi (<90%)";
         }
       }
 
+      // Populate Card 3: Terlambat Masuk
+      if (document.getElementById('abs-kpi-late-count')) {
+        document.getElementById('abs-kpi-late-count').textContent = lateCount.toLocaleString('id-ID');
+      }
+      if (document.getElementById('abs-kpi-late-avg')) {
+        document.getElementById('abs-kpi-late-avg').textContent = lateCount > 0 ? `Rata-rata: ${avgLate} mnt` : "Nihil Keterlambatan";
+      }
+      if (document.getElementById('abs-kpi-late-severe')) {
+        document.getElementById('abs-kpi-late-severe').textContent = `>30m: ${lateOver30} | >1j: ${lateOver60}`;
+      }
+
+      // Populate Card 4: Durasi Jam Kerja
+      if (document.getElementById('abs-kpi-avg-hours')) {
+        document.getElementById('abs-kpi-avg-hours').textContent = avgHours;
+      }
+      if (document.getElementById('abs-kpi-under-hours')) {
+        document.getElementById('abs-kpi-under-hours').textContent = `${under8Count} Karyawan < 8.0 Jam`;
+      }
+      const hoursBadge = document.getElementById('abs-kpi-hours-badge');
+      if (hoursBadge) {
+        if (validWorkHoursCount === 0) {
+          hoursBadge.className = "text-[9px] font-bold text-slate-500 bg-slate-100 px-1.5 py-0.5 rounded-md border border-slate-200";
+          hoursBadge.textContent = "Target ≥ 8.0 Jam";
+        } else if (parseFloat(avgHours) >= 8.0) {
+          hoursBadge.className = "text-[9px] font-extrabold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded-md border border-indigo-200";
+          hoursBadge.textContent = "Target HO Terpenuhi (≥8.0j)";
+        } else {
+          hoursBadge.className = "text-[9px] font-extrabold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-200";
+          hoursBadge.textContent = "Di Bawah Standar 8.0 Jam";
+        }
+      }
+
+      // Populate Card 5: Perlu Approval / CICO Anomali
+      if (document.getElementById('abs-kpi-anomali-count')) {
+        document.getElementById('abs-kpi-anomali-count').textContent = totalAnomali.toLocaleString('id-ID');
+      }
+      if (document.getElementById('abs-kpi-anomali-desc')) {
+        if (totalAnomali === 0) {
+          document.getElementById('abs-kpi-anomali-desc').textContent = "Semua Presensi Normal";
+        } else if (needApprovalCount > 0 && outRadiusCount > 0) {
+          document.getElementById('abs-kpi-anomali-desc').textContent = `${needApprovalCount} Butuh Approval, ${outRadiusCount} Luar Radius`;
+        } else if (needApprovalCount > 0) {
+          document.getElementById('abs-kpi-anomali-desc').textContent = `${needApprovalCount} Butuh Approval CICO`;
+        } else if (outRadiusCount > 0) {
+          document.getElementById('abs-kpi-anomali-desc').textContent = `${outRadiusCount} Check-in Luar Radius`;
+        } else if (noClockOutCount > 0) {
+          document.getElementById('abs-kpi-anomali-desc').textContent = `${noClockOutCount} Belum Clock Out`;
+        } else {
+          document.getElementById('abs-kpi-anomali-desc').textContent = `${totalAnomali} Memerlukan Verifikasi`;
+        }
+      }
+      const anomaliBadge = document.getElementById('abs-kpi-anomali-status');
+      if (anomaliBadge) {
+        if (totalAnomali === 0) {
+          anomaliBadge.className = "text-[9px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200";
+          anomaliBadge.textContent = "Semua Verified";
+        } else {
+          anomaliBadge.className = "text-[9px] font-extrabold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-200";
+          anomaliBadge.textContent = `${totalAnomali} Menunggu`;
+        }
+      }
+
+      // Highlight active KPI card
+      highlightActiveAbsensiKpi(activeFilter);
+
+      // Populate legacy elements for backward compatibility
+      if (document.getElementById('abs-card-rate')) document.getElementById('abs-card-rate').textContent = `${onTimeRate}%`;
+      if (document.getElementById('abs-card-alpha')) document.getElementById('abs-card-alpha').textContent = under8Count;
+      if (document.getElementById('abs-card-telat')) document.getElementById('abs-card-telat').textContent = lateCount;
+      const legacyBadge = document.getElementById('abs-card-status-badge');
+      if (legacyBadge) {
+        if (onTimeRate >= 95) {
+          legacyBadge.innerHTML = `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-emerald-50 text-emerald-700 rounded-lg text-xs font-black border border-emerald-200"><i class="fa-solid fa-circle-check"></i> DISIPLIN BAIK (≥95%)</span>`;
+        } else {
+          legacyBadge.innerHTML = `<span class="inline-flex items-center gap-1 px-2.5 py-1 bg-amber-50 text-amber-700 rounded-lg text-xs font-black border border-amber-200"><i class="fa-solid fa-triangle-exclamation"></i> PERLU EVALUASI (<95%)</span>`;
+        }
+      }
+    }
+
+    /**
+     * Mengatur sorotan visual pada kartu KPI Absensi yang aktif difilter
+     */
+    function highlightActiveAbsensiKpi(activeFilter) {
+      const cards = {
+        'ALL': document.getElementById('abs-kpi-card-all'),
+        'ON_TIME': document.getElementById('abs-kpi-card-ontime'),
+        'LATE': document.getElementById('abs-kpi-card-late'),
+        'UNDER_HOURS': document.getElementById('abs-kpi-card-hours'),
+        'NEED_APPROVAL': document.getElementById('abs-kpi-card-anomali')
+      };
+
+      const activeBorderMap = {
+        'ALL': ['border-blue-500', 'ring-2', 'ring-blue-400/40', 'bg-blue-50/20'],
+        'ON_TIME': ['border-emerald-500', 'ring-2', 'ring-emerald-400/40', 'bg-emerald-50/20'],
+        'LATE': ['border-amber-500', 'ring-2', 'ring-amber-400/40', 'bg-amber-50/20'],
+        'LATE_30': ['border-amber-500', 'ring-2', 'ring-amber-400/40', 'bg-amber-50/20'],
+        'LATE_60': ['border-amber-500', 'ring-2', 'ring-amber-400/40', 'bg-amber-50/20'],
+        'UNDER_HOURS': ['border-indigo-500', 'ring-2', 'ring-indigo-400/40', 'bg-indigo-50/20'],
+        'NEED_APPROVAL': ['border-rose-500', 'ring-2', 'ring-rose-400/40', 'bg-rose-50/20']
+      };
+
+      const allClassesToRemove = [
+        'border-blue-500', 'ring-blue-400/40', 'bg-blue-50/20',
+        'border-emerald-500', 'ring-emerald-400/40', 'bg-emerald-50/20',
+        'border-amber-500', 'ring-amber-400/40', 'bg-amber-50/20',
+        'border-indigo-500', 'ring-indigo-400/40', 'bg-indigo-50/20',
+        'border-rose-500', 'ring-rose-400/40', 'bg-rose-50/20',
+        'ring-2'
+      ];
+
+      Object.values(cards).forEach(c => {
+        if (c) {
+          c.classList.remove(...allClassesToRemove);
+          c.classList.add('border-slate-200/80');
+        }
+      });
+
+      let targetCardKey = activeFilter;
+      if (activeFilter === 'LATE_30' || activeFilter === 'LATE_60') targetCardKey = 'LATE';
+
+      const targetCard = cards[targetCardKey];
+      const classesToAdd = activeBorderMap[activeFilter] || activeBorderMap[targetCardKey];
+      if (targetCard && classesToAdd) {
+        targetCard.classList.remove('border-slate-200/80');
+        targetCard.classList.add(...classesToAdd);
+      }
+    }
+
+    /**
+     * 1-Click Quick Filter dari Card KPI Absensi ke Tabel Presensi
+     */
+    function quickFilterAbsensi(filterVal) {
+      const select = document.getElementById('abs-filter-compliance');
+      if (select) {
+        if (select.value === filterVal && filterVal !== 'ALL') {
+          select.value = 'ALL';
+        } else {
+          select.value = filterVal;
+        }
+      }
       filterAbsensiTable();
     }
 
@@ -6063,13 +6350,19 @@
       const userBranchCode = getUserBranchCode(loggedInUser);
       const targetBranch = (toolbarBranch !== 'ALL') ? toolbarBranch : (isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode);
 
-      let list = rawRows;
+      let branchRows = rawRows;
 
       // 0. Filter cabang aktif
       if (targetBranch !== 'ALL') {
-        list = list.filter(e => matchBranch(e, targetBranch));
+        branchRows = branchRows.filter(e => matchBranch(e, targetBranch));
       }
 
+      // Update 5 KPI Cards secara sinkron dengan cabang & periode aktif
+      updateAbsensiKPICards(branchRows, compFilter);
+
+      let list = branchRows;
+
+      // 1. Filter pencarian teks
       if (q) {
         list = list.filter(e => 
           String(e['NPK'] || '').toLowerCase().includes(q) || 
@@ -6080,6 +6373,7 @@
         );
       }
 
+      // 2. Filter Kepatuhan Jam Masuk & Jam Kerja
       if (compFilter !== 'ALL') {
         list = list.filter(e => {
           const rawTime = e['Time Clock In'] || e['Clock In'] || e['Time'] || '';
@@ -6088,17 +6382,34 @@
           const ket = String(e['Keterangan'] || '').toLowerCase();
           const telatStr = String(existingEstimasi || '').toLowerCase();
 
+          const actuallyLate = lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || telatStr.includes('telat');
+          const actuallyOnTime = (!actuallyLate && lateness.hasClockIn) || ket.includes('tepat') || telatStr.includes('tepat');
+
           if (compFilter === 'ON_TIME' || compFilter === 'Hadir Tepat Waktu') {
-            return (!lateness.isLate && lateness.hasClockIn) || ket.includes('tepat') || telatStr.includes('tepat');
+            return actuallyOnTime;
           }
           if (compFilter === 'LATE' || compFilter === 'Terlambat') {
-            return lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || telatStr.includes('telat');
+            return actuallyLate;
           }
           if (compFilter === 'LATE_30') {
-            return lateness.isLate && (lateness.diffMinutes > 30 || (lateness.lateHours && lateness.lateHours > 0));
+            return actuallyLate && (lateness.diffMinutes > 30 || (lateness.lateHours && lateness.lateHours > 0));
           }
           if (compFilter === 'LATE_60') {
-            return lateness.isLate && (lateness.diffMinutes > 60 || (lateness.lateHours && lateness.lateHours >= 1));
+            return actuallyLate && (lateness.diffMinutes > 60 || (lateness.lateHours && lateness.lateHours >= 1));
+          }
+          if (compFilter === 'UNDER_HOURS') {
+            const whRaw = (e['Durasi Kerja (Work Hours)'] !== undefined && e['Durasi Kerja (Work Hours)'] !== null && e['Durasi Kerja (Work Hours)'] !== '') 
+              ? e['Durasi Kerja (Work Hours)'] 
+              : (e['Work Hours'] || e['Durasi Kerja']);
+            const wh = safeFloat(whRaw, 0);
+            return wh > 0 && wh < 8.0;
+          }
+          if (compFilter === 'NEED_APPROVAL') {
+            const needApp = String(e['Need CICO Approval'] || '').toUpperCase().trim() === 'YES';
+            const radIn = String(e['In Radius Clock in'] || '').toUpperCase().trim() === 'NO';
+            const radOut = String(e['In Radius Clock Out'] || '').toUpperCase().trim() === 'NO';
+            const noClockOut = lateness.hasClockIn && (!e['Time Clock Out'] || e['Time Clock Out'] === '-' || String(e['Time Clock Out']).trim() === '');
+            return needApp || radIn || radOut || noClockOut;
           }
           return true;
         });
@@ -6114,7 +6425,7 @@
 
       const tbody = document.getElementById('abs-table-body');
       if (document.getElementById('abs-row-count')) {
-        document.getElementById('abs-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} data absensi (${cols.length} kolom)`;
+        document.getElementById('abs-row-count').textContent = `Menampilkan ${list.length} dari ${branchRows.length} data absensi (${cols.length} kolom)`;
       }
 
       if (!list.length) {
