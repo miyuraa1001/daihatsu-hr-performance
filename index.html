@@ -321,26 +321,41 @@
 
           <!-- Right Desktop Controls (Hidden on Mobile) -->
           <div class="hidden md:flex items-center gap-2.5 flex-shrink-0">
-            <!-- Dropdown Cabang Desktop -->
-            <div class="relative flex items-center bg-slate-50 border border-slate-200/90 rounded-xl px-3 py-1.5 hover:border-slate-300 transition">
-              <i class="fa-solid fa-location-dot text-red-600 text-xs mr-2 flex-shrink-0"></i>
-              <span class="text-[11px] text-slate-400 mr-1.5 font-medium">Cabang:</span>
-              <select id="branch-select" onchange="handleBranchOrPeriodChange()" class="text-xs font-bold bg-transparent text-slate-800 focus:outline-none cursor-pointer max-w-[190px] truncate">
-              </select>
+            <!-- Dropdown Cabang Desktop (Elevated Modern Pill) -->
+            <div class="relative flex items-center bg-white border border-slate-200/90 hover:border-red-400 rounded-xl px-3 py-1.5 shadow-2xs hover:shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-red-500/20 focus-within:border-red-500 group">
+              <div class="w-6 h-6 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-[11px] mr-2 flex-shrink-0 group-hover:scale-105 transition-transform">
+                <i class="fa-solid fa-location-dot"></i>
+              </div>
+              <div class="flex flex-col text-left">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Cabang Wewenang</span>
+                <div class="flex items-center gap-1 mt-0.5">
+                  <select id="branch-select" onchange="handleBranchOrPeriodChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer max-w-[200px] truncate appearance-none pr-3.5">
+                  </select>
+                  <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5"></i>
+                </div>
+              </div>
             </div>
 
-            <!-- Dropdown Periode Desktop -->
-            <div class="flex items-center bg-slate-50 border border-slate-200/90 rounded-xl px-3 py-1.5 gap-2 text-xs hover:border-slate-300 transition">
-              <i class="fa-regular fa-calendar text-slate-400 text-xs"></i>
-              <select id="period-select" onchange="handleBranchOrPeriodChange()" class="bg-transparent focus:outline-none cursor-pointer text-xs font-bold text-slate-800">
-                <option value="Mei 2025" selected>Mei 2025</option>
-                <option value="Juni 2025">Juni 2025</option>
-                <option value="Semester 1 2025">Sem. 1 2025</option>
-              </select>
+            <!-- Dropdown Periode Desktop (Elevated Modern Pill) -->
+            <div class="relative flex items-center bg-white border border-slate-200/90 hover:border-blue-400 rounded-xl px-3 py-1.5 shadow-2xs hover:shadow-xs transition-all duration-200 focus-within:ring-2 focus-within:ring-blue-500/20 focus-within:border-blue-500 group">
+              <div class="w-6 h-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[11px] mr-2 flex-shrink-0 group-hover:scale-105 transition-transform">
+                <i class="fa-regular fa-calendar-check"></i>
+              </div>
+              <div class="flex flex-col text-left">
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Periode Data</span>
+                <div class="flex items-center gap-1 mt-0.5">
+                  <select id="period-select" onchange="handleBranchOrPeriodChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none pr-3.5">
+                    <option value="Mei 2025" selected>Mei 2025</option>
+                    <option value="Juni 2025">Juni 2025</option>
+                    <option value="Semester 1 2025">Semester 1 2025</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5"></i>
+                </div>
+              </div>
             </div>
 
             <!-- Profile Info Desktop -->
-            <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-200/90 rounded-xl py-1 px-2.5">
+            <div class="flex items-center gap-2.5 bg-white border border-slate-200/90 rounded-xl py-1 px-2.5 shadow-2xs">
               <div class="w-7 h-7 rounded-full bg-slate-900 text-white flex items-center justify-center font-bold text-xs flex-shrink-0">
                 <i class="fa-solid fa-user-tie"></i>
               </div>
@@ -366,22 +381,32 @@
         </div>
 
         <!-- Mobile Filter Bar: Dedicated clean row on small screens -->
-        <div class="md:hidden px-3.5 py-2 bg-slate-50/90 border-t border-slate-100 flex items-center gap-2">
+        <div class="md:hidden px-3.5 py-2 bg-slate-50/95 border-t border-slate-200/80 flex items-center gap-2">
           <!-- Dropdown Cabang Mobile -->
-          <div class="flex-1 min-w-0 flex items-center bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-sm">
-            <i class="fa-solid fa-location-dot text-red-500 text-xs mr-2 flex-shrink-0"></i>
-            <select id="branch-select-mobile" onchange="syncBranchChangeMobile(this.value)" class="w-full text-xs font-bold bg-transparent text-slate-800 focus:outline-none cursor-pointer truncate">
-            </select>
+          <div class="flex-1 min-w-0 flex items-center bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-2xs">
+            <div class="w-5 h-5 rounded-lg bg-red-50 text-red-600 flex items-center justify-center text-[10px] mr-1.5 flex-shrink-0">
+              <i class="fa-solid fa-location-dot"></i>
+            </div>
+            <div class="flex-1 min-w-0 flex items-center justify-between">
+              <select id="branch-select-mobile" onchange="syncBranchChangeMobile(this.value)" class="w-full text-xs font-black bg-transparent text-slate-800 focus:outline-none cursor-pointer truncate appearance-none pr-3">
+              </select>
+              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5 flex-shrink-0"></i>
+            </div>
           </div>
 
           <!-- Dropdown Periode Mobile -->
-          <div class="w-32 flex-shrink-0 flex items-center bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-sm">
-            <i class="fa-regular fa-calendar text-slate-400 text-xs mr-1.5 flex-shrink-0"></i>
-            <select id="period-select-mobile" onchange="syncPeriodChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-bold text-slate-800">
-              <option value="Mei 2025" selected>Mei 2025</option>
-              <option value="Juni 2025">Juni 2025</option>
-              <option value="Semester 1 2025">Sem. 1 2025</option>
-            </select>
+          <div class="w-36 flex-shrink-0 flex items-center bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 shadow-2xs">
+            <div class="w-5 h-5 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px] mr-1.5 flex-shrink-0">
+              <i class="fa-regular fa-calendar-check"></i>
+            </div>
+            <div class="flex-1 min-w-0 flex items-center justify-between">
+              <select id="period-select-mobile" onchange="syncPeriodChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-black text-slate-800 appearance-none pr-3 truncate">
+                <option value="Mei 2025" selected>Mei 2025</option>
+                <option value="Juni 2025">Juni 2025</option>
+                <option value="Semester 1 2025">Sem. 1 2025</option>
+              </select>
+              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5 flex-shrink-0"></i>
+            </div>
           </div>
         </div>
       </header>
@@ -1036,23 +1061,43 @@
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
             <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
               <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
-                <div class="relative w-full sm:w-64">
+                <!-- Search Input -->
+                <div class="relative w-full sm:w-60">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="abs-search-input" onkeyup="filterAbsensiTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+                  <input type="text" id="abs-search-input" onkeyup="filterAbsensiTable()" placeholder="Cari NPK, nama, atau cabang..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50/90 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 focus:bg-white transition shadow-2xs font-medium">
                 </div>
-                <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Keterangan</option>
-                  <option value="ON_TIME">Tepat Waktu (≤ 08.00)</option>
-                  <option value="LATE">Terlambat (> 08.00)</option>
-                  <option value="LATE_30">Telat > 30 Menit</option>
-                  <option value="LATE_60">Telat > 1 Jam</option>
-                </select>
-                <button type="button" onclick="toggleColumnMode('abs')" id="btn-col-toggle-abs" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
+
+                <!-- Filter Cabang Toolbar Absensi -->
+                <div class="relative flex items-center bg-slate-50/90 border border-slate-200 rounded-xl px-2.5 py-1.5 hover:border-red-400 focus-within:ring-2 focus-within:ring-red-500/20 focus-within:border-red-500 focus-within:bg-white transition shadow-2xs">
+                  <i class="fa-solid fa-location-dot text-red-500 text-xs mr-1.5 flex-shrink-0"></i>
+                  <select id="abs-filter-cabang" onchange="syncAbsFilterCabang(this.value)" class="text-xs bg-transparent font-bold text-slate-700 focus:outline-none cursor-pointer pr-4 appearance-none">
+                    <option value="ALL">Semua Cabang</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-3"></i>
+                </div>
+
+                <!-- Filter Keterlambatan -->
+                <div class="relative flex items-center bg-slate-50/90 border border-slate-200 rounded-xl px-2.5 py-1.5 hover:border-amber-400 focus-within:ring-2 focus-within:ring-amber-500/20 focus-within:border-amber-500 focus-within:bg-white transition shadow-2xs">
+                  <i class="fa-solid fa-clock text-amber-500 text-xs mr-1.5 flex-shrink-0"></i>
+                  <select id="abs-filter-compliance" onchange="filterAbsensiTable()" class="text-xs bg-transparent font-bold text-slate-700 focus:outline-none cursor-pointer pr-4 appearance-none">
+                    <option value="ALL">Semua Keterangan</option>
+                    <option value="ON_TIME">Tepat Waktu (≤ 08.00)</option>
+                    <option value="LATE">Terlambat (> 08.00)</option>
+                    <option value="LATE_30">Telat > 30 Menit</option>
+                    <option value="LATE_60">Telat > 1 Jam</option>
+                  </select>
+                  <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-3"></i>
+                </div>
+
+                <!-- Column Mode Toggle -->
+                <button type="button" onclick="toggleColumnMode('abs')" id="btn-col-toggle-abs" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-2xs">
                   <i class="fa-solid fa-table-columns"></i>
                   <span id="btn-col-text-abs">Kolom Lengkap (20)</span>
                 </button>
               </div>
-              <span class="text-[11px] text-slate-400 font-medium" id="abs-row-count">Menampilkan 0 data absensi</span>
+              <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100/90 rounded-xl text-[11px] text-slate-600 font-bold border border-slate-200 shadow-2xs" id="abs-row-count">
+                <i class="fa-solid fa-list-check text-slate-400"></i> Menampilkan 0 data absensi
+              </span>
             </div>
 
             <!-- Sticky Horizontal Table Container -->
@@ -1485,7 +1530,7 @@
                 <select id="km-filter-kategori" onchange="filterKMTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Kategori</option>
                 </select>
-                <select id="km-filter-cabang" onchange="filterKMTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                <select id="km-filter-cabang" onchange="syncKMFilterCabang(this.value)" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Cabang</option>
                 </select>
                 <button type="button" onclick="toggleColumnMode('km')" id="btn-col-toggle-km" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
@@ -3874,8 +3919,15 @@
       return info ? info.name : (cand || 'Cabang Terdaftar');
     }
 
+    function resolveBACode(str) {
+      if (!str) return '';
+      const clean = String(str).toUpperCase().trim();
+      const info = resolveBranchInfo(clean);
+      return info ? info.code : clean;
+    }
+
     /**
-     * Mencocokkan data karyawan / circle dengan target cabang
+     * Mencocokkan data karyawan / circle / presensi / modul dengan target cabang
      */
     function matchBranch(item, targetBranchCode) {
       if (!targetBranchCode || targetBranchCode === 'ALL') return true;
@@ -3885,14 +3937,22 @@
       const targetCode = (targetInfo ? targetInfo.code : String(targetBranchCode)).toUpperCase().trim();
       const targetName = (targetInfo ? targetInfo.name : String(targetBranchCode)).toLowerCase().trim();
 
-      const itemCode = String(item.kodeBA || item.kode_ba || '').toUpperCase().trim();
-      const itemCabang = String(item.cabang || item.branch || '').toLowerCase().trim();
+      // Extract branch code from various property name variations
+      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || '';
+      const itemCode = String(rawCode).toUpperCase().trim();
 
-      // 1. Kode cabang cocok persis
-      if (itemCode && itemCode === targetCode) return true;
+      // Extract branch name from various property name variations
+      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || '';
+      const itemCabang = String(rawCabang).toLowerCase().trim();
+
+      // 1. Kode cabang cocok persis atau resolveBACode cocok
+      if (itemCode) {
+        if (itemCode === targetCode) return true;
+        if (resolveBACode(itemCode) === targetCode) return true;
+      }
 
       // 2. Kode cabang ada dalam teks cabang
-      if (itemCabang.includes(targetCode.toLowerCase())) return true;
+      if (itemCabang && itemCabang.includes(targetCode.toLowerCase())) return true;
 
       // 3. Nama cabang cocok
       if (targetName && itemCabang) {
@@ -3900,6 +3960,19 @@
         const keywords = ['yani', 'hatta', 'bandarjaya', 'kotabumi', 'timur'];
         for (const kw of keywords) {
           if (targetName.includes(kw) && itemCabang.includes(kw)) return true;
+        }
+      }
+
+      // 4. Relasi NPK ke Master Karyawan jika kode/cabang tidak langsung tersedia
+      const npk = safeString(item['NPK'] || item['Personnel no.'] || item.npk);
+      const empList = (currentDashboardPayload && currentDashboardPayload.employeeList) || (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList);
+      if (npk && empList && empList.length > 0) {
+        const emp = empList.find(e => safeString(e.npk || e['Personnel no.']) === npk);
+        if (emp && emp !== item) {
+          const empCode = String(emp.kodeBA || emp['Business area'] || '').toUpperCase().trim();
+          const empCabang = String(emp.cabang || emp['P.subarea'] || '').toLowerCase().trim();
+          if (empCode && (empCode === targetCode || resolveBACode(empCode) === targetCode)) return true;
+          if (targetName && empCabang && (empCabang.includes(targetName) || targetName.includes(empCabang))) return true;
         }
       }
 
@@ -4242,26 +4315,63 @@
       loadBackendDashboardData();
     }
 
+    function syncAbsFilterCabang(val) {
+      const desktop = document.getElementById('branch-select');
+      const mobile = document.getElementById('branch-select-mobile');
+      const km = document.getElementById('km-filter-cabang');
+      if (desktop) desktop.value = val;
+      if (mobile) mobile.value = val;
+      if (km) km.value = val;
+      handleBranchOrPeriodChange();
+    }
+
+    function syncKMFilterCabang(val) {
+      const desktop = document.getElementById('branch-select');
+      const mobile = document.getElementById('branch-select-mobile');
+      const abs = document.getElementById('abs-filter-cabang');
+      if (desktop) desktop.value = val;
+      if (mobile) mobile.value = val;
+      if (abs) abs.value = val;
+      handleBranchOrPeriodChange();
+    }
+
     /**
      * Mengisi dropdown Cabang sesuai hak akses (Admin: Semua Cabang, Kacab: Terkunci pada cabangnya)
      */
     function populateBranchDropdown(availableBranchList = null) {
       const selectDesktop = document.getElementById('branch-select');
       const selectMobile = document.getElementById('branch-select-mobile');
-      const selects = [selectDesktop, selectMobile].filter(Boolean);
+      const selectAbs = document.getElementById('abs-filter-cabang');
+      const selectKM = document.getElementById('km-filter-cabang');
+      const selects = [selectDesktop, selectMobile, selectAbs, selectKM].filter(Boolean);
       if (!selects.length) return;
 
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
-      const branchList = availableBranchList || 
-        (currentDashboardPayload ? extractBranchesFromData(currentDashboardPayload) : KNOWN_BRANCHES.map(b => ({ code: b.code, name: b.fullName })));
+
+      // ALWAYS retain all KNOWN_BRANCHES as the foundation
+      const baseMap = new Map();
+      KNOWN_BRANCHES.forEach(b => baseMap.set(b.code, { code: b.code, name: b.name, fullName: b.fullName }));
+
+      const candidateList = availableBranchList || 
+        (window.fullUnscopedPayload ? extractBranchesFromData(window.fullUnscopedPayload) : 
+        (currentDashboardPayload ? extractBranchesFromData(currentDashboardPayload) : []));
+
+      if (Array.isArray(candidateList)) {
+        candidateList.forEach(b => {
+          if (b && b.code && !baseMap.has(b.code)) {
+            baseMap.set(b.code, { code: b.code, name: b.name || b.fullName, fullName: b.fullName || b.name });
+          }
+        });
+      }
+
+      const branchList = Array.from(baseMap.values());
 
       selects.forEach(select => {
         const prevVal = select.value;
         select.innerHTML = '';
 
         if (isAdmin) {
-          // ADMIN: Akses penuh dan dapat memilih semua cabang
           select.disabled = false;
           select.classList.remove('cursor-not-allowed', 'opacity-80', 'bg-slate-100');
 
@@ -4283,7 +4393,6 @@
             select.value = 'ALL';
           }
         } else {
-          // KACAB: Dibatasi ketat hanya pada cabangnya sendiri & dropdown terkunci
           select.disabled = true;
           select.classList.add('cursor-not-allowed', 'opacity-80');
 
@@ -4350,7 +4459,7 @@
     function handleBranchOrPeriodChange() {
       const period = document.getElementById('period-select')?.value || 'Mei 2025';
       const mPeriod = document.getElementById('period-select-mobile');
-      if (mPeriod) mPeriod.value = period;
+      if (mPeriod && mPeriod !== document.activeElement) mPeriod.value = period;
 
       const isAdmin = isUserAdmin(loggedInUser);
       let branch = 'ALL';
@@ -4361,16 +4470,33 @@
       }
 
       const mBranch = document.getElementById('branch-select-mobile');
-      if (mBranch) mBranch.value = branch;
+      if (mBranch && mBranch !== document.activeElement) mBranch.value = branch;
+
+      const absBranch = document.getElementById('abs-filter-cabang');
+      if (absBranch && absBranch !== document.activeElement) absBranch.value = branch;
+
+      const kmBranch = document.getElementById('km-filter-cabang');
+      if (kmBranch && kmBranch !== document.activeElement) kmBranch.value = branch;
 
       const badge = document.getElementById('welcome-period-badge');
       if (badge) badge.textContent = period;
 
-      loadBackendDashboardData();
+      // 1. Maintain master full copy in window.fullUnscopedPayload
+      if (!window.fullUnscopedPayload && currentDashboardPayload) {
+        window.fullUnscopedPayload = JSON.parse(JSON.stringify(currentDashboardPayload));
+      }
+
+      // 2. Instantly filter in-memory client-side data for immediate UI response
+      if (window.fullUnscopedPayload) {
+        renderAllDashboardData(window.fullUnscopedPayload, branch, period);
+      }
+
+      // 3. Request fresh filtered data from backend
+      loadBackendDashboardData(false);
     }
 
     // 3. Ambil Data Dashboard dengan Pengamanan Hak Akses
-    async function loadBackendDashboardData() {
+    async function loadBackendDashboardData(shouldShowLoader = true) {
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
 
@@ -4378,7 +4504,7 @@
       const branchVal = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
       const periodVal = document.getElementById('period-select')?.value || 'Mei 2025';
       const loader = document.getElementById('loading-overlay');
-      if (loader) loader.classList.remove('hidden');
+      if (shouldShowLoader && loader) loader.classList.remove('hidden');
 
       const res = await callBackendAPI("GET_DASHBOARD", {
         user: loggedInUser,
@@ -4388,39 +4514,75 @@
 
       if (loader) loader.classList.add('hidden');
 
-      if (res.success) {
-        // Sinkronisasi dinamis daftar cabang dan periode dari data aktual database
-        if (isAdmin) {
-          const dynamicBranches = extractBranchesFromData(res.data);
-          populateBranchDropdown(dynamicBranches);
+      if (res && res.success && res.data) {
+        // If we fetched ALL branches, update window.fullUnscopedPayload
+        if (branchVal === 'ALL') {
+          window.fullUnscopedPayload = JSON.parse(JSON.stringify(res.data));
+          if (isAdmin) {
+            const dynamicBranches = extractBranchesFromData(res.data);
+            populateBranchDropdown(dynamicBranches);
+          }
+          populatePeriodDropdown(res.data);
         }
-        populatePeriodDropdown(res.data);
 
-        renderAllDashboardData(res.data);
+        renderAllDashboardData(res.data, branchVal, periodVal);
       } else {
-        showToast("Gagal memuat data: " + res.message);
+        // Fallback: If backend fails or is offline, keep client-side filtering active
+        if (window.fullUnscopedPayload) {
+          renderAllDashboardData(window.fullUnscopedPayload, branchVal, periodVal);
+        }
       }
     }
 
     // 4. Render Metrik dengan Isolasi Data Kacab vs Admin
-    function renderAllDashboardData(data) {
+    function renderAllDashboardData(data, targetBranchOverride = null, targetPeriodOverride = null) {
       if (!data) return;
 
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
-      const targetBranch = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
+      const targetBranch = targetBranchOverride || (isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode);
+      const selectedPeriod = targetPeriodOverride || document.getElementById('period-select')?.value || 'Mei 2025';
 
-      let scopedEmployees = data.employeeList || [];
-      let scopedQCC = data.qccList || [];
+      // Always maintain master copy if on ALL
+      if (!window.fullUnscopedPayload && targetBranch === 'ALL') {
+        window.fullUnscopedPayload = JSON.parse(JSON.stringify(data));
+      }
+
+      let sourceData = data;
+      // If data is scoped but user requests different branch or ALL, prefer window.fullUnscopedPayload if available
+      if (window.fullUnscopedPayload && (!data.employeeList || data.employeeList.length < (window.fullUnscopedPayload.employeeList?.length || 0))) {
+        sourceData = window.fullUnscopedPayload;
+      }
+
+      let scopedEmployees = (sourceData.employeeList || []).slice();
+      let scopedQCC = (sourceData.qccList || []).slice();
+
+      const rawSource = sourceData.rawTables || {};
+      const scopedRawTables = {
+        Master_Karyawan: (rawSource.Master_Karyawan || []).slice(),
+        Data_Kehadiran: (rawSource.Data_Kehadiran || []).slice(),
+        Data_SS: (rawSource.Data_SS || []).slice(),
+        Data_QCC: (rawSource.Data_QCC || []).slice(),
+        Data_SP: (rawSource.Data_SP || []).slice(),
+        Knowledge_management: (rawSource.Knowledge_management || rawSource.Data_KM || []).slice(),
+        Data_KM: (rawSource.Knowledge_management || rawSource.Data_KM || []).slice()
+      };
 
       // 1. Filter ketat per cabang jika target bukan 'ALL'
       if (targetBranch !== 'ALL') {
         scopedEmployees = scopedEmployees.filter(e => matchBranch(e, targetBranch));
         scopedQCC = scopedQCC.filter(q => matchBranch(q, targetBranch));
+
+        scopedRawTables.Master_Karyawan = scopedRawTables.Master_Karyawan.filter(e => matchBranch(e, targetBranch));
+        scopedRawTables.Data_Kehadiran = scopedRawTables.Data_Kehadiran.filter(e => matchBranch(e, targetBranch));
+        scopedRawTables.Data_SS = scopedRawTables.Data_SS.filter(e => matchBranch(e, targetBranch));
+        scopedRawTables.Data_QCC = scopedRawTables.Data_QCC.filter(q => matchBranch(q, targetBranch));
+        scopedRawTables.Data_SP = scopedRawTables.Data_SP.filter(e => matchBranch(e, targetBranch));
+        scopedRawTables.Knowledge_management = scopedRawTables.Knowledge_management.filter(e => matchBranch(e, targetBranch));
+        scopedRawTables.Data_KM = scopedRawTables.Knowledge_management;
       }
 
       // 2. Filter periode jika record karyawan memiliki label periode spesifik
-      const selectedPeriod = document.getElementById('period-select')?.value;
       if (selectedPeriod && scopedEmployees.some(e => e.periode)) {
         const periodFiltered = scopedEmployees.filter(e => {
           if (!e.periode) return true;
@@ -4440,8 +4602,8 @@
 
       // 3. Hitung metrik agregasi (summary) khusus cabang yang diakses
       let s;
-      if (targetBranch === 'ALL' && data.summary && isAdmin) {
-        s = { ...data.summary };
+      if (targetBranch === 'ALL' && sourceData.summary && isAdmin) {
+        s = { ...sourceData.summary };
         if (!s.contractGroupMap || Object.keys(s.contractGroupMap).length === 0) {
           const cMap = {};
           STANDARD_CONTRACT_CATEGORIES.forEach(cat => { cMap[cat] = 0; });
@@ -4453,14 +4615,15 @@
           s.contractGroupMap = cMap;
         }
       } else {
-        s = computeBranchSummary(scopedEmployees, scopedQCC, data.summary || {}, data);
+        s = computeBranchSummary(scopedEmployees, scopedQCC, sourceData.summary || {}, { ...sourceData, rawTables: scopedRawTables });
       }
 
       // Simpan payload scoped ke state global agar tabel dan ekspor hanya berisi data yang berhak diakses
       currentDashboardPayload = {
-        ...data,
+        ...sourceData,
         employeeList: scopedEmployees,
         qccList: scopedQCC,
+        rawTables: scopedRawTables,
         summary: s
       };
       initializeStandardTables(currentDashboardPayload, targetBranch);
@@ -5700,8 +5863,18 @@
       const rawRows = currentDashboardPayload.rawTables.Data_Kehadiran || [];
       const q = (document.getElementById('abs-search-input')?.value || '').toLowerCase().trim();
       const compFilter = document.getElementById('abs-filter-compliance')?.value || 'ALL';
+      const toolbarBranch = document.getElementById('abs-filter-cabang')?.value || 'ALL';
+
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+      const targetBranch = (toolbarBranch !== 'ALL') ? toolbarBranch : (isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode);
 
       let list = rawRows;
+
+      // 0. Filter cabang aktif
+      if (targetBranch !== 'ALL') {
+        list = list.filter(e => matchBranch(e, targetBranch));
+      }
 
       if (q) {
         list = list.filter(e => 
@@ -5716,9 +5889,10 @@
       if (compFilter !== 'ALL') {
         list = list.filter(e => {
           const rawTime = e['Time Clock In'] || e['Clock In'] || e['Time'] || '';
-          const lateness = calculateLatenessInfo(rawTime);
+          const existingEstimasi = e['Estimasi Telat (Asumsi 08.00)'];
+          const lateness = calculateLatenessInfo(existingEstimasi || rawTime);
           const ket = String(e['Keterangan'] || '').toLowerCase();
-          const telatStr = String(e['Estimasi Telat (Asumsi 08.00)'] || '').toLowerCase();
+          const telatStr = String(existingEstimasi || '').toLowerCase();
 
           if (compFilter === 'ON_TIME' || compFilter === 'Hadir Tepat Waktu') {
             return (!lateness.isLate && lateness.hasClockIn) || ket.includes('tepat') || telatStr.includes('tepat');
@@ -5727,10 +5901,10 @@
             return lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || telatStr.includes('telat');
           }
           if (compFilter === 'LATE_30') {
-            return lateness.isLate && lateness.diffMinutes > 30;
+            return lateness.isLate && (lateness.diffMinutes > 30 || (lateness.lateHours && lateness.lateHours > 0));
           }
           if (compFilter === 'LATE_60') {
-            return lateness.isLate && lateness.diffMinutes > 60;
+            return lateness.isLate && (lateness.diffMinutes > 60 || (lateness.lateHours && lateness.lateHours >= 1));
           }
           return true;
         });
@@ -5805,7 +5979,16 @@
       const q = (document.getElementById('ss-search-input')?.value || '').toLowerCase().trim();
       const partFilter = document.getElementById('ss-filter-part')?.value || 'ALL';
 
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+      const targetBranch = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
+
       let list = rawRows;
+
+      // Filter per cabang aktif
+      if (targetBranch !== 'ALL') {
+        list = list.filter(e => matchBranch(e, targetBranch));
+      }
 
       if (q) {
         list = list.filter(e => 
@@ -5891,7 +6074,16 @@
       const q = (document.getElementById('qcc-search-input')?.value || '').toLowerCase().trim();
       const pdcaFilter = document.getElementById('qcc-filter-pdca')?.value || 'ALL';
 
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+      const targetBranch = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
+
       let list = rawRows;
+
+      // Filter per cabang aktif
+      if (targetBranch !== 'ALL') {
+        list = list.filter(e => matchBranch(e, targetBranch));
+      }
 
       if (q) {
         list = list.filter(e => 
