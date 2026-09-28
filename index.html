@@ -255,6 +255,10 @@
             <i class="fa-solid fa-shield-halved w-4 text-center"></i>
             <span>Surat Peringatan (SP)</span>
           </a>
+          <a href="#" onclick="switchView('km'); closeSidebarMobile();" id="nav-km" class="nav-item-inactive flex items-center gap-3 px-5 py-2.5 text-xs transition-colors">
+            <i class="fa-solid fa-book-bookmark w-4 text-center"></i>
+            <span>Knowledge Management</span>
+          </a>
         </nav>
 
         <!-- Kesiapan Data Kinerja Cabang Sidebar Widget -->
@@ -1393,6 +1397,119 @@
             </div>
           </div>
         </div>
+
+        <!-- ======================================================== -->
+        <!-- VIEW: KNOWLEDGE MANAGEMENT (KM)                          -->
+        <!-- ======================================================== -->
+        <div id="view-km" class="hidden space-y-4 max-w-[1400px] mx-auto">
+          <!-- Top Action Banner -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div class="flex items-center gap-3.5">
+              <div class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-lg border border-cyan-100 flex-shrink-0">
+                <i class="fa-solid fa-book-bookmark"></i>
+              </div>
+              <div>
+                <h3 class="text-base font-extrabold text-slate-900 leading-tight">Knowledge Management (KM) DSO Lampung</h3>
+                <p class="text-xs text-slate-500 font-medium">Bank Pengetahuan, Repositori Berbagi Praktik Terbaik & Inovasi Kerja</p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <button onclick="openUploadModal('Data_KM')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-cyan-200">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                <span>Import KM (.xlsx)</span>
+              </button>
+              <button onclick="exportModuleTableToExcel('Data_KM')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-file-excel text-emerald-600"></i>
+                <span>Ekspor Excel</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- KPI Summary Cards KM -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Total Dokumen KM</span>
+                <span class="text-xl sm:text-2xl font-black text-slate-900 mt-1 block" id="km-kpi-total">0</span>
+                <span class="text-[10px] font-medium text-slate-500">Artikel & Panduan</span>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-base border border-cyan-100 flex-shrink-0">
+                <i class="fa-solid fa-book-open"></i>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Kontributor Karyawan</span>
+                <span class="text-xl sm:text-2xl font-black text-slate-900 mt-1 block" id="km-kpi-contributors">0</span>
+                <span class="text-[10px] font-medium text-emerald-600 font-bold">Penulis Aktif</span>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base border border-emerald-100 flex-shrink-0">
+                <i class="fa-solid fa-users"></i>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Topik Terpopuler</span>
+                <span class="text-sm font-black text-slate-900 mt-1 block truncate max-w-[150px]" id="km-kpi-top-category">Teknikal & Bengkel</span>
+                <span class="text-[10px] font-medium text-slate-500">Kategori Terbanyak</span>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-base border border-blue-100 flex-shrink-0">
+                <i class="fa-solid fa-tags"></i>
+              </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex items-center justify-between">
+              <div>
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Status Dokumen</span>
+                <span class="text-xl sm:text-2xl font-black text-emerald-600 mt-1 block" id="km-kpi-verified">100%</span>
+                <span class="text-[10px] font-medium text-emerald-600 font-bold">Terverifikasi DSO</span>
+              </div>
+              <div class="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-base border border-emerald-100 flex-shrink-0">
+                <i class="fa-solid fa-circle-check"></i>
+              </div>
+            </div>
+          </div>
+
+          <!-- Table Container KM -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
+            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
+              <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+                <div class="relative w-full sm:w-64">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                  <input type="text" id="km-search-input" onkeyup="filterKMTable()" placeholder="Cari NPK, nama, atau judul..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+                </div>
+                <select id="km-filter-kategori" onchange="filterKMTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Kategori</option>
+                </select>
+                <select id="km-filter-cabang" onchange="filterKMTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Cabang</option>
+                </select>
+                <button type="button" onclick="toggleColumnMode('km')" id="btn-col-toggle-km" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
+                  <i class="fa-solid fa-table-columns"></i>
+                  <span id="btn-col-text-km">Kolom Ringkas (4)</span>
+                </button>
+              </div>
+              <span class="text-[11px] text-slate-400 font-medium" id="km-row-count">Menampilkan 0 catatan</span>
+            </div>
+
+            <!-- Sticky Horizontal Table Container -->
+            <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
+              <table class="w-full text-left text-xs border-collapse" id="table-km-content">
+                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+                  <tr id="km-table-header">
+                    <!-- Standard Columns: NPK, Nama, Judul, Tanggal, Detail -->
+                  </tr>
+                </thead>
+                <tbody id="km-table-body" class="divide-y divide-slate-100 font-medium">
+                  <tr><td colspan="5" class="text-center py-8 text-slate-400">Memuat data Knowledge Management...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
         <div id="view-laporan" class="hidden space-y-4 max-w-[1400px] mx-auto">
           <div class="bg-white rounded-2xl p-5 border border-slate-200/80 shadow-card">
             <div class="flex items-center gap-3.5 mb-4">
@@ -1477,17 +1594,31 @@
                 </button>
               </div>
 
-              <!-- 6. Export Full Workbook -->
+              <!-- 6. Data KM -->
+              <div class="p-4 rounded-xl border border-slate-200/90 hover:border-cyan-300 bg-slate-50/50 hover:bg-cyan-50/30 transition flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-2">
+                    <span class="text-xs font-black text-slate-900">6. Data_KM</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-cyan-100 text-cyan-800">9 Kolom</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 mb-3">NPK, Nama, Judul, Tanggal, Kategori, Cabang, Kode BA, Deskripsi, Lampiran.</p>
+                </div>
+                <button onclick="exportModuleTableToExcel('Data_KM')" class="w-full py-2 px-3 bg-white hover:bg-cyan-600 hover:text-white text-cyan-700 font-bold rounded-lg text-xs border border-cyan-200 shadow-sm transition flex items-center justify-center gap-1.5">
+                  <i class="fa-solid fa-download"></i> Unduh Data_KM.xlsx
+                </button>
+              </div>
+
+              <!-- 7. Export Full Workbook -->
               <div class="p-4 rounded-xl border-2 border-dashed border-red-300 bg-red-50/40 flex flex-col justify-between">
                 <div>
                   <div class="flex items-center justify-between mb-2">
                     <span class="text-xs font-black text-red-700">Workbook Terpadu</span>
-                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-600 text-white">5-in-1 Sheet</span>
+                    <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-red-600 text-white">6-in-1 Sheet</span>
                   </div>
-                  <p class="text-[11px] text-slate-600 mb-3">Unduh seluruh 5 sheet database dalam 1 berkas Excel lengkap dan terstruktur rapi.</p>
+                  <p class="text-[11px] text-slate-600 mb-3">Unduh seluruh 6 sheet database dalam 1 berkas Excel lengkap dan terstruktur rapi.</p>
                 </div>
                 <button onclick="exportAllSheetsToSingleWorkbook()" class="w-full py-2 px-3 bg-[#E60012] hover:bg-[#99000B] text-white font-bold rounded-lg text-xs shadow-md shadow-red-500/20 transition flex items-center justify-center gap-1.5">
-                  <i class="fa-solid fa-file-zipper"></i> Ekspor Semua 5 Sheet (.xlsx)
+                  <i class="fa-solid fa-file-zipper"></i> Ekspor Semua 6 Sheet (.xlsx)
                 </button>
               </div>
             </div>
@@ -1562,6 +1693,7 @@
             <option value="Data_SS">3. Data_SS (21 Kolom Standard)</option>
             <option value="Data_QCC">4. Data_QCC (29 Kolom Standard)</option>
             <option value="Data_SP">5. Data_SP (5 Kolom Standard)</option>
+            <option value="Data_KM">6. Data_KM (Knowledge Management - 9 Kolom Standard)</option>
           </select>
         </div>
 
@@ -2030,6 +2162,87 @@
     </div>
   </div>
 
+  <!-- MODAL: DETAIL KNOWLEDGE MANAGEMENT (KM) -->
+  <div id="modal-km-detail" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-km-detail')">
+    <div class="bg-white rounded-2xl w-full max-w-2xl border border-slate-200 shadow-2xl overflow-hidden my-auto animate-in fade-in zoom-in-95 duration-200">
+      <!-- Modal Header -->
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-cyan-950 p-4 sm:p-5 text-white flex items-start justify-between relative overflow-hidden">
+        <div class="flex items-center gap-3 z-10">
+          <div class="w-10 h-10 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center justify-center text-lg flex-shrink-0 shadow-inner">
+            <i class="fa-solid fa-book-bookmark"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="px-2 py-0.5 rounded-full text-[9px] font-bold bg-cyan-500/20 text-cyan-300 border border-cyan-400/30" id="km-modal-category">Teknikal & Bengkel</span>
+              <span class="text-[10px] text-slate-400" id="km-modal-date">-</span>
+            </div>
+            <h3 class="text-sm sm:text-base font-extrabold text-white mt-1 leading-snug line-clamp-2" id="km-modal-title">Judul Knowledge Management</h3>
+          </div>
+        </div>
+        <button type="button" onclick="closeModal('modal-km-detail')" class="text-slate-400 hover:text-white transition w-7 h-7 rounded-lg hover:bg-white/10 flex items-center justify-center flex-shrink-0 z-10 cursor-pointer">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body -->
+      <div class="p-4 sm:p-6 space-y-4 max-h-[75vh] overflow-y-auto text-xs scrollbar-thin">
+        <!-- 1. Identitas Kontributor -->
+        <div class="bg-slate-50 rounded-xl p-3 sm:p-3.5 border border-slate-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs flex-shrink-0" id="km-modal-avatar">
+              <i class="fa-solid fa-user"></i>
+            </div>
+            <div>
+              <div class="text-xs font-bold text-slate-800" id="km-modal-author-name">Nama Kontributor</div>
+              <div class="text-[10px] text-slate-500 font-medium" id="km-modal-author-meta">NPK: - • Cabang: -</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="px-2.5 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full text-[10px] font-bold flex items-center gap-1">
+              <i class="fa-solid fa-circle-check text-[9px]"></i> Dokumen Terverifikasi
+            </span>
+          </div>
+        </div>
+
+        <!-- 2. Ringkasan & Deskripsi Pengetahuan -->
+        <div class="space-y-1.5">
+          <label class="text-[11px] font-bold text-slate-700 flex items-center gap-1.5">
+            <i class="fa-solid fa-file-lines text-cyan-600"></i>
+            Ringkasan Pengetahuan & Panduan Operasional
+          </label>
+          <div class="p-3.5 rounded-xl bg-slate-50/70 border border-slate-200/80 text-slate-700 leading-relaxed text-xs whitespace-pre-line" id="km-modal-desc">
+            Deskripsi pengetahuan...
+          </div>
+        </div>
+
+        <!-- 3. Informasi Tambahan (Cabang, Kode BA, Status Dokumen) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-[11px]">
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-[9px] font-bold text-slate-400 block uppercase">Unit Kerja / Cabang</span>
+            <span class="font-bold text-slate-800" id="km-modal-branch">-</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-[9px] font-bold text-slate-400 block uppercase">Kode Business Area</span>
+            <span class="font-bold text-slate-800" id="km-modal-ba">-</span>
+          </div>
+          <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+            <span class="text-[9px] font-bold text-slate-400 block uppercase">Lampiran / Berkas</span>
+            <span class="font-bold text-cyan-700 flex items-center gap-1" id="km-modal-attachment">
+              <i class="fa-solid fa-paperclip"></i> Dokumen Panduan
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
+        <button type="button" onclick="closeModal('modal-km-detail')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">
+          Tutup
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: EDIT ROW DATA (KHUSUS ADMIN) -->
   <div id="modal-edit-row" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-2xl shadow-2xl border border-slate-100 relative my-auto max-h-[90vh] flex flex-col">
@@ -2334,6 +2547,32 @@
           "tingkat sp": ["tingkat sp", "sp", "status sp", "jenis sp", "sanksi"],
           "alasan": ["alasan", "alasan sp", "pelanggaran", "alasan pelanggaran", "keterangan"]
         }
+      },
+      Data_KM: {
+        sheetName: "Data_KM",
+        title: "Knowledge Management (KM)",
+        columns: [
+          "NPK",
+          "Nama",
+          "Judul",
+          "Tanggal",
+          "Kategori",
+          "Cabang",
+          "Kode BA",
+          "Deskripsi",
+          "Lampiran"
+        ],
+        aliases: {
+          "npk": ["npk", "personnel no.", "id karyawan", "nik"],
+          "nama": ["nama", "nama karyawan", "nama lengkap", "last name", "employee name", "author"],
+          "judul": ["judul", "judul km", "tema", "title", "judul dokumen", "topik"],
+          "tanggal": ["tanggal", "date", "tgl", "tgl submit", "created_at"],
+          "kategori": ["kategori", "bidang", "kategori km", "divisi", "departemen"],
+          "cabang": ["cabang", "p.subarea", "subarea", "business area"],
+          "kode ba": ["kode ba", "business area", "ba"],
+          "deskripsi": ["deskripsi", "ringkasan", "keterangan", "abstrak", "isi"],
+          "lampiran": ["lampiran", "link", "dokumen", "file", "url"]
+        }
       }
     };
 
@@ -2343,16 +2582,17 @@
       abs: 'FULL',
       ss: 'FULL',
       qcc: 'FULL',
-      sp: 'FULL'
+      sp: 'FULL',
+      km: 'COMPACT'
     };
 
     function toggleColumnMode(moduleKey) {
       columnViewMode[moduleKey] = (columnViewMode[moduleKey] === 'FULL') ? 'COMPACT' : 'FULL';
       const isFull = columnViewMode[moduleKey] === 'FULL';
-      const colCounts = { mk: 16, abs: 19, ss: 21, qcc: 29, sp: 5 };
+      const colCounts = { mk: 16, abs: 19, ss: 21, qcc: 29, sp: 5, km: 9 };
       const btnText = document.getElementById(`btn-col-text-${moduleKey}`);
       if (btnText) {
-        btnText.textContent = isFull ? `Kolom Lengkap (${colCounts[moduleKey]})` : 'Kolom Ringkas';
+        btnText.textContent = isFull ? `Kolom Lengkap (${colCounts[moduleKey]})` : 'Kolom Ringkas (4)';
       }
 
       if (moduleKey === 'mk') filterMasterKaryawanTable();
@@ -2360,6 +2600,7 @@
       else if (moduleKey === 'ss') filterSSTable();
       else if (moduleKey === 'qcc') filterQCCTable();
       else if (moduleKey === 'sp') filterSPTable();
+      else if (moduleKey === 'km') filterKMTable();
     }
 
     // Normalisasi Header Kolom Excel / CSV
@@ -3133,6 +3374,34 @@
           "Tingkat SP": e['Tingkat SP'] || e.spAktif || 'SP 1',
           "Alasan": e['Alasan'] || e.spAlasan || 'Ketidakhadiran berulang tanpa izin resmi tertulis'
         }));
+      }
+
+      // 6. Data_KM (Knowledge Management)
+      if (!payload.rawTables.Data_KM || !payload.rawTables.Data_KM.length) {
+        const sampleTopics = [
+          { judul: "Standard Penanganan Keluhan AC Daihatsu Rocky & Terios", kategori: "Teknikal & Bengkel", deskripsi: "Panduan investigasi sistem pendingin kabin, pengecekan tekanan freon & pembersihan evaporator untuk memangkas durasi perbaikan." },
+          { judul: "Teknik Edukasi Konsumen untuk Penggunaan Aplikasi DaihatsuKu", kategori: "Layanan & Digital", deskripsi: "Pola komunikasi wiraniaga dan counter service dalam memandu instalasi dan booking service berkala via aplikasi resmi." },
+          { judul: "Optimalisasi Tata Kelola Rak Fast-Moving Spareparts di Gudang DSO", kategori: "Logistik & Part", deskripsi: "Penerapan visual control 5S dan zonasi fast-moving part guna meningkatkan kecepatan picking hingga 30%." },
+          { judul: "Checklist Efektif Inspeksi Pre-Delivery Inspection (PDI)", kategori: "Kualitas & PDI", deskripsi: "Daftar periksa 25 titik kritis kebersihan, fungsi elektrikal, dan kelengkapan aksesoris sebelum unit diserahterimakan ke konsumen." },
+          { judul: "SOP Administrasi Pengajuan Klaim Garansi ADM Cepat Tervalidasi", kategori: "Administrasi & Garansi", deskripsi: "Alur pelampiran foto bukti kerusakan dan form verifikasi sistem tanpa pengembalian berkas (zero reject warranty submission)." }
+        ];
+
+        payload.rawTables.Data_KM = employees.slice(0, 10).map((e, idx) => {
+          const topic = sampleTopics[idx % sampleTopics.length];
+          const d = String(10 + (idx * 2)).padStart(2, '0');
+          return {
+            "No": idx + 1,
+            "NPK": safeString(e['NPK'] || e.npk),
+            "Nama": e['Nama'] || e.nama,
+            "Judul": topic.judul,
+            "Tanggal": `${d}.05.2026`,
+            "Kategori": topic.kategori,
+            "Cabang": e['P.subarea'] || e['Cabang'] || e.cabang || 'Lampung A Yani',
+            "Kode BA": safeString(e['Kode BA'] || e.kodeBA || 'D660'),
+            "Deskripsi": topic.deskripsi,
+            "Lampiran": "Tersedia (PDF / Dokumen Panduan)"
+          };
+        });
       }
     }
 
@@ -4086,6 +4355,7 @@
       renderSSView(currentDashboardPayload);
       renderQCCView(currentDashboardPayload);
       renderSPView(currentDashboardPayload);
+      renderKMView(currentDashboardPayload);
       updateSidebarReadiness(currentDashboardPayload);
     }
 
@@ -4525,14 +4795,14 @@
     }
 
     // Helper dynamic table header renderer with sticky first column
-    function renderTableHeader(headerRowId, columns, stickyFirst = true) {
+    function renderTableHeader(headerRowId, columns, stickyFirst = true, actionLabel = 'Aksi') {
       const tr = document.getElementById(headerRowId);
       if (!tr) return;
       tr.innerHTML = columns.map((col, idx) => {
         const isFirst = stickyFirst && idx === 0;
         const stickyClass = isFirst ? 'sticky left-0 bg-slate-100 z-20 border-r border-slate-200 shadow-sm' : '';
         return `<th class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${col}</th>`;
-      }).join('') + '<th class="py-2.5 px-4 text-center whitespace-nowrap">Aksi</th>';
+      }).join('') + `<th class="py-2.5 px-4 text-center whitespace-nowrap">${actionLabel}</th>`;
     }
 
     // Helper formatting cell values based on canonical column type
@@ -4619,6 +4889,14 @@
         detailBtn = `
           <button type="button" onclick="openSSDetailModal(${rowIndex}, '${safeReg || npkVal}')" class="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-lg text-[11px] border border-amber-200 transition inline-flex items-center gap-1 shadow-2xs">
             <i class="fa-solid fa-lightbulb text-[10px]"></i> Detail SS
+          </button>
+        `;
+      } else if (sheetName === 'Data_KM') {
+        const judulVal = String(row['Judul'] || row['Judul KM'] || '').replace(/'/g, "\\'");
+        const npkVal = String(row['NPK'] || row['Personnel no.'] || '').replace(/'/g, "\\'");
+        detailBtn = `
+          <button type="button" onclick="openKMDetailModal(${rowIndex}, '${npkVal || judulVal}')" class="px-2.5 py-1 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 font-bold rounded-lg text-[11px] border border-cyan-200 transition inline-flex items-center gap-1 shadow-2xs">
+            <i class="fa-solid fa-book-open text-[10px]"></i> Detail
           </button>
         `;
       } else {
@@ -4828,6 +5106,8 @@
           currentDashboardPayload.summary
         );
         renderSPView(currentDashboardPayload);
+      } else if (sheetName === 'Data_KM') {
+        renderKMView(currentDashboardPayload);
       }
 
       closeModal('modal-edit-row');
@@ -4928,6 +5208,8 @@
           currentDashboardPayload.summary
         );
         renderSPView(currentDashboardPayload);
+      } else if (sheetName === 'Data_KM') {
+        renderKMView(currentDashboardPayload);
       }
 
       closeModal('modal-delete-row');
@@ -5403,6 +5685,177 @@
     }
 
     // ----------------------------------------------------
+    // E.2 Knowledge Management (KM) Presisi
+    // ----------------------------------------------------
+    function renderKMView(data) {
+      if (!data) return;
+      const rawRows = (data.rawTables && data.rawTables.Data_KM) ? data.rawTables.Data_KM : [];
+
+      const totalKM = rawRows.length;
+      const uniqueContributors = new Set(rawRows.map(r => safeString(r['NPK'])).filter(Boolean)).size;
+
+      // Hitung kategori terpopuler
+      const categoryCounts = {};
+      rawRows.forEach(r => {
+        const cat = r['Kategori'] || 'Umum';
+        categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+      });
+      let topCategory = "-";
+      let maxCount = 0;
+      for (const cat in categoryCounts) {
+        if (categoryCounts[cat] > maxCount) {
+          maxCount = categoryCounts[cat];
+          topCategory = cat;
+        }
+      }
+
+      if (document.getElementById('km-kpi-total')) document.getElementById('km-kpi-total').textContent = totalKM;
+      if (document.getElementById('km-kpi-contributors')) document.getElementById('km-kpi-contributors').textContent = uniqueContributors;
+      if (document.getElementById('km-kpi-top-category')) document.getElementById('km-kpi-top-category').textContent = topCategory;
+      if (document.getElementById('km-kpi-verified')) document.getElementById('km-kpi-verified').textContent = totalKM > 0 ? "100%" : "0%";
+
+      populateKMFilters();
+      filterKMTable();
+    }
+
+    function populateKMFilters() {
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Data_KM || [];
+
+      // Dropdown Kategori
+      const catSelect = document.getElementById('km-filter-kategori');
+      if (catSelect) {
+        const currentCat = catSelect.value || 'ALL';
+        const cats = Array.from(new Set(rawRows.map(r => String(r['Kategori'] || '').trim()).filter(Boolean))).sort();
+        let catOpts = '<option value="ALL">Semua Kategori</option>';
+        cats.forEach(c => {
+          catOpts += `<option value="${c}">${c}</option>`;
+        });
+        catSelect.innerHTML = catOpts;
+        const optsArr = Array.from(catSelect.options).map(o => o.value);
+        catSelect.value = optsArr.includes(currentCat) ? currentCat : 'ALL';
+      }
+
+      // Dropdown Cabang
+      const branchSelect = document.getElementById('km-filter-cabang');
+      if (branchSelect) {
+        const currentBranch = branchSelect.value || 'ALL';
+        const branches = Array.from(new Set(rawRows.map(r => String(r['Cabang'] || r['P.subarea'] || '').trim()).filter(Boolean))).sort();
+        let branchOpts = '<option value="ALL">Semua Cabang</option>';
+        branches.forEach(b => {
+          branchOpts += `<option value="${b}">${b}</option>`;
+        });
+        branchSelect.innerHTML = branchOpts;
+        const bOptsArr = Array.from(branchSelect.options).map(o => o.value);
+        branchSelect.value = bOptsArr.includes(currentBranch) ? currentBranch : 'ALL';
+      }
+    }
+
+    function filterKMTable() {
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Data_KM || [];
+      const q = (document.getElementById('km-search-input')?.value || '').toLowerCase().trim();
+      const catFilter = document.getElementById('km-filter-kategori')?.value || 'ALL';
+      const branchFilter = document.getElementById('km-filter-cabang')?.value || 'ALL';
+
+      let list = rawRows;
+
+      if (q) {
+        list = list.filter(e => 
+          String(e['NPK'] || '').toLowerCase().includes(q) || 
+          String(e['Nama'] || '').toLowerCase().includes(q) ||
+          String(e['Judul'] || '').toLowerCase().includes(q) ||
+          String(e['Kategori'] || '').toLowerCase().includes(q) ||
+          String(e['Cabang'] || '').toLowerCase().includes(q) ||
+          String(e['Deskripsi'] || '').toLowerCase().includes(q)
+        );
+      }
+
+      if (catFilter !== 'ALL') {
+        list = list.filter(e => String(e['Kategori'] || '').toLowerCase() === catFilter.toLowerCase());
+      }
+
+      if (branchFilter !== 'ALL') {
+        list = list.filter(e => String(e['Cabang'] || e['P.subarea'] || '').toLowerCase() === branchFilter.toLowerCase());
+      }
+
+      const isFull = columnViewMode.km === 'FULL';
+      const cols = isFull ? SCHEMAS.Data_KM.columns : ["NPK", "Nama", "Judul", "Tanggal"];
+
+      // Render Header dengan label kolom aksi 'Detail'
+      renderTableHeader('km-table-header', cols, true, 'Detail');
+
+      const tbody = document.getElementById('km-table-body');
+      if (document.getElementById('km-row-count')) {
+        document.getElementById('km-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} dokumen KM (${cols.length} kolom)`;
+      }
+
+      if (!list.length) {
+        tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center py-8 text-slate-400">Tidak ada dokumen Knowledge Management yang sesuai filter.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = list.map(row => {
+        const cells = cols.map((col, idx) => {
+          const isFirst = idx === 0;
+          const stickyClass = isFirst 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            : 'text-slate-600';
+          const val = formatColumnCell(col, row[col]);
+          return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
+        }).join('');
+
+        const realIdx = rawRows.indexOf(row);
+        const actionCell = renderRowActionCell('Data_KM', realIdx, row);
+        return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
+      }).join('');
+    }
+
+    function openKMDetailModal(rowIndex, fallbackKey) {
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const rawRows = currentDashboardPayload.rawTables.Data_KM || [];
+      let row = rawRows[rowIndex];
+
+      if (!row && fallbackKey) {
+        row = rawRows.find(r => 
+          safeString(r['NPK']) === safeString(fallbackKey) || 
+          String(r['Judul']).toLowerCase() === String(fallbackKey).toLowerCase()
+        );
+      }
+
+      if (!row) {
+        showToast("Data Knowledge Management tidak ditemukan.");
+        return;
+      }
+
+      const npk = safeString(row['NPK'] || '-');
+      const nama = row['Nama'] || 'Karyawan DSO';
+      const judul = row['Judul'] || 'Panduan Knowledge Management';
+      const tanggal = formatDatabaseDate(row['Tanggal']) || row['Tanggal'] || '-';
+      const kategori = row['Kategori'] || 'Operasional & Best Practice';
+      const cabang = row['Cabang'] || row['P.subarea'] || 'Lampung';
+      const kodeBA = row['Kode BA'] || row['Business area'] || '-';
+      const deskripsi = row['Deskripsi'] || 'Tidak ada deskripsi rinci untuk dokumen pengetahuan ini.';
+      const lampiran = row['Lampiran'] || 'Dokumen Panduan (Tersedia)';
+
+      if (document.getElementById('km-modal-category')) document.getElementById('km-modal-category').textContent = kategori;
+      if (document.getElementById('km-modal-date')) document.getElementById('km-modal-date').textContent = tanggal;
+      if (document.getElementById('km-modal-title')) document.getElementById('km-modal-title').textContent = judul;
+      if (document.getElementById('km-modal-author-name')) document.getElementById('km-modal-author-name').textContent = nama;
+      if (document.getElementById('km-modal-author-meta')) document.getElementById('km-modal-author-meta').textContent = `NPK: ${npk} • Cabang: ${cabang}`;
+      if (document.getElementById('km-modal-desc')) document.getElementById('km-modal-desc').textContent = deskripsi;
+      if (document.getElementById('km-modal-branch')) document.getElementById('km-modal-branch').textContent = cabang;
+      if (document.getElementById('km-modal-ba')) document.getElementById('km-modal-ba').textContent = kodeBA;
+      
+      const attEl = document.getElementById('km-modal-attachment');
+      if (attEl) {
+        attEl.innerHTML = `<i class="fa-solid fa-paperclip"></i> ${lampiran}`;
+      }
+
+      document.getElementById('modal-km-detail').classList.remove('hidden');
+    }
+
+    // ----------------------------------------------------
     // F. Sidebar Readiness & Ekspor Modul Presisi
     // ----------------------------------------------------
     function updateSidebarReadiness(data) {
@@ -5472,7 +5925,7 @@
       showToast(`Berkas ${schema.sheetName}.xlsx berhasil diunduh (${exportRows.length} baris, ${schema.columns.length} kolom)!`);
     }
 
-    // Ekspor Seluruh 5 Modul ke dalam Satu Workbook Terpadu (5-in-1 Sheet)
+    // Ekspor Seluruh Modul ke dalam Satu Workbook Terpadu (6-in-1 Sheet)
     function exportAllSheetsToSingleWorkbook() {
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) {
         showToast("Data database belum siap diekspor.");
@@ -5480,11 +5933,12 @@
       }
 
       const wb = XLSX.utils.book_new();
-      const sheetKeys = ["Master_Karyawan", "Data_Kehadiran", "Data_SS", "Data_QCC", "Data_SP"];
+      const sheetKeys = ["Master_Karyawan", "Data_Kehadiran", "Data_SS", "Data_QCC", "Data_SP", "Data_KM"];
       let totalRows = 0;
 
       sheetKeys.forEach(sheetKey => {
         const schema = SCHEMAS[sheetKey];
+        if (!schema) return;
         const rawRows = currentDashboardPayload.rawTables[sheetKey] || [];
         totalRows += rawRows.length;
 
@@ -5501,7 +5955,7 @@
       });
 
       XLSX.writeFile(wb, `D-PERFORM_Master_Database_${new Date().toISOString().slice(0, 10)}.xlsx`);
-      showToast(`Master Workbook 5-in-1 berhasil diunduh (${totalRows} total baris di 5 sheet)!`);
+      showToast(`Master Workbook 6-in-1 berhasil diunduh (${totalRows} total baris di 6 sheet)!`);
     }
 
     function renderEmployeeTable(list) {
@@ -5987,7 +6441,7 @@
 
     function switchView(viewId) {
       currentView = viewId;
-      const views = ['dashboard', 'master-karyawan', 'absensi', 'ss', 'qcc', 'sp', 'pbk', 'laporan'];
+      const views = ['dashboard', 'master-karyawan', 'absensi', 'ss', 'qcc', 'sp', 'km', 'pbk', 'laporan'];
       views.forEach(v => {
         const el = document.getElementById(`view-${v}`);
         const nav = document.getElementById(`nav-${v}`);
@@ -6008,6 +6462,7 @@
         'ss': { title: 'Suggestion System (SS)', subtitle: 'Inovasi Perbaikan Berkelanjutan & Partisipasi Karyawan' },
         'qcc': { title: 'Quality Control Circle (QCC)', subtitle: 'Gugus Kendali Mutu & Problem Solving (PDCA)' },
         'sp': { title: 'Kedisiplinan & Surat Peringatan (SP)', subtitle: 'Pencatatan Sanksi & Kepatuhan Tata Tertib Kerja' },
+        'km': { title: 'Knowledge Management (KM)', subtitle: 'Bank Pengetahuan, Repositori Berbagi Praktik Terbaik & Inovasi Kerja' },
         'pbk': { title: 'Rekapitulasi Data Pendukung PBK', subtitle: 'Basis Data Terpadu Acuan Penilaian Kepala Cabang' },
         'laporan': { title: 'Pusat Laporan & Ekspor Data Kinerja', subtitle: 'Unduh Rekapitulasi Data Kinerja Cabang' }
       };
@@ -6024,6 +6479,7 @@
         else if (viewId === 'ss') filterSSTable();
         else if (viewId === 'qcc') filterQCCTable();
         else if (viewId === 'sp') filterSPTable();
+        else if (viewId === 'km') filterKMTable();
       }
     }
 
