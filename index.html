@@ -870,15 +870,15 @@
           <!-- 2 KPI INSIGHT CARDS -->
           <div class="space-y-3 mb-4">
             <!-- CARD 1: STATUS KEPEGAWAIAN (CONTRACT) -->
-            <div id="mk-kpi-card-contract" class="bg-white rounded-2xl p-3 sm:p-4 border border-slate-200/80 shadow-card">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2.5 pb-2 border-b border-slate-100">
+            <div id="mk-kpi-card-contract" class="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 lg:p-3.5 border border-slate-200/80 shadow-card">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2 pb-1.5 border-b border-slate-100">
                 <div class="flex items-center gap-2">
-                  <span class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs border border-amber-200/60 shadow-2xs">
+                  <span class="w-6 h-6 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center text-[11px] border border-amber-200/60 shadow-2xs">
                     <i class="fa-solid fa-file-contract"></i>
                   </span>
                   <div>
                     <h4 class="text-xs font-bold text-slate-800">Status Kepegawaian (Contract)</h4>
-                    <p class="text-[10px] text-slate-400 font-medium">Berdasarkan Kolom Contract</p>
+                    <p class="text-[9px] sm:text-[10px] text-slate-400 font-medium">Berdasarkan Kolom Contract</p>
                   </div>
                 </div>
                 <div class="flex items-center gap-2 self-start sm:self-auto">
@@ -888,13 +888,13 @@
                 </div>
               </div>
 
-              <!-- Kelompok Status Kepegawaian Items: Icon di atas, Bawahnya Nama, Bawahnya Angka, Terus Persen -->
-              <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2 sm:gap-2.5" id="mk-contract-group-list">
+              <!-- Kelompok Status Kepegawaian Items: Mini Stat Cards -->
+              <div class="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-5 gap-1.5 sm:gap-2 lg:gap-2.5" id="mk-contract-group-list">
                 <!-- Dynamically populated from database/filter -->
               </div>
 
               <!-- Progress Bar -->
-              <div class="pt-2.5 mt-2.5 border-t border-slate-100" id="mk-contract-bar-wrapper">
+              <div class="pt-2 mt-2 border-t border-slate-100" id="mk-contract-bar-wrapper">
                 <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden flex shadow-inner" id="mk-contract-bar-segments">
                   <!-- Progress bar segments -->
                 </div>
@@ -4398,13 +4398,18 @@
           const isFifthOnMobile = (index === 4 && allCatsToRender.length === 5) ? 'col-span-2 xs:col-span-1' : '';
 
           return `
-            <div class="flex flex-col items-center justify-between p-2 sm:p-2.5 rounded-xl bg-slate-50/80 border border-slate-200/70 hover:shadow-sm ${meta.cardHover} transition text-center shadow-2xs ${isFifthOnMobile}">
-              <!-- 1. Icon (di atas) -->
-              <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-lg ${meta.iconBg} flex items-center justify-center text-xs mb-1.5 border ${meta.iconBorder} shadow-2xs flex-shrink-0">
-                <i class="${meta.icon}"></i>
+            <div class="flex flex-col justify-between p-2 sm:p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs ${isFifthOnMobile}">
+              <!-- Top row: Icon (kiri) + Persen (kanan) -->
+              <div class="flex items-center justify-between w-full mb-1 sm:mb-1.5">
+                <div class="w-6 h-6 sm:w-6.5 sm:h-6.5 rounded-lg ${meta.iconBg} flex items-center justify-center text-[10px] sm:text-xs border ${meta.iconBorder} shadow-2xs flex-shrink-0">
+                  <i class="${meta.icon}"></i>
+                </div>
+                <span class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black ${meta.badgeBg} border">
+                  ${pct}%
+                </span>
               </div>
-              <!-- 2. Bawahnya Nama (Title & Subtitle rapi) -->
-              <div class="mb-1 w-full px-0.5">
+              <!-- Middle: Nama (Title & Subtitle rapi) -->
+              <div class="w-full mb-1">
                 <div class="text-[11px] sm:text-xs font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
                   ${meta.displayName}
                 </div>
@@ -4412,14 +4417,11 @@
                   ${meta.subName}
                 </div>
               </div>
-              <!-- 3. Bawahnya Angka -->
-              <div class="text-xs sm:text-sm font-black text-slate-900 leading-tight mb-1">
-                ${count} <span class="text-[9px] sm:text-[10px] font-medium text-slate-400">Orang</span>
+              <!-- Bottom: Angka & Satuan -->
+              <div class="flex items-baseline gap-1">
+                <span class="text-xs sm:text-sm lg:text-base font-black text-slate-900 leading-none">${count}</span>
+                <span class="text-[9px] sm:text-[10px] font-medium text-slate-400">Orang</span>
               </div>
-              <!-- 4. Truss Persen -->
-              <span class="px-1.5 py-0.5 rounded text-[9px] sm:text-[10px] font-black ${meta.badgeBg} border">
-                ${pct}%
-              </span>
             </div>
           `;
         }).join('');
