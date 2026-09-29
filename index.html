@@ -89,16 +89,22 @@
     .shadow-clean-hover:hover {
       box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.06), 0 6px 8px -4px rgba(0, 0, 0, 0.04);
     }
-    /* Mobile-first select styling */
+    /* Modern clean select styling without duplicate arrows */
     select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+    }
+    select:not(.appearance-none) {
       background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
       background-position: right 0.4rem center;
       background-repeat: no-repeat;
       background-size: 1.25em 1.25em;
       padding-right: 1.75rem;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
+    }
+    select.appearance-none {
+      background-image: none !important;
+      padding-right: 0.25rem !important;
     }
   </style>
 </head>
@@ -328,10 +334,10 @@
               </div>
               <div class="flex flex-col text-left">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Cabang Wewenang</span>
-                <div class="flex items-center gap-1 mt-0.5">
-                  <select id="branch-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer max-w-[170px] truncate appearance-none pr-3.5">
+                <div class="flex items-center mt-0.5">
+                  <select id="branch-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer max-w-[180px] truncate appearance-none pr-1">
                   </select>
-                  <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5"></i>
+                  <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 pointer-events-none ml-1 group-hover:text-red-500 transition-colors"></i>
                 </div>
               </div>
             </div>
@@ -343,14 +349,14 @@
               </div>
               <div class="flex flex-col text-left">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Bulan</span>
-                <div class="flex items-center gap-1 mt-0.5">
-                  <select id="month-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none pr-3.5">
-                    <option value="ALL">Semua Bulan</option>
+                <div class="flex items-center mt-0.5">
+                  <select id="month-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none pr-1">
+                    <option value="ALL" selected>Semua Bulan</option>
                     <option value="Januari">Januari</option>
                     <option value="Februari">Februari</option>
                     <option value="Maret">Maret</option>
                     <option value="April">April</option>
-                    <option value="Mei" selected>Mei</option>
+                    <option value="Mei">Mei</option>
                     <option value="Juni">Juni</option>
                     <option value="Juli">Juli</option>
                     <option value="Agustus">Agustus</option>
@@ -359,7 +365,7 @@
                     <option value="November">November</option>
                     <option value="Desember">Desember</option>
                   </select>
-                  <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5"></i>
+                  <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 pointer-events-none ml-1 group-hover:text-amber-500 transition-colors"></i>
                 </div>
               </div>
             </div>
@@ -371,20 +377,20 @@
               </div>
               <div class="flex flex-col text-left">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Tahun</span>
-                <div class="flex items-center gap-1 mt-0.5">
-                  <select id="year-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none pr-3.5">
-                    <option value="ALL">Semua</option>
+                <div class="flex items-center mt-0.5">
+                  <select id="year-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none pr-1">
+                    <option value="ALL" selected>Semua</option>
                     <option value="2024">2024</option>
-                    <option value="2025" selected>2025</option>
+                    <option value="2025">2025</option>
                     <option value="2026">2026</option>
                   </select>
-                  <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5"></i>
+                  <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 pointer-events-none ml-1 group-hover:text-blue-500 transition-colors"></i>
                 </div>
               </div>
             </div>
 
             <!-- Hidden input for backwards compatibility -->
-            <input type="hidden" id="period-select" value="Mei 2025">
+            <input type="hidden" id="period-select" value="Semua Periode">
 
             <!-- Profile Info Desktop -->
             <div class="flex items-center gap-2.5 bg-white border border-slate-200/90 rounded-xl py-1 px-2.5 shadow-2xs">
@@ -420,9 +426,9 @@
               <i class="fa-solid fa-location-dot"></i>
             </div>
             <div class="flex-1 min-w-0 flex items-center justify-between">
-              <select id="branch-select-mobile" onchange="syncBranchChangeMobile(this.value)" class="w-full text-xs font-black bg-transparent text-slate-800 focus:outline-none cursor-pointer truncate appearance-none pr-3">
+              <select id="branch-select-mobile" onchange="syncBranchChangeMobile(this.value)" class="w-full text-xs font-black bg-transparent text-slate-800 focus:outline-none cursor-pointer truncate appearance-none pr-1">
               </select>
-              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2.5 flex-shrink-0"></i>
+              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none ml-1 flex-shrink-0"></i>
             </div>
           </div>
 
@@ -432,13 +438,13 @@
               <i class="fa-regular fa-calendar"></i>
             </div>
             <div class="flex-1 min-w-0 flex items-center justify-between">
-              <select id="month-select-mobile" onchange="syncMonthChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-black text-slate-800 appearance-none pr-2.5 truncate">
-                <option value="ALL">Semua</option>
+              <select id="month-select-mobile" onchange="syncMonthChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-black text-slate-800 appearance-none pr-1 truncate">
+                <option value="ALL" selected>Semua</option>
                 <option value="Januari">Jan</option>
                 <option value="Februari">Feb</option>
                 <option value="Maret">Mar</option>
                 <option value="April">Apr</option>
-                <option value="Mei" selected>Mei</option>
+                <option value="Mei">Mei</option>
                 <option value="Juni">Jun</option>
                 <option value="Juli">Jul</option>
                 <option value="Agustus">Agu</option>
@@ -447,7 +453,7 @@
                 <option value="November">Nov</option>
                 <option value="Desember">Des</option>
               </select>
-              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2 flex-shrink-0"></i>
+              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none ml-1 flex-shrink-0"></i>
             </div>
           </div>
 
@@ -457,13 +463,13 @@
               <i class="fa-solid fa-calendar-days"></i>
             </div>
             <div class="flex-1 min-w-0 flex items-center justify-between">
-              <select id="year-select-mobile" onchange="syncYearChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-black text-slate-800 appearance-none pr-2.5 truncate">
-                <option value="ALL">Semua</option>
+              <select id="year-select-mobile" onchange="syncYearChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-black text-slate-800 appearance-none pr-1 truncate">
+                <option value="ALL" selected>Semua</option>
                 <option value="2024">2024</option>
-                <option value="2025" selected>2025</option>
+                <option value="2025">2025</option>
                 <option value="2026">2026</option>
               </select>
-              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-2 flex-shrink-0"></i>
+              <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none ml-1 flex-shrink-0"></i>
             </div>
           </div>
         </div>
@@ -3953,11 +3959,11 @@
     // OTORISASI PERAN & STRUKTUR CABANG DSO LAMPUNG
     // ========================================================
     const KNOWN_BRANCHES = [
-      { code: "D660", name: "Lampung A Yani", fullName: "Lampung A Yani (D660)" },
-      { code: "D661", name: "Lampung S Hatta", fullName: "Lampung S Hatta (D661)" },
-      { code: "D662", name: "Bandarjaya", fullName: "Bandarjaya (D662)" },
-      { code: "D663", name: "Kotabumi", fullName: "Kotabumi (D663)" },
-      { code: "D664", name: "Lampung Timur", fullName: "Lampung Timur (D664)" }
+      { code: "D660", name: "Lampung A Yani", fullName: "Lampung A Yani (D660)", aliases: ["d660", "a yani", "ayani", "ahmad yani", "ahmadyani", "lampung a yani"] },
+      { code: "D661", name: "Lampung S Hatta", fullName: "Lampung S Hatta (D661)", aliases: ["d661", "s hatta", "shatta", "soekarno hatta", "soekarnohatta", "lampung s hatta"] },
+      { code: "D662", name: "Bandarjaya", fullName: "Bandarjaya (D662)", aliases: ["d662", "bandarjaya", "bandar jaya"] },
+      { code: "D663", name: "Kotabumi", fullName: "Kotabumi (D663)", aliases: ["d663", "kotabumi", "kota bumi", "lampung utara"] },
+      { code: "D664", name: "Lampung Timur", fullName: "Lampung Timur (D664)", aliases: ["d664", "lampung timur", "lamtim", "lam tim"] }
     ];
 
     const INDO_MONTHS = [
@@ -3986,19 +3992,33 @@
     }
 
     /**
-     * Menemukan info cabang (kode, nama, fullName) secara fleksibel
+     * Menemukan info cabang (kode, nama, fullName) secara fleksibel & tahan spasi/tanda baca
      */
     function resolveBranchInfo(input) {
       if (!input) return null;
       const str = String(input).trim();
       const upper = str.toUpperCase();
-      const lower = str.toLowerCase();
+      const clean = str.toLowerCase().replace(/[^a-z0-9]/g, "");
 
+      // 1. Cek kode persis
       let found = KNOWN_BRANCHES.find(b => b.code.toUpperCase() === upper);
       if (found) return found;
 
-      found = KNOWN_BRANCHES.find(b => lower.includes(b.name.toLowerCase()) || b.name.toLowerCase().includes(lower));
-      if (found) return found;
+      // 2. Cek alias dan nama bersih
+      for (const b of KNOWN_BRANCHES) {
+        const bClean = b.name.toLowerCase().replace(/[^a-z0-9]/g, "");
+        if (clean === bClean || (clean.length >= 4 && bClean.includes(clean)) || (bClean.length >= 4 && clean.includes(bClean))) {
+          return b;
+        }
+        if (b.aliases) {
+          for (const al of b.aliases) {
+            const alClean = al.toLowerCase().replace(/[^a-z0-9]/g, "");
+            if (clean === alClean || (clean.length >= 4 && alClean.includes(clean)) || (alClean.length >= 4 && clean.includes(alClean))) {
+              return b;
+            }
+          }
+        }
+      }
 
       return { code: str, name: str, fullName: str };
     }
@@ -4040,6 +4060,7 @@
 
     /**
      * Mencocokkan data karyawan / circle / presensi / modul dengan target cabang
+     * Tahan terhadap perbedaan penulisan spasi, singkatan, serta selalu mencocokkan NPK ke master
      */
     function matchBranch(item, targetBranchCode) {
       if (!targetBranchCode || targetBranchCode === 'ALL') return true;
@@ -4047,44 +4068,54 @@
 
       const targetInfo = resolveBranchInfo(targetBranchCode);
       const targetCode = (targetInfo ? targetInfo.code : String(targetBranchCode)).toUpperCase().trim();
-      const targetName = (targetInfo ? targetInfo.name : String(targetBranchCode)).toLowerCase().trim();
+      const targetNameClean = targetInfo ? targetInfo.name.toLowerCase().replace(/[^a-z0-9]/g, "") : targetCode.toLowerCase();
 
-      // Extract branch code from various property name variations
+      // 1. Ekstraksi kode cabang dari objek
       const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || '';
       const itemCode = String(rawCode).toUpperCase().trim();
 
-      // Extract branch name from various property name variations
-      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || '';
-      const itemCabang = String(rawCabang).toLowerCase().trim();
-
-      // 1. Kode cabang cocok persis atau resolveBACode cocok
       if (itemCode) {
         if (itemCode === targetCode) return true;
         if (resolveBACode(itemCode) === targetCode) return true;
       }
 
-      // 2. Kode cabang ada dalam teks cabang
-      if (itemCabang && itemCabang.includes(targetCode.toLowerCase())) return true;
+      // 2. Ekstraksi teks cabang dari objek
+      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || '';
+      const itemCabangClean = String(rawCabang).toLowerCase().replace(/[^a-z0-9]/g, "");
 
-      // 3. Nama cabang cocok
-      if (targetName && itemCabang) {
-        if (itemCabang.includes(targetName) || targetName.includes(itemCabang)) return true;
-        const keywords = ['yani', 'hatta', 'bandarjaya', 'kotabumi', 'timur'];
-        for (const kw of keywords) {
-          if (targetName.includes(kw) && itemCabang.includes(kw)) return true;
+      if (itemCabangClean) {
+        if (itemCabangClean.includes(targetCode.toLowerCase())) return true;
+        if (itemCabangClean.includes(targetNameClean) || targetNameClean.includes(itemCabangClean)) return true;
+        if (targetInfo && targetInfo.aliases) {
+          for (const al of targetInfo.aliases) {
+            const alClean = al.toLowerCase().replace(/[^a-z0-9]/g, "");
+            if (itemCabangClean.includes(alClean) || alClean.includes(itemCabangClean)) return true;
+          }
         }
       }
 
-      // 4. Relasi NPK ke Master Karyawan jika kode/cabang tidak langsung tersedia
-      const npk = safeString(item['NPK'] || item['Personnel no.'] || item.npk);
-      const empList = (currentDashboardPayload && currentDashboardPayload.employeeList) || (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList);
-      if (npk && empList && empList.length > 0) {
-        const emp = empList.find(e => safeString(e.npk || e['Personnel no.']) === npk);
+      // 3. Relasi NPK ke Master Karyawan LENGKAP (selalu ambil dari dataset global yang belum terfilter)
+      const npk = safeString(item['NPK'] || item['Personnel no.'] || item['Personnel No.'] || item.npk);
+      const masterList = (window.masterFullPayload && window.masterFullPayload.employeeList) || 
+                         (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList) || 
+                         (window.masterFullPayload && window.masterFullPayload.rawTables && window.masterFullPayload.rawTables.Master_Karyawan) || [];
+      if (npk && masterList.length > 0) {
+        const emp = masterList.find(e => safeString(e.npk || e['Personnel no.'] || e['Personnel No.']) === npk);
         if (emp && emp !== item) {
-          const empCode = String(emp.kodeBA || emp['Business area'] || '').toUpperCase().trim();
-          const empCabang = String(emp.cabang || emp['P.subarea'] || '').toLowerCase().trim();
+          const empCode = String(emp.kodeBA || emp['Business area'] || emp['Business Area'] || emp['Kode BA'] || '').toUpperCase().trim();
           if (empCode && (empCode === targetCode || resolveBACode(empCode) === targetCode)) return true;
-          if (targetName && empCabang && (empCabang.includes(targetName) || targetName.includes(empCabang))) return true;
+
+          const empCabangClean = String(emp.cabang || emp['P.subarea'] || emp['Cabang'] || '').toLowerCase().replace(/[^a-z0-9]/g, "");
+          if (empCabangClean) {
+            if (empCabangClean.includes(targetCode.toLowerCase())) return true;
+            if (empCabangClean.includes(targetNameClean) || targetNameClean.includes(empCabangClean)) return true;
+            if (targetInfo && targetInfo.aliases) {
+              for (const al of targetInfo.aliases) {
+                const alClean = al.toLowerCase().replace(/[^a-z0-9]/g, "");
+                if (empCabangClean.includes(alClean) || alClean.includes(empCabangClean)) return true;
+              }
+            }
+          }
         }
       }
 
@@ -4234,41 +4265,86 @@
       const countTetap = contractGroupMap['Tetap / Permanent'] || 0;
       const countPKWT = contractGroupMap['Kontrak / PKWT'] || 0;
 
-      const totalAttendance = employees.reduce((sum, e) => sum + (Number(e.kehadiranPct) || 0), 0);
-      const avgAttendance = totalKaryawan ? (totalAttendance / totalKaryawan).toFixed(1) : 0;
+      const payloadObj = rawData || currentDashboardPayload || {};
+      const rawTables = payloadObj.rawTables || {};
 
-      const totalAlpha = employees.reduce((sum, e) => sum + (Number(e.alpha) || ((e.kehadiranPct || 0) < 90 ? 1 : 0)), 0);
-      const totalSeringTelat = employees.reduce((sum, e) => sum + (Number(e.telat) || ((e.kehadiranPct || 0) < 95 ? 1 : 0)), 0);
+      // 1. Hitung Metrik Kehadiran / Absensi Riil dari Data_Kehadiran
+      const rawAbsRows = Array.isArray(rawTables.Data_Kehadiran) ? rawTables.Data_Kehadiran : [];
+      let totalAbsCount = rawAbsRows.length;
+      let totalSeringTelat = 0;
+      let totalAlpha = 0;
+      let onTimeCount = 0;
 
-      const totalSS = employees.reduce((sum, e) => sum + (Number(e.totalSS) || 0), 0);
-      const targetSS = fallbackSummary.targetSS || (totalKaryawan * 2);
-      const activeSSCount = employees.filter(e => (Number(e.totalSS) || 0) >= 1).length;
-      const ssParticipationRate = totalKaryawan ? Math.round((activeSSCount / totalKaryawan) * 100) : 0;
-      const countImplementedSS = employees.reduce((sum, e) => sum + (Number(e.implementedSS) || ((e.totalSS || 0) >= 2 ? 1 : 0)), 0);
+      if (totalAbsCount > 0) {
+        rawAbsRows.forEach(r => {
+          const rawTime = getRowCellValue(r, 'Time Clock In', SCHEMAS.Data_Kehadiran) || r['Time Clock In'] || r['Clock In'] || r['Time'] || r['Jam Masuk'] || '';
+          const existingEstimasi = getRowCellValue(r, 'Status Kehadiran', SCHEMAS.Data_Kehadiran) || r['Status Kehadiran'] || r['Estimasi Telat (Asumsi 08.00)'] || '';
+          const lateness = calculateLatenessInfo(existingEstimasi || rawTime);
+          const ket = String(getRowCellValue(r, 'Keterangan', SCHEMAS.Data_Kehadiran) || r['Keterangan'] || '').toLowerCase();
+          const estStr = String(existingEstimasi || '').toLowerCase();
+
+          const isLate = lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || estStr.includes('telat');
+          const isAlpha = ket.includes('alpha') || ket.includes('mangkir') || (!lateness.hasClockIn && (ket.includes('tidak') || ket.includes('absen')));
+
+          if (isLate) {
+            totalSeringTelat++;
+          } else if (isAlpha) {
+            totalAlpha++;
+          } else if (lateness.hasClockIn || ket.includes('tepat') || estStr.includes('tepat')) {
+            onTimeCount++;
+          }
+        });
+      } else {
+        totalSeringTelat = employees.reduce((sum, e) => sum + (Number(e.telat) || 0), 0);
+        totalAlpha = employees.reduce((sum, e) => sum + (Number(e.alpha) || 0), 0);
+      }
+
+      const avgAttendance = totalAbsCount > 0
+        ? Math.round(((totalAbsCount - totalSeringTelat - totalAlpha) / totalAbsCount) * 1000) / 10
+        : (totalKaryawan > 0 ? 100.0 : 0.0);
+
+      // 2. Hitung Metrik Suggestion System (SS) Riil dari Data_SS
+      const rawSSRows = Array.isArray(rawTables.Data_SS) ? rawTables.Data_SS : [];
+      const totalSS = rawSSRows.length > 0 ? rawSSRows.length : employees.reduce((sum, e) => sum + (Number(e.totalSS) || 0), 0);
+      const targetSS = fallbackSummary.targetSS || (totalKaryawan * 2) || (totalSS > 0 ? totalSS : 10);
+      const uniqueSSEmps = new Set(rawSSRows.map(s => safeString(s['NPK'] || s.npk)).filter(Boolean)).size;
+      const ssParticipationRate = totalKaryawan ? Math.min(100, Math.round(((uniqueSSEmps || (totalSS > 0 ? 1 : 0)) / totalKaryawan) * 100)) : (totalSS > 0 ? 100 : 0);
+      const countImplementedSS = rawSSRows.filter(s => {
+        const st = String(s['Status Reward'] || s['Keterangan'] || '').toLowerCase();
+        return st.includes('approved') || st.includes('terverifikasi') || st.includes('selesai') || st.includes('cair');
+      }).length || employees.reduce((sum, e) => sum + (Number(e.implementedSS) || 0), 0);
       const countEvaluasiSS = Math.max(0, totalSS - countImplementedSS);
 
-      // Hitung Surat Peringatan (SP)
+      // 3. Hitung Metrik QCC Riil dari Data_QCC
+      const rawQCCRows = Array.isArray(rawTables.Data_QCC) && rawTables.Data_QCC.length > 0 ? rawTables.Data_QCC : qccList;
+      const totalQCCCircles = rawQCCRows.length;
+      const pdcaCount = { Plan: 0, Do: 0, Check: 0, Action: 0 };
+      rawQCCRows.forEach(q => {
+        const st = String(q['Status'] || q['PDCA'] || 'Action').trim().toLowerCase();
+        if (st.includes('plan')) pdcaCount.Plan++;
+        else if (st.includes('do')) pdcaCount.Do++;
+        else if (st.includes('check')) pdcaCount.Check++;
+        else pdcaCount.Action++;
+      });
+      if (totalQCCCircles > 0 && (pdcaCount.Plan + pdcaCount.Do + pdcaCount.Check + pdcaCount.Action === 0)) {
+        pdcaCount.Action = totalQCCCircles;
+      }
+      const bestQCC = rawQCCRows[0] ? {
+        namaTim: rawQCCRows[0]['Nama Tim'] || rawQCCRows[0]['Tema'] || 'Circle Terdaftar',
+        skor: rawQCCRows[0]['Status'] || 'PDCA Aktif'
+      } : (fallbackSummary.bestQCC || null);
+
+      // 4. Hitung Surat Peringatan (SP) Riil dari Data_SP
       let countTeguran = 0;
       let countSP1 = 0;
       let countSP2 = 0;
       let countSP3 = 0;
       let countSPPT = 0;
 
-      const payloadObj = rawData || currentDashboardPayload;
-      const rawSPRows = (payloadObj && payloadObj.rawTables && Array.isArray(payloadObj.rawTables.Data_SP))
-        ? payloadObj.rawTables.Data_SP
-        : [];
+      const rawSPRows = Array.isArray(rawTables.Data_SP) ? rawTables.Data_SP : [];
 
       if (rawSPRows.length > 0) {
-        const branchEmployeesNpk = new Set(employees.map(e => String(e.npk || e['Personnel No.'] || e['Personnel no.'] || '').trim().toLowerCase()).filter(Boolean));
-        const relevantSP = branchEmployeesNpk.size > 0 
-          ? rawSPRows.filter(r => {
-              const npk = String(r['Personnel No.'] || r['Personnel no.'] || r['NPK'] || r.npk || '').trim().toLowerCase();
-              return branchEmployeesNpk.has(npk);
-            })
-          : rawSPRows;
-
-        relevantSP.forEach(r => {
+        rawSPRows.forEach(r => {
           const sp = String(r['Tingkat SP'] || r['Jenis Sanksi'] || r['Status SP'] || r.tingkat || r.status || '').toUpperCase();
           if (sp.includes('TEGURAN')) countTeguran++;
           else if (sp.includes('SP 1') || sp.includes('SP1')) countSP1++;
@@ -4303,9 +4379,9 @@
         countSPPT = fallbackSummary.countSPPT || 0;
       }
 
-      const totalQCCCircles = qccList.length || (fallbackSummary.totalQCCCircles || 0);
-      const pdcaCount = fallbackSummary.pdcaCount || { Plan: 1, Do: 1, Check: 1, Action: 1 };
-      const bestQCC = fallbackSummary.bestQCC || (qccList[0] || null);
+      // 5. Hitung Knowledge Management (KM) Riil
+      const rawKMRows = (rawTables.Knowledge_management || rawTables.Data_KM) || [];
+      const totalKM = Array.isArray(rawKMRows) ? rawKMRows.length : 0;
 
       return {
         totalKaryawan,
@@ -4331,7 +4407,8 @@
         countSP1,
         countSP2,
         countSP3,
-        countSPPT
+        countSPPT,
+        totalKM
       };
     }
 
@@ -4544,8 +4621,8 @@
         branch = document.getElementById('branch-select')?.value || 'ALL';
       }
 
-      const month = document.getElementById('month-select')?.value || 'Mei';
-      const year = document.getElementById('year-select')?.value || '2025';
+      const month = document.getElementById('month-select')?.value || 'ALL';
+      const year = document.getElementById('year-select')?.value || 'ALL';
 
       // Sinkronisasi mobile select
       const mBranch = document.getElementById('branch-select-mobile');
@@ -4575,14 +4652,10 @@
       if (badge) badge.textContent = pLabel;
 
       // Filter seketika secara responsif dari dataset master
-      if (window.masterFullPayload) {
-        renderAllDashboardData(window.masterFullPayload, branch, month, year);
-      } else if (window.fullUnscopedPayload) {
-        renderAllDashboardData(window.fullUnscopedPayload, branch, month, year);
+      const source = window.masterFullPayload || window.fullUnscopedPayload || currentDashboardPayload;
+      if (source) {
+        renderAllDashboardData(source, branch, month, year);
       }
-
-      // Ambil update backend di latar belakang jika online
-      loadBackendDashboardData(false);
     }
 
     /**
@@ -4689,7 +4762,7 @@
       const mSelects = [document.getElementById('month-select'), document.getElementById('month-select-mobile')].filter(Boolean);
       const ySelects = [document.getElementById('year-select'), document.getElementById('year-select-mobile')].filter(Boolean);
 
-      // 1. Ekstraksi Tahun
+      // 1. Ekstraksi Tahun dari seluruh tabel
       const detectedYears = new Set(['2024', '2025', '2026']);
       const srcList = data?.employeeList || window.masterFullPayload?.employeeList || [];
       srcList.forEach(e => {
@@ -4697,16 +4770,28 @@
         const m = p.match(/(20\d{2})/);
         if (m) detectedYears.add(m[1]);
       });
+
+      const rawTables = data?.rawTables || window.masterFullPayload?.rawTables || {};
+      ['Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP', 'Knowledge_management'].forEach(tbl => {
+        const rows = rawTables[tbl] || [];
+        rows.slice(0, 100).forEach(r => {
+          Object.values(r).forEach(v => {
+            const m = String(v).match(/(20\d{2})/);
+            if (m) detectedYears.add(m[1]);
+          });
+        });
+      });
+
       const yearList = Array.from(detectedYears).sort();
 
       ySelects.forEach(sel => {
-        const curVal = sel.value || '2025';
+        const curVal = sel.value || 'ALL';
         let opts = '<option value="ALL">Semua</option>';
         yearList.forEach(yr => {
           opts += `<option value="${yr}">${yr}</option>`;
         });
         sel.innerHTML = opts;
-        sel.value = yearList.includes(curVal) ? curVal : (yearList.includes('2025') ? '2025' : 'ALL');
+        sel.value = (curVal && (curVal === 'ALL' || yearList.includes(curVal))) ? curVal : 'ALL';
       });
 
       // 2. Daftar 12 Bulan Baku Bahasa Indonesia
@@ -4727,7 +4812,7 @@
       ];
 
       mSelects.forEach(sel => {
-        const curVal = sel.value || 'Mei';
+        const curVal = sel.value || 'ALL';
         const isMobile = sel.id.includes('mobile');
         let opts = '';
         months.forEach(m => {
@@ -4735,7 +4820,7 @@
           opts += `<option value="${m.val}">${lbl}</option>`;
         });
         sel.innerHTML = opts;
-        sel.value = curVal;
+        sel.value = months.some(m => m.val === curVal) ? curVal : 'ALL';
       });
     }
 
@@ -4749,42 +4834,44 @@
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
 
-      // Jika user adalah Kacab, query mutlak diarahkan HANYA ke cabangnya
-      const branchVal = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
-      const monthVal = document.getElementById('month-select')?.value || 'Mei';
-      const yearVal = document.getElementById('year-select')?.value || '2025';
-      const periodVal = (monthVal === 'ALL' && yearVal === 'ALL') ? 'ALL' :
-                        (monthVal === 'ALL') ? `Tahun ${yearVal}` :
-                        (yearVal === 'ALL') ? monthVal : `${monthVal} ${yearVal}`;
+      // Admin selalu mengambil ALL branches agar filter antar cabang instan tanpa kehilangan data
+      const queryBranch = isAdmin ? 'ALL' : userBranchCode;
+      const activeBranchVal = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
+      const monthVal = document.getElementById('month-select')?.value || 'ALL';
+      const yearVal = document.getElementById('year-select')?.value || 'ALL';
 
       const loader = document.getElementById('loading-overlay');
       if (shouldShowLoader && loader) loader.classList.remove('hidden');
 
-      const res = await callBackendAPI("GET_DASHBOARD", {
-        user: loggedInUser,
-        branch: branchVal,
-        period: periodVal
-      });
+      try {
+        const res = await callBackendAPI("GET_DASHBOARD", {
+          user: loggedInUser,
+          branch: queryBranch,
+          period: 'ALL'
+        });
 
-      if (loader) loader.classList.add('hidden');
+        if (loader) loader.classList.add('hidden');
 
-      if (res && res.success && res.data) {
-        ensureMasterStore(res.data);
+        if (res && res.success && res.data) {
+          ensureMasterStore(res.data);
 
-        // Jika kita mengambil ALL branches, perbarui opsi cabang & periode secara dinamis
-        if (branchVal === 'ALL') {
           if (isAdmin) {
             const dynamicBranches = extractBranchesFromData(res.data);
             populateBranchDropdown(dynamicBranches);
           }
           populateMonthAndYearDropdowns(res.data);
-        }
 
-        renderAllDashboardData(window.masterFullPayload || res.data, branchVal, monthVal, yearVal);
-      } else {
-        // Fallback: Jika backend offline/error, gunakan data master client-side
+          renderAllDashboardData(window.masterFullPayload || res.data, activeBranchVal, monthVal, yearVal);
+        } else {
+          if (window.masterFullPayload) {
+            renderAllDashboardData(window.masterFullPayload, activeBranchVal, monthVal, yearVal);
+          }
+        }
+      } catch (err) {
+        if (loader) loader.classList.add('hidden');
+        console.error("Error loading backend dashboard data:", err);
         if (window.masterFullPayload) {
-          renderAllDashboardData(window.masterFullPayload, branchVal, monthVal, yearVal);
+          renderAllDashboardData(window.masterFullPayload, activeBranchVal, monthVal, yearVal);
         }
       }
     }
@@ -4798,8 +4885,8 @@
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
       const targetBranch = targetBranchOverride || (isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode);
-      const selectedMonth = targetMonthOverride || document.getElementById('month-select')?.value || 'Mei';
-      const selectedYear = targetYearOverride || document.getElementById('year-select')?.value || '2025';
+      const selectedMonth = targetMonthOverride || document.getElementById('month-select')?.value || 'ALL';
+      const selectedYear = targetYearOverride || document.getElementById('year-select')?.value || 'ALL';
 
       // Selalu gunakan masterFullPayload sebagai sumber data baku tanpa terdistorsi
       const master = window.masterFullPayload || window.fullUnscopedPayload || data;
@@ -4842,23 +4929,38 @@
         }
 
         scopedRawTables.Data_Kehadiran = scopedRawTables.Data_Kehadiran.filter(r => 
-          matchDateMonthYear(r['Date'] || r['Date Clock In'] || r['Date Clock Out'], selectedMonth, selectedYear)
+          matchDateMonthYear(
+            getRowCellValue(r, 'Date', SCHEMAS.Data_Kehadiran) || r['Date'] || r['Tanggal'] || r['Date Clock In'] || r['Date Clock Out'], 
+            selectedMonth, selectedYear
+          )
         );
 
         scopedRawTables.Data_SS = scopedRawTables.Data_SS.filter(r => 
-          matchDateMonthYear(r['Diterima Bulan'] || r['Date'] || r['No.BPH'], selectedMonth, selectedYear)
+          matchDateMonthYear(
+            getRowCellValue(r, 'Diterima Bulan', SCHEMAS.Data_SS) || r['Diterima Bulan'] || r['Date'] || r['Tanggal'] || r['No.BPH'], 
+            selectedMonth, selectedYear
+          )
         );
 
         scopedRawTables.Data_QCC = scopedRawTables.Data_QCC.filter(r => 
-          matchDateMonthYear(r['L 1-8 diterima'] || r['Pendaftaran diterima'] || r['No.BPH'], selectedMonth, selectedYear)
+          matchDateMonthYear(
+            getRowCellValue(r, 'L 1-8 diterima', SCHEMAS.Data_QCC) || r['L 1-8 diterima'] || r['Pendaftaran diterima'] || r['No.BPH'], 
+            selectedMonth, selectedYear
+          )
         );
 
         scopedRawTables.Data_SP = scopedRawTables.Data_SP.filter(r => 
-          matchDateMonthYear(r['Tanggal'] || r['Date'], selectedMonth, selectedYear)
+          matchDateMonthYear(
+            getRowCellValue(r, 'Tanggal', SCHEMAS.Data_SP) || r['Tanggal'] || r['Date'], 
+            selectedMonth, selectedYear
+          )
         );
 
         scopedRawTables.Knowledge_management = scopedRawTables.Knowledge_management.filter(r => 
-          matchDateMonthYear(r['TANGGAL'] || r['Tanggal'], selectedMonth, selectedYear)
+          matchDateMonthYear(
+            getRowCellValue(r, 'TANGGAL', SCHEMAS.Data_KM) || r['TANGGAL'] || r['Tanggal'] || r['Date'], 
+            selectedMonth, selectedYear
+          )
         );
         scopedRawTables.Data_KM = scopedRawTables.Knowledge_management;
       }
@@ -5055,14 +5157,14 @@
       renderEmployeeTable(scopedEmployees);
       renderPBKTable(scopedEmployees);
 
-      // Render data untuk setiap menu modul
-      renderMasterKaryawanView(currentDashboardPayload);
-      renderAbsensiView(currentDashboardPayload);
-      renderSSView(currentDashboardPayload);
-      renderQCCView(currentDashboardPayload);
-      renderSPView(currentDashboardPayload);
-      renderKMView(currentDashboardPayload);
-      updateSidebarReadiness(currentDashboardPayload);
+      // Render data untuk setiap menu modul dengan proteksi try/catch
+      try { renderMasterKaryawanView(currentDashboardPayload); } catch (e) { console.error("renderMasterKaryawanView error:", e); }
+      try { renderAbsensiView(currentDashboardPayload); } catch (e) { console.error("renderAbsensiView error:", e); }
+      try { renderSSView(currentDashboardPayload); } catch (e) { console.error("renderSSView error:", e); }
+      try { renderQCCView(currentDashboardPayload); } catch (e) { console.error("renderQCCView error:", e); }
+      try { renderSPView(currentDashboardPayload); } catch (e) { console.error("renderSPView error:", e); }
+      try { renderKMView(currentDashboardPayload); } catch (e) { console.error("renderKMView error:", e); }
+      try { updateSidebarReadiness(currentDashboardPayload); } catch (e) { console.error("updateSidebarReadiness error:", e); }
     }
 
     // ----------------------------------------------------
@@ -6631,6 +6733,7 @@
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
       const rawRows = currentDashboardPayload.rawTables.Data_SP || [];
       const q = (document.getElementById('sp-search-input')?.value || '').toLowerCase().trim();
+      const statusFilter = document.getElementById('sp-filter-status')?.value || 'ALL';
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
       const targetBranch = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
