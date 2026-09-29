@@ -693,14 +693,14 @@
               
               <!-- Status Evaluasi Ide Boxes -->
               <div class="pt-2.5 border-t border-slate-100 mt-2 text-[10px]">
-                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Status Evaluasi Ide Kaizen</span>
+                <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Status Reward SS</span>
                 <div class="grid grid-cols-2 gap-2 text-center">
                   <div class="bg-emerald-50/90 border border-emerald-200 rounded-xl p-1.5 shadow-2xs">
-                    <span class="text-[9px] font-bold text-emerald-700 block uppercase">Implemented</span>
+                    <span class="text-[9px] font-bold text-emerald-700 block uppercase">IBRA / Lunas</span>
                     <span class="text-sm font-black text-emerald-900" id="card-ss-implemented">0 Ide</span>
                   </div>
                   <div class="bg-amber-50/90 border border-amber-200 rounded-xl p-1.5 shadow-2xs">
-                    <span class="text-[9px] font-bold text-amber-700 block uppercase">Dalam Evaluasi</span>
+                    <span class="text-[9px] font-bold text-amber-700 block uppercase">Proses / Review</span>
                     <span class="text-sm font-black text-amber-900" id="card-ss-evaluasi">0 Ide</span>
                   </div>
                 </div>
@@ -1296,22 +1296,74 @@
               <p class="text-[10px] text-slate-400 mt-1">Karyawan yang mengajukan minimal 1 ide</p>
             </div>
 
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Ide Terimplementasi</span>
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-2xl font-black text-emerald-600" id="ss-card-implemented">0</span>
-                <span class="text-xs font-bold text-slate-500">Ide Kaizen</span>
+            <div class="sm:col-span-2 bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
+              <div class="flex items-center justify-between mb-2">
+                <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Reward Ide Kaizen (SS)</span>
+                <span class="text-[9px] font-semibold text-slate-400 flex items-center gap-1"><i class="fa-solid fa-filter text-[8px]"></i> Klik status untuk menyaring</span>
               </div>
-              <p class="text-[10px] text-slate-400 mt-1">Sudah diterapkan di operasional kerja</p>
-            </div>
-
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Tahap Evaluasi / Review</span>
-              <div class="flex items-baseline gap-1.5">
-                <span class="text-2xl font-black text-blue-600" id="ss-card-evaluasi">0</span>
-                <span class="text-xs font-bold text-slate-500">Ide Masuk</span>
+              <div id="ss-reward-kpi-container" class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                <!-- 6 Kartu Status Reward Sesuai Database & SOP ADM -->
+                <div class="bg-amber-50/70 p-2 rounded-xl border border-amber-200/80 flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold text-amber-700 truncate">Proses Penilaian</span>
+                    <i class="fa-solid fa-clock-rotate-left text-xs text-amber-600"></i>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-auto">
+                    <span class="text-base sm:text-lg font-black text-amber-800" id="ss-kpi-penilaian">0</span>
+                    <span class="text-[9px] font-semibold text-slate-400">Ide</span>
+                  </div>
+                </div>
+                <div class="bg-blue-50/70 p-2 rounded-xl border border-blue-200/80 flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold text-blue-700 truncate">Berita Acara</span>
+                    <i class="fa-solid fa-file-invoice text-xs text-blue-600"></i>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-auto">
+                    <span class="text-base sm:text-lg font-black text-blue-800" id="ss-kpi-ba">0</span>
+                    <span class="text-[9px] font-semibold text-slate-400">Ide</span>
+                  </div>
+                </div>
+                <div class="bg-indigo-50/70 p-2 rounded-xl border border-indigo-200/80 flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold text-indigo-700 truncate">BPH</span>
+                    <i class="fa-solid fa-file-signature text-xs text-indigo-600"></i>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-auto">
+                    <span class="text-base sm:text-lg font-black text-indigo-800" id="ss-kpi-bph">0</span>
+                    <span class="text-[9px] font-semibold text-slate-400">Ide</span>
+                  </div>
+                </div>
+                <div class="bg-emerald-50/70 p-2 rounded-xl border border-emerald-200/80 flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold text-emerald-700 truncate">IBRA/Lunas</span>
+                    <i class="fa-solid fa-circle-check text-xs text-emerald-600"></i>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-auto">
+                    <span class="text-base sm:text-lg font-black text-emerald-800" id="ss-kpi-ibra">0</span>
+                    <span class="text-[9px] font-semibold text-slate-400">Ide</span>
+                  </div>
+                </div>
+                <div class="bg-purple-50/70 p-2 rounded-xl border border-purple-200/80 flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold text-purple-700 truncate">Revisi</span>
+                    <i class="fa-solid fa-pen-to-square text-xs text-purple-600"></i>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-auto">
+                    <span class="text-base sm:text-lg font-black text-purple-800" id="ss-kpi-revisi">0</span>
+                    <span class="text-[9px] font-semibold text-slate-400">Ide</span>
+                  </div>
+                </div>
+                <div class="bg-rose-50/70 p-2 rounded-xl border border-rose-200/80 flex flex-col justify-between">
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-bold text-rose-700 truncate">Dikembalikan</span>
+                    <i class="fa-solid fa-arrow-rotate-left text-xs text-rose-600"></i>
+                  </div>
+                  <div class="flex items-baseline justify-between mt-auto">
+                    <span class="text-base sm:text-lg font-black text-rose-800" id="ss-kpi-dikembalikan">0</span>
+                    <span class="text-[9px] font-semibold text-slate-400">Ide</span>
+                  </div>
+                </div>
               </div>
-              <p class="text-[10px] text-slate-400 mt-1">Sedang ditinjau oleh komite Kaizen</p>
             </div>
           </div>
 
@@ -1325,8 +1377,12 @@
                 </div>
                 <select id="ss-filter-part" onchange="filterSSTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Status Reward</option>
-                  <option value="Approved">Approved</option>
-                  <option value="Pending">Pending / Review</option>
+                  <option value="Proses Penilaian">Proses Penilaian</option>
+                  <option value="Berita Acara">Berita Acara</option>
+                  <option value="Dikembalikan">Dikembalikan</option>
+                  <option value="Revisi">Revisi</option>
+                  <option value="BPH">BPH</option>
+                  <option value="IBRA/Lunas">IBRA/Lunas</option>
                 </select>
                 <button type="button" onclick="toggleColumnMode('ss')" id="btn-col-toggle-ss" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
                   <i class="fa-solid fa-table-columns"></i>
@@ -4064,7 +4120,7 @@
       const targetNameClean = targetInfo ? targetInfo.name.toLowerCase().replace(/[^a-z0-9]/g, "") : targetCode.toLowerCase();
 
       // 1. Ekstraksi kode cabang dari objek
-      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || '';
+      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS) || '';
       const itemCode = String(rawCode).toUpperCase().trim();
 
       if (itemCode) {
@@ -4073,7 +4129,7 @@
       }
 
       // 2. Ekstraksi teks cabang dari objek
-      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || '';
+      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Cabang', SCHEMAS.Data_SS) || '';
       const itemCabangClean = String(rawCabang).toLowerCase().replace(/[^a-z0-9]/g, "");
 
       if (itemCabangClean) {
@@ -4271,9 +4327,20 @@
       const targetSS = fallbackSummary.targetSS || (totalKaryawan * 2) || (totalSS > 0 ? totalSS : 10);
       const uniqueSSEmps = new Set(rawSSRows.map(s => safeString(s['NPK'] || s.npk)).filter(Boolean)).size;
       const ssParticipationRate = totalKaryawan ? Math.min(100, Math.round(((uniqueSSEmps || (totalSS > 0 ? 1 : 0)) / totalKaryawan) * 100)) : (totalSS > 0 ? 100 : 0);
+
+      // Hitung Distribusi Status Reward SS Riil dari Database
+      const ssRewardStatusCount = {};
+      rawSSRows.forEach(s => {
+        const rawStatus = getRowCellValue(s, 'Status Reward', SCHEMAS.Data_SS) || s['Status Reward'] || '';
+        const st = String(rawStatus).trim();
+        if (st && st !== '-') {
+          ssRewardStatusCount[st] = (ssRewardStatusCount[st] || 0) + 1;
+        }
+      });
+
       const countImplementedSS = rawSSRows.filter(s => {
-        const st = String(s['Status Reward'] || s['Keterangan'] || '').toLowerCase();
-        return st.includes('approved') || st.includes('terverifikasi') || st.includes('selesai') || st.includes('cair');
+        const st = String(getRowCellValue(s, 'Status Reward', SCHEMAS.Data_SS) || s['Status Reward'] || s['Keterangan'] || '').toLowerCase();
+        return st.includes('ibra') || st.includes('lunas') || st.includes('approved') || st.includes('terverifikasi') || st.includes('cair');
       }).length || employees.reduce((sum, e) => sum + (Number(e.implementedSS) || 0), 0);
       const countEvaluasiSS = Math.max(0, totalSS - countImplementedSS);
 
@@ -4370,6 +4437,7 @@
         ssParticipationRate,
         countImplementedSS,
         countEvaluasiSS,
+        ssRewardStatusCount,
         totalQCCCircles,
         qccStatusCount,
         pdcaCount,
@@ -5653,8 +5721,15 @@
         return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${meta.badgeBg}">${val}</span>`;
       }
       if (norm === 'status reward') {
-        const isApproved = String(val).toLowerCase().includes('approved') || String(val).toLowerCase().includes('terverifikasi');
-        return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isApproved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${val}</span>`;
+        const meta = getSSRewardStatusMeta(val);
+        return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold border inline-flex items-center gap-1 ${meta.badgeBg}"><i class="${meta.icon} text-[9px]"></i> ${val}</span>`;
+      }
+      if (norm === 'reward') {
+        let rewStr = String(val).trim();
+        if (/^\d+$/.test(rewStr)) {
+          rewStr = 'Rp ' + Number(rewStr).toLocaleString('id-ID');
+        }
+        return `<span class="font-bold text-emerald-700 bg-emerald-50/70 px-2 py-0.5 rounded-lg border border-emerald-200/60">${rewStr}</span>`;
       }
       if (norm === 'status' || norm === 'pdca' || norm === 'status circle' || norm === 'tahapan') {
         const sNorm = String(val).toLowerCase().trim();
@@ -6548,11 +6623,211 @@
     }
 
     // ----------------------------------------------------
-    // C. Suggestion System / SS (21 Kolom Presisi)
+    // C. Suggestion System / SS (Status Reward Dinamis dari Database)
     // ----------------------------------------------------
+    function getSSRewardStatusMeta(statusName) {
+      const s = String(statusName || '').toLowerCase().trim();
+      
+      if (s.includes('ibra') || s.includes('lunas') || s.includes('cair')) {
+        return {
+          key: 'IBRA/Lunas',
+          displayName: 'IBRA / Lunas',
+          icon: 'fa-solid fa-circle-check',
+          textColor: 'text-emerald-700',
+          badgeBg: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+          cardBg: 'bg-emerald-50/70 border-emerald-200/80 hover:bg-emerald-50',
+          countColor: 'text-emerald-800',
+          desc: 'Reward sudah di-IBRA / dicairkan ke cabang'
+        };
+      }
+      if (s === 'bph' || s.includes('bph')) {
+        return {
+          key: 'BPH',
+          displayName: 'BPH',
+          icon: 'fa-solid fa-file-signature',
+          textColor: 'text-indigo-700',
+          badgeBg: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+          cardBg: 'bg-indigo-50/70 border-indigo-200/80 hover:bg-indigo-50',
+          countColor: 'text-indigo-800',
+          desc: 'Reward sudah diproses BPH'
+        };
+      }
+      if (s.includes('berita acara') || s === 'ba' || s.includes('acara')) {
+        return {
+          key: 'Berita Acara',
+          displayName: 'Berita Acara',
+          icon: 'fa-solid fa-file-invoice',
+          textColor: 'text-blue-700',
+          badgeBg: 'bg-blue-50 text-blue-700 border-blue-200',
+          cardBg: 'bg-blue-50/70 border-blue-200/80 hover:bg-blue-50',
+          countColor: 'text-blue-800',
+          desc: 'Sudah dinilai, reward belum diproses BPH'
+        };
+      }
+      if (s.includes('proses') || s.includes('penilaian') || s.includes('evaluasi') || s.includes('review') || s.includes('pending')) {
+        return {
+          key: 'Proses Penilaian',
+          displayName: 'Proses Penilaian',
+          icon: 'fa-solid fa-clock-rotate-left',
+          textColor: 'text-amber-700',
+          badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
+          cardBg: 'bg-amber-50/70 border-amber-200/80 hover:bg-amber-50',
+          countColor: 'text-amber-800',
+          desc: 'Proses penilaian Corp Planning & Dev'
+        };
+      }
+      if (s.includes('revisi')) {
+        return {
+          key: 'Revisi',
+          displayName: 'Revisi',
+          icon: 'fa-solid fa-pen-to-square',
+          textColor: 'text-purple-700',
+          badgeBg: 'bg-purple-50 text-purple-700 border-purple-200',
+          cardBg: 'bg-purple-50/70 border-purple-200/80 hover:bg-purple-50',
+          countColor: 'text-purple-800',
+          desc: 'Diminta revisi & submit ulang via aplikasi'
+        };
+      }
+      if (s.includes('kembali') || s.includes('tolak') || s.includes('reject')) {
+        return {
+          key: 'Dikembalikan',
+          displayName: 'Dikembalikan',
+          icon: 'fa-solid fa-arrow-rotate-left',
+          textColor: 'text-rose-700',
+          badgeBg: 'bg-rose-50 text-rose-700 border-rose-200',
+          cardBg: 'bg-rose-50/70 border-rose-200/80 hover:bg-rose-50',
+          countColor: 'text-rose-800',
+          desc: 'Improvement tidak sesuai kriteria penilaian'
+        };
+      }
+
+      return {
+        key: statusName || 'Lainnya',
+        displayName: statusName || 'Lainnya',
+        icon: 'fa-solid fa-tag',
+        textColor: 'text-slate-700',
+        badgeBg: 'bg-slate-100 text-slate-700 border-slate-200',
+        cardBg: 'bg-slate-50 border-slate-200 hover:bg-slate-100',
+        countColor: 'text-slate-800',
+        desc: 'Status reward terdaftar di database'
+      };
+    }
+
+    function populateSSRewardFilter(rawRows = []) {
+      const select = document.getElementById('ss-filter-part');
+      if (!select) return;
+
+      const currentVal = select.value || 'ALL';
+      const standardStatuses = [
+        'Proses Penilaian',
+        'Berita Acara',
+        'Dikembalikan',
+        'Revisi',
+        'BPH',
+        'IBRA/Lunas'
+      ];
+      const foundStatuses = new Set(standardStatuses);
+
+      rawRows.forEach(r => {
+        const rawSt = getRowCellValue(r, 'Status Reward', SCHEMAS.Data_SS) || r['Status Reward'];
+        if (rawSt && String(rawSt).trim() && String(rawSt).trim() !== '-') {
+          foundStatuses.add(String(rawSt).trim());
+        }
+      });
+
+      let html = `<option value="ALL">Semua Status Reward</option>`;
+      foundStatuses.forEach(st => {
+        const selected = (currentVal.toLowerCase() === st.toLowerCase()) ? 'selected' : '';
+        html += `<option value="${st}" ${selected}>${st}</option>`;
+      });
+
+      select.innerHTML = html;
+    }
+
+    function selectSSRewardFilter(statusKey) {
+      const select = document.getElementById('ss-filter-part');
+      if (!select) return;
+
+      if (select.value.toLowerCase() === statusKey.toLowerCase()) {
+        select.value = 'ALL';
+      } else {
+        let matched = false;
+        for (let i = 0; i < select.options.length; i++) {
+          if (select.options[i].value.toLowerCase() === statusKey.toLowerCase()) {
+            select.selectedIndex = i;
+            matched = true;
+            break;
+          }
+        }
+        if (!matched) {
+          const opt = document.createElement('option');
+          opt.value = statusKey;
+          opt.textContent = statusKey;
+          select.appendChild(opt);
+          select.value = statusKey;
+        }
+      }
+
+      filterSSTable();
+    }
+
+    function renderModuleSSRewardKPI(statusCount = {}) {
+      const container = document.getElementById('ss-reward-kpi-container');
+      if (!container) return;
+
+      const standardStatuses = [
+        'Proses Penilaian',
+        'Berita Acara',
+        'Dikembalikan',
+        'Revisi',
+        'BPH',
+        'IBRA/Lunas'
+      ];
+
+      const allStatuses = [...standardStatuses];
+      Object.keys(statusCount).forEach(k => {
+        const exists = allStatuses.some(s => s.toLowerCase() === k.toLowerCase());
+        if (!exists && k && k !== '-') allStatuses.push(k);
+      });
+
+      const activeFilter = (document.getElementById('ss-filter-part')?.value || 'ALL').toLowerCase();
+
+      container.innerHTML = allStatuses.map(st => {
+        const meta = getSSRewardStatusMeta(st);
+        let count = 0;
+        Object.keys(statusCount).forEach(k => {
+          const kNorm = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const metaKeyNorm = meta.key.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const stNorm = st.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (kNorm === metaKeyNorm || kNorm === stNorm) {
+            count += Number(statusCount[k]) || 0;
+          }
+        });
+
+        const isActive = activeFilter !== 'all' && (activeFilter === meta.key.toLowerCase() || activeFilter === st.toLowerCase());
+        const ringClass = isActive ? 'ring-2 ring-offset-1 ring-slate-800 font-black shadow-md' : 'shadow-2xs';
+
+        return `
+          <div onclick="selectSSRewardFilter('${meta.key}')" 
+               title="${meta.desc} (Klik untuk menyaring tabel)"
+               class="p-2 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between ${meta.cardBg} ${ringClass}">
+            <div class="flex items-center justify-between gap-1 mb-1">
+              <span class="text-[10px] font-bold ${meta.textColor} truncate" title="${meta.displayName}">${meta.displayName}</span>
+              <i class="${meta.icon} text-xs ${meta.textColor} opacity-85 flex-shrink-0"></i>
+            </div>
+            <div class="flex items-baseline justify-between mt-auto">
+              <span class="text-base sm:text-lg font-black ${meta.countColor}">${count}</span>
+              <span class="text-[9px] font-semibold text-slate-400">Ide</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function renderSSView(data) {
       if (!data) return;
       const s = data.summary || {};
+      const rawRows = data.rawTables?.Data_SS || [];
 
       if (document.getElementById('ss-card-total')) document.getElementById('ss-card-total').textContent = s.totalSS || 0;
       if (document.getElementById('ss-card-target-denom')) document.getElementById('ss-card-target-denom').textContent = `/ ${s.targetSS || 0} Target`;
@@ -6561,8 +6836,12 @@
       if (document.getElementById('ss-card-prog-bar')) document.getElementById('ss-card-prog-bar').style.width = `${ssPct}%`;
       
       if (document.getElementById('ss-card-part-rate')) document.getElementById('ss-card-part-rate').textContent = `${s.ssParticipationRate || 0}%`;
-      if (document.getElementById('ss-card-implemented')) document.getElementById('ss-card-implemented').textContent = s.countImplementedSS || 0;
-      if (document.getElementById('ss-card-evaluasi')) document.getElementById('ss-card-evaluasi').textContent = s.countEvaluasiSS || 0;
+
+      // Populate filter dropdown status reward dinamis
+      populateSSRewardFilter(rawRows);
+
+      // Render KPI Status Reward Cards
+      renderModuleSSRewardKPI(s.ssRewardStatusCount || {});
 
       filterSSTable();
     }
@@ -6584,24 +6863,56 @@
         list = list.filter(e => matchBranch(e, targetBranch));
       }
 
+      // Hitung dan update status KPI sesuai cabang yang sedang disaring
+      const currentBranchStatusCount = {};
+      list.forEach(r => {
+        const rawSt = getRowCellValue(r, 'Status Reward', SCHEMAS.Data_SS) || r['Status Reward'] || '';
+        const st = String(rawSt).trim();
+        if (st && st !== '-') {
+          currentBranchStatusCount[st] = (currentBranchStatusCount[st] || 0) + 1;
+        }
+      });
+      renderModuleSSRewardKPI(currentBranchStatusCount);
+
       if (q) {
-        list = list.filter(e => 
-          String(e['No'] || '').toLowerCase().includes(q) || 
-          String(e['Registrasi'] || '').toLowerCase().includes(q) || 
-          String(e['Nama'] || '').toLowerCase().includes(q) || 
-          String(e['NPK'] || '').toLowerCase().includes(q) ||
-          String(e['Tema'] || '').toLowerCase().includes(q) ||
-          String(e['Cabang'] || '').toLowerCase().includes(q) ||
-          String(e['Kode BA'] || '').toLowerCase().includes(q)
-        );
+        list = list.filter(e => {
+          const checkMatch = (colName) => {
+            const v = getRowCellValue(e, colName, SCHEMAS.Data_SS) || e[colName] || '';
+            return String(v).toLowerCase().includes(q);
+          };
+          return (
+            checkMatch('No') ||
+            checkMatch('Registrasi') ||
+            checkMatch('Nama') ||
+            checkMatch('NPK') ||
+            checkMatch('Cabang') ||
+            checkMatch('Kode BA') ||
+            checkMatch('Bagian') ||
+            checkMatch('Tema') ||
+            checkMatch('Fasilitator') ||
+            checkMatch('NPK Fasilitator') ||
+            checkMatch('Diterima Bulan') ||
+            checkMatch('Kategori') ||
+            checkMatch('No.Akun AstraPay') ||
+            checkMatch('Nama Akun') ||
+            checkMatch('Status Reward') ||
+            checkMatch('Reward') ||
+            checkMatch('No.Berita Acara') ||
+            checkMatch('No.BPH') ||
+            checkMatch('Distribusi Reward') ||
+            checkMatch('Keterangan')
+          );
+        });
       }
 
       if (partFilter !== 'ALL') {
+        const pNorm = partFilter.toLowerCase().replace(/[^a-z0-9]/g, '');
         list = list.filter(e => {
-          const st = String(e['Status Reward'] || '').toLowerCase();
-          if (partFilter === 'Approved') return st.includes('approved') || st.includes('terverifikasi');
-          if (partFilter === 'Pending') return st.includes('pending') || st.includes('review') || st.includes('draft');
-          return true;
+          const rawSt = String(getRowCellValue(e, 'Status Reward', SCHEMAS.Data_SS) || e['Status Reward'] || '').trim();
+          const stNorm = rawSt.toLowerCase().replace(/[^a-z0-9]/g, '');
+          const meta = getSSRewardStatusMeta(rawSt);
+          const metaNorm = meta.key.toLowerCase().replace(/[^a-z0-9]/g, '');
+          return stNorm === pNorm || metaNorm === pNorm || rawSt.toLowerCase() === partFilter.toLowerCase();
         });
       }
 
@@ -6629,7 +6940,8 @@
           const stickyClass = isFirst 
             ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
             : 'text-slate-600';
-          const val = formatColumnCell(col, row[col]);
+          const rawVal = getRowCellValue(row, col, SCHEMAS.Data_SS);
+          const val = formatColumnCell(col, rawVal);
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -8169,9 +8481,9 @@
       let row = rawRows[rowIndex];
       if (!row && fallbackKey) {
         row = rawRows.find(r => 
-          String(r['Registrasi'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase() ||
-          String(r['NPK'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase() ||
-          String(r['Nama'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase()
+          String(getRowCellValue(r, 'Registrasi', SCHEMAS.Data_SS) || r['Registrasi'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase() ||
+          String(getRowCellValue(r, 'NPK', SCHEMAS.Data_SS) || r['NPK'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase() ||
+          String(getRowCellValue(r, 'Nama', SCHEMAS.Data_SS) || r['Nama'] || '').trim().toLowerCase() === String(fallbackKey).trim().toLowerCase()
         );
       }
       if (!row) {
@@ -8180,55 +8492,53 @@
       }
 
       // 1. Identitas Inovator
-      const empName = row['Nama'] || 'Karyawan Inovator';
-      const npkVal = row['NPK'] || '-';
+      const empName = getRowCellValue(row, 'Nama', SCHEMAS.Data_SS) || row['Nama'] || 'Karyawan Inovator';
+      const npkVal = getRowCellValue(row, 'NPK', SCHEMAS.Data_SS) || row['NPK'] || '-';
       document.getElementById('ss-modal-emp-name').textContent = empName;
       document.getElementById('ss-modal-emp-fullname').textContent = empName;
       document.getElementById('ss-modal-emp-npk').textContent = `NPK: ${npkVal}`;
-      document.getElementById('ss-modal-category').textContent = row['Kategori'] || 'Suggestion System';
-      document.getElementById('ss-modal-period').textContent = `Bulan: ${row['Diterima Bulan'] || '-'}`;
+      document.getElementById('ss-modal-category').textContent = getRowCellValue(row, 'Kategori', SCHEMAS.Data_SS) || row['Kategori'] || 'Suggestion System';
+      document.getElementById('ss-modal-period').textContent = `Bulan: ${getRowCellValue(row, 'Diterima Bulan', SCHEMAS.Data_SS) || row['Diterima Bulan'] || '-'}`;
 
-      const cab = row['Cabang'] || '-';
-      const ba = row['Kode BA'] || '-';
-      const sec = row['Bagian'] || '-';
-      const reg = row['Registrasi'] || '-';
+      const cab = getRowCellValue(row, 'Cabang', SCHEMAS.Data_SS) || row['Cabang'] || '-';
+      const ba = getRowCellValue(row, 'Kode BA', SCHEMAS.Data_SS) || row['Kode BA'] || '-';
+      const sec = getRowCellValue(row, 'Bagian', SCHEMAS.Data_SS) || row['Bagian'] || '-';
+      const reg = getRowCellValue(row, 'Registrasi', SCHEMAS.Data_SS) || row['Registrasi'] || '-';
       document.getElementById('ss-modal-meta').textContent = `NPK: ${npkVal} • Cabang: ${cab} • Kode BA: ${ba} • Bagian: ${sec}`;
       document.getElementById('ss-modal-reg-no').textContent = `Reg: ${reg}`;
 
       // Status Badge
-      const statusReward = row['Status Reward'] || 'Terverifikasi';
+      const statusReward = getRowCellValue(row, 'Status Reward', SCHEMAS.Data_SS) || row['Status Reward'] || 'Proses Penilaian';
+      const meta = getSSRewardStatusMeta(statusReward);
       const statusBadge = document.getElementById('ss-modal-status-badge');
       if (statusBadge) {
         statusBadge.textContent = `Status: ${statusReward}`;
-        const sNorm = String(statusReward).toLowerCase();
-        if (sNorm.includes('approved') || sNorm.includes('terverifikasi') || sNorm.includes('selesai')) {
-          statusBadge.className = 'px-2.5 py-1 bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full text-[10px] font-bold';
-        } else if (sNorm.includes('pending') || sNorm.includes('review') || sNorm.includes('evaluasi')) {
-          statusBadge.className = 'px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-[10px] font-bold';
-        } else {
-          statusBadge.className = 'px-2.5 py-1 bg-slate-100 text-slate-800 border border-slate-200 rounded-full text-[10px] font-bold';
-        }
+        statusBadge.className = `px-2.5 py-1 ${meta.badgeBg} rounded-full text-[10px] font-bold inline-flex items-center gap-1`;
       }
 
       // 2. Tema & Keterangan
-      document.getElementById('ss-modal-theme').textContent = row['Tema'] || 'Belum ada deskripsi tema inovasi.';
-      const descVal = row['Keterangan'] || '-';
+      document.getElementById('ss-modal-theme').textContent = getRowCellValue(row, 'Tema', SCHEMAS.Data_SS) || row['Tema'] || 'Belum ada deskripsi tema inovasi.';
+      const descVal = getRowCellValue(row, 'Keterangan', SCHEMAS.Data_SS) || row['Keterangan'] || '-';
       document.getElementById('ss-modal-desc').textContent = descVal;
 
       // 3. Fasilitator
-      document.getElementById('ss-modal-facilitator').textContent = row['Fasilitator'] || '-';
-      document.getElementById('ss-modal-facilitator-npk').textContent = `NPK: ${row['NPK Fasilitator'] || '-'}`;
+      document.getElementById('ss-modal-facilitator').textContent = getRowCellValue(row, 'Fasilitator', SCHEMAS.Data_SS) || row['Fasilitator'] || '-';
+      document.getElementById('ss-modal-facilitator-npk').textContent = `NPK: ${getRowCellValue(row, 'NPK Fasilitator', SCHEMAS.Data_SS) || row['NPK Fasilitator'] || '-'}`;
 
       // 4. Reward & AstraPay
-      document.getElementById('ss-modal-reward-val').textContent = row['Reward'] || '-';
+      let rew = getRowCellValue(row, 'Reward', SCHEMAS.Data_SS) || row['Reward'] || '-';
+      if (/^\d+$/.test(String(rew).trim())) {
+        rew = 'Rp ' + Number(rew).toLocaleString('id-ID');
+      }
+      document.getElementById('ss-modal-reward-val').textContent = rew;
       document.getElementById('ss-modal-reward-status').textContent = statusReward;
-      document.getElementById('ss-modal-astrapay-no').textContent = row['No.Akun AstraPay'] || '-';
-      document.getElementById('ss-modal-astrapay-name').textContent = row['Nama Akun'] || '-';
-      document.getElementById('ss-modal-distribusi').textContent = row['Distribusi Reward'] || 'Penyaluran via Akun AstraPay Pengusul';
+      document.getElementById('ss-modal-astrapay-no').textContent = getRowCellValue(row, 'No.Akun AstraPay', SCHEMAS.Data_SS) || row['No.Akun AstraPay'] || '-';
+      document.getElementById('ss-modal-astrapay-name').textContent = getRowCellValue(row, 'Nama Akun', SCHEMAS.Data_SS) || row['Nama Akun'] || '-';
+      document.getElementById('ss-modal-distribusi').textContent = getRowCellValue(row, 'Distribusi Reward', SCHEMAS.Data_SS) || row['Distribusi Reward'] || 'Penyaluran via Akun AstraPay Pengusul';
 
       // 5. Administrasi
-      document.getElementById('ss-modal-no-ba').textContent = row['No.Berita Acara'] || '-';
-      document.getElementById('ss-modal-no-bph').textContent = row['No.BPH'] || '-';
+      document.getElementById('ss-modal-no-ba').textContent = getRowCellValue(row, 'No.Berita Acara', SCHEMAS.Data_SS) || row['No.Berita Acara'] || '-';
+      document.getElementById('ss-modal-no-bph').textContent = getRowCellValue(row, 'No.BPH', SCHEMAS.Data_SS) || row['No.BPH'] || '-';
 
       // Buka modal
       const modal = document.getElementById('modal-ss-detail');
