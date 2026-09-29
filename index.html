@@ -727,25 +727,17 @@
                   <span class="text-[10px] font-bold text-slate-500 block mt-1">Gugus Kendali Mutu Aktif</span>
                 </div>
                 
-                <!-- PDCA Stage Pills (Vibrant & High Contrast) -->
+                <!-- Status Proyek QCC (Finish, Progress, & Dinamis Sesuai Database) -->
                 <div class="pt-2 border-t border-slate-100">
-                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Tahapan Proyek (PDCA)</span>
-                  <div class="grid grid-cols-4 gap-1.5 text-center">
-                    <div class="bg-blue-50/90 rounded-xl p-1.5 border border-blue-200 shadow-2xs">
-                      <span class="text-[9px] font-bold text-blue-700 block">Plan</span>
-                      <span class="text-sm font-black text-blue-900" id="card-pdca-plan">0</span>
-                    </div>
+                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block mb-1.5">Status Proyek Circle</span>
+                  <div id="dashboard-qcc-status-container" class="grid grid-cols-2 gap-1.5 text-center">
                     <div class="bg-emerald-50/90 rounded-xl p-1.5 border border-emerald-200 shadow-2xs">
-                      <span class="text-[9px] font-bold text-emerald-700 block">Do</span>
-                      <span class="text-sm font-black text-emerald-900" id="card-pdca-do">0</span>
+                      <span class="text-[9px] font-extrabold text-emerald-700 block">Finish</span>
+                      <span class="text-sm font-black text-emerald-900" id="card-qcc-finish">0</span>
                     </div>
-                    <div class="bg-amber-50/90 rounded-xl p-1.5 border border-amber-200 shadow-2xs">
-                      <span class="text-[9px] font-bold text-amber-700 block">Check</span>
-                      <span class="text-sm font-black text-amber-900" id="card-pdca-check">0</span>
-                    </div>
-                    <div class="bg-purple-50/90 rounded-xl p-1.5 border border-purple-200 shadow-2xs">
-                      <span class="text-[9px] font-bold text-purple-700 block">Action</span>
-                      <span class="text-sm font-black text-purple-900" id="card-pdca-action">0</span>
+                    <div class="bg-blue-50/90 rounded-xl p-1.5 border border-blue-200 shadow-2xs">
+                      <span class="text-[9px] font-extrabold text-blue-700 block">Progress</span>
+                      <span class="text-sm font-black text-blue-900" id="card-qcc-progress">0</span>
                     </div>
                   </div>
                 </div>
@@ -1372,7 +1364,7 @@
               </div>
               <div>
                 <h3 class="text-sm font-extrabold text-slate-900">Quality Control Circle (QCC)</h3>
-                <p class="text-xs text-slate-500">Aktivitas gugus kerja dalam problem solving sistematis berbasis siklus Plan-Do-Check-Action (PDCA).</p>
+                <p class="text-xs text-slate-500">Aktivitas gugus kerja dalam inovasi dan problem solving mutu kerja berbasis status progres proyek (Progress & Finish).</p>
               </div>
             </div>
             <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -1397,23 +1389,27 @@
             </div>
 
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
-              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Tahapan Siklus PDCA</span>
-              <div class="grid grid-cols-4 gap-1.5 text-center text-xs">
-                <div class="bg-blue-50 p-1.5 rounded-lg border border-blue-100">
-                  <span class="text-[9px] font-bold text-blue-600 block">Plan</span>
-                  <span class="font-extrabold text-blue-800" id="qcc-card-plan">0</span>
+              <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-2">Status Proyek Circle QCC</span>
+              <div id="qcc-status-kpi-container" class="grid grid-cols-2 gap-2 text-center text-xs">
+                <div class="bg-emerald-50 p-2 rounded-xl border border-emerald-200 shadow-2xs text-left">
+                  <div class="flex items-center justify-between mb-0.5">
+                    <span class="text-[10px] font-extrabold text-emerald-700">Finish</span>
+                    <i class="fa-solid fa-circle-check text-emerald-500 text-xs"></i>
+                  </div>
+                  <div class="flex items-baseline gap-1">
+                    <span class="text-xl font-black text-emerald-900" id="qcc-card-finish">0</span>
+                    <span class="text-[9px] font-bold text-emerald-600">Circle</span>
+                  </div>
                 </div>
-                <div class="bg-emerald-50 p-1.5 rounded-lg border border-emerald-100">
-                  <span class="text-[9px] font-bold text-emerald-600 block">Do</span>
-                  <span class="font-extrabold text-emerald-800" id="qcc-card-do">0</span>
-                </div>
-                <div class="bg-amber-50 p-1.5 rounded-lg border border-amber-100">
-                  <span class="text-[9px] font-bold text-amber-600 block">Check</span>
-                  <span class="font-extrabold text-amber-800" id="qcc-card-check">0</span>
-                </div>
-                <div class="bg-red-50 p-1.5 rounded-lg border border-red-100">
-                  <span class="text-[9px] font-bold text-red-600 block">Action</span>
-                  <span class="font-extrabold text-red-800" id="qcc-card-action">0</span>
+                <div class="bg-blue-50 p-2 rounded-xl border border-blue-200 shadow-2xs text-left">
+                  <div class="flex items-center justify-between mb-0.5">
+                    <span class="text-[10px] font-extrabold text-blue-700">Progress</span>
+                    <i class="fa-solid fa-spinner text-blue-500 text-xs"></i>
+                  </div>
+                  <div class="flex items-baseline gap-1">
+                    <span class="text-xl font-black text-blue-900" id="qcc-card-progress">0</span>
+                    <span class="text-[9px] font-bold text-blue-600">Circle</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1426,7 +1422,7 @@
                 </div>
                 <div class="min-w-0">
                   <p class="text-xs font-black text-slate-900 truncate" id="qcc-card-best-team">-</p>
-                  <span class="text-[10px] font-bold text-purple-600" id="qcc-card-best-score">Poin: -</span>
+                  <span class="text-[10px] font-bold text-purple-600" id="qcc-card-best-score">Status: -</span>
                 </div>
               </div>
             </div>
@@ -1440,12 +1436,8 @@
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
                   <input type="text" id="qcc-search-input" onkeyup="filterQCCTable()" placeholder="Cari nama tim, leader, tema..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="qcc-filter-pdca" onchange="filterQCCTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Tahap PDCA</option>
-                  <option value="Plan">Plan</option>
-                  <option value="Do">Do</option>
-                  <option value="Check">Check</option>
-                  <option value="Action">Action</option>
+                <select id="qcc-filter-status" onchange="filterQCCTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Status</option>
                 </select>
                 <button type="button" onclick="toggleColumnMode('qcc')" id="btn-col-toggle-qcc" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
                   <i class="fa-solid fa-table-columns"></i>
@@ -3802,11 +3794,11 @@
       // 4. Data_QCC (29 Columns)
       if (!payload.rawTables.Data_QCC || !payload.rawTables.Data_QCC.length) {
         const baseQCC = qccs.length ? qccs : [
-          { namaTim: "Circle Kaizen Service DSO", cabang: "Lampung A Yani", kodeBA: "D660", departemen: "Service & Workshop", pdca: "Action", tema: "Peningkatan Kecepatan Service Berkala dari 60 Menit ke 45 Menit", leader: "Ahmad Fauzi" },
-          { namaTim: "Circle Speed-Up Sales", cabang: "Lampung S Hatta", kodeBA: "D661", departemen: "Sales & Delivery", pdca: "Check", tema: "Reduksi Waktu Serah Terima Unit Kendaraan Baru ke Konsumen", leader: "Bambang Irawan" },
-          { namaTim: "Circle Tertib Administrasi", cabang: "Bandarjaya", kodeBA: "D662", departemen: "Finance & Admin", pdca: "Do", tema: "Penerapan E-Archive Faktur Kendaraan Tanpa Kertas", leader: "Citra Lestari" },
-          { namaTim: "Circle Part & Inventory", cabang: "Kotabumi", kodeBA: "D663", departemen: "Logistik & Gudang", pdca: "Plan", tema: "Eliminasi Selisih Stok Fast Moving Parts di Gudang", leader: "Dedy Prasetya" },
-          { namaTim: "Circle Zero Defect Body Repair", cabang: "Lampung Timur", kodeBA: "D664", departemen: "Body & Paint", pdca: "Action", tema: "Pengurangan Debu Cat Finishing dengan Modifikasi Filter Booth", leader: "Eko Wahyudi" }
+          { namaTim: "Circle Kaizen Service DSO", cabang: "Lampung A Yani", kodeBA: "D660", departemen: "Service & Workshop", status: "Finish", tema: "Peningkatan Kecepatan Service Berkala dari 60 Menit ke 45 Menit", leader: "Ahmad Fauzi" },
+          { namaTim: "Circle Speed-Up Sales", cabang: "Lampung S Hatta", kodeBA: "D661", departemen: "Sales & Delivery", status: "Progress", tema: "Reduksi Waktu Serah Terima Unit Kendaraan Baru ke Konsumen", leader: "Bambang Irawan" },
+          { namaTim: "Circle Tertib Administrasi", cabang: "Bandarjaya", kodeBA: "D662", departemen: "Finance & Admin", status: "Progress", tema: "Penerapan E-Archive Faktur Kendaraan Tanpa Kertas", leader: "Citra Lestari" },
+          { namaTim: "Circle Part & Inventory", cabang: "Kotabumi", kodeBA: "D663", departemen: "Logistik & Gudang", status: "Progress", tema: "Eliminasi Selisih Stok Fast Moving Parts di Gudang", leader: "Dedy Prasetya" },
+          { namaTim: "Circle Zero Defect Body Repair", cabang: "Lampung Timur", kodeBA: "D664", departemen: "Body & Paint", status: "Finish", tema: "Pengurangan Debu Cat Finishing dengan Modifikasi Filter Booth", leader: "Eko Wahyudi" }
         ];
 
         payload.rawTables.Data_QCC = baseQCC.map((q, idx) => ({
@@ -3828,7 +3820,7 @@
           "Anggota 7": q['Anggota 7'] || 'Hendra Setiawan',
           "Tema": q['Tema'] || q.tema || 'Peningkatan Kualitas dan Kecepatan Pelayanan Pelanggan',
           "Kategori": q['Kategori'] || 'QCC Kategori Teknik',
-          "Status": q['Status'] || q.pdca || 'Action',
+          "Status": q['Status'] || q.status || q.pdca || 'Progress',
           "No.Akun Astrapay QC Leader": safeString(q['No.Akun Astrapay QC Leader'] || '081298765432'),
           "Pendaftaran diterima": parseExcelDate(q['Pendaftaran diterima'] || '2025-01-15'),
           "L 1-8 diterima": parseExcelDate(q['L 1-8 diterima'] || '2025-05-10'),
@@ -4285,23 +4277,32 @@
       }).length || employees.reduce((sum, e) => sum + (Number(e.implementedSS) || 0), 0);
       const countEvaluasiSS = Math.max(0, totalSS - countImplementedSS);
 
-      // 3. Hitung Metrik QCC Riil dari Data_QCC
+      // 3. Hitung Metrik QCC Riil dari Data_QCC (Berdasarkan Kolom Status di Database)
       const rawQCCRows = Array.isArray(rawTables.Data_QCC) && rawTables.Data_QCC.length > 0 ? rawTables.Data_QCC : qccList;
       const totalQCCCircles = rawQCCRows.length;
-      const pdcaCount = { Plan: 0, Do: 0, Check: 0, Action: 0 };
+      const qccStatusCount = {};
       rawQCCRows.forEach(q => {
-        const st = String(q['Status'] || q['PDCA'] || 'Action').trim().toLowerCase();
-        if (st.includes('plan')) pdcaCount.Plan++;
-        else if (st.includes('do')) pdcaCount.Do++;
-        else if (st.includes('check')) pdcaCount.Check++;
-        else pdcaCount.Action++;
+        const st = String(q['Status'] || q['status'] || 'Progress').trim();
+        if (st && st !== '-') {
+          qccStatusCount[st] = (qccStatusCount[st] || 0) + 1;
+        }
       });
-      if (totalQCCCircles > 0 && (pdcaCount.Plan + pdcaCount.Do + pdcaCount.Check + pdcaCount.Action === 0)) {
-        pdcaCount.Action = totalQCCCircles;
+      if (Object.keys(qccStatusCount).length === 0 && totalQCCCircles > 0) {
+        qccStatusCount['Progress'] = totalQCCCircles;
       }
-      const bestQCC = rawQCCRows[0] ? {
-        namaTim: rawQCCRows[0]['Nama Tim'] || rawQCCRows[0]['Tema'] || 'Circle Terdaftar',
-        skor: rawQCCRows[0]['Status'] || 'PDCA Aktif'
+
+      // Backward compatibility untuk pemanggil pdcaCount
+      const pdcaCount = {
+        Plan: qccStatusCount['Progress'] || 0,
+        Do: qccStatusCount['Finish'] || 0,
+        Check: 0,
+        Action: 0
+      };
+
+      const finishCircle = rawQCCRows.find(q => String(q['Status'] || '').toLowerCase().includes('finish')) || rawQCCRows[0];
+      const bestQCC = finishCircle ? {
+        namaTim: finishCircle['Nama Tim'] || finishCircle['Tema'] || 'Circle Terdaftar',
+        skor: finishCircle['Status'] || 'Finish'
       } : (fallbackSummary.bestQCC || null);
 
       // 4. Hitung Surat Peringatan (SP) Riil dari Data_SP
@@ -4370,6 +4371,7 @@
         countImplementedSS,
         countEvaluasiSS,
         totalQCCCircles,
+        qccStatusCount,
         pdcaCount,
         bestQCC,
         totalSP,
@@ -5140,18 +5142,16 @@
 
       // Card 4: QCC
       if (document.getElementById('card-qcc-total')) document.getElementById('card-qcc-total').textContent = s.totalQCCCircles || 0;
-      if (s.pdcaCount) {
-        if (document.getElementById('card-pdca-plan')) document.getElementById('card-pdca-plan').textContent = s.pdcaCount.Plan || 0;
-        if (document.getElementById('card-pdca-do')) document.getElementById('card-pdca-do').textContent = s.pdcaCount.Do || 0;
-        if (document.getElementById('card-pdca-check')) document.getElementById('card-pdca-check').textContent = s.pdcaCount.Check || 0;
-        if (document.getElementById('card-pdca-action')) document.getElementById('card-pdca-action').textContent = s.pdcaCount.Action || 0;
-      }
+      renderDashboardQCCStatus(s.qccStatusCount || {});
       if (s.bestQCC) {
         if (document.getElementById('card-qcc-best-team')) document.getElementById('card-qcc-best-team').textContent = s.bestQCC.namaTim;
-        if (document.getElementById('card-qcc-best-score')) document.getElementById('card-qcc-best-score').textContent = `Poin: ${s.bestQCC.skor}`;
+        if (document.getElementById('card-qcc-best-score')) {
+          const skorText = String(s.bestQCC.skor || '');
+          document.getElementById('card-qcc-best-score').textContent = skorText.startsWith('Status:') ? skorText : `Status: ${skorText}`;
+        }
       } else {
         if (document.getElementById('card-qcc-best-team')) document.getElementById('card-qcc-best-team').textContent = "Belum Ada Circle";
-        if (document.getElementById('card-qcc-best-score')) document.getElementById('card-qcc-best-score').textContent = "Poin: -";
+        if (document.getElementById('card-qcc-best-score')) document.getElementById('card-qcc-best-score').textContent = "Status: -";
       }
 
       // Card 5: SP (Surat Peringatan)
@@ -5656,14 +5656,24 @@
         const isApproved = String(val).toLowerCase().includes('approved') || String(val).toLowerCase().includes('terverifikasi');
         return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${isApproved ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-amber-50 text-amber-700 border border-amber-200'}">${val}</span>`;
       }
-      if (norm === 'status' || norm === 'pdca') {
-        const pdcaColors = {
-          'Plan': 'bg-blue-50 text-blue-700 border-blue-200',
-          'Do': 'bg-emerald-50 text-emerald-700 border-emerald-200',
-          'Check': 'bg-amber-50 text-amber-700 border-amber-200',
-          'Action': 'bg-purple-50 text-purple-700 border-purple-200'
-        };
-        const cls = pdcaColors[val] || 'bg-slate-100 text-slate-700 border-slate-200';
+      if (norm === 'status' || norm === 'pdca' || norm === 'status circle' || norm === 'tahapan') {
+        const sNorm = String(val).toLowerCase().trim();
+        let cls = 'bg-slate-100 text-slate-700 border-slate-200';
+        if (sNorm.includes('finish') || sNorm.includes('selesai')) {
+          cls = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        } else if (sNorm.includes('progress') || sNorm.includes('proses')) {
+          cls = 'bg-blue-50 text-blue-700 border-blue-200';
+        } else if (sNorm.includes('plan')) {
+          cls = 'bg-indigo-50 text-indigo-700 border-indigo-200';
+        } else if (sNorm.includes('do')) {
+          cls = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        } else if (sNorm.includes('check')) {
+          cls = 'bg-amber-50 text-amber-700 border-amber-200';
+        } else if (sNorm.includes('action')) {
+          cls = 'bg-purple-50 text-purple-700 border-purple-200';
+        } else {
+          cls = 'bg-purple-50 text-purple-700 border-purple-200';
+        }
         return `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-black border ${cls}">${val}</span>`;
       }
       if (norm === 'tingkat sp') {
@@ -6630,23 +6640,195 @@
     }
 
     // ----------------------------------------------------
-    // D. Quality Control Circle / QCC (29 Kolom Presisi)
+    // D. Quality Control Circle / QCC (Status Dinamis dari Database)
     // ----------------------------------------------------
+    function getQCCStatusMeta(statusName) {
+      const s = String(statusName || '').toLowerCase().trim();
+      if (s.includes('finish') || s.includes('selesai')) {
+        return {
+          displayName: statusName || 'Finish',
+          bg: 'bg-emerald-50/90',
+          border: 'border-emerald-200',
+          textTitle: 'text-emerald-700',
+          textCount: 'text-emerald-900',
+          icon: 'fa-solid fa-circle-check text-emerald-500'
+        };
+      }
+      if (s.includes('progress') || s.includes('proses')) {
+        return {
+          displayName: statusName || 'Progress',
+          bg: 'bg-blue-50/90',
+          border: 'border-blue-200',
+          textTitle: 'text-blue-700',
+          textCount: 'text-blue-900',
+          icon: 'fa-solid fa-spinner fa-spin-pulse text-blue-500'
+        };
+      }
+      if (s.includes('plan')) {
+        return {
+          displayName: statusName || 'Plan',
+          bg: 'bg-indigo-50/90',
+          border: 'border-indigo-200',
+          textTitle: 'text-indigo-700',
+          textCount: 'text-indigo-900',
+          icon: 'fa-solid fa-clipboard-list text-indigo-500'
+        };
+      }
+      if (s.includes('pending') || s.includes('draft') || s.includes('review') || s.includes('evaluasi')) {
+        return {
+          displayName: statusName,
+          bg: 'bg-amber-50/90',
+          border: 'border-amber-200',
+          textTitle: 'text-amber-700',
+          textCount: 'text-amber-900',
+          icon: 'fa-solid fa-clock text-amber-500'
+        };
+      }
+      return {
+        displayName: statusName,
+        bg: 'bg-purple-50/90',
+        border: 'border-purple-200',
+        textTitle: 'text-purple-700',
+        textCount: 'text-purple-900',
+        icon: 'fa-solid fa-tag text-purple-500'
+      };
+    }
+
+    function renderDashboardQCCStatus(statusCount = {}) {
+      const container = document.getElementById('dashboard-qcc-status-container');
+      if (!container) return;
+
+      const keys = Object.keys(statusCount);
+      const displayKeys = keys.length > 0 ? keys : ['Finish', 'Progress'];
+
+      const orderedKeys = [];
+      const finishKey = displayKeys.find(k => k.toLowerCase().includes('finish'));
+      if (finishKey) orderedKeys.push(finishKey);
+      else if (!keys.length) orderedKeys.push('Finish');
+
+      const progressKey = displayKeys.find(k => k.toLowerCase().includes('progress'));
+      if (progressKey) orderedKeys.push(progressKey);
+      else if (!keys.length) orderedKeys.push('Progress');
+
+      displayKeys.forEach(k => {
+        if (!orderedKeys.includes(k)) orderedKeys.push(k);
+      });
+
+      const colClass = orderedKeys.length <= 2 ? 'grid-cols-2' : (orderedKeys.length === 3 ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-4');
+      container.className = `grid ${colClass} gap-1.5 text-center`;
+
+      container.innerHTML = orderedKeys.map(st => {
+        const meta = getQCCStatusMeta(st);
+        const count = statusCount[st] || 0;
+        return `
+          <div class="${meta.bg} rounded-xl p-1.5 border ${meta.border} shadow-2xs">
+            <span class="text-[9px] font-extrabold ${meta.textTitle} block truncate" title="${meta.displayName}">${meta.displayName}</span>
+            <span class="text-sm font-black ${meta.textCount}">${count}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderModuleQCCStatusKPI(statusCount = {}) {
+      const container = document.getElementById('qcc-status-kpi-container');
+      if (!container) return;
+
+      const keys = Object.keys(statusCount);
+      const displayKeys = keys.length > 0 ? keys : ['Finish', 'Progress'];
+
+      const orderedKeys = [];
+      const finishKey = displayKeys.find(k => k.toLowerCase().includes('finish'));
+      if (finishKey) orderedKeys.push(finishKey);
+      else if (!keys.length) orderedKeys.push('Finish');
+
+      const progressKey = displayKeys.find(k => k.toLowerCase().includes('progress'));
+      if (progressKey) orderedKeys.push(progressKey);
+      else if (!keys.length) orderedKeys.push('Progress');
+
+      displayKeys.forEach(k => {
+        if (!orderedKeys.includes(k)) orderedKeys.push(k);
+      });
+
+      const colClass = orderedKeys.length <= 2 ? 'grid-cols-2' : (orderedKeys.length === 3 ? 'grid-cols-3' : 'grid-cols-2 sm:grid-cols-4');
+      container.className = `grid ${colClass} gap-2 text-center text-xs`;
+
+      container.innerHTML = orderedKeys.map(st => {
+        const meta = getQCCStatusMeta(st);
+        const count = statusCount[st] || 0;
+        return `
+          <div class="${meta.bg} p-2 rounded-xl border ${meta.border} shadow-2xs text-left">
+            <div class="flex items-center justify-between mb-0.5">
+              <span class="text-[10px] font-extrabold ${meta.textTitle} truncate" title="${meta.displayName}">${meta.displayName}</span>
+              <i class="${meta.icon} text-xs flex-shrink-0 ml-1"></i>
+            </div>
+            <div class="flex items-baseline gap-1">
+              <span class="text-xl font-black ${meta.textCount}">${count}</span>
+              <span class="text-[9px] font-bold ${meta.textTitle}">Circle</span>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function populateQCCStatusFilter(rows = []) {
+      const sel = document.getElementById('qcc-filter-status') || document.getElementById('qcc-filter-pdca');
+      if (!sel) return;
+
+      const currentVal = sel.value || 'ALL';
+      const statusSet = new Set();
+
+      rows.forEach(r => {
+        const st = String(r['Status'] || r['status'] || '').trim();
+        if (st && st !== '-') statusSet.add(st);
+      });
+
+      if (statusSet.size === 0) {
+        statusSet.add('Finish');
+        statusSet.add('Progress');
+      }
+
+      const sortedStatuses = Array.from(statusSet).sort((a, b) => {
+        const aLower = a.toLowerCase();
+        const bLower = b.toLowerCase();
+        if (aLower === 'finish' && bLower !== 'finish') return -1;
+        if (bLower === 'finish' && aLower !== 'finish') return 1;
+        if (aLower === 'progress' && bLower !== 'progress') return -1;
+        if (bLower === 'progress' && aLower !== 'progress') return 1;
+        return a.localeCompare(b);
+      });
+
+      let html = '<option value="ALL">Semua Status</option>';
+      sortedStatuses.forEach(st => {
+        html += `<option value="${st}">${st}</option>`;
+      });
+
+      sel.innerHTML = html;
+      if (sortedStatuses.includes(currentVal) || currentVal === 'ALL') {
+        sel.value = currentVal;
+      } else {
+        sel.value = 'ALL';
+      }
+    }
+
     function renderQCCView(data) {
       if (!data) return;
       const s = data.summary || {};
+      const rawRows = data.rawTables?.Data_QCC || [];
 
       if (document.getElementById('qcc-card-total')) document.getElementById('qcc-card-total').textContent = s.totalQCCCircles || 0;
-      if (document.getElementById('qcc-card-plan')) document.getElementById('qcc-card-plan').textContent = s.pdcaCount?.Plan || 0;
-      if (document.getElementById('qcc-card-do')) document.getElementById('qcc-card-do').textContent = s.pdcaCount?.Do || 0;
-      if (document.getElementById('qcc-card-check')) document.getElementById('qcc-card-check').textContent = s.pdcaCount?.Check || 0;
-      if (document.getElementById('qcc-card-action')) document.getElementById('qcc-card-action').textContent = s.pdcaCount?.Action || 0;
-      
+
+      // Populate opsi filter status dinamis dari database
+      populateQCCStatusFilter(rawRows);
+
+      // Render KPI Status Cards
+      renderModuleQCCStatusKPI(s.qccStatusCount || {});
+
       if (document.getElementById('qcc-card-best-team')) {
         document.getElementById('qcc-card-best-team').textContent = s.bestQCC?.namaTim || "Belum Ada Circle";
       }
       if (document.getElementById('qcc-card-best-score')) {
-        document.getElementById('qcc-card-best-score').textContent = s.bestQCC ? `Poin: ${s.bestQCC.skor}` : "Poin: -";
+        const skorText = String(s.bestQCC?.skor || '');
+        document.getElementById('qcc-card-best-score').textContent = skorText.startsWith('Status:') ? skorText : `Status: ${skorText}`;
       }
 
       filterQCCTable();
@@ -6656,7 +6838,8 @@
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
       const rawRows = currentDashboardPayload.rawTables.Data_QCC || [];
       const q = (document.getElementById('qcc-search-input')?.value || '').toLowerCase().trim();
-      const pdcaFilter = document.getElementById('qcc-filter-pdca')?.value || 'ALL';
+      const statusFilter = document.getElementById('qcc-filter-status')?.value || 
+                           document.getElementById('qcc-filter-pdca')?.value || 'ALL';
 
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
@@ -6669,6 +6852,16 @@
         list = list.filter(e => matchBranch(e, targetBranch));
       }
 
+      // Hitung dan update status KPI sesuai cabang yang sedang disaring
+      const currentBranchStatusCount = {};
+      list.forEach(q => {
+        const st = String(q['Status'] || q['status'] || 'Progress').trim();
+        if (st && st !== '-') {
+          currentBranchStatusCount[st] = (currentBranchStatusCount[st] || 0) + 1;
+        }
+      });
+      renderModuleQCCStatusKPI(currentBranchStatusCount);
+
       if (q) {
         list = list.filter(e => 
           String(e['No'] || '').toLowerCase().includes(q) ||
@@ -6677,13 +6870,14 @@
           String(e['Leader'] || '').toLowerCase().includes(q) ||
           String(e['Tema'] || '').toLowerCase().includes(q) ||
           String(e['Cabang/Departemen'] || '').toLowerCase().includes(q) ||
-          String(e['Kode BA'] || '').toLowerCase().includes(q)
+          String(e['Kode BA'] || '').toLowerCase().includes(q) ||
+          String(e['Status'] || '').toLowerCase().includes(q)
         );
       }
 
-      if (pdcaFilter !== 'ALL') {
+      if (statusFilter !== 'ALL') {
         list = list.filter(e => 
-          String(e['Status'] || '').toLowerCase() === pdcaFilter.toLowerCase()
+          String(e['Status'] || e['status'] || '').trim().toLowerCase() === statusFilter.toLowerCase()
         );
       }
 
