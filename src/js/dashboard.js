@@ -622,7 +622,7 @@
           const count = cMap[grpName] || 0;
           const meta = getContractMeta(grpName);
           const pct = Math.round((count / totalEmp) * 100);
-          const isFifth = (index === 4) ? 'col-span-2 xs:col-span-1' : '';
+          const isFifth = '';
           return `
             <div class="flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:shadow-xs ${meta.cardHover} transition text-center min-w-0 shadow-2xs ${isFifth}">
               <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg ${meta.iconBg} flex items-center justify-center text-[10px] sm:text-xs mb-1 border ${meta.iconBorder} shadow-2xs flex-shrink-0">

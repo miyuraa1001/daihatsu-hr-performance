@@ -433,11 +433,10 @@
       return isNaN(parsed) ? fallback : Math.round(parsed * 100) / 100;
     }
 
-    // 5 Kategori Baku Status Kepegawaian (Contract) DSO Lampung
+    // 4 Kategori Baku Status Kepegawaian (Contract) DSO Lampung (Contracters digabung ke Kontrak / PKWT)
     const STANDARD_CONTRACT_CATEGORIES = [
       'Tetap / Permanent',
       'Kontrak / PKWT',
-      'Contracters',
       'On probation',
       'Magang/Intern'
     ];
@@ -452,10 +451,7 @@
       if (s.includes('magang') || s.includes('intern') || s.includes('trainee')) {
         return 'Magang/Intern';
       }
-      if (s.includes('contracter') || s.includes('contractor') || s.includes('outsource') || s.includes('vendor')) {
-        return 'Contracters';
-      }
-      if (s.includes('kontrak') || s.includes('pkwt')) {
+      if (s.includes('contracter') || s.includes('contractor') || s.includes('outsource') || s.includes('vendor') || s.includes('kontrak') || s.includes('pkwt')) {
         return 'Kontrak / PKWT';
       }
       if (s.includes('tetap') || s.includes('permanent') || s.includes('pkwtt') || s === 'p') {

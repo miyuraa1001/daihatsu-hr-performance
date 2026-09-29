@@ -187,7 +187,6 @@
             <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
               <option value="Tetap / Permanent" ${normVal === 'Tetap / Permanent' ? 'selected' : ''}>Tetap / Permanent</option>
               <option value="Kontrak / PKWT" ${normVal === 'Kontrak / PKWT' ? 'selected' : ''}>Kontrak / PKWT</option>
-              <option value="Contracters" ${normVal === 'Contracters' ? 'selected' : ''}>Contracters</option>
               <option value="On probation" ${normVal === 'On probation' ? 'selected' : ''}>On probation</option>
               <option value="Magang/Intern" ${normVal === 'Magang/Intern' ? 'selected' : ''}>Magang/Intern</option>
             </select>
