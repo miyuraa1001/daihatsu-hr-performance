@@ -387,9 +387,6 @@
                 <div class="flex items-center mt-0.5">
                   <select id="year-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer appearance-none pr-1">
                     <option value="ALL" selected>Semua</option>
-                    <option value="2024">2024</option>
-                    <option value="2025">2025</option>
-                    <option value="2026">2026</option>
                   </select>
                   <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 pointer-events-none ml-1 group-hover:text-blue-500 transition-colors"></i>
                 </div>
@@ -472,9 +469,6 @@
             <div class="flex-1 min-w-0 flex items-center justify-between">
               <select id="year-select-mobile" onchange="syncYearChangeMobile(this.value)" class="w-full bg-transparent focus:outline-none cursor-pointer text-xs font-black text-slate-800 appearance-none pr-1 truncate">
                 <option value="ALL" selected>Semua</option>
-                <option value="2024">2024</option>
-                <option value="2025">2025</option>
-                <option value="2026">2026</option>
               </select>
               <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none ml-1 flex-shrink-0"></i>
             </div>
@@ -4509,28 +4503,37 @@
       let itemYear = null;
       let itemMonth = null;
 
-      const ymdMatch = str.match(/^(\d{4})[-/. ](\d{1,2})[-/. ](\d{1,2})/);
-      const dmyMatch = str.match(/^(\d{1,2})[-/. ](\d{1,2})[-/. ](\d{4})/);
-
-      if (ymdMatch) {
-        itemYear = parseInt(ymdMatch[1], 10);
-        itemMonth = parseInt(ymdMatch[2], 10);
-      } else if (dmyMatch) {
-        itemYear = parseInt(dmyMatch[3], 10);
-        itemMonth = parseInt(dmyMatch[2], 10);
-      } else {
-        const lower = str.toLowerCase();
-        for (const [mName, mNum] of Object.entries(monthMap)) {
-          if (lower.includes(mName)) {
-            itemMonth = mNum;
-            break;
-          }
+      // Cek serial number Excel (contoh: 45789)
+      if (typeof dateVal === 'number' || (/^\d{5}$/.test(str) && Number(str) > 35000 && Number(str) < 65000)) {
+        const d = new Date(Math.round((Number(str) - 25569) * 86400 * 1000));
+        if (!isNaN(d.getTime())) {
+          itemYear = d.getFullYear();
+          itemMonth = d.getMonth() + 1;
         }
-        const yrMatch = str.match(/(20\d{2})/);
-        if (yrMatch) itemYear = parseInt(yrMatch[1], 10);
-        else {
-          const yr2Match = str.match(/-(\d{2})$/);
-          if (yr2Match) itemYear = 2000 + parseInt(yr2Match[1], 10);
+      } else {
+        const ymdMatch = str.match(/^(\d{4})[-/. ](\d{1,2})[-/. ](\d{1,2})/);
+        const dmyMatch = str.match(/^(\d{1,2})[-/. ](\d{1,2})[-/. ](\d{4})/);
+
+        if (ymdMatch) {
+          itemYear = parseInt(ymdMatch[1], 10);
+          itemMonth = parseInt(ymdMatch[2], 10);
+        } else if (dmyMatch) {
+          itemYear = parseInt(dmyMatch[3], 10);
+          itemMonth = parseInt(dmyMatch[2], 10);
+        } else {
+          const lower = str.toLowerCase();
+          for (const [mName, mNum] of Object.entries(monthMap)) {
+            if (lower.includes(mName)) {
+              itemMonth = mNum;
+              break;
+            }
+          }
+          const yrMatch = str.match(/\b(20\d{2})\b/);
+          if (yrMatch) itemYear = parseInt(yrMatch[1], 10);
+          else {
+            const yr2Match = str.match(/-(\d{2})$/);
+            if (yr2Match) itemYear = 2000 + parseInt(yr2Match[1], 10);
+          }
         }
       }
 
@@ -4726,27 +4729,89 @@
       const mSelects = [document.getElementById('month-select'), document.getElementById('month-select-mobile')].filter(Boolean);
       const ySelects = [document.getElementById('year-select'), document.getElementById('year-select-mobile')].filter(Boolean);
 
-      // 1. Ekstraksi Tahun dari seluruh tabel
-      const detectedYears = new Set(['2024', '2025', '2026']);
-      const srcList = data?.employeeList || window.masterFullPayload?.employeeList || [];
-      srcList.forEach(e => {
-        const p = String(e.periode || e['Date'] || '');
-        const m = p.match(/(20\d{2})/);
-        if (m) detectedYears.add(m[1]);
-      });
+      // 1. Ekstraksi Tahun Dinamis dari Database Aktual (Tanpa Hardcode & Selalu Ter-update)
+      const detectedYears = new Set();
+      const currentYear = new Date().getFullYear();
 
+      const helperCheckYear = (val) => {
+        if (!val && val !== 0) return;
+        const str = String(val).trim();
+        if (!str || str === '-') return;
+
+        // Serial number Excel (contoh: 45789 -> 2025)
+        if (typeof val === 'number' || (/^\d{5}$/.test(str) && Number(str) > 35000 && Number(str) < 65000)) {
+          const d = new Date(Math.round((Number(str) - 25569) * 86400 * 1000));
+          if (!isNaN(d.getTime())) {
+            const yr = d.getFullYear();
+            if (yr >= 2020 && yr <= (currentYear + 2)) detectedYears.add(String(yr));
+            return;
+          }
+        }
+
+        // Cocokkan tahun 4 digit (2020 s/d currentYear + 2)
+        const match4 = str.match(/\b(20\d{2})\b/);
+        if (match4) {
+          const yNum = parseInt(match4[1], 10);
+          if (yNum >= 2020 && yNum <= (currentYear + 2)) {
+            detectedYears.add(String(yNum));
+            return;
+          }
+        }
+
+        // Format short year: misal "Mei-25" -> 2025
+        const matchShort = str.match(/^[a-zA-Z]+-(\d{2})$/);
+        if (matchShort) {
+          const yNum = 2000 + parseInt(matchShort[1], 10);
+          if (yNum >= 2020 && yNum <= (currentYear + 2)) {
+            detectedYears.add(String(yNum));
+          }
+        }
+      };
+
+      // A. Sumber: availablePeriods backend
+      const periods = data?.availablePeriods || window.masterFullPayload?.availablePeriods || [];
+      if (Array.isArray(periods)) {
+        periods.forEach(p => helperCheckYear(p));
+      }
+
+      // B. Sumber: employeeList (periode, tahun, Date, joinDate)
+      const empList = data?.employeeList || window.masterFullPayload?.employeeList || [];
+      if (Array.isArray(empList)) {
+        empList.forEach(e => {
+          helperCheckYear(e.periode);
+          helperCheckYear(e.tahun);
+          helperCheckYear(e['Date']);
+          helperCheckYear(e.joinDate);
+        });
+      }
+
+      // C. Sumber: seluruh tabel database (Data_Kehadiran, Data_SS, Data_QCC, Data_SP, Knowledge_management)
       const rawTables = data?.rawTables || window.masterFullPayload?.rawTables || {};
-      ['Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP', 'Knowledge_management'].forEach(tbl => {
+      const targetDateFields = [
+        'Date', 'Tanggal', 'Date Clock In', 'Date Clock Out', 
+        'Diterima Bulan', 'Pendaftaran diterima', 'L 1-8 diterima', 
+        'Tahun Konvensi', 'TANGGAL', 'periode', 'tahun'
+      ];
+
+      ['Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP', 'Knowledge_management', 'Data_KM'].forEach(tbl => {
         const rows = rawTables[tbl] || [];
-        rows.slice(0, 100).forEach(r => {
-          Object.values(r).forEach(v => {
-            const m = String(v).match(/(20\d{2})/);
-            if (m) detectedYears.add(m[1]);
+        rows.forEach(r => {
+          targetDateFields.forEach(field => {
+            if (r[field] !== undefined) helperCheckYear(r[field]);
           });
+          if (r['No.Berita Acara']) helperCheckYear(r['No.Berita Acara']);
+          if (r['No.BPH']) helperCheckYear(r['No.BPH']);
         });
       });
 
-      const yearList = Array.from(detectedYears).sort();
+      // D. Fallback jika database belum dimuat / baru inisialisasi awal
+      if (detectedYears.size === 0) {
+        detectedYears.add(String(currentYear));
+        detectedYears.add(String(currentYear - 1));
+      }
+
+      // Urutkan tahun terbaru di posisi atas (descending) agar elegan dan mudah disajikan
+      const yearList = Array.from(detectedYears).sort((a, b) => b.localeCompare(a));
 
       ySelects.forEach(sel => {
         const curVal = sel.value || 'ALL';
