@@ -4127,8 +4127,11 @@
       return false;
     }
 
+    const ALLOWED_BRANCH_CODES = ["D660", "D661", "D662", "D663", "D664"];
+
     /**
-     * Menemukan info cabang (kode, nama, fullName) secara fleksibel & tahan spasi/tanda baca
+     * Menemukan info cabang (kode, nama, fullName) secara fleksibel & tahan spasi/tanda baca.
+     * Hanya mencocokkan dengan 5 cabang resmi DSO Lampung.
      */
     function resolveBranchInfo(input) {
       if (!input) return null;
@@ -4156,7 +4159,7 @@
         }
       }
 
-      return { code: str, name: str, fullName: str };
+      return null;
     }
 
     /**
@@ -4191,16 +4194,92 @@
       if (!str) return '';
       const clean = String(str).toUpperCase().trim();
       const info = resolveBranchInfo(clean);
-      return info ? info.code : clean;
+      return info ? info.code : '';
+    }
+
+    /**
+     * Memeriksa apakah sebuah record / item berasal dari salah satu 5 Cabang Resmi DSO Lampung:
+     * D660, D661, D662, D663, D664
+     */
+    function isLampungBranch(item) {
+      if (!item) return false;
+
+      // 1. Cek kode BA langsung
+      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS) || '';
+      if (rawCode) {
+        const ba = resolveBACode(rawCode);
+        if (ALLOWED_BRANCH_CODES.includes(ba)) return true;
+        const cleanUpper = String(rawCode).trim().toUpperCase();
+        if (/^D\d{3}$/.test(cleanUpper) && !ALLOWED_BRANCH_CODES.includes(cleanUpper)) return false;
+      }
+
+      // 2. Cek teks P.subarea / Cabang
+      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Cabang', SCHEMAS.Data_SS) || '';
+      if (rawCabang) {
+        const ba = resolveBACode(rawCabang);
+        if (ALLOWED_BRANCH_CODES.includes(ba)) return true;
+      }
+
+      // 3. Cek Wilayah (jika menyebut Lampung)
+      const rawWilayah = item.wilayah || item['Wilayah'] || getRowCellValue(item, 'Wilayah', SCHEMAS.Master_Karyawan) || '';
+      if (rawWilayah && String(rawWilayah).toLowerCase().includes('lampung')) {
+        if (!rawCode || ALLOWED_BRANCH_CODES.includes(resolveBACode(rawCode))) return true;
+      }
+
+      // 4. Relasi NPK ke Master Karyawan
+      const npk = safeString(item['NPK'] || item['Personnel no.'] || item['Personnel No.'] || item.npk);
+      const masterList = (window.masterFullPayload && window.masterFullPayload.employeeList) || 
+                         (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList) || 
+                         (window.masterFullPayload && window.masterFullPayload.rawTables && window.masterFullPayload.rawTables.Master_Karyawan) || [];
+      if (npk && masterList.length > 0) {
+        const emp = masterList.find(e => safeString(e.npk || e['Personnel no.'] || e['Personnel No.']) === npk);
+        if (emp && emp !== item) {
+          const empCode = emp.kodeBA || emp['Business area'] || emp['Business Area'] || emp['Kode BA'] || '';
+          if (empCode && ALLOWED_BRANCH_CODES.includes(resolveBACode(empCode))) return true;
+          const empCabang = emp.cabang || emp['P.subarea'] || emp['Cabang'] || '';
+          if (empCabang && ALLOWED_BRANCH_CODES.includes(resolveBACode(empCabang))) return true;
+          const empWil = emp.wilayah || emp['Wilayah'] || '';
+          if (empWil && String(empWil).toLowerCase().includes('lampung')) return true;
+        }
+      }
+
+      return false;
+    }
+
+    /**
+     * Menyaring payload agar eksklusif hanya memuat data 5 Cabang DSO Lampung
+     */
+    function sanitizeLampungPayload(payload) {
+      if (!payload) return payload;
+      if (Array.isArray(payload.employeeList)) {
+        payload.employeeList = payload.employeeList.filter(e => isLampungBranch(e));
+      }
+      if (Array.isArray(payload.qccList)) {
+        payload.qccList = payload.qccList.filter(q => isLampungBranch(q));
+      }
+      if (payload.rawTables) {
+        const sheets = ['Master_Karyawan', 'Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP', 'Knowledge_management', 'Data_KM'];
+        sheets.forEach(sh => {
+          if (Array.isArray(payload.rawTables[sh])) {
+            payload.rawTables[sh] = payload.rawTables[sh].filter(r => isLampungBranch(r));
+          }
+        });
+      }
+      return payload;
     }
 
     /**
      * Mencocokkan data karyawan / circle / presensi / modul dengan target cabang
-     * Tahan terhadap perbedaan penulisan spasi, singkatan, serta selalu mencocokkan NPK ke master
+     * Eksklusif hanya mengizinkan data dengan kode BA D660, D661, D662, D663, D664
      */
     function matchBranch(item, targetBranchCode) {
-      if (!targetBranchCode || targetBranchCode === 'ALL') return true;
       if (!item) return false;
+
+      // Filter Mutlak: Tolak seluruh data di luar 5 cabang Lampung (D660, D661, D662, D663, D664)
+      if (!isLampungBranch(item)) return false;
+
+      // Jika target 'ALL', loloskan seluruh data 5 cabang Lampung
+      if (!targetBranchCode || targetBranchCode === 'ALL') return true;
 
       const targetInfo = resolveBranchInfo(targetBranchCode);
       const targetCode = (targetInfo ? targetInfo.code : String(targetBranchCode)).toUpperCase().trim();
@@ -4230,7 +4309,7 @@
         }
       }
 
-      // 3. Relasi NPK ke Master Karyawan LENGKAP (selalu ambil dari dataset global yang belum terfilter)
+      // 3. Relasi NPK ke Master Karyawan
       const npk = safeString(item['NPK'] || item['Personnel no.'] || item['Personnel No.'] || item.npk);
       const masterList = (window.masterFullPayload && window.masterFullPayload.employeeList) || 
                          (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList) || 
@@ -4238,20 +4317,7 @@
       if (npk && masterList.length > 0) {
         const emp = masterList.find(e => safeString(e.npk || e['Personnel no.'] || e['Personnel No.']) === npk);
         if (emp && emp !== item) {
-          const empCode = String(emp.kodeBA || emp['Business area'] || emp['Business Area'] || emp['Kode BA'] || '').toUpperCase().trim();
-          if (empCode && (empCode === targetCode || resolveBACode(empCode) === targetCode)) return true;
-
-          const empCabangClean = String(emp.cabang || emp['P.subarea'] || emp['Cabang'] || '').toLowerCase().replace(/[^a-z0-9]/g, "");
-          if (empCabangClean) {
-            if (empCabangClean.includes(targetCode.toLowerCase())) return true;
-            if (empCabangClean.includes(targetNameClean) || targetNameClean.includes(empCabangClean)) return true;
-            if (targetInfo && targetInfo.aliases) {
-              for (const al of targetInfo.aliases) {
-                const alClean = al.toLowerCase().replace(/[^a-z0-9]/g, "");
-                if (empCabangClean.includes(alClean) || alClean.includes(empCabangClean)) return true;
-              }
-            }
-          }
+          return matchBranch(emp, targetCode);
         }
       }
 
@@ -4800,7 +4866,7 @@
     function ensureMasterStore(data) {
       if (!data) return;
       if (!window.masterFullPayload || !window.masterFullPayload.rawTables || !window.masterFullPayload.rawTables.Data_Kehadiran) {
-        const fullCopy = JSON.parse(JSON.stringify(data));
+        const fullCopy = sanitizeLampungPayload(JSON.parse(JSON.stringify(data)));
         initializeStandardTables(fullCopy);
         window.masterFullPayload = fullCopy;
         window.fullUnscopedPayload = fullCopy;
@@ -4808,7 +4874,7 @@
         const existingCount = window.masterFullPayload.employeeList?.length || 0;
         const newCount = data.employeeList?.length || 0;
         if (newCount > existingCount) {
-          const fullCopy = JSON.parse(JSON.stringify(data));
+          const fullCopy = sanitizeLampungPayload(JSON.parse(JSON.stringify(data)));
           initializeStandardTables(fullCopy);
           window.masterFullPayload = fullCopy;
           window.fullUnscopedPayload = fullCopy;
@@ -5076,33 +5142,21 @@
 
       // Selalu gunakan masterFullPayload sebagai sumber data baku tanpa terdistorsi
       const master = window.masterFullPayload || window.fullUnscopedPayload || data;
-      let scopedEmployees = (master.employeeList || []).slice();
-      let scopedQCC = (master.qccList || []).slice();
+
+      // 1. Filter ketat per cabang (Eksklusif D660, D661, D662, D663, D664)
+      let scopedEmployees = (master.employeeList || []).filter(e => matchBranch(e, targetBranch));
+      let scopedQCC = (master.qccList || []).filter(q => matchBranch(q, targetBranch));
 
       const rawSource = master.rawTables || {};
       const scopedRawTables = {
-        Master_Karyawan: (rawSource.Master_Karyawan || []).slice(),
-        Data_Kehadiran: (rawSource.Data_Kehadiran || []).slice(),
-        Data_SS: (rawSource.Data_SS || []).slice(),
-        Data_QCC: (rawSource.Data_QCC || []).slice(),
-        Data_SP: (rawSource.Data_SP || []).slice(),
-        Knowledge_management: (rawSource.Knowledge_management || rawSource.Data_KM || []).slice(),
-        Data_KM: (rawSource.Knowledge_management || rawSource.Data_KM || []).slice()
+        Master_Karyawan: (rawSource.Master_Karyawan || []).filter(e => matchBranch(e, targetBranch)),
+        Data_Kehadiran: (rawSource.Data_Kehadiran || []).filter(e => matchBranch(e, targetBranch)),
+        Data_SS: (rawSource.Data_SS || []).filter(e => matchBranch(e, targetBranch)),
+        Data_QCC: (rawSource.Data_QCC || []).filter(q => matchBranch(q, targetBranch)),
+        Data_SP: (rawSource.Data_SP || []).filter(e => matchBranch(e, targetBranch)),
+        Knowledge_management: (rawSource.Knowledge_management || rawSource.Data_KM || []).filter(e => matchBranch(e, targetBranch)),
+        Data_KM: (rawSource.Knowledge_management || rawSource.Data_KM || []).filter(e => matchBranch(e, targetBranch))
       };
-
-      // 1. Filter ketat per cabang jika target bukan 'ALL'
-      if (targetBranch !== 'ALL') {
-        scopedEmployees = scopedEmployees.filter(e => matchBranch(e, targetBranch));
-        scopedQCC = scopedQCC.filter(q => matchBranch(q, targetBranch));
-
-        scopedRawTables.Master_Karyawan = scopedRawTables.Master_Karyawan.filter(e => matchBranch(e, targetBranch));
-        scopedRawTables.Data_Kehadiran = scopedRawTables.Data_Kehadiran.filter(e => matchBranch(e, targetBranch));
-        scopedRawTables.Data_SS = scopedRawTables.Data_SS.filter(e => matchBranch(e, targetBranch));
-        scopedRawTables.Data_QCC = scopedRawTables.Data_QCC.filter(q => matchBranch(q, targetBranch));
-        scopedRawTables.Data_SP = scopedRawTables.Data_SP.filter(e => matchBranch(e, targetBranch));
-        scopedRawTables.Knowledge_management = scopedRawTables.Knowledge_management.filter(e => matchBranch(e, targetBranch));
-        scopedRawTables.Data_KM = scopedRawTables.Knowledge_management;
-      }
 
       // 2. Filter per Bulan & Tahun
       if (selectedMonth !== 'ALL' || selectedYear !== 'ALL') {
