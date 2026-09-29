@@ -301,31 +301,19 @@
           const pct = totalContract ? Math.round((count / totalContract) * 100) : 0;
 
           return `
-            <div class="flex flex-col justify-between p-1.5 sm:p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs">
-              <!-- Top row: Icon (kiri) + Persen (kanan) -->
-              <div class="flex items-center justify-between w-full mb-1 sm:mb-1.5">
-                <div class="w-5 h-5 sm:w-6.5 sm:h-6.5 rounded-md ${meta.iconBg} flex items-center justify-center text-[9px] sm:text-xs border ${meta.iconBorder} shadow-2xs flex-shrink-0">
-                  <i class="${meta.icon}"></i>
-                </div>
-                <span class="px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded text-[8px] sm:text-[10px] font-black ${meta.badgeBg} border flex-shrink-0">
-                  ${pct}%
-                </span>
+            <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs">
+              <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg ${meta.iconBg} flex items-center justify-center text-[10px] sm:text-xs border ${meta.iconBorder} shadow-2xs flex-shrink-0">
+                <i class="${meta.icon}"></i>
               </div>
-
-              <!-- Middle: Nama (Title & Subtitle rapi) -->
-              <div class="w-full mb-0.5 sm:mb-1 min-w-0 text-left">
-                <div class="text-[10px] sm:text-xs font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
-                  ${meta.displayName}
+              <div class="min-w-0 flex-1 text-left">
+                <div class="flex items-center justify-between gap-1 leading-tight">
+                  <span class="text-[10px] sm:text-xs font-bold text-slate-800 truncate" title="${meta.displayName}">${meta.displayName}</span>
+                  <span class="px-1.5 py-0.2 rounded text-[8px] sm:text-[9px] font-black ${meta.badgeBg} border flex-shrink-0">${pct}%</span>
                 </div>
-                <div class="text-[8px] sm:text-[9px] font-medium text-slate-400 leading-tight truncate mt-0.5" title="${meta.subName}">
-                  ${meta.subName}
+                <div class="flex items-baseline gap-1 mt-0.5">
+                  <span class="text-xs sm:text-sm font-black text-slate-900 leading-none">${count}</span>
+                  <span class="text-[8px] sm:text-[10px] font-medium text-slate-400">Org</span>
                 </div>
-              </div>
-
-              <!-- Bottom: Angka & Satuan -->
-              <div class="flex items-baseline gap-0.5 sm:gap-1 text-left">
-                <span class="text-xs sm:text-sm lg:text-base font-black text-slate-900 leading-none">${count}</span>
-                <span class="text-[8px] sm:text-[10px] font-medium text-slate-400">Org</span>
               </div>
             </div>
           `;

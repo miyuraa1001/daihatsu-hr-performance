@@ -618,30 +618,24 @@
         const cMap = s.contractGroupMap || {};
         const standardCats = STANDARD_CONTRACT_CATEGORIES;
         const totalEmp = s.totalKaryawan || 1;
-        contractContainer.innerHTML = standardCats.map((grpName, index) => {
+        contractContainer.innerHTML = standardCats.map((grpName) => {
           const count = cMap[grpName] || 0;
           const meta = getContractMeta(grpName);
           const pct = Math.round((count / totalEmp) * 100);
-          const isFifth = '';
           return `
-            <div class="flex flex-col items-center justify-between p-1.5 sm:p-2 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:shadow-xs ${meta.cardHover} transition text-center min-w-0 shadow-2xs ${isFifth}">
-              <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg ${meta.iconBg} flex items-center justify-center text-[10px] sm:text-xs mb-1 border ${meta.iconBorder} shadow-2xs flex-shrink-0">
+            <div class="flex items-center gap-1.5 p-1.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs">
+              <div class="w-6 h-6 rounded-lg ${meta.iconBg} flex items-center justify-center text-[10px] border ${meta.iconBorder} flex-shrink-0">
                 <i class="${meta.icon}"></i>
               </div>
-              <div class="w-full px-0.5 mb-0.5">
-                <div class="text-[9px] sm:text-[10px] font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
-                  ${meta.displayName}
+              <div class="min-w-0 flex-1 text-left">
+                <div class="flex items-center justify-between gap-0.5 leading-tight">
+                  <span class="text-[9px] font-bold text-slate-800 truncate" title="${meta.displayName}">${meta.displayName}</span>
+                  <span class="px-1 py-0.2 rounded text-[8px] font-black ${meta.badgeBg} border flex-shrink-0">${pct}%</span>
                 </div>
-                <div class="text-[8px] font-medium text-slate-400 leading-tight truncate" title="${meta.subName}">
-                  ${meta.subName}
+                <div class="text-[11px] font-black text-slate-900 leading-none mt-0.5">
+                  ${count} <span class="text-[8px] font-medium text-slate-400 font-normal">Org</span>
                 </div>
               </div>
-              <div class="text-[11px] sm:text-xs font-black text-slate-900 leading-tight my-0.5">
-                ${count} <span class="text-[8px] font-medium text-slate-400">Org</span>
-              </div>
-              <span class="px-1 py-0.2 rounded text-[8px] sm:text-[9px] font-black ${meta.badgeBg} border">
-                ${pct}%
-              </span>
             </div>
           `;
         }).join('');
