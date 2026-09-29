@@ -510,26 +510,118 @@
         return;
       }
 
-      const rawRows = currentDashboardPayload.rawTables[targetSheet] || [];
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
+
+      let rawRows = currentDashboardPayload.rawTables[targetSheet] || [];
+      if (!rawRows.length && targetSheet === 'Master_Karyawan' && currentDashboardPayload.employeeList) {
+        rawRows = currentDashboardPayload.employeeList;
+      }
+
       if (!rawRows.length) {
         showToast(`Tidak ada data ${schema.title} untuk diekspor.`);
         return;
       }
 
-      // Pastikan baris pertama (Row 1) berisikan header kolom persis dengan urutan baku
-      const exportRows = rawRows.map(row => {
-        const obj = {};
-        schema.columns.forEach(col => {
-          obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
-        });
-        return obj;
-      });
+      let exportRows = [];
+      let exportColumns = [];
 
-      const ws = XLSX.utils.json_to_sheet(exportRows, { header: schema.columns });
+      if (targetSheet === 'Master_Karyawan') {
+        let list = rawRows;
+        // Role-based filter: Kepala Cabang HANYA mengekspor karyawan Aktif pada cabangnya
+        if (!isAdmin) {
+          list = list.filter(e => {
+            const st = String(e['Status_Karyawan'] || e.statusKaryawan || 'Aktif').trim().toLowerCase();
+            const branchOk = matchBranch(e, userBranchCode);
+            return st !== 'resign' && branchOk;
+          });
+        } else {
+          // Jika Admin sedang memilih cabang tertentu di filter atas
+          const selectedBranch = document.getElementById('branch-select')?.value || 'ALL';
+          if (selectedBranch !== 'ALL') {
+            list = list.filter(e => matchBranch(e, selectedBranch));
+          }
+        }
+
+        // Definisi urutan kolom ekspor baku dengan kolom Umur & Masa Kerja terpisah
+        exportColumns = [
+          "Personnel no.",
+          "P.subarea",
+          "Wilayah",
+          "Contract",
+          "Name",
+          "Name of organizational unit",
+          "Job Title",
+          "Last name",
+          "D.o.birth",
+          "Umur",
+          "Gender text",
+          "Religious denomination",
+          "PS group",
+          "Lvl",
+          "Date",
+          "Masa Kerja",
+          "P0001-STEXT",
+          "Business area",
+          "Status_Karyawan"
+        ];
+        if (isAdmin) {
+          exportColumns.push("Tanggal_Resign", "Alasan_Resign");
+        }
+
+        exportRows = list.map((row, idx) => {
+          const dob = (row['D.o.birth'] !== undefined && row['D.o.birth'] !== null && String(row['D.o.birth']).trim() !== '' && row['D.o.birth'] !== '1995-05-15')
+            ? row['D.o.birth']
+            : findDOBirth(row, idx);
+          const joinDate = (row['Date'] !== undefined && row['Date'] !== null && String(row['Date']).trim() !== '')
+            ? row['Date']
+            : findDate(row, idx);
+
+          const umurVal = calculateAgeAndService(dob);
+          const masaKerjaVal = calculateAgeAndService(joinDate);
+
+          const obj = {};
+          exportColumns.forEach(col => {
+            if (col === 'Umur') {
+              obj['Umur'] = (umurVal && umurVal !== '-') ? umurVal : "";
+            } else if (col === 'Masa Kerja') {
+              obj['Masa Kerja'] = (masaKerjaVal && masaKerjaVal !== '-') ? masaKerjaVal : "";
+            } else if (col === 'D.o.birth') {
+              obj['D.o.birth'] = formatDatabaseDate(dob);
+            } else if (col === 'Date') {
+              obj['Date'] = formatDatabaseDate(joinDate);
+            } else if (col === 'PS group' && (!row[col] || row[col] === 'III/A')) {
+              obj['PS group'] = findPSGroup(row, idx);
+            } else if (col === 'Lvl' && (!row[col] || row[col] === 'Staff')) {
+              obj['Lvl'] = findLvl(row, idx);
+            } else if (col === 'P0001-STEXT' && (!row[col] || row[col] === 'Staff Unit')) {
+              obj['P0001-STEXT'] = findP0001STEXT(row, idx);
+            } else {
+              obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
+            }
+          });
+          return obj;
+        });
+      } else {
+        exportColumns = schema.columns.slice();
+        if (!isAdmin && (targetSheet === 'Data_Kehadiran' || targetSheet === 'Data_SS' || targetSheet === 'Data_QCC' || targetSheet === 'Data_SP')) {
+          rawRows = rawRows.filter(e => matchBranch(e, userBranchCode));
+        }
+
+        exportRows = rawRows.map(row => {
+          const obj = {};
+          exportColumns.forEach(col => {
+            obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
+          });
+          return obj;
+        });
+      }
+
+      const ws = XLSX.utils.json_to_sheet(exportRows, { header: exportColumns });
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, schema.sheetName);
       XLSX.writeFile(wb, `${schema.sheetName}_${new Date().toISOString().slice(0, 10)}.xlsx`);
-      showToast(`Berkas ${schema.sheetName}.xlsx berhasil diunduh (${exportRows.length} baris, ${schema.columns.length} kolom)!`);
+      showToast(`Berkas ${schema.sheetName}.xlsx berhasil diunduh (${exportRows.length} baris, ${exportColumns.length} kolom)! Kolom Umur & Masa Kerja terpisah.`);
     }
 
     // Ekspor Seluruh Modul ke dalam Satu Workbook Terpadu (6-in-1 Sheet)
@@ -539,6 +631,8 @@
         return;
       }
 
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
       const wb = XLSX.utils.book_new();
       const sheetKeys = ["Master_Karyawan", "Data_Kehadiran", "Data_SS", "Data_QCC", "Data_SP", "Knowledge_management"];
       let totalRows = 0;
@@ -546,23 +640,99 @@
       sheetKeys.forEach(sheetKey => {
         const schema = SCHEMAS[sheetKey];
         if (!schema) return;
-        const rawRows = currentDashboardPayload.rawTables[sheetKey] || (sheetKey === 'Knowledge_management' ? currentDashboardPayload.rawTables.Data_KM : []) || [];
-        totalRows += rawRows.length;
+        let rawRows = currentDashboardPayload.rawTables[sheetKey] || (sheetKey === 'Knowledge_management' ? currentDashboardPayload.rawTables.Data_KM : []) || [];
+        
+        let exportRows = [];
+        let exportColumns = [];
 
-        const exportRows = rawRows.map(row => {
-          const obj = {};
-          schema.columns.forEach(col => {
-            obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
+        if (sheetKey === 'Master_Karyawan') {
+          if (!isAdmin) {
+            rawRows = rawRows.filter(e => {
+              const st = String(e['Status_Karyawan'] || e.statusKaryawan || 'Aktif').trim().toLowerCase();
+              return st !== 'resign' && matchBranch(e, userBranchCode);
+            });
+          }
+
+          exportColumns = [
+            "Personnel no.",
+            "P.subarea",
+            "Wilayah",
+            "Contract",
+            "Name",
+            "Name of organizational unit",
+            "Job Title",
+            "Last name",
+            "D.o.birth",
+            "Umur",
+            "Gender text",
+            "Religious denomination",
+            "PS group",
+            "Lvl",
+            "Date",
+            "Masa Kerja",
+            "P0001-STEXT",
+            "Business area",
+            "Status_Karyawan"
+          ];
+          if (isAdmin) {
+            exportColumns.push("Tanggal_Resign", "Alasan_Resign");
+          }
+
+          exportRows = rawRows.map((row, idx) => {
+            const dob = (row['D.o.birth'] !== undefined && row['D.o.birth'] !== null && String(row['D.o.birth']).trim() !== '' && row['D.o.birth'] !== '1995-05-15')
+              ? row['D.o.birth']
+              : findDOBirth(row, idx);
+            const joinDate = (row['Date'] !== undefined && row['Date'] !== null && String(row['Date']).trim() !== '')
+              ? row['Date']
+              : findDate(row, idx);
+
+            const umurVal = calculateAgeAndService(dob);
+            const masaKerjaVal = calculateAgeAndService(joinDate);
+
+            const obj = {};
+            exportColumns.forEach(col => {
+              if (col === 'Umur') {
+                obj['Umur'] = (umurVal && umurVal !== '-') ? umurVal : "";
+              } else if (col === 'Masa Kerja') {
+                obj['Masa Kerja'] = (masaKerjaVal && masaKerjaVal !== '-') ? masaKerjaVal : "";
+              } else if (col === 'D.o.birth') {
+                obj['D.o.birth'] = formatDatabaseDate(dob);
+              } else if (col === 'Date') {
+                obj['Date'] = formatDatabaseDate(joinDate);
+              } else if (col === 'PS group' && (!row[col] || row[col] === 'III/A')) {
+                obj['PS group'] = findPSGroup(row, idx);
+              } else if (col === 'Lvl' && (!row[col] || row[col] === 'Staff')) {
+                obj['Lvl'] = findLvl(row, idx);
+              } else if (col === 'P0001-STEXT' && (!row[col] || row[col] === 'Staff Unit')) {
+                obj['P0001-STEXT'] = findP0001STEXT(row, idx);
+              } else {
+                obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
+              }
+            });
+            return obj;
           });
-          return obj;
-        });
+        } else {
+          exportColumns = schema.columns.slice();
+          if (!isAdmin) {
+            rawRows = rawRows.filter(e => matchBranch(e, userBranchCode));
+          }
 
-        const ws = XLSX.utils.json_to_sheet(exportRows.length ? exportRows : [{}], { header: schema.columns });
+          exportRows = rawRows.map(row => {
+            const obj = {};
+            exportColumns.forEach(col => {
+              obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
+            });
+            return obj;
+          });
+        }
+
+        totalRows += exportRows.length;
+        const ws = XLSX.utils.json_to_sheet(exportRows.length ? exportRows : [{}], { header: exportColumns });
         XLSX.utils.book_append_sheet(wb, ws, schema.sheetName);
       });
 
       XLSX.writeFile(wb, `D-PERFORM_Master_Database_${new Date().toISOString().slice(0, 10)}.xlsx`);
-      showToast(`Master Workbook 6-in-1 berhasil diunduh (${totalRows} total baris di 6 sheet)!`);
+      showToast(`Master Workbook 6-in-1 berhasil diunduh (${totalRows} total baris di 6 sheet)! Kolom Umur & Masa Kerja terpisah.`);
     }
 
     function prosesUploadExcelFrontend() {
@@ -748,18 +918,61 @@
       reader.readAsArrayBuffer(file);
     }
 
-    // 6. Ekspor Data
+    // 6. Ekspor Data (Rekapitulasi Kinerja Cabang / Acuan PBK dengan Kolom Umur & Masa Kerja Terpisah)
     function exportCurrentTableToExcel(fileNamePrefix) {
       if (!currentDashboardPayload || !currentDashboardPayload.employeeList) {
         showToast("Tidak ada data untuk diekspor!");
         return;
       }
       
-      const ws = XLSX.utils.json_to_sheet(currentDashboardPayload.employeeList);
+      const isAdmin = isUserAdmin(loggedInUser);
+      let list = currentDashboardPayload.employeeList || [];
+      if (!isAdmin) {
+        list = list.filter(e => {
+          const st = String(e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim().toLowerCase();
+          return st !== 'resign';
+        });
+      }
+
+      const exportRows = list.map((e, idx) => {
+        const dob = e.tglLahir || e['D.o.birth'] || findDOBirth(e, idx);
+        const joinDate = e.joinDate || e['Date'] || findDate(e, idx);
+        const umur = e.umurText || calculateAgeAndService(dob);
+        const masaKerja = e.masaKerjaText || calculateAgeAndService(joinDate);
+        const status = (e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim();
+
+        const row = {
+          "NPK": safeString(e.npk || e['Personnel no.']),
+          "Nama Karyawan": e.nama || e['Last name'] || '',
+          "Cabang": e.cabang || e['P.subarea'] || '',
+          "Kode BA": safeString(e.kodeBA || e['Business area'] || ''),
+          "Divisi": e.divisi || e['Name'] || '',
+          "Jabatan": e.jabatan || e['Job Title'] || '',
+          "Tipe Kontrak": e.tipeKontrak || e['Contract'] || 'Tetap',
+          "Tanggal Lahir": formatDatabaseDate(dob),
+          "Umur": (umur && umur !== '-') ? umur : '',
+          "Tanggal Masuk": formatDatabaseDate(joinDate),
+          "Masa Kerja": (masaKerja && masaKerja !== '-') ? masaKerja : '',
+          "Status Karyawan": status
+        };
+
+        if (isAdmin) {
+          row["Tanggal Resign"] = e.tanggalResign || e['Tanggal_Resign'] || '';
+          row["Alasan Resign"] = e.alasanResign || e['Alasan_Resign'] || '';
+        }
+
+        row["Kehadiran (%)"] = e.kehadiranPct !== undefined ? `${e.kehadiranPct}%` : '100%';
+        row["Total Ide SS"] = e.totalSS !== undefined ? Number(e.totalSS) : 0;
+        row["Catatan SP"] = e.spAktif || '-';
+
+        return row;
+      });
+
+      const ws = XLSX.utils.json_to_sheet(exportRows);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Rekap_Data_Kinerja");
       XLSX.writeFile(wb, `${fileNamePrefix}_${new Date().toISOString().slice(0,10)}.xlsx`);
-      showToast("Berkas Excel berhasil diunduh!");
+      showToast("Berkas Excel berhasil diunduh! Kolom Umur & Masa Kerja dipisahkan secara rapi.");
     }
 
     // 7. Modal & UI Helpers
