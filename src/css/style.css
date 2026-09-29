@@ -1,0 +1,82 @@
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #F8FAFC;
+  -webkit-font-smoothing: antialiased;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: #CBD5E1;
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: #94A3B8;
+}
+
+.nav-item-active {
+  background-color: #FEF2F2;
+  color: #E60012;
+  font-weight: 700;
+  border-right: 3px solid #E60012;
+}
+
+.nav-item-inactive {
+  color: #475569;
+  font-weight: 500;
+}
+
+.nav-item-inactive:hover {
+  background-color: #F8FAFC;
+  color: #0F172A;
+}
+
+.modal-backdrop {
+  background-color: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/* Modern card shadows */
+.shadow-clean {
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.04);
+}
+
+.shadow-clean-hover:hover {
+  box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.06), 0 6px 8px -4px rgba(0, 0, 0, 0.04);
+}
+
+/* Modern clean select styling without duplicate arrows */
+select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+}
+
+select:not(.appearance-none) {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2364748b' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.4rem center;
+  background-repeat: no-repeat;
+  background-size: 1.25em 1.25em;
+  padding-right: 1.75rem;
+}
+
+select.appearance-none {
+  background-image: none !important;
+  padding-right: 0.25rem !important;
+}
+
+select option {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0f172a;
+  padding: 6px 10px;
+  background-color: #ffffff;
+}
