@@ -832,9 +832,17 @@
                 <h4 class="text-sm font-extrabold text-slate-900">Daftar Karyawan Cabang</h4>
                 <p class="text-[11px] text-slate-400">Rekapitulasi data kehadiran, SS, QCC, dan kedisiplinan staf sebagai data acuan PBK</p>
               </div>
-              <div class="relative w-full sm:w-64">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                <input type="text" id="employee-search-input" onkeyup="filterEmployeeTable()" placeholder="Cari nama atau NPK..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+              <div class="flex flex-wrap items-center gap-2">
+                <!-- Toggle Filter Cepat Status Admin: Semua, Aktif, Resign -->
+                <div id="emp-status-filter-container" class="hidden items-center bg-slate-100 p-0.5 rounded-xl border border-slate-200 text-xs">
+                  <button type="button" onclick="setEmployeeStatusFilter('ALL')" id="emp-filter-all" class="px-2.5 py-1 font-bold rounded-lg bg-white text-slate-800 shadow-xs transition">Semua</button>
+                  <button type="button" onclick="setEmployeeStatusFilter('Aktif')" id="emp-filter-aktif" class="px-2.5 py-1 font-bold rounded-lg text-slate-600 hover:text-slate-900 transition">Aktif</button>
+                  <button type="button" onclick="setEmployeeStatusFilter('Resign')" id="emp-filter-resign" class="px-2.5 py-1 font-bold rounded-lg text-slate-600 hover:text-slate-900 transition">Resign</button>
+                </div>
+                <div class="relative w-full sm:w-64">
+                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                  <input type="text" id="employee-search-input" onkeyup="filterEmployeeTable()" placeholder="Cari nama atau NPK..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+                </div>
               </div>
             </div>
             <div class="overflow-x-auto">
@@ -845,6 +853,10 @@
                     <th class="py-2.5 px-4">Nama Karyawan</th>
                     <th class="py-2.5 px-4">Cabang (BA)</th>
                     <th class="py-2.5 px-4">Divisi & Posisi</th>
+                    <th class="py-2.5 px-4 text-center">Umur</th>
+                    <th class="py-2.5 px-4 text-center">Masa Kerja</th>
+                    <th class="py-2.5 px-4 text-center">Status</th>
+                    <th id="th-admin-resign" class="py-2.5 px-4 text-left hidden">Info Resign</th>
                     <th class="py-2.5 px-4 text-center">Kehadiran</th>
                     <th class="py-2.5 px-4 text-center">SS Masuk</th>
                     <th class="py-2.5 px-4 text-center">Status Disiplin</th>
@@ -852,7 +864,7 @@
                   </tr>
                 </thead>
                 <tbody id="employee-table-body" class="divide-y divide-slate-100 font-medium">
-                  <tr><td colspan="8" class="text-center py-6 text-slate-400">Mengambil data karyawan...</td></tr>
+                  <tr><td colspan="12" class="text-center py-6 text-slate-400">Mengambil data karyawan...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -878,6 +890,10 @@
                   <tr>
                     <th class="py-3 px-4">Karyawan</th>
                     <th class="py-3 px-4">Cabang</th>
+                    <th class="py-3 px-4 text-center">Umur</th>
+                    <th class="py-3 px-4 text-center">Masa Kerja</th>
+                    <th class="py-3 px-4 text-center">Status</th>
+                    <th id="th-pbk-resign" class="py-3 px-4 text-left hidden">Info Resign</th>
                     <th class="py-3 px-4 text-center">Kehadiran</th>
                     <th class="py-3 px-4 text-center">Total Ide SS</th>
                     <th class="py-3 px-4 text-center">Catatan SP</th>
@@ -886,7 +902,7 @@
                   </tr>
                 </thead>
                 <tbody id="pbk-table-tbody" class="divide-y divide-slate-100">
-                  <tr><td colspan="7" class="text-center py-6 text-slate-400">Memuat data kinerja cabang...</td></tr>
+                  <tr><td colspan="11" class="text-center py-6 text-slate-400">Memuat data kinerja cabang...</td></tr>
                 </tbody>
               </table>
             </div>
@@ -2735,7 +2751,10 @@
           "Lvl",
           "Date",
           "P0001-STEXT",
-          "Business area"
+          "Business area",
+          "Status_Karyawan",
+          "Tanggal_Resign",
+          "Alasan_Resign"
         ],
         aliases: {
           "personnel no.": ["personnel no.", "personnel no", "npk", "id karyawan", "nik", "id"],
@@ -2753,7 +2772,10 @@
           "lvl": ["lvl", "level"],
           "date": ["date", "tanggal masuk", "tgl masuk", "effective date", "tanggal"],
           "p0001-stext": ["p0001-stext", "stext", "deskripsi jabatan", "struktur"],
-          "business area": ["business area", "kode ba", "ba", "kode cabang", "ba code"]
+          "business area": ["business area", "kode ba", "ba", "kode cabang", "ba code"],
+          "status_karyawan": ["status_karyawan", "status karyawan", "status kerja", "status aktif", "status keaktifan"],
+          "tanggal_resign": ["tanggal_resign", "tgl resign", "tgl keluar", "tanggal keluar", "date of resignation", "resign date"],
+          "alasan_resign": ["alasan_resign", "alasan keluar", "alasan", "keterangan resign", "reason of resignation"]
         }
       },
       Data_Kehadiran: {
@@ -2987,7 +3009,7 @@
     function toggleColumnMode(moduleKey) {
       columnViewMode[moduleKey] = (columnViewMode[moduleKey] === 'FULL') ? 'COMPACT' : 'FULL';
       const isFull = columnViewMode[moduleKey] === 'FULL';
-      const colCounts = { mk: 16, abs: 20, ss: 21, qcc: 29, sp: 5, km: 5 };
+      const colCounts = { mk: 19, abs: 20, ss: 21, qcc: 29, sp: 5, km: 5 };
       const compactCounts = { mk: 6, abs: 9, ss: 8, qcc: 8, sp: 5, km: 5 };
       const btnText = document.getElementById(`btn-col-text-${moduleKey}`);
       if (btnText) {
@@ -3000,6 +3022,25 @@
       else if (moduleKey === 'qcc') filterQCCTable();
       else if (moduleKey === 'sp') filterSPTable();
       else if (moduleKey === 'km') filterKMTable();
+    }
+
+    // Filter status cepat karyawan dashboard (Admin only)
+    let currentEmployeeStatusFilter = 'ALL';
+
+    function setEmployeeStatusFilter(filter) {
+      currentEmployeeStatusFilter = filter || 'ALL';
+      const filters = ['all', 'aktif', 'resign'];
+      filters.forEach(f => {
+        const btn = document.getElementById(`emp-filter-${f}`);
+        if (btn) {
+          if (f === currentEmployeeStatusFilter.toLowerCase()) {
+            btn.className = 'px-2.5 py-1 font-bold rounded-lg bg-white text-slate-800 shadow-xs transition';
+          } else {
+            btn.className = 'px-2.5 py-1 font-bold rounded-lg text-slate-600 hover:text-slate-900 transition';
+          }
+        }
+      });
+      filterEmployeeTable();
     }
 
     // Normalisasi Header Kolom Excel / CSV
@@ -3044,6 +3085,48 @@
         }
       }
       return s;
+    }
+
+    // Perhitungan Dinamis Umur & Masa Kerja (Per Hari Ini)
+    function calculateAgeAndService(dateVal) {
+      if (!dateVal && dateVal !== 0) return "-";
+      let str = String(dateVal).trim();
+      if (!str || str === "-" || str === "null" || str === "undefined") return "-";
+
+      let d = null;
+      if (dateVal instanceof Date && !isNaN(dateVal.getTime())) {
+        d = dateVal;
+      } else if (typeof dateVal === 'number' || (/^\d{4,5}$/.test(str) && Number(str) > 20000 && Number(str) < 70000)) {
+        d = new Date(Math.round((Number(str) - 25569) * 86400 * 1000));
+      } else {
+        const isoMatch = str.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
+        if (isoMatch) {
+          d = new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10));
+        } else {
+          const dmyMatch = str.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/);
+          if (dmyMatch) {
+            d = new Date(parseInt(dmyMatch[3], 10), parseInt(dmyMatch[2], 10) - 1, parseInt(dmyMatch[1], 10));
+          } else {
+            const parsed = new Date(str);
+            if (!isNaN(parsed.getTime())) d = parsed;
+          }
+        }
+      }
+
+      if (!d || isNaN(d.getTime())) return "-";
+
+      const today = new Date();
+      let years = today.getFullYear() - d.getFullYear();
+      let months = today.getMonth() - d.getMonth();
+      if (today.getDate() < d.getDate()) {
+        months--;
+      }
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+      if (years < 0) return "-";
+      return `${years} Tahun ${months} Bulan`;
     }
 
     function parseExcelTime(val) {
@@ -3227,6 +3310,10 @@
       }
       if (norm.includes('time') || norm.includes('jam')) {
         return parseExcelTime(val);
+      }
+      if (norm === 'status_karyawan' || norm === 'status karyawan') {
+        const s = String(val || '').trim();
+        return s ? s : 'Aktif';
       }
       if (val === null || val === undefined) return "";
       return String(val).trim();
@@ -5760,12 +5847,29 @@
       if (norm.includes('durasi kerja') || norm.includes('work hours')) {
         return `<span class="font-bold text-slate-900">${val} Jam</span>`;
       }
-      if (norm.includes('assigned work') || norm.includes('in radius') || norm.includes('need cico')) {
-        const isYes = String(val).toUpperCase() === 'YES';
-        return `<span class="px-1.5 py-0.5 rounded text-[10px] font-bold ${isYes ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600'}">${val}</span>`;
+      if (norm === 'status_karyawan' || norm === 'status karyawan') {
+        const isResign = String(val).trim().toLowerCase() === 'resign';
+        return isResign
+          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-user-xmark mr-1 text-[9px]"></i>Resign</span>`
+          : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-user-check mr-1 text-[9px]"></i>Aktif</span>`;
       }
-      if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob' || norm === 'date' || norm === 'tanggal' || norm === 'tgl' || norm.includes('date clock')) {
-        return formatDatabaseDate(val);
+      if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob') {
+        const dateStr = formatDatabaseDate(val);
+        const ageStr = calculateAgeAndService(val);
+        if (ageStr !== '-') {
+          return `<div><span class="font-medium text-slate-800">${dateStr}</span><span class="text-[10px] text-slate-400 block">${ageStr}</span></div>`;
+        }
+        return dateStr;
+      }
+      if (norm === 'date' || norm === 'tanggal' || norm === 'tgl' || norm.includes('date clock')) {
+        const dateStr = formatDatabaseDate(val);
+        if (norm === 'date') {
+          const serviceStr = calculateAgeAndService(val);
+          if (serviceStr !== '-') {
+            return `<div><span class="font-medium text-slate-800">${dateStr}</span><span class="text-[10px] text-slate-400 block">${serviceStr}</span></div>`;
+          }
+        }
+        return dateStr;
       }
       if (norm.includes('time clock in') || norm.includes('time clock out') || norm === 'time' || norm === 'jam' || norm === 'time in' || norm === 'time out') {
         const timeStr = formatDatabaseTime(val);
@@ -6183,12 +6287,20 @@
 
       let list = rawRows;
 
-      // 1. Filter cabang sesuai hak akses user atau pilihan dropdown cabang admin
+      // 1. Role-based: Kepala Cabang (User) HANYA melihat karyawan Aktif
+      if (!isAdmin) {
+        list = list.filter(e => {
+          const st = String(e['Status_Karyawan'] || e.statusKaryawan || 'Aktif').trim().toLowerCase();
+          return st !== 'resign';
+        });
+      }
+
+      // 2. Filter cabang sesuai hak akses user atau pilihan dropdown cabang admin
       if (targetBranch !== 'ALL') {
         list = list.filter(e => matchBranch(e, targetBranch));
       }
 
-      // 2. Filter pencarian teks bebas (mencakup semua nilai kolom database)
+      // 3. Filter pencarian teks bebas (mencakup semua nilai kolom database)
       if (q) {
         list = list.filter((e, rowIdx) => {
           const targetIdx = rawRows.indexOf(e) !== -1 ? rawRows.indexOf(e) : rowIdx;
@@ -6197,6 +6309,7 @@
             String(e['Job Title'] || e.jabatan || '').toLowerCase().includes(q) ||
             String(e['P.subarea'] || e.cabang || '').toLowerCase().includes(q) ||
             String(e['Business area'] || e.kodeBA || '').toLowerCase().includes(q) ||
+            String(e['Status_Karyawan'] || e.statusKaryawan || '').toLowerCase().includes(q) ||
             String(e['P0001-STEXT'] || findP0001STEXT(e, targetIdx) || '').toLowerCase().includes(q) ||
             String(e['PS group'] || findPSGroup(e, targetIdx) || '').toLowerCase().includes(q) ||
             String(e['Date'] || findDate(e, targetIdx) || '').toLowerCase().includes(q) ||
@@ -6204,7 +6317,7 @@
         });
       }
 
-      // 3. Filter status kepegawaian / kontrak
+      // 4. Filter status kepegawaian / kontrak
       if (contractFilter !== 'ALL') {
         const targetNorm = normalizeContractCategory(contractFilter).toLowerCase();
         list = list.filter(e => {
@@ -6215,9 +6328,14 @@
       }
 
       const isFull = columnViewMode.mk === 'FULL';
-      const cols = isFull 
-        ? SCHEMAS.Master_Karyawan.columns 
-        : ["Personnel no.", "Last name", "P.subarea", "Wilayah", "Contract", "Job Title", "Name of organizational unit", "Business area"];
+      let cols = isFull 
+        ? SCHEMAS.Master_Karyawan.columns.slice() 
+        : ["Personnel no.", "Last name", "P.subarea", "Wilayah", "Contract", "Job Title", "Name of organizational unit", "Business area", "Status_Karyawan"];
+
+      // Jika role User (Kacab), sembunyikan kolom Tanggal_Resign & Alasan_Resign
+      if (!isAdmin) {
+        cols = cols.filter(c => c !== 'Tanggal_Resign' && c !== 'Alasan_Resign');
+      }
 
       // Render Header
       renderTableHeader('mk-table-header', cols, true);
@@ -7577,47 +7695,123 @@
 
     function renderEmployeeTable(list) {
       const tbody = document.getElementById('employee-table-body');
-      if (!list || list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="text-center py-6 text-slate-400">Tidak ada karyawan terdaftar di cabang ini.</td></tr>`;
+      if (!tbody) return;
+      const isAdmin = isUserAdmin(loggedInUser);
+
+      // Sinkronkan visibilitas kolom Info Resign & filter status toggle khusus Admin
+      const thResign = document.getElementById('th-admin-resign');
+      if (thResign) {
+        if (isAdmin) thResign.classList.remove('hidden');
+        else thResign.classList.add('hidden');
+      }
+      const filterContainer = document.getElementById('emp-status-filter-container');
+      if (filterContainer) {
+        if (isAdmin) filterContainer.classList.remove('hidden');
+        else filterContainer.classList.add('hidden');
+      }
+
+      // Proteksi Kacab: HANYA tampilkan karyawan aktif murni
+      let displayList = list || [];
+      if (!isAdmin) {
+        displayList = displayList.filter(e => {
+          const st = String(e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim().toLowerCase();
+          return st !== 'resign';
+        });
+      }
+
+      const totalCols = isAdmin ? 12 : 11;
+      if (!displayList || displayList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${totalCols}" class="text-center py-6 text-slate-400">Tidak ada karyawan yang sesuai kriteria di cabang ini.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = list.map(e => `
-        <tr class="hover:bg-slate-50 transition-colors">
-          <td class="py-3 px-4 font-mono font-bold text-slate-600">${e.npk}</td>
-          <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
-          <td class="py-3 px-4 text-slate-500">${e.cabang} (${e.kodeBA || '-'})</td>
-          <td class="py-3 px-4">
-            <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
-            <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
-          </td>
-          <td class="py-3 px-4 text-center font-bold ${e.kehadiranPct < 95 ? 'text-amber-600' : 'text-emerald-600'}">${e.kehadiranPct}%</td>
-          <td class="py-3 px-4 text-center font-bold text-amber-500">${e.totalSS} Ide</td>
-          <td class="py-3 px-4 text-center font-bold">
-            ${e.spAktif ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-[10px]">${e.spAktif}</span>` : `<span class="text-emerald-600 text-xs font-bold">-</span>`}
-          </td>
-          <td class="py-3 px-4 text-center">
-            <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
-              Detail Kinerja
-            </button>
-          </td>
-        </tr>
-      `).join('');
+      tbody.innerHTML = displayList.map(e => {
+        const umur = e.umurText || calculateAgeAndService(e.tglLahir || e['D.o.birth']);
+        const masaKerja = e.masaKerjaText || calculateAgeAndService(e.joinDate || e['Date']);
+        const status = (e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim();
+        const isResign = status.toLowerCase() === 'resign';
+        const statusBadge = isResign
+          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-user-xmark mr-1 text-[9px]"></i>Resign</span>`
+          : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-user-check mr-1 text-[9px]"></i>Aktif</span>`;
+
+        const resignInfo = (isAdmin && isResign)
+          ? `<div class="text-[10px] leading-tight"><span class="font-bold text-rose-600 block">${e.tanggalResign || '-'}</span><span class="text-slate-400 truncate max-w-[140px] block" title="${e.alasanResign || '-'}">${e.alasanResign || '-'}</span></div>`
+          : (isAdmin ? `<span class="text-slate-300 text-xs">-</span>` : '');
+
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-3 px-4 font-mono font-bold text-slate-600">${e.npk}</td>
+            <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
+            <td class="py-3 px-4 text-slate-500">${e.cabang} (${e.kodeBA || '-'})</td>
+            <td class="py-3 px-4">
+              <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
+              <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
+            </td>
+            <td class="py-3 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${umur}</td>
+            <td class="py-3 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${masaKerja}</td>
+            <td class="py-3 px-4 text-center">${statusBadge}</td>
+            ${isAdmin ? `<td class="py-3 px-4 text-left">${resignInfo}</td>` : ''}
+            <td class="py-3 px-4 text-center font-bold ${e.kehadiranPct < 95 ? 'text-amber-600' : 'text-emerald-600'}">${e.kehadiranPct}%</td>
+            <td class="py-3 px-4 text-center font-bold text-amber-500">${e.totalSS} Ide</td>
+            <td class="py-3 px-4 text-center font-bold">
+              ${e.spAktif ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-[10px]">${e.spAktif}</span>` : `<span class="text-emerald-600 text-xs font-bold">-</span>`}
+            </td>
+            <td class="py-3 px-4 text-center">
+              <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
+                Detail Kinerja
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     function renderPBKTable(list) {
       const tbody = document.getElementById('pbk-table-tbody');
       if (!tbody) return;
-      if (!list || list.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-6 text-slate-400">Data kinerja staf belum tersedia.</td></tr>`;
+      const isAdmin = isUserAdmin(loggedInUser);
+
+      const thPbkResign = document.getElementById('th-pbk-resign');
+      if (thPbkResign) {
+        if (isAdmin) thPbkResign.classList.remove('hidden');
+        else thPbkResign.classList.add('hidden');
+      }
+
+      let displayList = list || [];
+      if (!isAdmin) {
+        displayList = displayList.filter(e => {
+          const st = String(e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim().toLowerCase();
+          return st !== 'resign';
+        });
+      }
+
+      const totalCols = isAdmin ? 11 : 10;
+      if (!displayList || displayList.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="${totalCols}" class="text-center py-6 text-slate-400">Data kinerja staf belum tersedia.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = list.map(emp => {
+      tbody.innerHTML = displayList.map(emp => {
+        const umur = emp.umurText || calculateAgeAndService(emp.tglLahir || emp['D.o.birth']);
+        const masaKerja = emp.masaKerjaText || calculateAgeAndService(emp.joinDate || emp['Date']);
+        const status = (emp.statusKaryawan || emp.Status_Karyawan || 'Aktif').trim();
+        const isResign = status.toLowerCase() === 'resign';
+        const statusBadge = isResign
+          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-user-xmark mr-1 text-[9px]"></i>Resign</span>`
+          : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-user-check mr-1 text-[9px]"></i>Aktif</span>`;
+
+        const resignInfo = (isAdmin && isResign)
+          ? `<div class="text-[10px] leading-tight"><span class="font-bold text-rose-600 block">${emp.tanggalResign || '-'}</span><span class="text-slate-400 truncate max-w-[140px] block" title="${emp.alasanResign || '-'}">${emp.alasanResign || '-'}</span></div>`
+          : (isAdmin ? `<span class="text-slate-300 text-xs">-</span>` : '');
+
         return `
           <tr class="hover:bg-slate-50">
             <td class="py-3.5 px-4 font-semibold text-slate-900">${emp.nama} <span class="font-mono text-slate-400 text-[10px] block">${emp.npk}</span></td>
             <td class="py-3.5 px-4 text-slate-600">${emp.cabang}</td>
+            <td class="py-3.5 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${umur}</td>
+            <td class="py-3.5 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${masaKerja}</td>
+            <td class="py-3.5 px-4 text-center">${statusBadge}</td>
+            ${isAdmin ? `<td class="py-3.5 px-4 text-left">${resignInfo}</td>` : ''}
             <td class="py-3.5 px-4 text-center font-bold ${emp.kehadiranPct < 95 ? 'text-amber-600' : 'text-emerald-600'}">${emp.kehadiranPct}%</td>
             <td class="py-3.5 px-4 text-center font-bold text-amber-500">${emp.totalSS} Ide</td>
             <td class="py-3.5 px-4 text-center font-bold ${emp.spAktif ? 'text-red-600' : 'text-slate-400'}">${emp.spAktif || '-'}</td>
@@ -7729,6 +7923,9 @@
             currentDashboardPayload.employeeList = parsedObjects.map(obj => {
               const contractVal = obj['Contract'] || 'Tetap';
               const existing = (currentDashboardPayload.employeeList || []).find(e => String(e.npk) === String(obj['Personnel no.'])) || {};
+              const stKaryawan = obj['Status_Karyawan'] || existing.statusKaryawan || 'Aktif';
+              const dob = obj['D.o.birth'] || existing.tglLahir || '';
+              const jDate = obj['Date'] || existing.joinDate || '';
               return {
                 ...existing,
                 npk: safeString(obj['Personnel no.']),
@@ -7740,8 +7937,14 @@
                 jabatan: obj['Job Title'] || existing.jabatan || '',
                 tipeKontrak: contractVal,
                 'Contract': contractVal,
-                joinDate: obj['Date'] || existing.joinDate || '',
-                tglLahir: obj['D.o.birth'] || existing.tglLahir || '',
+                statusKaryawan: stKaryawan,
+                Status_Karyawan: stKaryawan,
+                tanggalResign: obj['Tanggal_Resign'] || existing.tanggalResign || '',
+                alasanResign: obj['Alasan_Resign'] || existing.alasanResign || '',
+                umurText: calculateAgeAndService(dob),
+                masaKerjaText: calculateAgeAndService(jDate),
+                joinDate: jDate,
+                tglLahir: dob,
                 gender: obj['Gender text'] || existing.gender || '',
                 agama: obj['Religious denomination'] || existing.agama || '',
                 psGroup: obj['PS group'] || existing.psGroup || '',
@@ -8619,12 +8822,36 @@
     }
 
     function filterEmployeeTable() {
-      const q = document.getElementById('employee-search-input').value.toLowerCase();
+      const q = (document.getElementById('employee-search-input')?.value || '').toLowerCase().trim();
       if (!currentDashboardPayload) return;
-      const filtered = currentDashboardPayload.employeeList.filter(e => 
-        e.nama.toLowerCase().includes(q) || String(e.npk).toLowerCase().includes(q)
-      );
-      renderEmployeeTable(filtered);
+      const isAdmin = isUserAdmin(loggedInUser);
+      let list = currentDashboardPayload.employeeList || [];
+
+      // 1. Role-based & Quick Status Filter (Semua, Aktif, Resign)
+      if (!isAdmin) {
+        list = list.filter(e => {
+          const st = String(e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim().toLowerCase();
+          return st !== 'resign';
+        });
+      } else if (currentEmployeeStatusFilter !== 'ALL') {
+        list = list.filter(e => {
+          const st = String(e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim().toLowerCase();
+          return st === currentEmployeeStatusFilter.toLowerCase();
+        });
+      }
+
+      // 2. Filter teks pencarian (nama, NPK, jabatan, divisi, cabang)
+      if (q) {
+        list = list.filter(e => 
+          String(e.nama || '').toLowerCase().includes(q) || 
+          String(e.npk || '').toLowerCase().includes(q) ||
+          String(e.jabatan || '').toLowerCase().includes(q) ||
+          String(e.divisi || '').toLowerCase().includes(q) ||
+          String(e.cabang || '').toLowerCase().includes(q)
+        );
+      }
+
+      renderEmployeeTable(list);
     }
 
     function showToast(msg) {
