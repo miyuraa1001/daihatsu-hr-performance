@@ -106,6 +106,13 @@
       background-image: none !important;
       padding-right: 0.25rem !important;
     }
+    select option {
+      font-size: 12px;
+      font-weight: 600;
+      color: #0f172a;
+      padding: 6px 10px;
+      background-color: #ffffff;
+    }
   </style>
 </head>
 
@@ -335,7 +342,7 @@
               <div class="flex flex-col text-left">
                 <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider leading-none">Cabang Wewenang</span>
                 <div class="flex items-center mt-0.5">
-                  <select id="branch-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer max-w-[180px] truncate appearance-none pr-1">
+                  <select id="branch-select" onchange="handleFilterChange()" class="text-xs font-black text-slate-800 bg-transparent focus:outline-none cursor-pointer max-w-[195px] truncate appearance-none pr-1">
                   </select>
                   <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 pointer-events-none ml-1 group-hover:text-red-500 transition-colors"></i>
                 </div>
@@ -4123,45 +4130,14 @@
     }
 
     /**
-     * Ekstraksi daftar cabang unik dari respon database
+     * Ekstraksi daftar cabang unik dari respon database (Eksklusif 5 Cabang Resmi DSO Lampung)
      */
     function extractBranchesFromData(data) {
-      const branchMap = new Map();
-
-      // Dari availableBranches jika backend mengirimkan
-      if (Array.isArray(data?.availableBranches) && data.availableBranches.length > 0) {
-        data.availableBranches.forEach(b => {
-          if (typeof b === 'string') {
-            const info = resolveBranchInfo(b);
-            branchMap.set(info.code, info.fullName);
-          } else if (b && b.code) {
-            const info = resolveBranchInfo(b.code);
-            branchMap.set(b.code, b.fullName || (info ? info.fullName : b.code));
-          }
-        });
-      }
-
-      // Dari employeeList yang tersimpan di spreadsheet
-      if (Array.isArray(data?.employeeList)) {
-        data.employeeList.forEach(e => {
-          const code = e.kodeBA || e.kode_ba;
-          const name = e.cabang;
-          if (code && !branchMap.has(code)) {
-            const info = resolveBranchInfo(code);
-            branchMap.set(code, info ? info.fullName : `${name || code} (${code})`);
-          } else if (name && !code) {
-            const info = resolveBranchInfo(name);
-            if (info) branchMap.set(info.code, info.fullName);
-            else branchMap.set(name, name);
-          }
-        });
-      }
-
-      if (branchMap.size === 0) {
-        KNOWN_BRANCHES.forEach(b => branchMap.set(b.code, b.fullName));
-      }
-
-      return Array.from(branchMap.entries()).map(([code, name]) => ({ code, name }));
+      return KNOWN_BRANCHES.map(b => ({
+        code: b.code,
+        name: b.name,
+        fullName: `${b.code} - ${b.name}`
+      }));
     }
 
     /**
@@ -4694,24 +4670,12 @@
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
 
-      // ALWAYS retain all KNOWN_BRANCHES as the foundation
-      const baseMap = new Map();
-      KNOWN_BRANCHES.forEach(b => baseMap.set(b.code, { code: b.code, name: b.name, fullName: b.fullName }));
-
-      const candidateList = availableBranchList || 
-        (window.masterFullPayload ? extractBranchesFromData(window.masterFullPayload) : 
-        (window.fullUnscopedPayload ? extractBranchesFromData(window.fullUnscopedPayload) : 
-        (currentDashboardPayload ? extractBranchesFromData(currentDashboardPayload) : [])));
-
-      if (Array.isArray(candidateList)) {
-        candidateList.forEach(b => {
-          if (b && b.code && !baseMap.has(b.code)) {
-            baseMap.set(b.code, { code: b.code, name: b.name || b.fullName, fullName: b.fullName || b.name });
-          }
-        });
-      }
-
-      const branchList = Array.from(baseMap.values());
+      // DSO LAMPUNG 5 Cabang Resmi (Bebas Duplikasi & Rapi)
+      const branchList = KNOWN_BRANCHES.map(b => ({
+        code: b.code,
+        name: b.name,
+        fullName: `${b.code} - ${b.name}`
+      }));
 
       selects.forEach(select => {
         const prevVal = select.value;
@@ -4729,7 +4693,7 @@
           branchList.forEach(b => {
             const opt = document.createElement('option');
             opt.value = b.code;
-            opt.textContent = `${b.code} - ${b.name || b.fullName}`;
+            opt.textContent = `${b.code} - ${b.name}`;
             select.appendChild(opt);
           });
 
@@ -4744,7 +4708,7 @@
 
           const userBranchObj = branchList.find(b => b.code === userBranchCode) || 
                                 KNOWN_BRANCHES.find(b => b.code === userBranchCode);
-          const branchName = userBranchObj ? (userBranchObj.name || userBranchObj.fullName) : `Cabang ${userBranchCode}`;
+          const branchName = userBranchObj ? userBranchObj.name : `Cabang ${userBranchCode}`;
 
           const opt = document.createElement('option');
           opt.value = userBranchCode;
