@@ -155,8 +155,14 @@
         else el.classList.add('hidden');
       });
 
-      populateBranchDropdown();
-      populateMonthAndYearDropdowns();
-      loadBackendDashboardData();
+      if (typeof populateBranchDropdown === "function") {
+        populateBranchDropdown();
+      }
+      if (typeof populateMonthAndYearDropdowns === "function") {
+        populateMonthAndYearDropdowns();
+      }
+      if (typeof loadBackendDashboardData === "function") {
+        loadBackendDashboardData();
+      }
     }
 

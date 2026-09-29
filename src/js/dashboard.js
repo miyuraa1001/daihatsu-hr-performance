@@ -163,9 +163,6 @@
     }
 
     /**
-     * Helper Pemanggil Backend Google Apps Script via API Fetch
-
-    /**
      * Ekstraksi daftar cabang unik dari respon database (Eksklusif 5 Cabang Resmi DSO Lampung)
      */
     function extractBranchesFromData(data) {

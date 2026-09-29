@@ -98,8 +98,8 @@
     }
 
     /**
-     * Memastikan Master Store selalu menyimpan salinan lengkap seluruh tabel untuk semua cabang
-
+     * Mengisi dropdown Cabang secara dinamis
+     */
     function populateBranchDropdown(availableBranchList = null) {
       const selectDesktop = document.getElementById('branch-select');
       const selectMobile = document.getElementById('branch-select-mobile');
