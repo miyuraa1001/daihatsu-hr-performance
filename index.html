@@ -2148,7 +2148,7 @@
         </div>
         <div class="flex items-center gap-1.5 flex-wrap self-start sm:self-center">
           <span class="px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-full text-[10px] font-bold" id="qcc-modal-year">
-            Tahun Konvensi: 2025
+            Tahun Konvensi: -
           </span>
           <span class="px-2.5 py-1 bg-blue-50 text-blue-800 border border-blue-200 rounded-full text-[10px] font-bold" id="qcc-modal-status-badge">
             Status: Plan
@@ -3829,7 +3829,7 @@
           "No.Berita Acara": q['No.Berita Acara'] || `BA-QCC/${q.kodeBA || 'D660'}/2025`,
           "Status Reward": q['Status Reward'] || 'Terverifikasi',
           "No.BPH": q['No.BPH'] || `BPH-QCC-2025-${idx + 1}`,
-          "Tahun Konvensi": safeString(q['Tahun Konvensi'] || '2025'),
+          "Tahun Konvensi": safeString(q['Tahun Konvensi'] || ''),
           "Kelengkapan Risalah Langkah 1-8": q['Kelengkapan Risalah Langkah 1-8'] || 'Lengkap (Format Baku ADM)'
         }));
       }
@@ -8081,7 +8081,8 @@
       const teamName = getRowCellValue(row, 'Nama Tim', SCHEMAS.Data_QCC) || row['Nama Tim'] || 'Tim Circle QCC';
       document.getElementById('qcc-modal-team-name').textContent = teamName;
       document.getElementById('qcc-modal-category').textContent = getRowCellValue(row, 'Kategori', SCHEMAS.Data_QCC) || row['Kategori'] || 'QCC';
-      document.getElementById('qcc-modal-year').textContent = `Tahun Konvensi: ${getRowCellValue(row, 'Tahun Konvensi', SCHEMAS.Data_QCC) || row['Tahun Konvensi'] || '2026'}`;
+      const thnKonvensi = getRowCellValue(row, 'Tahun Konvensi', SCHEMAS.Data_QCC) || row['Tahun Konvensi'] || '';
+      document.getElementById('qcc-modal-year').textContent = thnKonvensi ? `Tahun Konvensi: ${thnKonvensi}` : 'Tahun Konvensi: -';
       
       const cab = getRowCellValue(row, 'Cabang/Departemen', SCHEMAS.Data_QCC) || row['Cabang/Departemen'] || row['Cabang'] || '-';
       const ba = getRowCellValue(row, 'Kode BA', SCHEMAS.Data_QCC) || row['Kode BA'] || '-';
