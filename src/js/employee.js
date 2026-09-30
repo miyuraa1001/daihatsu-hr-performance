@@ -529,6 +529,10 @@
           if ((cellRaw === undefined || cellRaw === null || cellRaw === '' || cellRaw === '1995-05-15') && (col === 'D.o.birth' || col === 'Tanggal Lahir')) {
             cellRaw = findDOBirth(row, targetIdx);
           }
+          if ((cellRaw === undefined || cellRaw === null || cellRaw === '' || cellRaw === 'Operational') && col === 'Name') {
+            const dInfo = typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(row, targetIdx) : null;
+            if (dInfo && dInfo.divisionName) cellRaw = dInfo.divisionName;
+          }
           if ((cellRaw === undefined || cellRaw === null || cellRaw === '') && col === 'PS group') {
             cellRaw = findPSGroup(row, targetIdx);
           }
@@ -1799,7 +1803,7 @@
             <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
             <td class="py-3 px-4 text-slate-500">${e.cabang} (${e.kodeBA || '-'})</td>
             <td class="py-3 px-4">
-              <span class="font-medium text-slate-800">${e.divisi || '-'}</span>
+              <span class="font-medium text-slate-800">${e.divisi || (typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(e).divisionName : '-')}</span>
               <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
             </td>
             <td class="py-3 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${umur}</td>
@@ -1867,8 +1871,8 @@
             <td class="py-3.5 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${masaKerja}</td>
             <td class="py-3.5 px-4 text-center">${statusBadge}</td>
             ${isAdmin ? `<td class="py-3.5 px-4 text-left">${resignInfo}</td>` : ''}
-            <td class="py-3.5 px-4 text-center font-bold ${emp.kehadiranPct < 95 ? 'text-amber-600' : 'text-emerald-600'}">${emp.kehadiranPct}%</td>
-            <td class="py-3.5 px-4 text-center font-bold text-amber-500">${emp.totalSS} Ide</td>
+            <td class="py-3.5 px-4 text-center font-bold ${(emp.kehadiranPct !== undefined ? emp.kehadiranPct : 100) < 95 ? 'text-amber-600' : 'text-emerald-600'}">${emp.kehadiranPct !== undefined ? emp.kehadiranPct : 100}%</td>
+            <td class="py-3.5 px-4 text-center font-bold text-amber-500">${emp.totalSS || 0} Ide</td>
             <td class="py-3.5 px-4 text-center font-bold ${emp.spAktif ? 'text-red-600' : 'text-slate-400'}">${emp.spAktif || '-'}</td>
             <td class="py-3.5 px-4 text-center"><span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-circle-check mr-1"></i>Siap Acuan</span></td>
             <td class="py-3.5 px-4 text-center">

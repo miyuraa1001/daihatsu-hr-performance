@@ -3,6 +3,132 @@
  * Data Store, Summaries, KPI Cards, and Analytics
  */
 
+        /**
+     * Ekstraksi dan resolusi Divisi Karyawan secara cerdas dari P0001-STEXT, Name, Job Title, dan SAP data
+     * Mendeteksi divisi spesifik (contoh: 'GL Service', 'SA', 'Sales Executive', 'Kepala Cabang')
+     * dan mengelompokkan ke 3 pilar baku: 'Sales', 'Service', 'Admin'
+     */
+    function resolveEmployeeDivision(e, idx = 0) {
+      if (!e) {
+        return { divisionName: 'Operational', category: 'Admin' };
+      }
+
+      // 1. Ambil kandidat teks struktur organisasi P0001-STEXT
+      let stext = '';
+      if (typeof findP0001STEXT === 'function') {
+        stext = String(e['P0001-STEXT'] || findP0001STEXT(e, idx) || '').trim();
+      } else {
+        stext = String(e['P0001-STEXT'] || e.stext || '').trim();
+      }
+
+      const nameVal = String(e['Name'] || e.divisi || e.departemen || '').trim();
+      const orgUnit = String(e['Name of organizational unit'] || e.unit || '').trim();
+      const jobTitle = String(e['Job Title'] || e.jabatan || e.posisi || '').trim();
+
+      // Daftar kata kunci cabang / lokasi yang ada di akhiran P0001-STEXT Astra DSO
+      const locationPatterns = [
+        /\blampung\s+a\s+yani\b/i,
+        /\blampung\s+a\.?\s*yani\b/i,
+        /\blampung\b/i,
+        /\bbandar\s+jaya\b/i,
+        /\bbandarjaya\b/i,
+        /\bkotabumi\b/i,
+        /\bkota\s+bumi\b/i,
+        /\bpringsewu\b/i,
+        /\btulang\s+bawang\b/i,
+        /\btulangbawang\b/i,
+        /\bplb\s+veteran\b/i,
+        /\bveteran\b/i,
+        /\bpalembang\b/i,
+        /\bprabumulih\b/i,
+        /\bjambi\b/i,
+        /\bbengkulu\b/i,
+        /\bpangkal\s+pinang\b/i,
+        /\bpadang\b/i,
+        /\bsumbagsel\b/i,
+        /\bd66[0-4]\b/i
+      ];
+
+      let cleanedDivName = '';
+
+      if (stext && stext !== 'Staff Unit' && stext !== 'DSO Unit Operational') {
+        // Hapus prefix umum SAP (DSO, AI, PT Astra International Tbk - DSO, dsb.)
+        let clean = stext.replace(/^(dso|ai|pt\s+astra\s+international\s+tbk\s*-\s*dso)\s+/i, '').trim();
+
+        // Hapus suffix nama cabang / wilayah
+        for (const locPat of locationPatterns) {
+          clean = clean.replace(locPat, '').trim();
+        }
+
+        // Bersihkan tanda hubung atau spasi berlebih
+        clean = clean.replace(/^[-–\s/]+|[-–\s/]+$/g, '').trim();
+        if (clean.length >= 2) {
+          cleanedDivName = clean;
+        }
+      }
+
+      if (!cleanedDivName) {
+        if (nameVal && nameVal !== 'Operational' && nameVal !== 'Departemen DSO' && nameVal !== '-') {
+          cleanedDivName = nameVal;
+        } else if (orgUnit && orgUnit !== 'Departemen DSO' && orgUnit !== '-') {
+          cleanedDivName = orgUnit.replace(/\s+DSO$/i, '').trim();
+        } else if (jobTitle && jobTitle !== 'Staff' && jobTitle !== '-') {
+          cleanedDivName = jobTitle;
+        } else {
+          cleanedDivName = 'Operational';
+        }
+      }
+
+      // Normalisasi sebutan divisi agar seragam dan elegan
+      if (/^sa$/i.test(cleanedDivName)) {
+        cleanedDivName = 'SA (Service Advisor)';
+      } else if (/^kacab$/i.test(cleanedDivName)) {
+        cleanedDivName = 'Kepala Cabang';
+      }
+
+      // 2. Klasifikasi ke 3 Pilar Baku (Sales, Service, Admin)
+      const combined = `${stext} ${nameVal} ${orgUnit} ${jobTitle} ${cleanedDivName}`.toLowerCase();
+
+      let category = 'Admin';
+      if (
+        combined.includes('service') || 
+        combined.includes('bengkel') || 
+        combined.includes('workshop') ||
+        /\bgl\s+service\b/i.test(combined) ||
+        /\bsa\b/i.test(combined) ||
+        combined.includes('service advisor') ||
+        combined.includes('foreman') ||
+        combined.includes('mekanik') ||
+        combined.includes('mechanic') ||
+        combined.includes('teknisi') ||
+        combined.includes('part') ||
+        combined.includes('sparepart') ||
+        combined.includes('pdi') ||
+        combined.includes('body repair') ||
+        combined.includes('cuci')
+      ) {
+        category = 'Service';
+      } else if (
+        combined.includes('sales') ||
+        combined.includes('wiraniaga') ||
+        combined.includes('marketing') ||
+        combined.includes('counter') ||
+        combined.includes('showroom') ||
+        combined.includes('penjualan') ||
+        combined.includes('fleet')
+      ) {
+        category = 'Sales';
+      } else {
+        category = 'Admin';
+      }
+
+      return {
+        divisionName: cleanedDivName,
+        category: category
+      };
+    }
+    if (typeof window !== 'undefined') window.resolveEmployeeDivision = resolveEmployeeDivision;
+
     function initializeStandardTables(payload) {
       if (!payload) return;
       if (!payload.rawTables) payload.rawTables = {};
@@ -175,15 +301,18 @@
     function computeBranchSummary(employees, qccList = [], fallbackSummary = {}, rawData = null) {
       const totalKaryawan = employees.length;
 
-      const salesCount = employees.filter(e => (e.divisi || '').toLowerCase().includes('sales')).length;
-      const serviceCount = employees.filter(e => (e.divisi || '').toLowerCase().includes('service') || (e.divisi || '').toLowerCase().includes('bengkel')).length;
-      const adminCount = employees.filter(e => {
-        const div = (e.divisi || '').toLowerCase();
-        return div.includes('admin') || div.includes('finance') || div.includes('general') || div.includes('ga');
-      }).length;
+      let salesCount = 0;
+      let serviceCount = 0;
+      let adminCount = 0;
 
-      const otherCount = Math.max(0, totalKaryawan - salesCount - serviceCount - adminCount);
-      const finalAdminCount = adminCount + otherCount;
+      employees.forEach((e, idx) => {
+        const divInfo = resolveEmployeeDivision(e, idx);
+        e.divisi = divInfo.divisionName;
+        e.divisiCategory = divInfo.category;
+        if (divInfo.category === 'Sales') salesCount++;
+        else if (divInfo.category === 'Service') serviceCount++;
+        else adminCount++;
+      });
 
       const salesPct = totalKaryawan ? Math.round((salesCount / totalKaryawan) * 100) : 0;
       const servicePct = totalKaryawan ? Math.round((serviceCount / totalKaryawan) * 100) : 0;
@@ -347,6 +476,9 @@
 
       return {
         totalKaryawan,
+        salesCount,
+        serviceCount,
+        adminCount,
         salesPct,
         servicePct,
         adminPct,
@@ -531,9 +663,9 @@
 
       // Card 1: Master Karyawan
       document.getElementById('card-total-karyawan').textContent = s.totalKaryawan || 0;
-      document.getElementById('card-pct-sales').textContent = `${s.salesPct || 0}%`;
-      document.getElementById('card-pct-service').textContent = `${s.servicePct || 0}%`;
-      document.getElementById('card-pct-admin').textContent = `${s.adminPct || 0}%`;
+      document.getElementById('card-pct-sales').textContent = `${s.salesCount || 0} Org (${s.salesPct || 0}%)`;
+      document.getElementById('card-pct-service').textContent = `${s.serviceCount || 0} Org (${s.servicePct || 0}%)`;
+      document.getElementById('card-pct-admin').textContent = `${s.adminCount || 0} Org (${s.adminPct || 0}%)`;
       const tetapPct = s.totalKaryawan ? Math.round(((s.countTetap || 0) / s.totalKaryawan) * 100) : 0;
       const pkwtPct = s.totalKaryawan ? Math.round(((s.countPKWT || 0) / s.totalKaryawan) * 100) : 0;
       if (document.getElementById('card-tetap-val')) document.getElementById('card-tetap-val').textContent = `${s.countTetap || 0} Orang`;
@@ -744,7 +876,10 @@
       const rawSP = scopedRawTables.Data_SP || [];
       const rawKM = scopedRawTables.Knowledge_management || scopedRawTables.Data_KM || [];
 
-      scopedEmployees.forEach(e => {
+      scopedEmployees.forEach((e, idx) => {
+        const divInfo = resolveEmployeeDivision(e, idx);
+        e.divisi = divInfo.divisionName;
+        e.divisiCategory = divInfo.category;
         const npk = safeString(e.npk || e['Personnel no.']);
         if (!npk) return;
         const cleanNpk = npk.replace(/^0+/, '');

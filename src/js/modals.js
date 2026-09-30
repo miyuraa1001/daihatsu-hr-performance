@@ -1243,7 +1243,8 @@
 
       document.getElementById('modal-emp-avatar').textContent = empNama.slice(0, 2).toUpperCase();
       document.getElementById('modal-emp-name').textContent = empNama;
-      document.getElementById('modal-emp-role').textContent = `NPK: ${empNpk} • ${empJabatan} • Cabang ${empCabang}`;
+      const empDivisi = emp.divisi || (typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(emp).divisionName : '-');
+      document.getElementById('modal-emp-role').textContent = `NPK: ${empNpk} • ${empDivisi} • ${empJabatan} • Cabang ${empCabang}`;
 
       // 1. Hitung Kehadiran & Telat
       const absRows = (currentDashboardPayload.rawTables?.Data_Kehadiran || []).filter(r => 
