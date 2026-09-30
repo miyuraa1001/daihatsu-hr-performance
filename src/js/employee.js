@@ -1750,12 +1750,23 @@
       }
 
       tbody.innerHTML = list.map(row => {
+        const rowNpk = safeString(row['NPK'] || row['Personnel no.'] || row['npk']);
+        // Pastikan nama otomatis terisi jika NPK tersedia
+        if ((!row['NAMA'] || row['NAMA'] === '-' || String(row['NAMA']).trim() === '') && rowNpk) {
+          const autoName = typeof lookupEmployeeName === 'function' ? lookupEmployeeName(rowNpk) : '';
+          if (autoName) row['NAMA'] = autoName;
+        }
+
         const cells = cols.map((col, idx) => {
           const isFirst = idx === 0;
           const stickyClass = isFirst 
             ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
             : 'text-slate-600';
-          const val = formatColumnCell(col, row[col] !== undefined ? row[col] : (row[col.toLowerCase()] !== undefined ? row[col.toLowerCase()] : (row[col.toUpperCase()] !== undefined ? row[col.toUpperCase()] : (typeof capitalizeFirst === 'function' ? row[capitalizeFirst(col)] : ''))));
+          let rawCell = row[col] !== undefined ? row[col] : (row[col.toLowerCase()] !== undefined ? row[col.toLowerCase()] : (row[col.toUpperCase()] !== undefined ? row[col.toUpperCase()] : (typeof capitalizeFirst === 'function' ? row[capitalizeFirst(col)] : '')));
+          if ((col === 'NAMA' || col === 'Nama') && (!rawCell || rawCell === '-' || String(rawCell).trim() === '') && rowNpk) {
+            rawCell = (typeof lookupEmployeeName === 'function' ? lookupEmployeeName(rowNpk) : '') || rawCell;
+          }
+          const val = formatColumnCell(col, rawCell);
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 

@@ -288,6 +288,41 @@
       km: 'COMPACT'
     };
 
+        function lookupEmployeeName(npk) {
+      if (!npk) return '';
+      const cleanNpk = String(npk).trim();
+      if (!cleanNpk || cleanNpk === '-') return '';
+      const cleanNum = parseInt(cleanNpk, 10);
+      const cleanStripped = cleanNpk.replace(/^0+/, '');
+
+      const sources = [
+        window.masterFullPayload?.employeeList,
+        currentDashboardPayload?.employeeList,
+        window.fullUnscopedPayload?.employeeList,
+        window.masterFullPayload?.rawTables?.Master_Karyawan,
+        currentDashboardPayload?.rawTables?.Master_Karyawan,
+        window.fullUnscopedPayload?.rawTables?.Master_Karyawan
+      ];
+
+      for (const src of sources) {
+        if (!Array.isArray(src) || !src.length) continue;
+        const emp = src.find(e => {
+          const eNpk = safeString(e.npk || e['Personnel no.'] || e['NPK']).trim();
+          if (!eNpk) return false;
+          if (eNpk === cleanNpk) return true;
+          if (cleanStripped && eNpk.replace(/^0+/, '') === cleanStripped) return true;
+          if (!isNaN(cleanNum) && parseInt(eNpk, 10) === cleanNum) return true;
+          return false;
+        });
+        if (emp) {
+          const name = emp.nama || emp['Last name'] || emp['Nama'] || emp['Employee Name'] || '';
+          if (name && name !== '-' && name.trim() !== '') return name.trim();
+        }
+      }
+      return '';
+    }
+    window.lookupEmployeeName = lookupEmployeeName;
+
     function toggleColumnMode(moduleKey) {
       columnViewMode[moduleKey] = (columnViewMode[moduleKey] === 'FULL') ? 'COMPACT' : 'FULL';
       const isFull = columnViewMode[moduleKey] === 'FULL';
