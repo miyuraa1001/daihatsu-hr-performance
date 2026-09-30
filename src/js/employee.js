@@ -1686,7 +1686,38 @@
       }
 
       if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center py-8 text-slate-400">Belum ada data Knowledge Management di database Google Sheets.</td></tr>`;
+        const isAdmin = isUserAdmin(loggedInUser);
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="${cols.length + 1}" class="py-12 px-4 text-center">
+              <div class="max-w-md mx-auto flex flex-col items-center">
+                <div class="w-12 h-12 rounded-2xl bg-cyan-50 border border-cyan-200 text-cyan-600 flex items-center justify-center text-xl mb-3 shadow-2xs">
+                  <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <h4 class="text-sm font-extrabold text-slate-800 mb-1">Belum Ada Data Knowledge Management</h4>
+                <p class="text-xs text-slate-500 mb-4 leading-relaxed">
+                  Belum ada dokumen materi sharing session atau panduan KM yang terdata untuk cabang / filter ini.
+                </p>
+                <div class="flex flex-wrap items-center justify-center gap-2">
+                  <button type="button" onclick="document.getElementById('km-guide-banner')?.scrollIntoView({ behavior: 'smooth' })" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-2xs cursor-pointer">
+                    <i class="fa-solid fa-circle-info text-cyan-600"></i>
+                    <span>Pelajari Cara Upload</span>
+                  </button>
+                  ${isAdmin ? `
+                    <button type="button" onclick="openAddKMModal()" class="px-3.5 py-1.5 bg-[#E60012] hover:bg-[#c5000f] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                      <i class="fa-solid fa-plus"></i>
+                      <span>Tambah Data Pertama</span>
+                    </button>
+                    <button type="button" onclick="openUploadModal('Knowledge_management')" class="px-3.5 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                      <span>Upload Berkas Rekap</span>
+                    </button>
+                  ` : ''}
+                </div>
+              </div>
+            </td>
+          </tr>
+        `;
         return;
       }
 

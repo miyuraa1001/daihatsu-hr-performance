@@ -1785,4 +1785,194 @@
 
     function closeModal(id) {
       document.getElementById(id).classList.add('hidden');
-    }
+    }
+    // ========================================================
+    // KNOWLEDGE MANAGEMENT (KM) AUTOMATION & MANUAL INPUT
+    // ========================================================
+    function downloadKMScript() {
+      const batContent = `@echo off
+echo ========================================================
+echo  D-PERFORM - GENERATOR REKAP KNOWLEDGE MANAGEMENT DSO
+echo ========================================================
+echo Sedang memindai file PDF dan PPT di folder ini...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "$files = Get-ChildItem -File | Where-Object { $_.Extension -match '\\.(pdf|ppt|pptx)$' }; $res = @(); foreach ($f in $files) { if ($f.BaseName -match '(\\d{4,6})') { $npk = $matches[1]; $judul = ($f.BaseName -replace $npk, '').Replace('_', ' ').Trim(); if (-not $judul) { $judul = 'Materi Sharing KM' }; $res += [PSCustomObject]@{ NPK = $npk; NAMA = ''; JUDUL = $judul; TANGGAL = $f.LastWriteTime.ToString('yyyy-MM-dd'); TIME = $f.LastWriteTime.ToString('HH:mm') } } }; if ($res.Count -gt 0) { $res | Export-Csv -Path 'Rekap_KM_Siap_Upload.csv' -NoTypeInformation -Encoding UTF8; Write-Host 'BERHASIL! Rekap ' $res.Count ' file tersimpan di Rekap_KM_Siap_Upload.csv' -ForegroundColor Green } else { Write-Host 'Tidak ditemukan file PDF/PPT dengan NPK pada nama file.' -ForegroundColor Red }"
+echo ========================================================
+echo Selesai. Silakan upload Rekap_KM_Siap_Upload.csv ke D-PERFORM.
+pause
+`;
+
+      const blob = new Blob([batContent], { type: 'application/x-bat;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'Rekap_KM_Otomatis.bat';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Skrip Rekap_KM_Otomatis.bat berhasil diunduh!');
+    }
+
+    function openAddKMModal() {
+      if (!isUserAdmin(loggedInUser)) {
+        showToast("Akses ditolak: Hanya Administrator HR yang dapat menambahkan data KM.");
+        return;
+      }
+      const form = document.getElementById('form-add-km');
+      if (form) form.reset();
+
+      const npkInput = document.getElementById('add-km-npk');
+      const namaInput = document.getElementById('add-km-nama');
+      const dateInput = document.getElementById('add-km-tanggal');
+      const timeInput = document.getElementById('add-km-time');
+      const statusBox = document.getElementById('add-km-status-box');
+
+      if (statusBox) statusBox.className = 'hidden';
+      if (namaInput) namaInput.value = '';
+
+      const now = new Date();
+      if (dateInput) {
+        dateInput.value = now.toISOString().slice(0, 10);
+      }
+      if (timeInput) {
+        const hh = String(now.getHours()).padStart(2, '0');
+        const mm = String(now.getMinutes()).padStart(2, '0');
+        timeInput.value = `${hh}:${mm}`;
+      }
+
+      // Isi datalist karyawan dari Master Karyawan
+      const dl = document.getElementById('km-employee-datalist');
+      if (dl) {
+        const empList = (window.masterFullPayload?.employeeList || currentDashboardPayload?.employeeList || []);
+        dl.innerHTML = empList
+          .filter(e => String(e.statusKaryawan || e.Status_Karyawan || 'Aktif').toLowerCase() === 'aktif')
+          .map(e => `<option value="${safeString(e.npk || e['Personnel no.'])}">${e.nama || e['Last name']} (${e.cabang || e['P.subarea'] || 'DSO'})</option>`)
+          .join('');
+      }
+
+      const modal = document.getElementById('modal-add-km');
+      if (modal) modal.classList.remove('hidden');
+      if (npkInput) npkInput.focus();
+    }
+
+    function handleKMNPKLookup(npkVal) {
+      const cleanVal = safeString(npkVal).trim();
+      const namaInput = document.getElementById('add-km-nama');
+      if (!namaInput) return;
+      if (!cleanVal) {
+        namaInput.value = '';
+        return;
+      }
+      const empList = (window.masterFullPayload?.employeeList || currentDashboardPayload?.employeeList || []);
+      const emp = empList.find(e => safeString(e.npk || e['Personnel no.']) === cleanVal);
+      if (emp) {
+        namaInput.value = emp.nama || emp['Last name'] || '';
+      }
+    }
+
+    async function submitAddKMForm(e) {
+      if (e && typeof e.preventDefault === 'function') e.preventDefault();
+      if (!isUserAdmin(loggedInUser)) {
+        showToast("Akses ditolak: Hanya Administrator HR yang dapat menyimpan data KM.");
+        return;
+      }
+
+      const npkVal = safeString(document.getElementById('add-km-npk')?.value).trim();
+      let namaVal = document.getElementById('add-km-nama')?.value.trim();
+      const judulVal = document.getElementById('add-km-judul')?.value.trim();
+      const tglVal = document.getElementById('add-km-tanggal')?.value;
+      const timeVal = document.getElementById('add-km-time')?.value;
+      const statusBox = document.getElementById('add-km-status-box');
+      const btn = document.getElementById('btn-submit-add-km');
+
+      if (!npkVal || !judulVal || !tglVal) {
+        alert("Harap lengkapi NPK, Judul Materi, dan Tanggal Sesi.");
+        return;
+      }
+
+      // Lookup nama jika kosong
+      if (!namaVal) {
+        const empList = (window.masterFullPayload?.employeeList || currentDashboardPayload?.employeeList || []);
+        const emp = empList.find(em => safeString(em.npk || em['Personnel no.']) === npkVal);
+        if (emp) namaVal = emp.nama || emp['Last name'] || '';
+      }
+
+      // Format tanggal DD/MM/YYYY
+      let formattedDate = tglVal;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(tglVal)) {
+        const [y, m, d] = tglVal.split('-');
+        formattedDate = `${d}/${m}/${y}`;
+      }
+
+      let formattedTime = timeVal || '09:00';
+      if (/^\d{1,2}:\d{2}$/.test(formattedTime)) {
+        formattedTime = `${formattedTime}:00`;
+      }
+
+      const newRow = {
+        "NPK": npkVal,
+        "NAMA": namaVal,
+        "JUDUL": judulVal,
+        "TANGGAL": formattedDate,
+        "TIME": formattedTime
+      };
+
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Menyimpan...';
+      }
+      if (statusBox) {
+        statusBox.className = 'text-xs p-3 rounded-xl bg-blue-50 text-blue-700 border border-blue-200 block';
+        statusBox.textContent = 'Menyinkronkan data KM ke Google Sheets...';
+      }
+
+      try {
+        if (!currentDashboardPayload.rawTables) currentDashboardPayload.rawTables = {};
+        if (!currentDashboardPayload.rawTables.Knowledge_management) currentDashboardPayload.rawTables.Knowledge_management = [];
+        if (!currentDashboardPayload.rawTables.Data_KM) currentDashboardPayload.rawTables.Data_KM = [];
+
+        // Tambah ke array lokal
+        currentDashboardPayload.rawTables.Knowledge_management.push(newRow);
+        currentDashboardPayload.rawTables.Data_KM = currentDashboardPayload.rawTables.Knowledge_management;
+
+        if (window.masterFullPayload && window.masterFullPayload.rawTables) {
+          if (!window.masterFullPayload.rawTables.Knowledge_management) window.masterFullPayload.rawTables.Knowledge_management = [];
+          window.masterFullPayload.rawTables.Knowledge_management.push(newRow);
+          window.masterFullPayload.rawTables.Data_KM = window.masterFullPayload.rawTables.Knowledge_management;
+        }
+
+        // Sinkronkan ke Google Sheets via syncSheetToBackend
+        const res = await syncSheetToBackend('Knowledge_management');
+        
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Data KM';
+        }
+
+        if (res && res.success === false) {
+          alert("Peringatan: Data KM tersimpan di memori aplikasi tetapi gagal disinkronkan ke backend: " + (res.message || ""));
+        } else {
+          showToast("Data Knowledge Management berhasil ditambahkan dan disinkronkan!");
+        }
+
+        closeModal('modal-add-km');
+        if (typeof renderKMView === 'function') renderKMView(currentDashboardPayload);
+        if (typeof filterKMTable === 'function') filterKMTable();
+      } catch (err) {
+        console.error("Gagal menambah data KM:", err);
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Data KM';
+        }
+        if (statusBox) {
+          statusBox.className = 'text-xs p-3 rounded-xl bg-rose-50 text-rose-700 border border-rose-200 block';
+          statusBox.textContent = 'Terjadi kesalahan: ' + err.message;
+        }
+      }
+    }
+
+    // Expose KM functions to window for template/onclick calls
+    window.downloadKMScript = downloadKMScript;
+    window.openAddKMModal = openAddKMModal;
+    window.handleKMNPKLookup = handleKMNPKLookup;
+    window.submitAddKMForm = submitAddKMForm;
