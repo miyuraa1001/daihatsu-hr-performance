@@ -448,6 +448,26 @@
       // Selalu perbarui master store dengan salinan payload terbaru yang telah disanitasi
       const fullCopy = sanitizeLampungPayload(JSON.parse(JSON.stringify(data)));
       initializeStandardTables(fullCopy);
+
+      // Proteksi KM: jangan biarkan KM ditimpa kosong jika memori lokal / cache memiliki data
+      const existingKM = (window.masterFullPayload?.rawTables?.Knowledge_management || window.masterFullPayload?.rawTables?.Data_KM || currentDashboardPayload?.rawTables?.Knowledge_management || []);
+      let cachedKM = [];
+      try {
+        const c = localStorage.getItem('dperform_km_cache');
+        if (c) cachedKM = JSON.parse(c);
+      } catch(e) {}
+
+      const incomingKM = (fullCopy.rawTables?.Knowledge_management || fullCopy.rawTables?.Data_KM || []);
+      if (incomingKM.length === 0) {
+        const fallbackKM = existingKM.length > 0 ? existingKM : cachedKM;
+        if (fallbackKM.length > 0) {
+          fullCopy.rawTables.Knowledge_management = fallbackKM;
+          fullCopy.rawTables.Data_KM = fallbackKM;
+        }
+      } else {
+        try { localStorage.setItem('dperform_km_cache', JSON.stringify(incomingKM)); } catch(e) {}
+      }
+
       window.masterFullPayload = fullCopy;
       window.fullUnscopedPayload = fullCopy;
     }

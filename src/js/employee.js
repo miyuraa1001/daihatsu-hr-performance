@@ -1625,8 +1625,21 @@
     // ----------------------------------------------------
     function renderKMView(data) {
       if (!data) return;
+      let cachedKM = [];
+      try {
+        const c = localStorage.getItem('dperform_km_cache');
+        if (c) cachedKM = JSON.parse(c);
+      } catch(e) {}
+
       const source = window.masterFullPayload?.rawTables || data.rawTables || {};
-      const rawRows = (source.Knowledge_management || source.Data_KM) || [];
+      let rawRows = (source.Knowledge_management || source.Data_KM) || [];
+      if (!rawRows.length && cachedKM.length > 0) {
+        rawRows = cachedKM;
+        if (source) {
+          source.Knowledge_management = cachedKM;
+          source.Data_KM = cachedKM;
+        }
+      }
 
       const totalKM = rawRows.length;
       const uniqueContributors = new Set(rawRows.map(r => safeString(r['NPK'] || r['Personnel no.'])).filter(Boolean)).size;
@@ -1657,9 +1670,17 @@
     }
 
     function filterKMTable() {
-      const source = window.masterFullPayload?.rawTables || currentDashboardPayload?.rawTables;
-      if (!source) return;
-      const rawRows = (source.Knowledge_management || source.Data_KM) || [];
+      let cachedKM = [];
+      try {
+        const c = localStorage.getItem('dperform_km_cache');
+        if (c) cachedKM = JSON.parse(c);
+      } catch(e) {}
+
+      const source = window.masterFullPayload?.rawTables || currentDashboardPayload?.rawTables || {};
+      let rawRows = (source.Knowledge_management || source.Data_KM) || [];
+      if (!rawRows.length && cachedKM.length > 0) {
+        rawRows = cachedKM;
+      }
       const q = (document.getElementById('km-search-input')?.value || '').toLowerCase().trim();
       const branchFilter = document.getElementById('km-filter-cabang')?.value || 'ALL';
 

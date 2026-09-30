@@ -879,6 +879,7 @@
 
           if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
             currentDashboardPayload.rawTables.Knowledge_management = parsedObjects;
+            try { localStorage.setItem('dperform_km_cache', JSON.stringify(parsedObjects)); } catch(e) {}
             currentDashboardPayload.rawTables.Data_KM = parsedObjects;
             if (window.masterFullPayload && window.masterFullPayload.rawTables) {
               window.masterFullPayload.rawTables.Knowledge_management = parsedObjects;
@@ -1806,12 +1807,12 @@
     // ========================================================
     function downloadKMScript() {
       const batContent = `@echo off
+chcp 65001 >nul
 echo ========================================================
 echo  D-PERFORM - GENERATOR REKAP KNOWLEDGE MANAGEMENT DSO
 echo ========================================================
-echo Sedang memindai file PDF dan PPT di folder ini...
-powershell -NoProfile -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; \$files = Get-ChildItem -File | Where-Object { \$_.Extension -match '\.(pdf|ppt|pptx)$' }; \$res = @(); foreach (\$f in \$files) { \$npk = ''; if (\$f.BaseName -match '(\d{4,6})') { \$npk = \$matches[1]; } if (-not \$npk -and \$f.Extension -eq '.pptx') { try { \$zip = [System.IO.Compression.ZipFile]::OpenRead(\$f.FullName); \$entry = \$zip.GetEntry('ppt/slides/slide1.xml'); if (\$entry) { \$sr = New-Object System.IO.StreamReader(\$entry.Open()); \$xml = \$sr.ReadToEnd(); \$sr.Close(); if (\$xml -match '(?i)npk[\s.:-]*(\d{4,6})') { \$npk = \$matches[1]; } elseif (\$xml -match '(?i)(?:nik|pegawai|karyawan)[\s.:-]*(\d{4,6})') { \$npk = \$matches[1]; } } \$zip.Dispose(); } catch {} } if (-not \$npk -and \$f.Extension -eq '.pdf') { try { \$raw = [System.IO.File]::ReadAllText(\$f.FullName); if (\$raw -match '(?i)npk[\s.:-]*(\d{4,6})') { \$npk = \$matches[1]; } } catch {} } \$judul = \$f.BaseName; if (\$npk) { \$judul = (\$judul -replace \$npk, '').Replace('_', ' ').Trim(); \$judul = (\$judul -replace '^[\s-_:]+', '').Trim(); } if (-not \$judul) { \$judul = 'Materi Sharing KM' }; \$res += [PSCustomObject]@{ NPK = \$npk; NAMA = ''; JUDUL = \$judul; TANGGAL = \$f.LastWriteTime.ToString('yyyy-MM-dd'); TIME = \$f.LastWriteTime.ToString('HH:mm:ss') } }; if (\$res.Count -gt 0) { \$res | Export-Csv -Path 'Rekap_KM_Siap_Upload.csv' -NoTypeInformation -Encoding UTF8; Write-Host ('BERHASIL! Rekap ' + \$res.Count + ' file tersimpan di Rekap_KM_Siap_Upload.csv') -ForegroundColor Green; } else { Write-Host 'Tidak ditemukan file PDF/PPT di folder ini.' -ForegroundColor Red; }"
-echo ========================================================
+echo Sedang memindai seluruh file presentasi (termasuk subfolder)...
+powershell -NoProfile -ExecutionPolicy Bypass -Command "Add-Type -AssemblyName System.IO.Compression.FileSystem; \$files = Get-ChildItem -Path . -Recurse -File | Where-Object { \$_.Extension -match '(?i)\\.(pdf|ppt|pptx|pps|ppsx)$' -and \$_.Name -notmatch '^~\\$' -and \$_.Name -ne 'Rekap_KM_Siap_Upload.csv' }; Write-Host ('Ditemukan total ' + \$files.Count + ' file presentasi. Memulai ekstraksi...') -ForegroundColor Cyan; \$res = @(); \$i = 0; foreach (\$f in \$files) { \$i++; if (\$i % 25 -eq 0 -or \$i -eq \$files.Count) { Write-Host ('Memproses file [' + \$i + '/' + \$files.Count + ']...') -ForegroundColor Yellow; } \$npk = ''; if (\$f.BaseName -match '(\\d{4,6})') { \$npk = \$matches[1]; } if (-not \$npk -and (\$f.Extension -match '(?i)^\\.(pptx|ppsx)$')) { try { \$zip = [System.IO.Compression.ZipFile]::OpenRead(\$f.FullName); \$entry = \$zip.GetEntry('ppt/slides/slide1.xml'); if (\$entry) { \$sr = New-Object System.IO.StreamReader(\$entry.Open()); \$xml = \$sr.ReadToEnd(); \$sr.Close(); if (\$xml -match '(?i)npk[\\s.:-]*(\\d{4,6})') { \$npk = \$matches[1]; } elseif (\$xml -match '(?i)(?:nik|pegawai|karyawan)[\\s.:-]*(\\d{4,6})') { \$npk = \$matches[1]; } } \$zip.Dispose(); } catch {} } if (-not \$npk -and \$f.Extension -match '(?i)^\\.pdf$') { try { \$raw = [System.IO.File]::ReadAllText(\$f.FullName); if (\$raw -match '(?i)npk[\\s.:-]*(\\d{4,6})') { \$npk = \$matches[1]; } elseif (\$raw -match '(?i)(?:nik|pegawai|karyawan)[\\s.:-]*(\\d{4,6})') { \$npk = \$matches[1]; } } catch {} } \$judul = \$f.BaseName; if (\$npk) { \$judul = (\$judul -replace \$npk, '').Replace('_', ' ').Trim(); \$judul = (\$judul -replace '^[\\s-_:]+', '').Trim(); } if (-not \$judul) { \$judul = \$f.BaseName; } \$res += [PSCustomObject]@{ NPK = \$npk; NAMA = ''; JUDUL = \$judul; TANGGAL = \$f.LastWriteTime.ToString('yyyy-MM-dd'); TIME = \$f.LastWriteTime.ToString('HH:mm:ss') }; }; if (\$res.Count -gt 0) { \$res | Export-Csv -Path 'Rekap_KM_Siap_Upload.csv' -NoTypeInformation -Encoding UTF8; Write-Host ('========================================================') -ForegroundColor Green; Write-Host ('BERHASIL! Sebanyak ' + \$res.Count + ' file tersimpan di Rekap_KM_Siap_Upload.csv') -ForegroundColor Green; Write-Host ('========================================================') -ForegroundColor Green; } else { Write-Host 'Tidak ditemukan file PDF/PPT di folder ini maupun subfoldernya.' -ForegroundColor Red; }"
 echo Selesai. Silakan upload Rekap_KM_Siap_Upload.csv ke D-PERFORM.
 pause
 `;
@@ -1825,7 +1826,7 @@ pause
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-      showToast('Skrip Rekap_KM_Otomatis.bat (Deep Scan) berhasil diunduh!');
+      showToast('Skrip Rekap_KM_Otomatis.bat (Deep Scan + Subfolder) berhasil diunduh!');
     }
 
     function openAddKMModal() {
