@@ -1,3 +1,8 @@
+
+    function capitalizeFirst(str) {
+      if (!str) return '';
+      return String(str).charAt(0).toUpperCase() + String(str).slice(1).toLowerCase();
+    }
 /**
  * D-PERFORM - Employee & Module Views
  * Master Karyawan, Presensi, SS, QCC, SP, dan KM Tables
@@ -1727,7 +1732,7 @@
           const stickyClass = isFirst 
             ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
             : 'text-slate-600';
-          const val = formatColumnCell(col, row[col] || row[col.toLowerCase()] || row[capitalizeFirst(col)]);
+          const val = formatColumnCell(col, row[col] !== undefined ? row[col] : (row[col.toLowerCase()] !== undefined ? row[col.toLowerCase()] : (row[col.toUpperCase()] !== undefined ? row[col.toUpperCase()] : (typeof capitalizeFirst === 'function' ? row[capitalizeFirst(col)] : ''))));
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
