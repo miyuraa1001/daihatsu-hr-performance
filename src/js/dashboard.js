@@ -686,17 +686,17 @@
           const meta = getContractMeta(grpName);
           const pct = Math.round((count / totalEmp) * 100);
           return `
-            <div class="flex items-center gap-1.5 p-1.5 rounded-xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs">
-              <div class="w-6 h-6 rounded-lg ${meta.iconBg} flex items-center justify-center text-[10px] border ${meta.iconBorder} flex-shrink-0">
+            <div class="flex items-center gap-2 p-2 rounded-xl bg-slate-50 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs">
+              <div class="w-7 h-7 rounded-lg ${meta.iconBg} flex items-center justify-center text-xs border ${meta.iconBorder} flex-shrink-0">
                 <i class="${meta.icon}"></i>
               </div>
               <div class="min-w-0 flex-1 text-left">
-                <div class="flex items-center justify-between gap-0.5 leading-tight">
-                  <span class="text-[9px] font-bold text-slate-800 truncate" title="${meta.displayName}">${meta.displayName}</span>
-                  <span class="px-1 py-0.2 rounded text-[8px] font-black ${meta.badgeBg} border flex-shrink-0">${pct}%</span>
+                <div class="flex items-center justify-between gap-1 leading-tight">
+                  <span class="text-[10px] font-bold text-slate-800 truncate" title="${meta.displayName}">${meta.displayName}</span>
+                  <span class="px-1.5 py-0.5 rounded text-[8.5px] font-black ${meta.badgeBg} border flex-shrink-0">${pct}%</span>
                 </div>
-                <div class="text-[11px] font-black text-slate-900 leading-none mt-0.5">
-                  ${count} <span class="text-[8px] font-medium text-slate-400 font-normal">Org</span>
+                <div class="text-xs font-black text-slate-900 leading-none mt-1">
+                  ${count} <span class="text-[8.5px] font-medium text-slate-400 font-normal">Org</span>
                 </div>
               </div>
             </div>
