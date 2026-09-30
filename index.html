@@ -2608,10 +2608,22 @@
       </div>
 
       <!-- Modal Footer -->
-      <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-end gap-2">
-        <button type="button" onclick="closeModal('modal-km-detail')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">
-          Tutup
-        </button>
+      <div class="p-3.5 sm:p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between gap-2">
+        <div id="km-modal-admin-actions" class="hidden items-center gap-2">
+          <button type="button" onclick="openEditKMFromDetail()" class="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-xl text-xs border border-amber-200 transition inline-flex items-center gap-1.5 cursor-pointer shadow-xs">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <span>Edit Dokumen</span>
+          </button>
+          <button type="button" onclick="openDeleteKMFromDetail()" class="px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 font-bold rounded-xl text-xs border border-red-200 transition inline-flex items-center gap-1.5 cursor-pointer shadow-xs">
+            <i class="fa-solid fa-trash"></i>
+            <span>Hapus Dokumen</span>
+          </button>
+        </div>
+        <div class="flex items-center justify-end gap-2 ml-auto">
+          <button type="button" onclick="closeModal('modal-km-detail')" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">
+            Tutup
+          </button>
+        </div>
       </div>
     </div>
   </div>

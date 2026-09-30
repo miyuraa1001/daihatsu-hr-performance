@@ -1239,9 +1239,21 @@
     async function syncSheetToBackend(targetSheet) {
       const schema = SCHEMAS[targetSheet];
       if (!schema) return { success: false, message: 'Skema tabel tidak ditemukan.' };
-      const rawRows = (currentDashboardPayload?.rawTables && currentDashboardPayload.rawTables[targetSheet]) || [];
+      let rawRows = (currentDashboardPayload?.rawTables && (currentDashboardPayload.rawTables[targetSheet] || currentDashboardPayload.rawTables[schema.sheetName])) || [];
+      if (!rawRows.length && (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM')) {
+        const altKey = targetSheet === 'Knowledge_management' ? 'Data_KM' : 'Knowledge_management';
+        rawRows = currentDashboardPayload?.rawTables?.[altKey] || window.masterFullPayload?.rawTables?.[altKey] || window.masterFullPayload?.rawTables?.[targetSheet] || [];
+      }
       const canonicalColumns = schema.columns;
-      const formattedDataRows = rawRows.map(obj => canonicalColumns.map(col => (obj[col] !== undefined && obj[col] !== null) ? obj[col] : ''));
+      const formattedDataRows = rawRows.map(obj => canonicalColumns.map(col => {
+        if (obj[col] !== undefined && obj[col] !== null) return obj[col];
+        const lower = col.toLowerCase();
+        if (obj[lower] !== undefined && obj[lower] !== null) return obj[lower];
+        const upper = col.toUpperCase();
+        if (obj[upper] !== undefined && obj[upper] !== null) return obj[upper];
+        if (typeof capitalizeFirst === 'function' && obj[capitalizeFirst(col)] !== undefined) return obj[capitalizeFirst(col)];
+        return '';
+      }));
 
       return await callBackendAPI("IMPORT_EXCEL", {
         targetSheet: schema.sheetName,

@@ -263,7 +263,7 @@
       }
     }
 
-    async function handleSaveRowEdit(event) {
+        async function handleSaveRowEdit(event) {
       if (event) event.preventDefault();
       if (!isUserAdmin(loggedInUser)) {
         showToast("Akses ditolak: Hanya Admin yang dapat menyimpan perubahan.");
@@ -294,7 +294,19 @@
         }
       });
 
-      // Sinkronkan ke modul terkait
+      // Update di masterFullPayload jika ada baris yang sama
+      [window.masterFullPayload, window.fullUnscopedPayload].forEach(payload => {
+        if (payload?.rawTables?.[sheetName]) {
+          const idx = payload.rawTables[sheetName].indexOf(targetRow);
+          if (idx !== -1) {
+            payload.rawTables[sheetName][idx] = targetRow;
+          } else if (payload.rawTables[sheetName][rowIndex]) {
+            payload.rawTables[sheetName][rowIndex] = targetRow;
+          }
+        }
+      });
+
+      // Sinkronkan ke modul terkait secara realtime
       if (sheetName === 'Master_Karyawan') {
         const npk = safeString(targetRow['Personnel no.']);
         const emp = (currentDashboardPayload.employeeList || []).find(e => safeString(e.npk || e['Personnel no.']) === npk);
@@ -321,12 +333,16 @@
           currentDashboardPayload.summary
         );
         renderMasterKaryawanView(currentDashboardPayload);
+        if (typeof filterEmployeeTable === 'function') filterEmployeeTable();
       } else if (sheetName === 'Data_Kehadiran') {
         renderAbsensiView(currentDashboardPayload);
+        if (typeof filterAttendanceTable === 'function') filterAttendanceTable();
       } else if (sheetName === 'Data_SS') {
         renderSSView(currentDashboardPayload);
+        if (typeof filterSSTable === 'function') filterSSTable();
       } else if (sheetName === 'Data_QCC') {
         renderQCCView(currentDashboardPayload);
+        if (typeof filterQCCTable === 'function') filterQCCTable();
       } else if (sheetName === 'Data_SP') {
         const npk = safeString(targetRow['NPK']);
         const emp = (currentDashboardPayload.employeeList || []).find(e => safeString(e.npk || e['Personnel no.']) === npk);
@@ -340,22 +356,34 @@
           currentDashboardPayload.summary
         );
         renderSPView(currentDashboardPayload);
+        if (typeof filterSPTable === 'function') filterSPTable();
       } else if (sheetName === 'Data_KM' || sheetName === 'Knowledge_management') {
+        const updatedKM = currentDashboardPayload.rawTables[sheetName];
+        currentDashboardPayload.rawTables.Knowledge_management = updatedKM;
+        currentDashboardPayload.rawTables.Data_KM = updatedKM;
+        if (window.masterFullPayload?.rawTables) {
+          window.masterFullPayload.rawTables.Knowledge_management = updatedKM;
+          window.masterFullPayload.rawTables.Data_KM = updatedKM;
+        }
+        try {
+          localStorage.setItem('dperform_km_cache', JSON.stringify(updatedKM));
+        } catch(e) {}
         renderKMView(currentDashboardPayload);
+        if (typeof filterKMTable === 'function') filterKMTable();
       }
 
       closeModal('modal-edit-row');
-      showToast("Menyinkronkan perubahan ke basis data Google Sheets...");
+      showToast("✅ Perubahan berhasil disimpan seketika!");
 
       try {
         const res = await syncSheetToBackend(sheetName);
         if (res.success) {
-          showToast(`✅ Perubahan ${schema.title} berhasil disinkronkan ke Google Sheets!`);
+          showToast(`✅ Data ${schema.title} berhasil disinkronkan ke Google Sheets!`);
         } else {
-          showToast(`⚠️ Data diperbarui di aplikasi, status sync: ${res.message || 'Offline'}`);
+          showToast(`⚠️ Data tersimpan di aplikasi, status sync: ${res.message || 'Offline'}`);
         }
       } catch (err) {
-        showToast(`⚠️ Data diperbarui di aplikasi, gagal sinkron: ${err.message}`);
+        showToast(`⚠️ Data tersimpan di aplikasi, gagal sinkron: ${err.message}`);
       } finally {
         if (btnSave) {
           btnSave.disabled = false;
@@ -387,7 +415,7 @@
       document.getElementById('modal-delete-row').classList.remove('hidden');
     }
 
-    async function handleConfirmDeleteRow() {
+        async function handleConfirmDeleteRow() {
       if (!isUserAdmin(loggedInUser)) {
         showToast("Akses ditolak: Hanya Admin yang dapat menghapus data.");
         return;
@@ -409,12 +437,30 @@
 
       const npk = safeString(targetRow['Personnel no.'] || targetRow['NPK']);
 
-      // Hapus dari rawTables
+      // 1. Hapus dari currentDashboardPayload.rawTables
       currentDashboardPayload.rawTables[sheetName].splice(rowIndex, 1);
 
+      // 2. Hapus juga dari window.masterFullPayload dan window.fullUnscopedPayload
+      [window.masterFullPayload, window.fullUnscopedPayload].forEach(payload => {
+        if (payload?.rawTables?.[sheetName]) {
+          const idx = payload.rawTables[sheetName].indexOf(targetRow);
+          if (idx !== -1) {
+            payload.rawTables[sheetName].splice(idx, 1);
+          } else if (payload.rawTables[sheetName][rowIndex]) {
+            payload.rawTables[sheetName].splice(rowIndex, 1);
+          }
+        }
+      });
+
+      // 3. Sinkronkan ke modul spesifik & update tampilan secara realtime
       if (sheetName === 'Master_Karyawan') {
-        if (npk && currentDashboardPayload.employeeList) {
-          currentDashboardPayload.employeeList = currentDashboardPayload.employeeList.filter(e => safeString(e.npk || e['Personnel no.']) !== npk);
+        if (npk) {
+          if (currentDashboardPayload.employeeList) {
+            currentDashboardPayload.employeeList = currentDashboardPayload.employeeList.filter(e => safeString(e.npk || e['Personnel no.']) !== npk);
+          }
+          if (window.masterFullPayload?.employeeList) {
+            window.masterFullPayload.employeeList = window.masterFullPayload.employeeList.filter(e => safeString(e.npk || e['Personnel no.']) !== npk);
+          }
         }
         currentDashboardPayload.summary = computeBranchSummary(
           currentDashboardPayload.employeeList,
@@ -422,15 +468,19 @@
           currentDashboardPayload.summary
         );
         renderMasterKaryawanView(currentDashboardPayload);
+        if (typeof filterEmployeeTable === 'function') filterEmployeeTable();
       } else if (sheetName === 'Data_Kehadiran') {
         renderAbsensiView(currentDashboardPayload);
+        if (typeof filterAttendanceTable === 'function') filterAttendanceTable();
       } else if (sheetName === 'Data_SS') {
         renderSSView(currentDashboardPayload);
+        if (typeof filterSSTable === 'function') filterSSTable();
       } else if (sheetName === 'Data_QCC') {
         renderQCCView(currentDashboardPayload);
+        if (typeof filterQCCTable === 'function') filterQCCTable();
       } else if (sheetName === 'Data_SP') {
-        if (npk && currentDashboardPayload.employeeList) {
-          const emp = currentDashboardPayload.employeeList.find(e => safeString(e.npk || e['Personnel no.']) === npk);
+        if (npk) {
+          const emp = (currentDashboardPayload.employeeList || []).find(e => safeString(e.npk || e['Personnel no.']) === npk);
           if (emp) {
             emp.spAktif = '';
             emp.spAlasan = '';
@@ -442,17 +492,29 @@
           currentDashboardPayload.summary
         );
         renderSPView(currentDashboardPayload);
+        if (typeof filterSPTable === 'function') filterSPTable();
       } else if (sheetName === 'Data_KM' || sheetName === 'Knowledge_management') {
+        const remainingKM = currentDashboardPayload.rawTables[sheetName];
+        currentDashboardPayload.rawTables.Knowledge_management = remainingKM;
+        currentDashboardPayload.rawTables.Data_KM = remainingKM;
+        if (window.masterFullPayload?.rawTables) {
+          window.masterFullPayload.rawTables.Knowledge_management = remainingKM;
+          window.masterFullPayload.rawTables.Data_KM = remainingKM;
+        }
+        try {
+          localStorage.setItem('dperform_km_cache', JSON.stringify(remainingKM));
+        } catch(e) {}
         renderKMView(currentDashboardPayload);
+        if (typeof filterKMTable === 'function') filterKMTable();
       }
 
       closeModal('modal-delete-row');
-      showToast("Menyinkronkan penghapusan data ke basis data Google Sheets...");
+      showToast("✅ Baris data berhasil dihapus seketika!");
 
       try {
         const res = await syncSheetToBackend(sheetName);
         if (res.success) {
-          showToast(`✅ Data berhasil dihapus dan disinkronkan ke Google Sheets!`);
+          showToast(`✅ Data ${schema.title} berhasil disinkronkan ke Google Sheets!`);
         } else {
           showToast(`⚠️ Data terhapus di aplikasi, status sync: ${res.message || 'Offline'}`);
         }
@@ -505,8 +567,43 @@
         attEl.innerHTML = `<i class="fa-solid fa-clock"></i> ${time !== '-' ? time : 'Tercatat'}`;
       }
 
+      const actualIndex = rawRows.indexOf(row);
+      window.currentKMDetailIndex = actualIndex !== -1 ? actualIndex : rowIndex;
+
+      const adminBtns = document.getElementById('km-modal-admin-actions');
+      if (adminBtns) {
+        if (isUserAdmin(loggedInUser)) {
+          adminBtns.classList.remove('hidden');
+          adminBtns.classList.add('flex');
+        } else {
+          adminBtns.classList.add('hidden');
+          adminBtns.classList.remove('flex');
+        }
+      }
+
       document.getElementById('modal-km-detail').classList.remove('hidden');
     }
+    window.openKMDetailModal = openKMDetailModal;
+
+    function openEditKMFromDetail() {
+      const idx = window.currentKMDetailIndex;
+      closeModal('modal-km-detail');
+      const targetSheet = (currentDashboardPayload?.rawTables?.Knowledge_management) ? 'Knowledge_management' : 'Data_KM';
+      if (typeof idx === 'number' && idx >= 0) {
+        openEditRowModal(targetSheet, idx);
+      }
+    }
+    window.openEditKMFromDetail = openEditKMFromDetail;
+
+    function openDeleteKMFromDetail() {
+      const idx = window.currentKMDetailIndex;
+      closeModal('modal-km-detail');
+      const targetSheet = (currentDashboardPayload?.rawTables?.Knowledge_management) ? 'Knowledge_management' : 'Data_KM';
+      if (typeof idx === 'number' && idx >= 0) {
+        openDeleteRowModal(targetSheet, idx);
+      }
+    }
+    window.openDeleteKMFromDetail = openDeleteKMFromDetail;
 
     function exportModuleTableToExcel(targetSheet) {
       if (targetSheet === 'Data_Absensi') targetSheet = 'Data_Kehadiran';
