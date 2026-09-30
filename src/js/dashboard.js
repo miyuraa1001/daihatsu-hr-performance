@@ -445,21 +445,11 @@
 
     function ensureMasterStore(data) {
       if (!data) return;
-      if (!window.masterFullPayload || !window.masterFullPayload.rawTables || !window.masterFullPayload.rawTables.Data_Kehadiran) {
-        const fullCopy = sanitizeLampungPayload(JSON.parse(JSON.stringify(data)));
-        initializeStandardTables(fullCopy);
-        window.masterFullPayload = fullCopy;
-        window.fullUnscopedPayload = fullCopy;
-      } else {
-        const existingCount = window.masterFullPayload.employeeList?.length || 0;
-        const newCount = data.employeeList?.length || 0;
-        if (newCount > existingCount) {
-          const fullCopy = sanitizeLampungPayload(JSON.parse(JSON.stringify(data)));
-          initializeStandardTables(fullCopy);
-          window.masterFullPayload = fullCopy;
-          window.fullUnscopedPayload = fullCopy;
-        }
-      }
+      // Selalu perbarui master store dengan salinan payload terbaru yang telah disanitasi
+      const fullCopy = sanitizeLampungPayload(JSON.parse(JSON.stringify(data)));
+      initializeStandardTables(fullCopy);
+      window.masterFullPayload = fullCopy;
+      window.fullUnscopedPayload = fullCopy;
     }
 
     async function loadBackendDashboardData(shouldShowLoader = true) {
@@ -576,12 +566,8 @@
           )
         );
 
-        scopedRawTables.Knowledge_management = scopedRawTables.Knowledge_management.filter(r => 
-          matchDateMonthYear(
-            getRowCellValue(r, 'TANGGAL', SCHEMAS.Data_KM) || r['TANGGAL'] || r['Tanggal'] || r['Date'], 
-            selectedMonth, selectedYear
-          )
-        );
+        // Knowledge Management adalah repositori pengetahuan permanen,
+        // pertahankan seluruh dokumen KM agar dapat selalu dibaca pada menu KM
         scopedRawTables.Data_KM = scopedRawTables.Knowledge_management;
       }
 

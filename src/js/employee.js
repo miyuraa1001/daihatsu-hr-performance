@@ -1620,7 +1620,8 @@
     // ----------------------------------------------------
     function renderKMView(data) {
       if (!data) return;
-      const rawRows = (data.rawTables && (data.rawTables.Knowledge_management || data.rawTables.Data_KM)) ? (data.rawTables.Knowledge_management || data.rawTables.Data_KM) : [];
+      const source = window.masterFullPayload?.rawTables || data.rawTables || {};
+      const rawRows = (source.Knowledge_management || source.Data_KM) || [];
 
       const totalKM = rawRows.length;
       const uniqueContributors = new Set(rawRows.map(r => safeString(r['NPK'] || r['Personnel no.'])).filter(Boolean)).size;
@@ -1640,9 +1641,10 @@
     }
 
     function populateKMFilters() {
-      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const source = window.masterFullPayload?.rawTables || currentDashboardPayload?.rawTables || {};
+      const rawRows = (source.Knowledge_management || source.Data_KM) || [];
 
-      // Dropdown Kategori / Waktu
+      // Ekstraksi topik / kategori dinamis jika tersedia
       const catSelect = document.getElementById('km-filter-kategori');
       if (catSelect) {
         catSelect.innerHTML = '<option value="ALL">Semua Dokumen</option>';
@@ -1650,8 +1652,9 @@
     }
 
     function filterKMTable() {
-      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
-      const rawRows = (currentDashboardPayload.rawTables.Knowledge_management || currentDashboardPayload.rawTables.Data_KM) || [];
+      const source = window.masterFullPayload?.rawTables || currentDashboardPayload?.rawTables;
+      if (!source) return;
+      const rawRows = (source.Knowledge_management || source.Data_KM) || [];
       const q = (document.getElementById('km-search-input')?.value || '').toLowerCase().trim();
       const branchFilter = document.getElementById('km-filter-cabang')?.value || 'ALL';
 

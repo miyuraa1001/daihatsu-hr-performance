@@ -920,23 +920,29 @@
      * Memeriksa apakah sebuah record / item berasal dari salah satu 5 Cabang Resmi DSO Lampung:
      * D660, D661, D662, D663, D664
      */
-    function isLampungBranch(item) {
+    function isLampungBranch(item, fallbackMasterList = null) {
       if (!item) return false;
 
-      // 1. Cek kode BA langsung
-      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS) || '';
-      if (rawCode) {
-        const ba = resolveBACode(rawCode);
-        if (ALLOWED_BRANCH_CODES.includes(ba)) return true;
-        const cleanUpper = String(rawCode).trim().toUpperCase();
-        if (/^D\d{3}$/.test(cleanUpper) && !ALLOWED_BRANCH_CODES.includes(cleanUpper)) return false;
+      // Khusus tabel Knowledge_management (hanya ada NPK, NAMA, JUDUL, TANGGAL, TIME):
+      // Merupakan dokumen repositori pengetahuan resmi DSO Lampung, selalu bernilai true
+      if (item['JUDUL'] !== undefined || item['judul'] !== undefined || item['Judul'] !== undefined) {
+        return true;
       }
 
-      // 2. Cek teks P.subarea / Cabang
+      // 1. Cek langsung kode BA
+      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS) || '';
+      if (rawCode) {
+        const norm = resolveBACode(rawCode);
+        if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
+        if (!norm) return false;
+      }
+
+      // 2. Cek teks nama cabang
       const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Cabang', SCHEMAS.Data_SS) || '';
       if (rawCabang) {
-        const ba = resolveBACode(rawCabang);
-        if (ALLOWED_BRANCH_CODES.includes(ba)) return true;
+        const norm = resolveBACode(rawCabang);
+        if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
+        if (!norm) return false;
       }
 
       // 3. Cek Wilayah (jika menyebut Lampung)
@@ -947,11 +953,17 @@
 
       // 4. Relasi NPK ke Master Karyawan
       const npk = safeString(item['NPK'] || item['Personnel no.'] || item['Personnel No.'] || item.npk);
-      const masterList = (window.masterFullPayload && window.masterFullPayload.employeeList) || 
-                         (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList) || 
-                         (window.masterFullPayload && window.masterFullPayload.rawTables && window.masterFullPayload.rawTables.Master_Karyawan) || [];
+      const masterList = (fallbackMasterList && fallbackMasterList.length > 0) ? fallbackMasterList :
+                         ((window.masterFullPayload && window.masterFullPayload.employeeList) || 
+                          (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList) || 
+                          (window.masterFullPayload && window.masterFullPayload.rawTables && window.masterFullPayload.rawTables.Master_Karyawan) || 
+                          (currentDashboardPayload && currentDashboardPayload.employeeList) || []);
       if (npk && masterList.length > 0) {
-        const emp = masterList.find(e => safeString(e.npk || e['Personnel no.'] || e['Personnel No.']) === npk);
+        const cleanNpk = npk.replace(/^0+/, '');
+        const emp = masterList.find(e => {
+          const eNpk = safeString(e.npk || e['Personnel no.'] || e['Personnel No.']);
+          return eNpk === npk || eNpk.replace(/^0+/, '') === cleanNpk;
+        });
         if (emp && emp !== item) {
           const empCode = emp.kodeBA || emp['Business area'] || emp['Business Area'] || emp['Kode BA'] || '';
           if (empCode && ALLOWED_BRANCH_CODES.includes(resolveBACode(empCode))) return true;
@@ -970,19 +982,25 @@
      */
     function sanitizeLampungPayload(payload) {
       if (!payload) return payload;
+      const empList = payload.employeeList || (payload.rawTables && payload.rawTables.Master_Karyawan) || [];
       if (Array.isArray(payload.employeeList)) {
-        payload.employeeList = payload.employeeList.filter(e => isLampungBranch(e));
+        payload.employeeList = payload.employeeList.filter(e => isLampungBranch(e, empList));
       }
       if (Array.isArray(payload.qccList)) {
-        payload.qccList = payload.qccList.filter(q => isLampungBranch(q));
+        payload.qccList = payload.qccList.filter(q => isLampungBranch(q, empList));
       }
       if (payload.rawTables) {
-        const sheets = ['Master_Karyawan', 'Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP', 'Knowledge_management', 'Data_KM'];
+        const sheets = ['Master_Karyawan', 'Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP'];
         sheets.forEach(sh => {
           if (Array.isArray(payload.rawTables[sh])) {
-            payload.rawTables[sh] = payload.rawTables[sh].filter(r => isLampungBranch(r));
+            payload.rawTables[sh] = payload.rawTables[sh].filter(r => isLampungBranch(r, empList));
           }
         });
+
+        // Sinkronisasi data Knowledge Management (KM)
+        const kmRows = payload.rawTables.Knowledge_management || payload.rawTables.Data_KM || [];
+        payload.rawTables.Knowledge_management = kmRows;
+        payload.rawTables.Data_KM = kmRows;
       }
       return payload;
     }
@@ -994,11 +1012,13 @@
     function matchBranch(item, targetBranchCode) {
       if (!item) return false;
 
-      // Filter Mutlak: Tolak seluruh data di luar 5 cabang Lampung (D660, D661, D662, D663, D664)
-      if (!isLampungBranch(item)) return false;
+      // Jika target 'ALL', loloskan seluruh data (asalkan milik Lampung / KM)
+      if (!targetBranchCode || targetBranchCode === 'ALL') {
+        return isLampungBranch(item);
+      }
 
-      // Jika target 'ALL', loloskan seluruh data 5 cabang Lampung
-      if (!targetBranchCode || targetBranchCode === 'ALL') return true;
+      // Filter Mutlak: Tolak data di luar 5 cabang Lampung
+      if (!isLampungBranch(item)) return false;
 
       const targetInfo = resolveBranchInfo(targetBranchCode);
       const targetCode = (targetInfo ? targetInfo.code : String(targetBranchCode)).toUpperCase().trim();
@@ -1028,16 +1048,26 @@
         }
       }
 
-      // 3. Relasi NPK ke Master Karyawan
+      // 3. Relasi NPK ke Master Karyawan (Penting untuk Knowledge_management dan Data_SP)
       const npk = safeString(item['NPK'] || item['Personnel no.'] || item['Personnel No.'] || item.npk);
       const masterList = (window.masterFullPayload && window.masterFullPayload.employeeList) || 
                          (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList) || 
-                         (window.masterFullPayload && window.masterFullPayload.rawTables && window.masterFullPayload.rawTables.Master_Karyawan) || [];
+                         (window.masterFullPayload && window.masterFullPayload.rawTables && window.masterFullPayload.rawTables.Master_Karyawan) || 
+                         (currentDashboardPayload && currentDashboardPayload.employeeList) || [];
       if (npk && masterList.length > 0) {
-        const emp = masterList.find(e => safeString(e.npk || e['Personnel no.'] || e['Personnel No.']) === npk);
+        const cleanNpk = npk.replace(/^0+/, '');
+        const emp = masterList.find(e => {
+          const eNpk = safeString(e.npk || e['Personnel no.'] || e['Personnel No.']);
+          return eNpk === npk || eNpk.replace(/^0+/, '') === cleanNpk;
+        });
         if (emp && emp !== item) {
           return matchBranch(emp, targetCode);
         }
+      }
+
+      // Jika data adalah KM (tanpa kolom cabang), dan NPK tidak tercatat di Master Karyawan cabang terpilih:
+      if (item['JUDUL'] !== undefined || item['judul'] !== undefined || item['Judul'] !== undefined) {
+        return false;
       }
 
       return false;

@@ -826,6 +826,15 @@
           if (!currentDashboardPayload.rawTables) currentDashboardPayload.rawTables = {};
           currentDashboardPayload.rawTables[targetSheet] = parsedObjects;
 
+          if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
+            currentDashboardPayload.rawTables.Knowledge_management = parsedObjects;
+            currentDashboardPayload.rawTables.Data_KM = parsedObjects;
+            if (window.masterFullPayload && window.masterFullPayload.rawTables) {
+              window.masterFullPayload.rawTables.Knowledge_management = parsedObjects;
+              window.masterFullPayload.rawTables.Data_KM = parsedObjects;
+            }
+          }
+
           // Perbarui tabel tampilan modul yang relevan seketika
           if (targetSheet === 'Master_Karyawan') {
             // Sinkronkan employeeList dengan data Master_Karyawan yang baru diunggah
@@ -875,6 +884,14 @@
           else if (targetSheet === 'Data_SS') filterSSTable();
           else if (targetSheet === 'Data_QCC') filterQCCTable();
           else if (targetSheet === 'Data_SP') filterSPTable();
+          else if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
+            if (typeof renderKMView === 'function') renderKMView(currentDashboardPayload);
+            if (typeof filterKMTable === 'function') filterKMTable();
+          }
+          else if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
+            if (typeof renderKMView === 'function') renderKMView(currentDashboardPayload);
+            if (typeof filterKMTable === 'function') filterKMTable();
+          }
 
           statusBox.textContent = `Menyimpan ${parsedObjects.length} baris terstandarisasi ke Google Sheets...`;
 
@@ -1705,7 +1722,12 @@
         showToast("Akses ditolak: Hanya Administrator HR yang dapat mengunggah berkas.");
         return;
       }
-      if (sheetName) document.getElementById('upload-target-sheet').value = sheetName;
+      let target = sheetName;
+      if (target === 'Data_KM') target = 'Knowledge_management';
+      if (target) {
+        const sel = document.getElementById('upload-target-sheet');
+        if (sel) sel.value = target;
+      }
       
       const fileInput = document.getElementById('excel-file-input');
       if (fileInput) fileInput.value = '';
