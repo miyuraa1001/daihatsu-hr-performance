@@ -1806,8 +1806,8 @@
             <td class="py-3 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${masaKerja}</td>
             <td class="py-3 px-4 text-center">${statusBadge}</td>
             ${isAdmin ? `<td class="py-3 px-4 text-left">${resignInfo}</td>` : ''}
-            <td class="py-3 px-4 text-center font-bold ${e.kehadiranPct < 95 ? 'text-amber-600' : 'text-emerald-600'}">${e.kehadiranPct}%</td>
-            <td class="py-3 px-4 text-center font-bold text-amber-500">${e.totalSS} Ide</td>
+            <td class="py-3 px-4 text-center font-bold ${(e.kehadiranPct !== undefined ? e.kehadiranPct : 100) < 95 ? 'text-amber-600' : 'text-emerald-600'}">${e.kehadiranPct !== undefined ? e.kehadiranPct : 100}%</td>
+            <td class="py-3 px-4 text-center font-bold text-amber-500">${e.totalSS || 0} Ide</td>
             <td class="py-3 px-4 text-center font-bold">
               ${e.spAktif ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-[10px]">${e.spAktif}</span>` : `<span class="text-emerald-600 text-xs font-bold">-</span>`}
             </td>

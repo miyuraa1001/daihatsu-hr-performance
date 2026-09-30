@@ -418,6 +418,19 @@
         if (typeof filterKMTable === 'function') filterKMTable();
       }
 
+            // Selalu perbarui metrik dashboard utama secara instan agar realtime
+      if (typeof computeBranchSummary === 'function' && currentDashboardPayload) {
+        currentDashboardPayload.summary = computeBranchSummary(
+          currentDashboardPayload.employeeList,
+          currentDashboardPayload.qccList,
+          currentDashboardPayload.summary,
+          currentDashboardPayload
+        );
+      }
+      if (typeof renderAllDashboardData === 'function' && (window.masterFullPayload || currentDashboardPayload)) {
+        renderAllDashboardData(window.masterFullPayload || currentDashboardPayload);
+      }
+
       closeModal('modal-edit-row');
       showToast("✅ Perubahan berhasil disimpan seketika!");
 
@@ -552,6 +565,19 @@
         } catch(e) {}
         renderKMView(currentDashboardPayload);
         if (typeof filterKMTable === 'function') filterKMTable();
+      }
+
+            // Selalu perbarui metrik dashboard utama secara instan agar realtime
+      if (typeof computeBranchSummary === 'function' && currentDashboardPayload) {
+        currentDashboardPayload.summary = computeBranchSummary(
+          currentDashboardPayload.employeeList,
+          currentDashboardPayload.qccList,
+          currentDashboardPayload.summary,
+          currentDashboardPayload
+        );
+      }
+      if (typeof renderAllDashboardData === 'function' && (window.masterFullPayload || currentDashboardPayload)) {
+        renderAllDashboardData(window.masterFullPayload || currentDashboardPayload);
       }
 
       closeModal('modal-delete-row');

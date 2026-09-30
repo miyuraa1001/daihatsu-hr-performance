@@ -341,6 +341,9 @@
       // 5. Hitung Knowledge Management (KM) Riil
       const rawKMRows = (rawTables.Knowledge_management || rawTables.Data_KM) || [];
       const totalKM = Array.isArray(rawKMRows) ? rawKMRows.length : 0;
+      const uniqueKMContributors = new Set(
+        rawKMRows.map(r => safeString(r['NPK'] || r['Personnel no.'] || r.npk)).filter(Boolean)
+      ).size;
 
       return {
         totalKaryawan,
@@ -369,7 +372,8 @@
         countSP2,
         countSP3,
         countSPPT,
-        totalKM
+        totalKM,
+        uniqueKMContributors
       };
     }
 
@@ -683,14 +687,129 @@
             <p class="text-[9px] text-emerald-700 font-semibold mt-0.5 leading-tight">Seluruh staf cabang tertib tanpa sanksi aktif</p>
           `;
         } else {
-          spAlertBox.className = "mt-3 bg-red-50 p-2.5 rounded-xl border border-red-200 text-center shadow-2xs";
+          spAlertBox.className = "mt-3 bg-rose-50 p-2.5 rounded-xl border border-rose-200 text-center shadow-2xs";
           spAlertBox.innerHTML = `
-            <p class="text-[11px] font-extrabold text-red-800 flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-triangle-exclamation text-red-600"></i> ${s.totalSP} KASUS SANKSI AKTIF
+            <p class="text-[11px] font-extrabold text-rose-800 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-triangle-exclamation text-rose-600"></i> ${s.totalSP} KASUS SANKSI AKTIF
             </p>
-            <p class="text-[9px] text-red-700 font-semibold mt-0.5 leading-tight">Perlu tindak lanjut pembinaan & monitoring kedisiplinan</p>
+            <p class="text-[9px] text-rose-700 font-semibold mt-0.5 leading-tight">Perlu tindak lanjut pembinaan & monitoring kedisiplinan</p>
           `;
         }
+      }
+
+      // Card 6: Knowledge Management (KM)
+      if (document.getElementById('card-km-total')) document.getElementById('card-km-total').textContent = s.totalKM || 0;
+      if (document.getElementById('card-km-contributors')) document.getElementById('card-km-contributors').textContent = `${s.uniqueKMContributors || 0} Orang`;
+      if (document.getElementById('card-km-verified')) document.getElementById('card-km-verified').textContent = (s.totalKM > 0) ? "100%" : "0%";
+
+      const kmAlertBox = document.getElementById('card-km-alert-box');
+      if (kmAlertBox) {
+        if ((s.totalKM || 0) === 0) {
+          kmAlertBox.className = "mt-3 bg-slate-50 p-2.5 rounded-xl border border-slate-200 text-center shadow-2xs";
+          kmAlertBox.innerHTML = `
+            <p class="text-[11px] font-extrabold text-slate-700 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-folder-open text-slate-400"></i> BELUM ADA MATERI
+            </p>
+            <p class="text-[9px] text-slate-500 font-semibold mt-0.5 leading-tight">Klik untuk melihat atau mengunggah materi KM</p>
+          `;
+        } else {
+          kmAlertBox.className = "mt-3 bg-cyan-50 p-2.5 rounded-xl border border-cyan-200 text-center shadow-2xs";
+          kmAlertBox.innerHTML = `
+            <p class="text-[11px] font-extrabold text-cyan-800 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-graduation-cap text-cyan-600"></i> REPOSITORI AKTIF
+            </p>
+            <p class="text-[9px] text-cyan-700 font-semibold mt-0.5 leading-tight">Tersedia ${s.totalKM} materi sharing session & best practice</p>
+          `;
+        }
+      }
+
+      // Dynamic Welcome Badge & Subtitle
+      const welcomeBadge = document.getElementById('welcome-period-badge');
+      if (welcomeBadge) {
+        let pLabel = (selectedMonth === 'ALL' && selectedYear === 'ALL') ? 'Semua Periode' : 
+                     (selectedMonth === 'ALL') ? `Tahun ${selectedYear}` : 
+                     (selectedYear === 'ALL') ? `Bulan ${selectedMonth}` : `${selectedMonth} ${selectedYear}`;
+        welcomeBadge.textContent = pLabel;
+      }
+      const welcomeSub = document.getElementById('welcome-greeting-subtitle');
+      if (welcomeSub) {
+        const branchInfo = typeof resolveBranchInfo === 'function' ? resolveBranchInfo(targetBranch) : null;
+        const branchName = branchInfo ? `${branchInfo.name} (${branchInfo.code})` : (targetBranch === 'ALL' ? 'seluruh cabang DSO Lampung' : targetBranch);
+        welcomeSub.textContent = `Ringkasan performa dan data kinerja karyawan wilayah ${branchName}.`;
+      }
+
+      // Sinkronisasi data karyawan dengan data agregat riil dari database (scopedRawTables)
+      const rawAbs = scopedRawTables.Data_Kehadiran || [];
+      const rawSS = scopedRawTables.Data_SS || [];
+      const rawSP = scopedRawTables.Data_SP || [];
+      const rawKM = scopedRawTables.Knowledge_management || scopedRawTables.Data_KM || [];
+
+      scopedEmployees.forEach(e => {
+        const npk = safeString(e.npk || e['Personnel no.']);
+        if (!npk) return;
+        const cleanNpk = npk.replace(/^0+/, '');
+
+        const matchNpk = (val) => {
+          const sVal = safeString(val);
+          return sVal === npk || sVal.replace(/^0+/, '') === cleanNpk;
+        };
+
+        // Real-time SS per staf
+        if (rawSS.length > 0) {
+          const empSS = rawSS.filter(r => matchNpk(r['NPK'] || r.npk || r['Personnel no.']));
+          e.totalSS = empSS.length;
+        } else if (e.totalSS === undefined) {
+          e.totalSS = 0;
+        }
+
+        // Real-time SP per staf
+        if (rawSP.length > 0) {
+          const empSP = rawSP.filter(r => matchNpk(r['NPK'] || r.npk || r['Personnel no.']));
+          if (empSP.length > 0) {
+            const lastSp = empSP[empSP.length - 1];
+            e.spAktif = String(lastSp['Tingkat SP'] || lastSp['Jenis Sanksi'] || lastSp['Status SP'] || lastSp.tingkat || '').trim() || 'SP';
+            e.spAlasan = lastSp['Alasan'] || '';
+          } else {
+            e.spAktif = '';
+            e.spAlasan = '';
+          }
+        }
+
+        // Real-time Kehadiran % per staf
+        if (rawAbs.length > 0) {
+          const empAbs = rawAbs.filter(r => matchNpk(r['NPK'] || r.npk || r['Personnel no.']));
+          if (empAbs.length > 0) {
+            let late = 0;
+            let alpha = 0;
+            empAbs.forEach(r => {
+              const rawTime = getRowCellValue(r, 'Time Clock In', SCHEMAS.Data_Kehadiran) || r['Time Clock In'] || r['Clock In'] || '';
+              const est = getRowCellValue(r, 'Status Kehadiran', SCHEMAS.Data_Kehadiran) || r['Status Kehadiran'] || '';
+              const lateness = calculateLatenessInfo(est || rawTime);
+              const ket = String(getRowCellValue(r, 'Keterangan', SCHEMAS.Data_Kehadiran) || r['Keterangan'] || '').toLowerCase();
+              if (lateness.isLate || ket.includes('terlambat') || ket.includes('telat')) late++;
+              else if (ket.includes('alpha') || ket.includes('mangkir')) alpha++;
+            });
+            e.kehadiranPct = Math.round(((empAbs.length - late - alpha) / empAbs.length) * 100);
+            e.telat = late;
+            e.alpha = alpha;
+          }
+        }
+        if (e.kehadiranPct === undefined || isNaN(e.kehadiranPct)) {
+          e.kehadiranPct = 100;
+        }
+
+        // Real-time KM per staf
+        if (rawKM.length > 0) {
+          const empKM = rawKM.filter(r => matchNpk(r['NPK'] || r.npk || r['Personnel no.']));
+          e.totalKM = empKM.length;
+        } else {
+          e.totalKM = 0;
+        }
+      });
+
+      const dashEmpBadge = document.getElementById('dash-emp-table-badge');
+      if (dashEmpBadge) {
+        dashEmpBadge.textContent = `${scopedEmployees.length} Karyawan`;
       }
 
       renderEmployeeTable(scopedEmployees);
