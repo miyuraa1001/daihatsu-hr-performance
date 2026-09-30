@@ -366,7 +366,7 @@
           window.masterFullPayload.rawTables.Data_KM = updatedKM;
         }
         try {
-          localStorage.setItem('dperform_km_cache', JSON.stringify(updatedKM));
+          localStorage.removeItem('dperform_km_cache');
         } catch(e) {}
         renderKMView(currentDashboardPayload);
         if (typeof filterKMTable === 'function') filterKMTable();
@@ -502,7 +502,7 @@
           window.masterFullPayload.rawTables.Data_KM = remainingKM;
         }
         try {
-          localStorage.setItem('dperform_km_cache', JSON.stringify(remainingKM));
+          localStorage.removeItem('dperform_km_cache');
         } catch(e) {}
         renderKMView(currentDashboardPayload);
         if (typeof filterKMTable === 'function') filterKMTable();
@@ -978,7 +978,7 @@
 
           if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
             currentDashboardPayload.rawTables.Knowledge_management = parsedObjects;
-            try { localStorage.setItem('dperform_km_cache', JSON.stringify(parsedObjects)); } catch(e) {}
+            try { localStorage.removeItem('dperform_km_cache'); } catch(e) {}
             currentDashboardPayload.rawTables.Data_KM = parsedObjects;
             if (window.masterFullPayload && window.masterFullPayload.rawTables) {
               window.masterFullPayload.rawTables.Knowledge_management = parsedObjects;

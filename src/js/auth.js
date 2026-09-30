@@ -101,6 +101,9 @@
      */
     function checkAutoLogin() {
       try {
+        localStorage.removeItem('dperform_km_cache');
+      } catch(e) {}
+      try {
         const raw = localStorage.getItem(AUTH_STORAGE_KEY);
         if (!raw) return;
         const saved = JSON.parse(raw);

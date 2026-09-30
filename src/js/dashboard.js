@@ -66,89 +66,19 @@
         payload.rawTables.Data_Kehadiran = [];
       }
 
-      // 3. Data_SS (21 Columns)
-      if (!payload.rawTables.Data_SS || !payload.rawTables.Data_SS.length) {
-        payload.rawTables.Data_SS = employees.map((e, idx) => {
-          const countSS = e.totalSS || 0;
-          const isApproved = countSS > 0;
-          return {
-            "No": safeString(idx + 1),
-            "Registrasi": e['Registrasi'] || `SS-${e.kodeBA || 'D660'}-${String(idx + 1).padStart(3, '0')}`,
-            "Nama": e['Nama'] || e.nama || '',
-            "NPK": safeString(e['NPK'] || e.npk),
-            "Wilayah": e['Wilayah'] || e.wilayah || 'DSO Lampung',
-            "Cabang": e['Cabang'] || e.cabang || 'Lampung A Yani',
-            "Kode BA": safeString(e['Kode BA'] || e.kodeBA || 'D660'),
-            "Bagian": e['Bagian'] || e.divisi || 'Operational',
-            "Tema": e['Tema'] || (isApproved ? 'Digitalisasi Format Checklist Inspeksi Kendaraan' : 'Optimalisasi Penataan Tool Workshop'),
-            "Fasilitator": e['Fasilitator'] || 'Kepala Cabang',
-            "NPK Fasilitator": safeString(e['NPK Fasilitator'] || '10001'),
-            "Diterima Bulan": e['Diterima Bulan'] || 'Mei-25',
-            "Kategori": e['Kategori'] || 'Quality & Productivity',
-            "No.Akun AstraPay": safeString(e['No.Akun AstraPay'] || `0812${String(e.npk || idx + 1000).padStart(7, '0')}`),
-            "Nama Akun": e['Nama Akun'] || e.nama || '',
-            "Status Reward": e['Status Reward'] || (isApproved ? 'Approved' : 'Pending'),
-            "Reward": e['Reward'] || (isApproved ? 'Rp 50.000' : '-'),
-            "No.Berita Acara": e['No.Berita Acara'] || `BA-SS/${e.kodeBA || 'D660'}/2025`,
-            "No.BPH": e['No.BPH'] || `BPH-05-2025-${String(idx + 1).padStart(2, '0')}`,
-            "Distribusi Reward": e['Distribusi Reward'] || (isApproved ? 'Transfer AstraPay' : '-'),
-            "Keterangan": e['Keterangan'] || (isApproved ? 'Terverifikasi Komite Kaizen' : 'Draft Pengajuan')
-          };
-        });
+      // 3. Data_SS (21 Columns - 100% Sesuai Database)
+      if (!payload.rawTables.Data_SS) {
+        payload.rawTables.Data_SS = [];
       }
 
-      // 4. Data_QCC (29 Columns)
-      if (!payload.rawTables.Data_QCC || !payload.rawTables.Data_QCC.length) {
-        const baseQCC = qccs.length ? qccs : [
-          { namaTim: "Circle Kaizen Service DSO", cabang: "Lampung A Yani", kodeBA: "D660", departemen: "Service & Workshop", status: "Finish", tema: "Peningkatan Kecepatan Service Berkala dari 60 Menit ke 45 Menit", leader: "Ahmad Fauzi" },
-          { namaTim: "Circle Speed-Up Sales", cabang: "Lampung S Hatta", kodeBA: "D661", departemen: "Sales & Delivery", status: "Progress", tema: "Reduksi Waktu Serah Terima Unit Kendaraan Baru ke Konsumen", leader: "Bambang Irawan" },
-          { namaTim: "Circle Tertib Administrasi", cabang: "Bandarjaya", kodeBA: "D662", departemen: "Finance & Admin", status: "Progress", tema: "Penerapan E-Archive Faktur Kendaraan Tanpa Kertas", leader: "Citra Lestari" },
-          { namaTim: "Circle Part & Inventory", cabang: "Lampung Utara", kodeBA: "D663", departemen: "Logistik & Gudang", status: "Progress", tema: "Eliminasi Selisih Stok Fast Moving Parts di Gudang", leader: "Dedy Prasetya" },
-          { namaTim: "Circle Zero Defect Body Repair", cabang: "Lampung Timur", kodeBA: "D664", departemen: "Body & Paint", status: "Finish", tema: "Pengurangan Debu Cat Finishing dengan Modifikasi Filter Booth", leader: "Eko Wahyudi" }
-        ];
-
-        payload.rawTables.Data_QCC = baseQCC.map((q, idx) => ({
-          "No": safeString(idx + 1),
-          "No.Registrasi": q['No.Registrasi'] || `QCC-${q.kodeBA || 'D660'}-0${idx + 1}`,
-          "Nama Tim": q['Nama Tim'] || q.namaTim || 'Circle Kaizen DSO',
-          "Wilayah/Divisi": q['Wilayah/Divisi'] || 'DSO Lampung',
-          "Cabang/Departemen": q['Cabang/Departemen'] || `${q.cabang || 'Lampung A Yani'} / ${q.departemen || 'Service'}`,
-          "Kode BA": safeString(q['Kode BA'] || q.kodeBA || 'D660'),
-          "Bagian": q['Bagian'] || q.departemen || 'Workshop',
-          "Fasilitator": q['Fasilitator'] || 'Kepala Cabang',
-          "Leader": q['Leader'] || q.leader || 'Ahmad Fauzi',
-          "Anggota 1": q['Anggota 1'] || 'Budi Santoso',
-          "Anggota 2": q['Anggota 2'] || 'Citra Dewi',
-          "Anggota 3": q['Anggota 3'] || 'Dedi Kurniawan',
-          "Anggota 4": q['Anggota 4'] || 'Eko Prasetyo',
-          "Anggota 5": q['Anggota 5'] || 'Fajar Pratama',
-          "Anggota 6": q['Anggota 6'] || 'Guntur Wijaya',
-          "Anggota 7": q['Anggota 7'] || 'Hendra Setiawan',
-          "Tema": q['Tema'] || q.tema || 'Peningkatan Kualitas dan Kecepatan Pelayanan Pelanggan',
-          "Kategori": q['Kategori'] || 'QCC Kategori Teknik',
-          "Status": q['Status'] || q.status || q.pdca || 'Progress',
-          "No.Akun Astrapay QC Leader": safeString(q['No.Akun Astrapay QC Leader'] || '081298765432'),
-          "Pendaftaran diterima": parseExcelDate(q['Pendaftaran diterima'] || '2025-01-15'),
-          "L 1-8 diterima": parseExcelDate(q['L 1-8 diterima'] || '2025-05-10'),
-          "Langkah 1-3": q['Langkah 1-3'] || 'Selesai',
-          "Langkah 1-5": q['Langkah 1-5'] || 'Selesai',
-          "No.Berita Acara": q['No.Berita Acara'] || `BA-QCC/${q.kodeBA || 'D660'}/2025`,
-          "Status Reward": q['Status Reward'] || 'Terverifikasi',
-          "No.BPH": q['No.BPH'] || `BPH-QCC-2025-${idx + 1}`,
-          "Tahun Konvensi": safeString(q['Tahun Konvensi'] || ''),
-          "Kelengkapan Risalah Langkah 1-8": q['Kelengkapan Risalah Langkah 1-8'] || 'Lengkap (Format Baku ADM)'
-        }));
+      // 4. Data_QCC (29 Columns - 100% Sesuai Database)
+      if (!payload.rawTables.Data_QCC) {
+        payload.rawTables.Data_QCC = [];
       }
 
-      // 5. Data_SP (5 Columns)
-      if (!payload.rawTables.Data_SP || !payload.rawTables.Data_SP.length) {
-        payload.rawTables.Data_SP = employees.filter(e => !!e.spAktif).map(e => ({
-          "NPK": safeString(e['NPK'] || e.npk),
-          "Nama": e['Nama'] || e.nama,
-          "Kode BA": safeString(e['Kode BA'] || e.kodeBA || 'D660'),
-          "Tingkat SP": e['Tingkat SP'] || e.spAktif || 'SP 1',
-          "Alasan": e['Alasan'] || e.spAlasan || 'Ketidakhadiran berulang tanpa izin resmi tertulis'
-        }));
+      // 5. Data_SP (5 Columns - 100% Sesuai Database)
+      if (!payload.rawTables.Data_SP) {
+        payload.rawTables.Data_SP = [];
       }
 
       // 6. Knowledge_management / Data_KM (Tidak menggunakan data palsu jika di spreadsheet kosong)
@@ -449,24 +379,15 @@
       const fullCopy = sanitizeLampungPayload(JSON.parse(JSON.stringify(data)));
       initializeStandardTables(fullCopy);
 
-      // Proteksi KM: jangan biarkan KM ditimpa kosong jika memori lokal / cache memiliki data
-      const existingKM = (window.masterFullPayload?.rawTables?.Knowledge_management || window.masterFullPayload?.rawTables?.Data_KM || currentDashboardPayload?.rawTables?.Knowledge_management || []);
-      let cachedKM = [];
-      try {
-        const c = localStorage.getItem('dperform_km_cache');
-        if (c) cachedKM = JSON.parse(c);
-      } catch(e) {}
-
+      // KM 100% sinkron langsung dari database (Google Sheets) aktual
       const incomingKM = (fullCopy.rawTables?.Knowledge_management || fullCopy.rawTables?.Data_KM || []);
-      if (incomingKM.length === 0) {
-        const fallbackKM = existingKM.length > 0 ? existingKM : cachedKM;
-        if (fallbackKM.length > 0) {
-          fullCopy.rawTables.Knowledge_management = fallbackKM;
-          fullCopy.rawTables.Data_KM = fallbackKM;
-        }
-      } else {
-        try { localStorage.setItem('dperform_km_cache', JSON.stringify(incomingKM)); } catch(e) {}
-      }
+      fullCopy.rawTables.Knowledge_management = incomingKM;
+      fullCopy.rawTables.Data_KM = incomingKM;
+
+      // Bersihkan cache usang dari localStorage agar tidak membangkitkan data yang sudah dihapus di database
+      try {
+        localStorage.removeItem('dperform_km_cache');
+      } catch(e) {}
 
       window.masterFullPayload = fullCopy;
       window.fullUnscopedPayload = fullCopy;

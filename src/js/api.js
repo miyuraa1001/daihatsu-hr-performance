@@ -835,8 +835,11 @@
         const response = await fetch(BACKEND_PROXY_URL, {
           method: "POST",
           headers: {
-            "Content-Type": "application/json"
+            "Content-Type": "application/json",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache"
           },
+          cache: "no-store",
           body: JSON.stringify(bodyData)
         });
     
@@ -1275,10 +1278,7 @@
       const schema = SCHEMAS[targetSheet];
       if (!schema) return { success: false, message: 'Skema tabel tidak ditemukan.' };
       let rawRows = (currentDashboardPayload?.rawTables && (currentDashboardPayload.rawTables[targetSheet] || currentDashboardPayload.rawTables[schema.sheetName])) || [];
-      if (!rawRows.length && (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM')) {
-        const altKey = targetSheet === 'Knowledge_management' ? 'Data_KM' : 'Knowledge_management';
-        rawRows = currentDashboardPayload?.rawTables?.[altKey] || window.masterFullPayload?.rawTables?.[altKey] || window.masterFullPayload?.rawTables?.[targetSheet] || [];
-      }
+      if (!Array.isArray(rawRows)) rawRows = [];
       const canonicalColumns = schema.columns;
       const formattedDataRows = rawRows.map(obj => canonicalColumns.map(col => {
         if (obj[col] !== undefined && obj[col] !== null) return obj[col];
