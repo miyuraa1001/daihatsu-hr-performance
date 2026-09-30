@@ -12,7 +12,11 @@
       const colsEl = document.getElementById('upload-guide-cols');
       if (titleEl) titleEl.textContent = `Skema Wajib: ${schema.sheetName}`;
       if (colsEl) {
-        colsEl.textContent = `${schema.columns.length} Kolom Baku (Sesuai Urutan): ${schema.columns.join(', ')}`;
+        if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
+          colsEl.innerHTML = `4 Kolom Wajib Berkas: <b class="text-slate-800">NPK, NAMA, JUDUL, TANGGAL</b><span class="text-emerald-600 block text-[11px] font-semibold mt-1"><i class="fa-solid fa-clock mr-1"></i>Kolom <b>TIME</b> otomatis diisi waktu saat berkas diunggah.</span>`;
+        } else {
+          colsEl.textContent = `${schema.columns.length} Kolom Baku (Sesuai Urutan): ${schema.columns.join(', ')}`;
+        }
       }
     }
 
@@ -52,7 +56,8 @@
       if (norm === 'nama tim') return 'Circle Kaizen DSO';
       if (norm === 'cabang/departemen') return 'Lampung A Yani / Service';
       if (norm === 'bagian') return 'Workshop';
-      if (norm === 'tema') return 'Digitalisasi Form Checklist Inspeksi Harian';
+      if (norm === 'tema' || norm === 'judul') return 'Standar Operasional Prosedur Service Kendaraan';
+      if (norm === 'tanggal') return '30/09/2026';
       if (norm === 'fasilitator') return 'Kepala Cabang';
       if (norm === 'npk fasilitator') return '10001';
       if (norm === 'diterima bulan') return 'Mei-25';
@@ -80,12 +85,18 @@
       const schema = SCHEMAS[targetSheet];
       if (!schema) return;
 
+      let cols = schema.columns;
+      if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
+        // Kolom template KM hanya 4 kolom: NPK, NAMA, JUDUL, TANGGAL (TIME otomatis diisi saat upload)
+        cols = ["NPK", "NAMA", "JUDUL", "TANGGAL"];
+      }
+
       const sampleRow = {};
-      schema.columns.forEach(col => {
+      cols.forEach(col => {
         sampleRow[col] = getSampleValueForColumn(targetSheet, col);
       });
 
-      const ws = XLSX.utils.json_to_sheet([sampleRow], { header: schema.columns });
+      const ws = XLSX.utils.json_to_sheet([sampleRow], { header: cols });
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, schema.sheetName);
       XLSX.writeFile(wb, `Template_${schema.sheetName}.xlsx`);
@@ -801,6 +812,17 @@
           });
 
           // 2. Parsing baris data dengan Safe Typecasting
+          const now = new Date();
+          const dStr = String(now.getDate()).padStart(2, '0');
+          const mStr = String(now.getMonth() + 1).padStart(2, '0');
+          const yStr = now.getFullYear();
+          const hourStr = String(now.getHours()).padStart(2, '0');
+          const minStr = String(now.getMinutes()).padStart(2, '0');
+          const secStr = String(now.getSeconds()).padStart(2, '0');
+          
+          const defaultUploadTime = `${hourStr}:${minStr}:${secStr}`;
+          const defaultUploadDate = `${dStr}/${mStr}/${yStr}`;
+
           const parsedObjects = [];
           for (let i = 1; i < rawRows.length; i++) {
             const rowData = rawRows[i];
@@ -809,7 +831,21 @@
             const rowObj = {};
             canonicalColumns.forEach(col => {
               const colIdx = colIndexMapping[col];
-              const cellVal = (colIdx !== -1 && colIdx !== undefined) ? rowData[colIdx] : "";
+              let cellVal = (colIdx !== -1 && colIdx !== undefined) ? rowData[colIdx] : "";
+
+              // Khusus Knowledge Management: jika kolom TIME tidak ada di file Excel atau kosong, otomatis isi dengan waktu saat berkas diunggah
+              if ((targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') && col === 'TIME') {
+                if (!cellVal || String(cellVal).trim() === '') {
+                  cellVal = defaultUploadTime;
+                }
+              }
+              // Khusus KM: jika kolom TANGGAL kosong, default ke tanggal hari upload
+              if ((targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') && col === 'TANGGAL') {
+                if (!cellVal || String(cellVal).trim() === '') {
+                  cellVal = defaultUploadDate;
+                }
+              }
+
               rowObj[col] = castSchemaValue(col, cellVal, i);
             });
             parsedObjects.push(rowObj);

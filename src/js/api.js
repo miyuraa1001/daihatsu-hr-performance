@@ -414,16 +414,16 @@
     function parseExcelTime(val) {
       if (!val) return "";
       if (typeof val === 'number') {
-        const totalMinutes = Math.round(val * 24 * 60);
-        const hours = Math.floor(totalMinutes / 60) % 24;
-        const minutes = totalMinutes % 60;
+        const totalSeconds = Math.round(val * 24 * 3600);
+        const hours = Math.floor(totalSeconds / 3600) % 24;
+        const minutes = Math.floor((totalSeconds % 3600) / 60);
+        const seconds = totalSeconds % 60;
+        if (seconds > 0) {
+          return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
       }
-      const s = String(val).trim();
-      if (/^\d{1,2}:\d{2}(:\d{2})?$/.test(s)) {
-        return s.slice(0, 5);
-      }
-      return s;
+      return String(val).trim();
     }
 
     function safeFloat(val, fallback = 0) {
@@ -1216,7 +1216,10 @@
         }
         return dateStr;
       }
-      if (norm.includes('time clock in') || norm.includes('time clock out') || norm === 'time' || norm === 'jam' || norm === 'time in' || norm === 'time out') {
+      if (norm === 'time' || norm === 'jam') {
+        return `<span class="font-mono font-bold text-slate-800">${val}</span>`;
+      }
+      if (norm.includes('time clock in') || norm.includes('time clock out') || norm === 'time in' || norm === 'time out') {
         const timeStr = formatDatabaseTime(val);
         return `<span class="font-mono font-bold text-slate-800">${timeStr}</span>`;
       }

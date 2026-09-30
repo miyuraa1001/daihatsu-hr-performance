@@ -1674,11 +1674,8 @@
         );
       }
 
-      const isFull = columnViewMode.km === 'FULL';
       // Sesuai spreadsheet: NPK, NAMA, JUDUL, TANGGAL, TIME
-      const cols = isFull 
-        ? ["NPK", "NAMA", "JUDUL", "TANGGAL", "TIME"] 
-        : ["NPK", "NAMA", "JUDUL", "TANGGAL"];
+      const cols = ["NPK", "NAMA", "JUDUL", "TANGGAL", "TIME"];
 
       // Render Header dengan label kolom aksi 'Detail'
       renderTableHeader('km-table-header', cols, true, 'Detail');
