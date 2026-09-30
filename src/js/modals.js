@@ -267,6 +267,14 @@
               <option value="SPPT" ${val === 'SPPT' ? 'selected' : ''}>SPPT</option>
             </select>
           `;
+        } else if (norm === 'status_karyawan' || norm === 'status karyawan') {
+          const isResign = val.toLowerCase().trim() === 'resign';
+          inputHtml = `
+            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
+              <option value="Aktif" ${!isResign ? 'selected' : ''}>Aktif</option>
+              <option value="Resign" ${isResign ? 'selected' : ''}>Resign</option>
+            </select>
+          `;
         } else if (norm === 'status' && sheetName === 'Data_QCC') {
           inputHtml = `
             <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
@@ -372,6 +380,8 @@
           emp.psGroup = targetRow['PS group'] || emp.psGroup;
           emp.lvl = targetRow['Lvl'] || emp.lvl;
           emp.stext = targetRow['P0001-STEXT'] || emp.stext;
+          emp.statusKaryawan = targetRow['Status_Karyawan'] || 'Aktif';
+          emp['Status_Karyawan'] = targetRow['Status_Karyawan'] || 'Aktif';
         }
         currentDashboardPayload.summary = computeBranchSummary(
           currentDashboardPayload.employeeList,
@@ -780,6 +790,8 @@
               obj['Lvl'] = findLvl(row, idx);
             } else if (col === 'P0001-STEXT' && (!row[col] || row[col] === 'Staff Unit')) {
               obj['P0001-STEXT'] = findP0001STEXT(row, idx);
+            } else if (col === 'Status_Karyawan') {
+              obj['Status_Karyawan'] = row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif';
             } else {
               obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
             }
@@ -889,6 +901,8 @@
                 obj['Lvl'] = findLvl(row, idx);
               } else if (col === 'P0001-STEXT' && (!row[col] || row[col] === 'Staff Unit')) {
                 obj['P0001-STEXT'] = findP0001STEXT(row, idx);
+              } else if (col === 'Status_Karyawan') {
+                obj['Status_Karyawan'] = row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif';
               } else {
                 obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
               }

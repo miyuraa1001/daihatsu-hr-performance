@@ -42,7 +42,7 @@
           "personnel no.": ["personnel no.", "personnel no", "npk", "id karyawan", "nik", "id"],
           "p.subarea": ["p.subarea", "subarea", "cabang", "nama cabang"],
           "wilayah": ["wilayah", "region", "area"],
-          "contract": ["contract", "kontrak", "status kontrak", "tipe kontrak", "status kepegawaian", "status kepegawaian (contract)", "employment status", "status karyawan", "status"],
+          "contract": ["contract", "kontrak", "status kontrak", "tipe kontrak", "status kepegawaian", "status kepegawaian (contract)", "employment status"],
           "name": ["name", "nama unit organisasi", "unit"],
           "name of organizational unit": ["name of organizational unit", "organizational unit", "organisasi", "departemen", "dept"],
           "job title": ["job title", "jabatan", "posisi", "title"],
@@ -55,7 +55,7 @@
           "date": ["date", "tanggal masuk", "tgl masuk", "effective date", "tanggal"],
           "p0001-stext": ["p0001-stext", "stext", "deskripsi jabatan", "struktur"],
           "business area": ["business area", "kode ba", "ba", "kode cabang", "ba code"],
-          "status_karyawan": ["status_karyawan", "status karyawan", "status kerja", "status aktif", "status keaktifan"],
+          "status_karyawan": ["status_karyawan", "status karyawan", "status kerja", "status aktif", "status keaktifan", "status_keaktifan"],
           "tanggal_resign": ["tanggal_resign", "tgl resign", "tgl keluar", "tanggal keluar", "date of resignation", "resign date"],
           "alasan_resign": ["alasan_resign", "alasan keluar", "alasan", "keterangan resign", "reason of resignation"]
         }
@@ -565,7 +565,8 @@
         'lvl': ['lvl', 'level'],
         'date': ['date', 'joinDate', 'join_date', 'tglMasuk', 'tgl_masuk', 'effectiveDate', 'tanggal'],
         'p0001-stext': ['p0001-stext', 'stext', 'p0001Stext', 'p0001_stext', 'deskripsiJabatan', 'struktur'],
-        'business area': ['kodeBA', 'kode_ba', 'ba', 'businessArea', 'business_area', 'kodeCabang', 'kode_cabang']
+        'business area': ['kodeBA', 'kode_ba', 'ba', 'businessArea', 'business_area', 'kodeCabang', 'kode_cabang'],
+        'status_karyawan': ['statusKaryawan', 'status_karyawan', 'status', 'statusKeaktifan', 'status_keaktifan']
       };
 
       const fallbackKeys = fallbackMap[normTarget] || [];
@@ -603,6 +604,9 @@
       }
       if (normTarget === 'lvl') {
         return findLvl(row);
+      }
+      if (normTarget === 'status_karyawan' || normTarget === 'status karyawan') {
+        return 'Aktif';
       }
 
       // 6. Jika tidak ditemukan, kembalikan nilai direct (bisa berupa "" atau undefined/null)
@@ -1182,8 +1186,16 @@
 
     // Helper formatting cell values based on canonical column type
     function formatColumnCell(col, val) {
-      if (val === null || val === undefined || val === '') return '<span class="text-slate-300">-</span>';
       const norm = normalizeHeaderName(col);
+      
+      if (norm === 'status_karyawan' || norm === 'status karyawan') {
+        const isResign = val && String(val).trim().toLowerCase() === 'resign';
+        return isResign
+          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-user-xmark mr-1 text-[9px]"></i>Resign</span>`
+          : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-user-check mr-1 text-[9px]"></i>Aktif</span>`;
+      }
+
+      if (val === null || val === undefined || val === '') return '<span class="text-slate-300">-</span>';
       
       if (norm === 'contract' || norm === 'status kontrak' || norm === 'status kepegawaian') {
         const cat = normalizeContractCategory(val);
@@ -1229,12 +1241,6 @@
       }
       if (norm.includes('durasi kerja') || norm.includes('work hours')) {
         return `<span class="font-bold text-slate-900">${val} Jam</span>`;
-      }
-      if (norm === 'status_karyawan' || norm === 'status karyawan') {
-        const isResign = String(val).trim().toLowerCase() === 'resign';
-        return isResign
-          ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-user-xmark mr-1 text-[9px]"></i>Resign</span>`
-          : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-user-check mr-1 text-[9px]"></i>Aktif</span>`;
       }
       if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob') {
         const dateStr = formatDatabaseDate(val);

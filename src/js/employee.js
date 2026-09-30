@@ -545,6 +545,10 @@
           if ((cellRaw === undefined || cellRaw === null || cellRaw === '') && col === 'Lvl') {
             cellRaw = findLvl(row, targetIdx);
           }
+          if ((cellRaw === undefined || cellRaw === null || cellRaw === '' || cellRaw === '-') && (col === 'Status_Karyawan' || col === 'Status Karyawan' || normalizeHeaderName(col) === 'status_karyawan' || normalizeHeaderName(col) === 'status karyawan')) {
+            cellRaw = row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif';
+            row['Status_Karyawan'] = cellRaw;
+          }
 
           const val = formatColumnCell(col, cellRaw);
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;

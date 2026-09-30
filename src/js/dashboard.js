@@ -140,8 +140,11 @@
       if (!payload.rawTables.Master_Karyawan || !payload.rawTables.Master_Karyawan.length) {
         payload.rawTables.Master_Karyawan = employees.map((e, idx) => {
           const contractVal = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap';
+          const statusVal = e['Status_Karyawan'] || e['Status Karyawan'] || e.statusKaryawan || 'Aktif';
           e['Contract'] = contractVal;
           e.tipeKontrak = contractVal;
+          e['Status_Karyawan'] = statusVal;
+          e.statusKaryawan = statusVal;
           return {
             "Personnel no.": safeString(e['Personnel no.'] || e.npk),
             "P.subarea": e['P.subarea'] || e.cabang || 'Lampung A Yani',
@@ -158,16 +161,21 @@
             "Lvl": findLvl(e, idx),
             "Date": findDate(e, idx),
             "P0001-STEXT": findP0001STEXT(e, idx),
-            "Business area": safeString(e['Business area'] || e.kodeBA || 'D660')
+            "Business area": safeString(e['Business area'] || e.kodeBA || 'D660'),
+            "Status_Karyawan": statusVal
           };
         });
       } else {
         payload.rawTables.Master_Karyawan.forEach((row, idx) => {
           const npk = safeString(row['Personnel no.']);
           const emp = employees.find(e => safeString(e.npk || e['Personnel no.']) === npk) || employees[idx] || {};
+          const statusVal = row['Status_Karyawan'] || row['Status Karyawan'] || emp['Status_Karyawan'] || emp.statusKaryawan || 'Aktif';
+          row['Status_Karyawan'] = statusVal;
           if (emp) {
             emp['Contract'] = row['Contract'] || 'Tetap';
             emp.tipeKontrak = row['Contract'] || 'Tetap';
+            emp['Status_Karyawan'] = statusVal;
+            emp.statusKaryawan = statusVal;
           }
           if (!row['D.o.birth'] || row['D.o.birth'] === '1995-05-15') {
             row['D.o.birth'] = findDOBirth(row, idx) || findDOBirth(emp, idx);
@@ -519,6 +527,25 @@
       const incomingKM = (fullCopy.rawTables?.Knowledge_management || fullCopy.rawTables?.Data_KM || []);
       fullCopy.rawTables.Knowledge_management = incomingKM;
       fullCopy.rawTables.Data_KM = incomingKM;
+
+      // Pastikan seluruh Master Karyawan dan employeeList terisi Status_Karyawan 'Aktif'
+      if (fullCopy.rawTables?.Master_Karyawan) {
+        fullCopy.rawTables.Master_Karyawan.forEach(row => {
+          if (!row['Status_Karyawan'] || row['Status_Karyawan'] === '-' || String(row['Status_Karyawan']).trim() === '') {
+            row['Status_Karyawan'] = 'Aktif';
+          }
+        });
+      }
+      if (Array.isArray(fullCopy.employeeList)) {
+        fullCopy.employeeList.forEach(e => {
+          if (!e.statusKaryawan || e.statusKaryawan === '-' || String(e.statusKaryawan).trim() === '') {
+            e.statusKaryawan = 'Aktif';
+          }
+          if (!e['Status_Karyawan'] || e['Status_Karyawan'] === '-' || String(e['Status_Karyawan']).trim() === '') {
+            e['Status_Karyawan'] = 'Aktif';
+          }
+        });
+      }
 
       // Bersihkan cache usang dari localStorage agar tidak membangkitkan data yang sudah dihapus di database
       try {
