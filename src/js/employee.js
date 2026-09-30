@@ -1715,9 +1715,9 @@
                       <span>Upload Rekap (.xlsx / .csv)</span>
                     </button>
                   </div>
-                  <button type="button" onclick="toggleKMGuide(true)" class="text-[11px] text-cyan-700 hover:text-cyan-800 font-bold flex items-center gap-1.5 hover:underline cursor-pointer transition">
+                  <button type="button" onclick="openUploadModal('Knowledge_management')" class="text-[11px] text-cyan-700 hover:text-cyan-800 font-bold flex items-center gap-1.5 hover:underline cursor-pointer transition">
                     <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
-                    <span>Punya banyak berkas presentasi? Buka Panduan Rekap Otomatis (.bat)</span>
+                    <span>Punya banyak berkas presentasi? Buka Alur Otomatisasi & Unduh Skrip (.bat)</span>
                   </button>
                 ` : `
                   <span class="text-xs text-slate-400">Hubungi Administrator HR untuk menambahkan data sharing session.</span>

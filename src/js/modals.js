@@ -10,10 +10,56 @@
 
       const titleEl = document.getElementById('upload-guide-title');
       const colsEl = document.getElementById('upload-guide-cols');
+      const kmBox = document.getElementById('km-modal-automation-box');
+      const fileLabel = document.getElementById('upload-file-label');
+      const fileHint = document.getElementById('upload-file-hint');
+      const modalTitle = document.getElementById('upload-modal-title');
+      const modalSubtitle = document.getElementById('upload-modal-subtitle');
+
+      const isKM = (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM');
+
+      if (kmBox) {
+        if (isKM) {
+          kmBox.classList.remove('hidden');
+        } else {
+          kmBox.classList.add('hidden');
+        }
+      }
+
+      const schemaPreview = document.getElementById('upload-schema-preview');
+      if (schemaPreview) {
+        if (isKM) {
+          schemaPreview.classList.add('hidden');
+        } else {
+          schemaPreview.classList.remove('hidden');
+        }
+      }
+
+      if (modalTitle) {
+        modalTitle.textContent = isKM 
+          ? "Import & Rekap Berkas KM (.xlsx / .csv)" 
+          : "Upload & Impor Data HR (.xlsx / .csv)";
+      }
+      if (modalSubtitle) {
+        modalSubtitle.textContent = isKM
+          ? "Gunakan file CSV hasil skrip rekap otomatis atau file Excel KM"
+          : "Normalisasi otomatis header & validasi tipe data presisi";
+      }
+      if (fileLabel) {
+        fileLabel.textContent = isKM
+          ? "Pilih Berkas Rekap KM (Rekap_KM_Siap_Upload.csv atau .xlsx):"
+          : "Pilih Berkas Excel atau CSV:";
+      }
+      if (fileHint) {
+        fileHint.innerHTML = isKM
+          ? `Kolom di file: <b class="text-slate-700">NPK, NAMA, JUDUL, TANGGAL</b> (TIME & Nama Karyawan otomatis disinkronkan).`
+          : `Mendukung format .xlsx, .xls, dan .csv dengan header di baris pertama.`;
+      }
+
       if (titleEl) titleEl.textContent = `Skema Wajib: ${schema.sheetName}`;
       if (colsEl) {
-        if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
-          colsEl.innerHTML = `4 Kolom Wajib Berkas: <b class="text-slate-800">NPK, NAMA, JUDUL, TANGGAL</b><span class="text-emerald-600 block text-[11px] font-semibold mt-1"><i class="fa-solid fa-clock mr-1"></i>Kolom <b>TIME</b> otomatis diisi waktu saat berkas diunggah.</span>`;
+        if (isKM) {
+          colsEl.innerHTML = `4 Kolom Wajib Berkas: <b class="text-slate-800">NPK, NAMA, JUDUL, TANGGAL</b><span class="text-emerald-600 block text-[11px] font-semibold mt-1"><i class="fa-solid fa-clock mr-1"></i>Kolom <b>TIME</b> otomatis diisi waktu saat berkas diunggah, NAMA otomatis sinkron dari Master Karyawan.</span>`;
         } else {
           colsEl.textContent = `${schema.columns.length} Kolom Baku (Sesuai Urutan): ${schema.columns.join(', ')}`;
         }
@@ -1894,6 +1940,8 @@
         btn.disabled = false;
         btn.textContent = "Proses & Simpan";
       }
+
+      renderUploadSchemaGuide();
 
       document.getElementById('modal-upload').classList.remove('hidden');
     }
