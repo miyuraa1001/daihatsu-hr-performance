@@ -1705,20 +1705,12 @@
                   Belum ada dokumen materi sharing session atau panduan KM yang terdata untuk cabang / filter ini.
                 </p>
                 ${isAdmin ? `
-                  <div class="flex flex-wrap items-center justify-center gap-2.5 mb-3">
-                    <button type="button" onclick="openAddKMModal()" class="px-4 py-2 bg-[#E60012] hover:bg-[#c5000f] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
-                      <i class="fa-solid fa-plus"></i>
-                      <span>+ Input Manual</span>
-                    </button>
-                    <button type="button" onclick="openUploadModal('Knowledge_management')" class="px-4 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border border-cyan-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
-                      <i class="fa-solid fa-cloud-arrow-up text-cyan-600"></i>
-                      <span>Upload Rekap (.xlsx / .csv)</span>
+                  <div class="flex flex-wrap items-center justify-center gap-2.5">
+                    <button type="button" onclick="openUploadModal('Knowledge_management')" class="px-5 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-2 shadow-sm cursor-pointer">
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                      <span>Import KM (.xlsx / .csv) & Tambah Data</span>
                     </button>
                   </div>
-                  <button type="button" onclick="openUploadModal('Knowledge_management')" class="text-[11px] text-cyan-700 hover:text-cyan-800 font-bold flex items-center gap-1.5 hover:underline cursor-pointer transition">
-                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
-                    <span>Punya banyak berkas presentasi? Buka Alur Otomatisasi & Unduh Skrip (.bat)</span>
-                  </button>
                 ` : `
                   <span class="text-xs text-slate-400">Hubungi Administrator HR untuk menambahkan data sharing session.</span>
                 `}
