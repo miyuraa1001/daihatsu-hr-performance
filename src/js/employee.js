@@ -1724,22 +1724,24 @@
                 <p class="text-xs text-slate-500 mb-4 leading-relaxed">
                   Belum ada dokumen materi sharing session atau panduan KM yang terdata untuk cabang / filter ini.
                 </p>
-                <div class="flex flex-wrap items-center justify-center gap-2">
-                  <button type="button" onclick="document.getElementById('km-guide-banner')?.scrollIntoView({ behavior: 'smooth' })" class="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-2xs cursor-pointer">
-                    <i class="fa-solid fa-circle-info text-cyan-600"></i>
-                    <span>Pelajari Cara Upload</span>
-                  </button>
-                  ${isAdmin ? `
-                    <button type="button" onclick="openAddKMModal()" class="px-3.5 py-1.5 bg-[#E60012] hover:bg-[#c5000f] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                ${isAdmin ? `
+                  <div class="flex flex-wrap items-center justify-center gap-2.5 mb-3">
+                    <button type="button" onclick="openAddKMModal()" class="px-4 py-2 bg-[#E60012] hover:bg-[#c5000f] text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
                       <i class="fa-solid fa-plus"></i>
-                      <span>Tambah Data Pertama</span>
+                      <span>+ Input Manual</span>
                     </button>
-                    <button type="button" onclick="openUploadModal('Knowledge_management')" class="px-3.5 py-1.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
-                      <i class="fa-solid fa-cloud-arrow-up"></i>
-                      <span>Upload Berkas Rekap</span>
+                    <button type="button" onclick="openUploadModal('Knowledge_management')" class="px-4 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-800 border border-cyan-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer">
+                      <i class="fa-solid fa-cloud-arrow-up text-cyan-600"></i>
+                      <span>Upload Rekap (.xlsx / .csv)</span>
                     </button>
-                  ` : ''}
-                </div>
+                  </div>
+                  <button type="button" onclick="toggleKMGuide(true)" class="text-[11px] text-cyan-700 hover:text-cyan-800 font-bold flex items-center gap-1.5 hover:underline cursor-pointer transition">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
+                    <span>Punya banyak berkas presentasi? Buka Panduan Rekap Otomatis (.bat)</span>
+                  </button>
+                ` : `
+                  <span class="text-xs text-slate-400">Hubungi Administrator HR untuk menambahkan data sharing session.</span>
+                `}
               </div>
             </td>
           </tr>

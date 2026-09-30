@@ -1659,36 +1659,69 @@
           </div>
 
           <!-- Guide Banner KM (Panduan Rekapitulasi Berkas) -->
-          <div id="km-guide-banner" class="bg-gradient-to-br from-white via-cyan-50/30 to-sky-50/40 rounded-2xl p-4 sm:p-5 border border-cyan-200/80 shadow-card relative overflow-hidden">
-            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-              <div class="flex items-start gap-3.5">
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-cyan-100 text-cyan-700 flex items-center justify-center text-lg sm:text-xl border border-cyan-200 flex-shrink-0 shadow-2xs">
-                  <i class="fa-solid fa-lightbulb"></i>
+          <div id="km-guide-banner" class="hidden bg-gradient-to-br from-white via-cyan-50/40 to-slate-50 rounded-2xl p-4 sm:p-5 border border-cyan-200 shadow-sm relative overflow-hidden transition-all duration-300">
+            <div class="flex items-start justify-between gap-3 mb-3.5">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-cyan-100 text-cyan-700 flex items-center justify-center text-sm border border-cyan-200 flex-shrink-0">
+                  <i class="fa-solid fa-wand-magic-sparkles text-amber-500"></i>
                 </div>
                 <div>
-                  <div class="flex items-center gap-2 mb-1 flex-wrap">
-                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-100 text-cyan-800 uppercase tracking-wider">Panduan Rekap</span>
-                    <h4 class="text-sm font-extrabold text-slate-900 leading-snug">Panduan Rekapitulasi Berkas Knowledge Management (PDF/PPT)</h4>
-                  </div>
-                  <ol class="text-xs text-slate-600 space-y-1 mt-1.5 list-decimal list-inside font-medium leading-relaxed">
-                    <li>Simpan seluruh file presentasi (PDF/PPT) sharing session karyawan dalam 1 folder bulanan.</li>
-                    <li>Cukup sertakan NPK pada nama file (Contoh: <code class="px-1.5 py-0.5 bg-slate-100 text-slate-800 rounded font-mono font-bold text-[11px]">1800 Rulia - Servis Berkala.pdf</code> atau <code class="px-1.5 py-0.5 bg-slate-100 text-slate-800 rounded font-mono font-bold text-[11px]">2023 Kamil Hasan.pptx</code>).</li>
-                    <li>Nama karyawan otomatis dicocokkan ke database Master Karyawan, dan tanggal sesi diambil otomatis dari tanggal pembuatan berkas.</li>
-                  </ol>
+                  <h4 class="text-xs sm:text-sm font-extrabold text-slate-900">Alur Otomatisasi Rekap Berkas KM (PDF / PPT)</h4>
+                  <p class="text-[11px] text-slate-500">Cara praktis merekap ratusan berkas sharing session karyawan tanpa ketik manual satu per satu.</p>
                 </div>
               </div>
-              <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 lg:flex-shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-cyan-100">
-                <button type="button" onclick="downloadKMScript()" class="flex-1 sm:flex-initial px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 border border-slate-200/90 shadow-2xs cursor-pointer">
-                  <i class="fa-solid fa-download text-slate-500"></i>
-                  <span>Unduh Skrip Rekap Otomatis (.bat)</span>
+              <button type="button" onclick="toggleKMGuide(false)" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition text-xs cursor-pointer" title="Tutup Panduan">
+                <i class="fa-solid fa-xmark text-sm"></i>
+              </button>
+            </div>
+
+            <!-- 3 Steps Visual Flow -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+              <!-- Step 1 -->
+              <div class="p-3.5 bg-white rounded-xl border border-cyan-100/80 shadow-2xs flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-cyan-100 text-cyan-800 uppercase tracking-wider">Langkah 1</span>
+                    <i class="fa-solid fa-download text-slate-400 text-xs"></i>
+                  </div>
+                  <h5 class="text-xs font-bold text-slate-800 mb-1">Unduh Skrip Rekap</h5>
+                  <p class="text-[11px] text-slate-500 leading-relaxed mb-3">Unduh skrip otomatisasi (.bat) lalu letakkan di folder tempat Anda menyimpan berkas presentasi.</p>
+                </div>
+                <button type="button" onclick="downloadKMScript()" class="w-full py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 border border-slate-200 cursor-pointer">
+                  <i class="fa-solid fa-download text-slate-600 text-[11px]"></i>
+                  <span>Unduh Skrip (.bat)</span>
                 </button>
-                <button type="button" onclick="openAddKMModal()" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2.5 bg-[#E60012] hover:bg-[#c5000f] text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer">
-                  <i class="fa-solid fa-plus"></i>
-                  <span>+ Input Manual KM</span>
-                </button>
-                <button type="button" onclick="openUploadModal('Knowledge_management')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2.5 bg-cyan-600 hover:bg-cyan-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer">
-                  <i class="fa-solid fa-cloud-arrow-up"></i>
-                  <span>Upload Hasil Rekap (.xlsx / .csv)</span>
+              </div>
+
+              <!-- Step 2 -->
+              <div class="p-3.5 bg-white rounded-xl border border-cyan-100/80 shadow-2xs flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-amber-100 text-amber-800 uppercase tracking-wider">Langkah 2</span>
+                    <i class="fa-solid fa-terminal text-slate-400 text-xs"></i>
+                  </div>
+                  <h5 class="text-xs font-bold text-slate-800 mb-1">Jalankan Skrip</h5>
+                  <p class="text-[11px] text-slate-500 leading-relaxed mb-2">Klik 2x <code class="px-1.5 py-0.5 bg-slate-100 text-slate-800 rounded font-mono text-[10px] font-bold">Rekap_KM_Otomatis.bat</code>. Skrip akan memindai berkas di seluruh subfolder dan menghasilkan file CSV.</p>
+                </div>
+                <div class="text-[10px] text-emerald-700 bg-emerald-50 px-2.5 py-1.5 rounded-lg border border-emerald-100 font-medium flex items-center gap-1.5 mt-2">
+                  <i class="fa-solid fa-circle-check text-emerald-600"></i>
+                  <span>NPK & tanggal otomatis diekstrak</span>
+                </div>
+              </div>
+
+              <!-- Step 3 -->
+              <div class="p-3.5 bg-white rounded-xl border border-cyan-100/80 shadow-2xs flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center justify-between mb-1.5">
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-black bg-emerald-100 text-emerald-800 uppercase tracking-wider">Langkah 3</span>
+                    <i class="fa-solid fa-cloud-arrow-up text-slate-400 text-xs"></i>
+                  </div>
+                  <h5 class="text-xs font-bold text-slate-800 mb-1">Upload Hasil Rekap</h5>
+                  <p class="text-[11px] text-slate-500 leading-relaxed mb-3">Upload file <code class="px-1.5 py-0.5 bg-slate-100 text-slate-800 rounded font-mono text-[10px] font-bold">Rekap_KM_Siap_Upload.csv</code> ke D-PERFORM. Nama karyawan akan otomatis sinkron.</p>
+                </div>
+                <button type="button" onclick="openUploadModal('Knowledge_management')" class="w-full py-2 px-3 bg-cyan-600 hover:bg-cyan-700 text-white rounded-lg text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs">
+                  <i class="fa-solid fa-cloud-arrow-up text-[11px]"></i>
+                  <span>Upload File CSV</span>
                 </button>
               </div>
             </div>

@@ -1902,6 +1902,26 @@
     // ========================================================
     // KNOWLEDGE MANAGEMENT (KM) AUTOMATION & MANUAL INPUT
     // ========================================================
+    function toggleKMGuide(forceState) {
+      const banner = document.getElementById('km-guide-banner');
+      const btnText = document.getElementById('btn-text-km-guide');
+      if (!banner) return;
+
+      const shouldShow = typeof forceState === 'boolean' 
+        ? forceState 
+        : banner.classList.contains('hidden');
+
+      if (shouldShow) {
+        banner.classList.remove('hidden');
+        if (btnText) btnText.textContent = 'Tutup Panduan';
+        banner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        banner.classList.add('hidden');
+        if (btnText) btnText.textContent = 'Panduan & Skrip';
+      }
+    }
+    window.toggleKMGuide = toggleKMGuide;
+
     function downloadKMScript() {
       const batContent = `@echo off
 chcp 65001 >nul
