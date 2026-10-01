@@ -1185,7 +1185,7 @@
     }
 
     // Helper formatting cell values based on canonical column type
-    function formatColumnCell(col, val) {
+    function formatColumnCell(col, val, context = '') {
       const norm = normalizeHeaderName(col);
       
       if (norm === 'status_karyawan' || norm === 'status karyawan') {
@@ -1252,7 +1252,8 @@
       }
       if (norm === 'date' || norm === 'tanggal' || norm === 'tgl' || norm.includes('date clock')) {
         const dateStr = formatDatabaseDate(val);
-        if (norm === 'date') {
+        // Kalkulasi masa kerja HANYA untuk tanggal masuk (join date) di Master Karyawan, TIDAK untuk data absensi/kehadiran
+        if (norm === 'date' && context === 'Master_Karyawan') {
           const serviceStr = calculateAgeAndService(val);
           if (serviceStr !== '-') {
             return `<div><span class="font-medium text-slate-800">${dateStr}</span><span class="text-[10px] text-slate-400 block">${serviceStr}</span></div>`;

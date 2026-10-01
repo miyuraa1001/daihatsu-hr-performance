@@ -558,7 +558,7 @@
             row['Status_Karyawan'] = cellRaw;
           }
 
-          const val = formatColumnCell(col, cellRaw);
+          const val = formatColumnCell(col, cellRaw, 'Master_Karyawan');
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -913,7 +913,7 @@
             let cellRaw = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') 
               ? row[col] 
               : getRowCellValue(row, col, SCHEMAS.Data_Kehadiran);
-            val = formatColumnCell(col, cellRaw);
+            val = formatColumnCell(col, cellRaw, 'Data_Kehadiran');
           }
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
@@ -1246,7 +1246,7 @@
             return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
           }
           const rawVal = getRowCellValue(row, col, SCHEMAS.Data_SS);
-          const val = formatColumnCell(col, rawVal);
+          const val = formatColumnCell(col, rawVal, 'Data_SS');
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -1535,7 +1535,7 @@
             return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
           }
           const rawVal = getRowCellValue(row, col, SCHEMAS.Data_QCC);
-          const val = formatColumnCell(col, rawVal);
+          const val = formatColumnCell(col, rawVal, 'Data_QCC');
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -1641,7 +1641,7 @@
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
             return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
           }
-          const val = formatColumnCell(col, row[col]);
+          const val = formatColumnCell(col, row[col], 'Data_SP');
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -1773,7 +1773,7 @@
           if ((col === 'NAMA' || col === 'Nama') && (!rawCell || rawCell === '-' || String(rawCell).trim() === '') && rowNpk) {
             rawCell = (typeof lookupEmployeeName === 'function' ? lookupEmployeeName(rowNpk) : '') || rawCell;
           }
-          const val = formatColumnCell(col, rawCell);
+          const val = formatColumnCell(col, rawCell, 'Knowledge_management');
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
