@@ -989,11 +989,41 @@
     }
 
     const KNOWN_BRANCHES = [
-      { code: "D660", name: "Lampung A Yani", fullName: "Lampung A Yani (D660)", aliases: ["d660", "a yani", "ayani", "ahmad yani", "ahmadyani", "lampung a yani"] },
-      { code: "D661", name: "Lampung S Hatta", fullName: "Lampung S Hatta (D661)", aliases: ["d661", "s hatta", "shatta", "soekarno hatta", "soekarnohatta", "lampung s hatta"] },
-      { code: "D662", name: "Bandarjaya", fullName: "Bandarjaya (D662)", aliases: ["d662", "bandarjaya", "bandar jaya"] },
-      { code: "D663", name: "Lampung Utara", fullName: "Lampung Utara (D663)", aliases: ["d663", "lampung utara", "lamut", "lam ut", "kotabumi", "kota bumi", "ktb"] },
-      { code: "D664", name: "Lampung Timur", fullName: "Lampung Timur (D664)", aliases: ["d664", "lampung timur", "lamtim", "lam tim"] }
+      { 
+        code: "D660", 
+        numericCode: "660",
+        name: "Lampung A Yani", 
+        fullName: "Lampung A Yani (D660)", 
+        aliases: ["d660", "660", "0660", "2660", "d-660", "d.660", "a yani", "ayani", "a. yani", "ahmad yani", "ahmadyani", "lampung a yani", "lampung ayani", "lampung a. yani", "tanjung karang", "tjk", "bandar lampung", "kedaton"] 
+      },
+      { 
+        code: "D661", 
+        numericCode: "661",
+        name: "Lampung S Hatta", 
+        fullName: "Lampung S Hatta (D661)", 
+        aliases: ["d661", "661", "0661", "2661", "d-661", "d.661", "s hatta", "shatta", "s. hatta", "soekarno hatta", "soekarnohatta", "lampung s hatta", "lampung soekarno hatta", "by pass", "bypass"] 
+      },
+      { 
+        code: "D662", 
+        numericCode: "662",
+        name: "Bandarjaya", 
+        fullName: "Bandarjaya (D662)", 
+        aliases: ["d662", "662", "0662", "2662", "d-662", "d.662", "bandarjaya", "bandar jaya", "bdj", "lampung tengah", "lamteng"] 
+      },
+      { 
+        code: "D663", 
+        numericCode: "663",
+        name: "Lampung Utara", 
+        fullName: "Lampung Utara (D663)", 
+        aliases: ["d663", "663", "0663", "2663", "d-663", "d.663", "lampung utara", "lamut", "lam ut", "kotabumi", "kota bumi", "ktb"] 
+      },
+      { 
+        code: "D664", 
+        numericCode: "664",
+        name: "Lampung Timur", 
+        fullName: "Lampung Timur (D664)", 
+        aliases: ["d664", "664", "0664", "2664", "d-664", "d.664", "lampung timur", "lamtim", "lam tim", "sukadana"] 
+      }
     ];
 
     const INDO_MONTHS = [
@@ -1021,32 +1051,54 @@
       return false;
     }
 
-    const ALLOWED_BRANCH_CODES = ["D660", "D661", "D662", "D663", "D664"];
+    const ALLOWED_BRANCH_CODES = ["D660", "D661", "D662", "D663", "D664", "660", "661", "662", "663", "664"];
 
     /**
      * Menemukan info cabang (kode, nama, fullName) secara fleksibel & tahan spasi/tanda baca.
-     * Hanya mencocokkan dengan 5 cabang resmi DSO Lampung.
+     * Mendukung format BA SAP: '660', '661', '662', '663', '664' maupun 'D660'-'D664'.
      */
     function resolveBranchInfo(input) {
-      if (!input) return null;
+      if (!input && input !== 0) return null;
       const str = String(input).trim();
+      if (!str || str === '-' || str === 'null' || str === 'undefined') return null;
+
       const upper = str.toUpperCase();
       const clean = str.toLowerCase().replace(/[^a-z0-9]/g, "");
 
-      // 1. Cek kode persis
-      let found = KNOWN_BRANCHES.find(b => b.code.toUpperCase() === upper);
+      // 1. Cek kode persis (misal 'D660' atau '660')
+      let found = KNOWN_BRANCHES.find(b => b.code.toUpperCase() === upper || b.numericCode === upper);
       if (found) return found;
 
-      // 2. Cek alias dan nama bersih
+      // 2. Cek apakah ada nomor cabang spesifik (660, 661, 662, 663, 664) dalam string
       for (const b of KNOWN_BRANCHES) {
-        const bClean = b.name.toLowerCase().replace(/[^a-z0-9]/g, "");
-        if (clean === bClean || (clean.length >= 4 && bClean.includes(clean)) || (bClean.length >= 4 && clean.includes(bClean))) {
+        if (upper.includes(b.code.toUpperCase()) || clean.includes(b.numericCode)) {
           return b;
         }
+      }
+
+      // 3. Cek cabang spesifik yang memiliki nama gabungan terlebih dahulu
+      if (clean.includes('shatta') || clean.includes('soekarnohatta') || clean.includes('bypass')) {
+        return KNOWN_BRANCHES.find(b => b.code === 'D661');
+      }
+      if (clean.includes('kotabumi') || clean.includes('lamut') || clean.includes('lampungutara')) {
+        return KNOWN_BRANCHES.find(b => b.code === 'D663');
+      }
+      if (clean.includes('lamtim') || clean.includes('lampungtimur') || clean.includes('sukadana')) {
+        return KNOWN_BRANCHES.find(b => b.code === 'D664');
+      }
+      if (clean.includes('bandarjaya') || clean.includes('lamteng') || clean.includes('lampungtengah')) {
+        return KNOWN_BRANCHES.find(b => b.code === 'D662');
+      }
+      if (clean.includes('ayani') || clean.includes('ahmadyani') || clean.includes('tanjungkarang') || clean === 'lampung') {
+        return KNOWN_BRANCHES.find(b => b.code === 'D660');
+      }
+
+      // 4. Cek seluruh daftar aliases
+      for (const b of KNOWN_BRANCHES) {
         if (b.aliases) {
           for (const al of b.aliases) {
             const alClean = al.toLowerCase().replace(/[^a-z0-9]/g, "");
-            if (clean === alClean || (clean.length >= 4 && alClean.includes(clean)) || (alClean.length >= 4 && clean.includes(alClean))) {
+            if (clean === alClean) {
               return b;
             }
           }
@@ -1057,35 +1109,33 @@
     }
 
     /**
-     * Mengambil Kode Cabang Kacab
+     * Mengambil Kode Cabang Kacab baku (D660, D661, D662, D663, D664)
      */
     function getUserBranchCode(user) {
       if (!user) return 'D660';
+      let cand = null;
       if (Array.isArray(user.assignedBACodes) && user.assignedBACodes.length > 0) {
-        const info = resolveBranchInfo(user.assignedBACodes[0]);
-        return info ? info.code : user.assignedBACodes[0];
+        const first = user.assignedBACodes[0];
+        cand = (typeof first === 'object' && first !== null) ? (first.code || first.kodeBA || first.ba) : first;
       }
-      const cand = user.kodeBA || user.kode_ba || user.cabang || user.branch;
+      if (!cand) {
+        cand = user.kodeBA || user.kode_ba || user.businessArea || user.business_area || user.ba || user.cabang || user.branch;
+      }
       const info = resolveBranchInfo(cand);
-      return info ? info.code : (cand || 'D660');
+      return info ? info.code : (cand ? String(cand).trim().toUpperCase() : 'D660');
     }
 
     /**
      * Mengambil Nama Cabang Kacab
      */
     function getUserBranchName(user) {
-      if (!user) return 'Lampung A Yani';
-      if (Array.isArray(user.assignedBACodes) && user.assignedBACodes.length > 0) {
-        const info = resolveBranchInfo(user.assignedBACodes[0]);
-        return info ? info.name : user.assignedBACodes[0];
-      }
-      const cand = user.cabang || user.kodeBA || user.kode_ba || user.branch;
-      const info = resolveBranchInfo(cand);
-      return info ? info.name : (cand || 'Cabang Terdaftar');
+      const code = getUserBranchCode(user);
+      const info = resolveBranchInfo(code);
+      return info ? info.name : (user?.cabang || 'Cabang Terdaftar');
     }
 
     function resolveBACode(str) {
-      if (!str) return '';
+      if (!str && str !== 0) return '';
       const clean = String(str).toUpperCase().trim();
       const info = resolveBranchInfo(clean);
       return info ? info.code : '';
@@ -1105,25 +1155,25 @@
       }
 
       // 1. Cek langsung kode BA
-      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS) || '';
-      if (rawCode) {
+      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || 
+        (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? (getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS)) : '') || '';
+      if (rawCode && rawCode !== '-' && rawCode !== '0') {
         const norm = resolveBACode(rawCode);
         if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
-        if (!norm) return false;
       }
 
-      // 2. Cek teks nama cabang
-      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Cabang', SCHEMAS.Data_SS) || '';
-      if (rawCabang) {
+      // 2. Cek teks nama cabang (P.subarea / Cabang)
+      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || 
+        (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? (getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Cabang', SCHEMAS.Data_SS)) : '') || '';
+      if (rawCabang && rawCabang !== '-' && rawCabang !== '0') {
         const norm = resolveBACode(rawCabang);
         if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
-        if (!norm) return false;
       }
 
       // 3. Cek Wilayah (jika menyebut Lampung)
-      const rawWilayah = item.wilayah || item['Wilayah'] || getRowCellValue(item, 'Wilayah', SCHEMAS.Master_Karyawan) || '';
+      const rawWilayah = item.wilayah || item['Wilayah'] || (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? getRowCellValue(item, 'Wilayah', SCHEMAS.Master_Karyawan) : '') || '';
       if (rawWilayah && String(rawWilayah).toLowerCase().includes('lampung')) {
-        if (!rawCode || ALLOWED_BRANCH_CODES.includes(resolveBACode(rawCode))) return true;
+        return true;
       }
 
       // 4. Relasi NPK ke Master Karyawan
@@ -1197,29 +1247,24 @@
 
       const targetInfo = resolveBranchInfo(targetBranchCode);
       const targetCode = (targetInfo ? targetInfo.code : String(targetBranchCode)).toUpperCase().trim();
-      const targetNameClean = targetInfo ? targetInfo.name.toLowerCase().replace(/[^a-z0-9]/g, "") : targetCode.toLowerCase();
 
-      // 1. Ekstraksi kode cabang dari objek
-      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS) || '';
-      const itemCode = String(rawCode).toUpperCase().trim();
-
-      if (itemCode) {
-        if (itemCode === targetCode) return true;
-        if (resolveBACode(itemCode) === targetCode) return true;
+      // 1. Ekstraksi kode cabang / Business Area dari objek (OTORITATIF & PALING UTAMA)
+      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || 
+        (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? (getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS)) : '') || '';
+      if (rawCode && rawCode !== '-' && rawCode !== '0') {
+        const norm = resolveBACode(rawCode);
+        if (norm) {
+          return norm === targetCode;
+        }
       }
 
-      // 2. Ekstraksi teks cabang dari objek
-      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Cabang', SCHEMAS.Data_SS) || '';
-      const itemCabangClean = String(rawCabang).toLowerCase().replace(/[^a-z0-9]/g, "");
-
-      if (itemCabangClean) {
-        if (itemCabangClean.includes(targetCode.toLowerCase())) return true;
-        if (itemCabangClean.includes(targetNameClean) || targetNameClean.includes(itemCabangClean)) return true;
-        if (targetInfo && targetInfo.aliases) {
-          for (const al of targetInfo.aliases) {
-            const alClean = al.toLowerCase().replace(/[^a-z0-9]/g, "");
-            if (itemCabangClean.includes(alClean) || alClean.includes(itemCabangClean)) return true;
-          }
+      // 2. Ekstraksi teks cabang dari objek (P.subarea / Cabang)
+      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || 
+        (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? (getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Cabang', SCHEMAS.Data_SS)) : '') || '';
+      if (rawCabang && rawCabang !== '-' && rawCabang !== '0') {
+        const norm = resolveBACode(rawCabang);
+        if (norm) {
+          return norm === targetCode;
         }
       }
 

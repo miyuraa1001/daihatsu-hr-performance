@@ -545,8 +545,9 @@
       const isAdmin = isUserAdmin(loggedInUser);
       const userBranchCode = getUserBranchCode(loggedInUser);
 
-      // Admin selalu mengambil ALL branches agar filter antar cabang instan tanpa kehilangan data
-      const queryBranch = isAdmin ? 'ALL' : userBranchCode;
+      // Ambil seluruh data master 'ALL' dari backend agar master store utuh tanpa risiko terpotong oleh format cabang backend,
+      // kemudian RBAC frontend mengisolasi ketat sesuai cabang wewenang Kacab (business area).
+      const queryBranch = 'ALL';
       const activeBranchVal = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : userBranchCode;
       const monthVal = document.getElementById('month-select')?.value || 'ALL';
       const yearVal = document.getElementById('year-select')?.value || 'ALL';
