@@ -410,4 +410,4 @@
         document.getElementById('sidebar').classList.add('-translate-x-full');
         document.getElementById('mobile-sidebar-overlay').classList.add('hidden');
       }
-    }
+    }
