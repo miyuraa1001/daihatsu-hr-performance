@@ -726,14 +726,14 @@
           hours: 0,
           minutes: 0,
           timeFormatted: '-',
-          text: 'Tidak Clock In',
-          badgeClass: 'bg-slate-100 text-slate-500 border border-slate-200',
-          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200"><i class="fa-solid fa-minus text-[10px]"></i> Tidak Clock In</span>'
+          text: 'Alpa',
+          badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpa</span>'
         };
       }
 
       const sRaw = String(timeVal).trim();
-      // Khusus 0.00.00 / 00:00:00 / 0 / 1899-12-30 (nol waktu / tidak clock in):
+      // Khusus 0.00.00 / 00:00:00 / 0 / 1899-12-30 (nol waktu / tidak clock in -> Alpa):
       if (
         timeVal === 0 || sRaw === '0' || sRaw === '0.00.00' || sRaw === '00:00:00' || 
         sRaw === '0:00:00' || sRaw === '0.00' || sRaw === '1899-12-30' || 
@@ -746,9 +746,9 @@
           hours: 0,
           minutes: 0,
           timeFormatted: '0.00.00',
-          text: 'Tidak Clock In',
-          badgeClass: 'bg-slate-100 text-slate-500 border border-slate-200',
-          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200"><i class="fa-solid fa-minus text-[10px]"></i> Tidak Clock In</span>'
+          text: 'Alpa',
+          badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpa</span>'
         };
       }
 
@@ -756,10 +756,26 @@
       if (typeof timeVal === 'string') {
         const sTrim = sRaw;
         const sLower = sTrim.toLowerCase();
+
+        if (sLower === 'tidak clock in' || sLower === 'tidak check in' || sLower === 'belum clock in' || sLower === 'belum check in') {
+          return {
+            hasClockIn: false,
+            isLate: false,
+            diffMinutes: 0,
+            hours: 0,
+            minutes: 0,
+            timeFormatted: '-',
+            text: 'Alpa',
+            badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
+            badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpa</span>'
+          };
+        }
+
         const knownStatus = ['hadir', 'cuti', 'sakit', 'izin', 'dinas', 'alpa', 'alpha', 'wfh', 'wfo'];
         if (knownStatus.includes(sLower)) {
           let badgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
           let icon = 'fa-solid fa-circle-check';
+          let isClockIn = true;
           if (sLower === 'hadir' || sLower === 'wfo') {
             badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
             icon = 'fa-solid fa-check';
@@ -775,15 +791,17 @@
           } else if (sLower === 'alpa' || sLower === 'alpha') {
             badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
             icon = 'fa-solid fa-xmark';
+            isClockIn = false;
           }
+          const displayTxt = (sLower === 'alpa' || sLower === 'alpha') ? 'Alpa' : sTrim;
           return {
-            hasClockIn: true,
+            hasClockIn: isClockIn,
             isLate: false,
             diffMinutes: 0,
             timeFormatted: sTrim,
-            text: sTrim,
+            text: displayTxt,
             badgeClass: badgeColor,
-            badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeColor}"><i class="${icon} text-[10px]"></i> ${sTrim}</span>`
+            badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeColor}"><i class="${icon} text-[10px]"></i> ${displayTxt}</span>`
           };
         }
 
@@ -863,9 +881,9 @@
           hours: 0,
           minutes: 0,
           timeFormatted: '0.00.00',
-          text: 'Tidak Clock In',
-          badgeClass: 'bg-slate-100 text-slate-500 border border-slate-200',
-          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200"><i class="fa-solid fa-minus text-[10px]"></i> Tidak Clock In</span>'
+          text: 'Alpa',
+          badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpa</span>'
         };
       }
 
@@ -953,7 +971,7 @@
       if (info.timeFormatted === '0.00.00' || s === '1899-12-30') {
         return '0.00.00';
       }
-      if (info.text === 'Tidak Clock In' && !info.hasClockIn) {
+      if ((info.text === 'Alpa' || info.text === 'Tidak Clock In') && !info.hasClockIn) {
         return (s === '0.00.00' || s === '00:00:00' || s === '1899-12-30' || s === '0') ? '0.00.00' : '-';
       }
       return info.timeFormatted || s;
@@ -1325,6 +1343,11 @@
           : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-user-check mr-1 text-[9px]"></i>Aktif</span>`;
       }
 
+      if (norm === 'status kehadiran' || norm.includes('estimasi telat') || norm.includes('keterlambatan')) {
+        const info = calculateLatenessInfo(val);
+        return info.badgeHtml;
+      }
+
       if (val === null || val === undefined || val === '') return '<span class="text-slate-300">-</span>';
       const sVal = String(val).trim();
       if (sVal === '' || sVal === '-' || sVal === 'null' || sVal === 'undefined') return '<span class="text-slate-300">-</span>';
@@ -1412,10 +1435,6 @@
           return '<span class="text-slate-300">-</span>';
         }
         return `<span class="font-mono font-bold text-slate-800">${timeStr}</span>`;
-      }
-      if (norm.includes('estimasi telat') || norm.includes('keterlambatan')) {
-        const info = calculateLatenessInfo(val);
-        return info.badgeHtml;
       }
       if (norm === 'no' || norm === 'nomor') {
         return `<span class="font-mono font-bold text-slate-500">${val}</span>`;

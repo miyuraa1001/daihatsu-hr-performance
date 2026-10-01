@@ -704,6 +704,9 @@
           if (compFilter === 'LATE' || compFilter === 'Terlambat') {
             return isLate;
           }
+          if (compFilter === 'ALPA' || compFilter === 'Alpa') {
+            return !lateness.hasClockIn || lateness.text === 'Alpa' || ket.includes('alpa') || ket.includes('alpha');
+          }
           if (compFilter === 'LATE_30') {
             return isLate && (lateness.diffMinutes > 30 || (lateness.lateHours && lateness.lateHours > 0));
           }
