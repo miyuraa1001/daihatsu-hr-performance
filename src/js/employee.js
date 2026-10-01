@@ -637,6 +637,35 @@
     /**
      * 1-Click Quick Filter dari Card KPI Absensi ke Tabel Presensi
      */
+    // Mode Tampilan Absensi: 'SUMMARY' (Rekap Per Karyawan - Default) atau 'RAW' (Log Harian Mentah)
+    let currentAbsViewMode = 'SUMMARY';
+
+    function toggleAbsViewMode() {
+      currentAbsViewMode = (currentAbsViewMode === 'SUMMARY') ? 'RAW' : 'SUMMARY';
+      const btn = document.getElementById('btn-abs-view-mode');
+      const btnText = document.getElementById('btn-abs-view-text');
+      const colToggleBtn = document.getElementById('btn-col-toggle-abs');
+
+      if (currentAbsViewMode === 'SUMMARY') {
+        if (btn) {
+          btn.className = "px-3 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-indigo-200 shadow-2xs";
+        }
+        if (btnText) btnText.textContent = "Rekap Per Karyawan";
+        if (colToggleBtn) colToggleBtn.classList.add('hidden');
+      } else {
+        if (btn) {
+          btn.className = "px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-2xs";
+        }
+        if (btnText) btnText.textContent = "Log Harian Mentah";
+        if (colToggleBtn) colToggleBtn.classList.remove('hidden');
+      }
+      filterAbsensiTable();
+    }
+    window.toggleAbsViewMode = toggleAbsViewMode;
+
+    /**
+     * 1-Click Quick Filter dari Card KPI Absensi ke Tabel Presensi
+     */
     function quickFilterAbsensi(filterVal) {
       const select = document.getElementById('abs-filter-compliance');
       if (select) {
@@ -648,6 +677,7 @@
       }
       filterAbsensiTable();
     }
+    window.quickFilterAbsensi = quickFilterAbsensi;
 
     function filterAbsensiTable() {
       if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
@@ -672,6 +702,207 @@
         updateAbsensiKPICards(branchRows, compFilter);
       }
 
+      const colToggleBtn = document.getElementById('btn-col-toggle-abs');
+      if (colToggleBtn) {
+        if (currentAbsViewMode === 'SUMMARY') colToggleBtn.classList.add('hidden');
+        else colToggleBtn.classList.remove('hidden');
+      }
+
+      // =====================================================================
+      // MODE 1: REKAPITULASI PRESENSI PER KARYAWAN (DEFAULT HO & HRD)
+      // =====================================================================
+      if (currentAbsViewMode === 'SUMMARY') {
+        const empMap = new Map();
+
+        branchRows.forEach(r => {
+          const npk = safeString(getRowCellValue(r, 'NPK', SCHEMAS.Data_Kehadiran) || r['NPK'] || r['Personnel no.']).trim();
+          if (!npk) return;
+
+          if (!empMap.has(npk)) {
+            let empName = getRowCellValue(r, 'Employee Name', SCHEMAS.Data_Kehadiran) || r['Employee Name'] || r['Nama'] || '';
+            if (!empName || empName === '-' || empName.trim() === '') {
+              empName = lookupEmployeeName(npk) || `Karyawan ${npk}`;
+            }
+            const cabang = getRowCellValue(r, 'Cabang', SCHEMAS.Data_Kehadiran) || r['Cabang'] || r['P.subarea'] || '-';
+            const wilayah = getRowCellValue(r, 'Wilayah', SCHEMAS.Data_Kehadiran) || r['Wilayah'] || '-';
+
+            empMap.set(npk, {
+              npk,
+              nama: empName,
+              cabang,
+              wilayah,
+              totalHari: 0,
+              hadirCount: 0,
+              onTimeCount: 0,
+              lateCount: 0,
+              lateMinsTotal: 0,
+              lateOver30Count: 0,
+              lateOver60Count: 0,
+              tanpaKeteranganCount: 0,
+              totalWorkHours: 0,
+              validWorkHoursCount: 0,
+              anomaliCount: 0,
+              records: []
+            });
+          }
+
+          const emp = empMap.get(npk);
+          emp.totalHari++;
+          emp.records.push(r);
+
+          const rawTime = getRowCellValue(r, 'Time Clock In', SCHEMAS.Data_Kehadiran) || r['Time Clock In'] || r['Clock In'] || r['Time'] || r['Jam Masuk'] || '';
+          const existingEstimasi = getRowCellValue(r, 'Status Kehadiran', SCHEMAS.Data_Kehadiran) || r['Status Kehadiran'] || r['Estimasi Telat (Asumsi 08.00)'] || '';
+          const lateness = calculateLatenessInfo(existingEstimasi || rawTime);
+          const ket = String(getRowCellValue(r, 'Keterangan', SCHEMAS.Data_Kehadiran) || r['Keterangan'] || '').toLowerCase();
+          const telatStr = String(existingEstimasi || '').toLowerCase();
+
+          const isLate = lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || telatStr.includes('telat');
+          const isOnTime = (!isLate && lateness.hasClockIn) || ket.includes('tepat') || telatStr.includes('tepat');
+
+          if (lateness.hasClockIn) {
+            emp.hadirCount++;
+            if (isLate) {
+              emp.lateCount++;
+              const mins = lateness.diffMinutes > 0 ? lateness.diffMinutes : 15;
+              emp.lateMinsTotal += mins;
+              if (mins > 60 || (lateness.lateHours && lateness.lateHours >= 1)) {
+                emp.lateOver60Count++;
+              } else if (mins > 30) {
+                emp.lateOver30Count++;
+              }
+            } else {
+              emp.onTimeCount++;
+            }
+          } else {
+            emp.tanpaKeteranganCount++;
+          }
+
+          const whRaw = getRowCellValue(r, 'Durasi Kerja (Work Hours)', SCHEMAS.Data_Kehadiran) || r['Durasi Kerja (Work Hours)'] || r['Work Hours'] || r['Durasi Kerja'];
+          const wh = safeFloat(whRaw, 0);
+          if (wh > 0) {
+            emp.totalWorkHours += wh;
+            emp.validWorkHoursCount++;
+          }
+
+          const needApp = String(getRowCellValue(r, 'Need CICO Approval', SCHEMAS.Data_Kehadiran) || r['Need CICO Approval'] || '').toUpperCase().trim() === 'YES';
+          const radIn = String(getRowCellValue(r, 'In Radius Clock in', SCHEMAS.Data_Kehadiran) || r['In Radius Clock in'] || '').toUpperCase().trim() === 'NO';
+          const radOut = String(getRowCellValue(r, 'In Radius Clock Out', SCHEMAS.Data_Kehadiran) || r['In Radius Clock Out'] || '').toUpperCase().trim() === 'NO';
+          const clockOut = getRowCellValue(r, 'Time Clock Out', SCHEMAS.Data_Kehadiran) || r['Time Clock Out'];
+          const noClockOut = lateness.hasClockIn && (!clockOut || clockOut === '-' || String(clockOut).trim() === '');
+          if (needApp || radIn || radOut || noClockOut) {
+            emp.anomaliCount++;
+          }
+        });
+
+        let empList = Array.from(empMap.values());
+        empList.forEach(emp => {
+          emp.kehadiranPct = emp.totalHari > 0 ? Math.round((emp.hadirCount / emp.totalHari) * 100) : 0;
+          emp.avgHours = emp.validWorkHoursCount > 0 ? (emp.totalWorkHours / emp.validWorkHoursCount).toFixed(1) : (emp.hadirCount > 0 ? '8.0' : '0.0');
+        });
+
+        // Filter pencarian teks
+        if (q) {
+          empList = empList.filter(emp =>
+            emp.npk.toLowerCase().includes(q) ||
+            emp.nama.toLowerCase().includes(q) ||
+            emp.cabang.toLowerCase().includes(q)
+          );
+        }
+
+        // Filter status kepatuhan & jam kerja
+        if (compFilter !== 'ALL') {
+          empList = empList.filter(emp => {
+            if (compFilter === 'ON_TIME' || compFilter === 'Hadir Tepat Waktu') return emp.onTimeCount > 0 && emp.lateCount === 0;
+            if (compFilter === 'LATE' || compFilter === 'Terlambat') return emp.lateCount > 0;
+            if (compFilter === 'NO_INFO' || compFilter === 'Tanpa Keterangan' || compFilter === 'ALPHA' || compFilter === 'Alpha') return emp.tanpaKeteranganCount > 0;
+            if (compFilter === 'LATE_30') return emp.lateOver30Count > 0 || emp.lateOver60Count > 0;
+            if (compFilter === 'LATE_60') return emp.lateOver60Count > 0;
+            if (compFilter === 'UNDER_HOURS') return parseFloat(emp.avgHours) < 8.0 && emp.hadirCount > 0;
+            if (compFilter === 'NEED_APPROVAL') return emp.anomaliCount > 0;
+            return true;
+          });
+        }
+
+        empList.sort((a, b) => a.nama.localeCompare(b.nama));
+
+        const summaryCols = [
+          "No",
+          "NPK",
+          "Nama Karyawan",
+          "Cabang",
+          "Total Hari",
+          "Masuk (Hadir)",
+          "Tepat Waktu",
+          "Terlambat",
+          "Tanpa Keterangan",
+          "% Kehadiran",
+          "Rata-rata Jam Kerja"
+        ];
+
+        renderTableHeader('abs-table-header', summaryCols, true, 'Detail Log');
+
+        const tbody = document.getElementById('abs-table-body');
+        if (document.getElementById('abs-row-count')) {
+          document.getElementById('abs-row-count').textContent = `Menampilkan ${empList.length} dari ${empMap.size} Karyawan (Rekap Kehadiran Juni 2026)`;
+        }
+
+        if (!empList.length) {
+          tbody.innerHTML = `<tr><td colspan="${summaryCols.length + 1}" class="text-center py-8 text-slate-400">Tidak ada rekap karyawan yang sesuai filter.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = empList.map((emp, rowIdx) => {
+          const stickyNo = 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]';
+          const stickyNpk = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm px-3 whitespace-nowrap';
+
+          const pctClass = emp.kehadiranPct >= 95 
+            ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
+            : (emp.kehadiranPct >= 85 ? 'bg-blue-50 text-blue-700 border-blue-200' : 'bg-amber-50 text-amber-700 border-amber-200');
+
+          const lateBadge = emp.lateCount > 0 
+            ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-clock text-[10px]"></i> ${emp.lateCount}x</span>`
+            : `<span class="text-slate-400 font-semibold">0x</span>`;
+
+          const noInfoBadge = emp.tanpaKeteranganCount > 0
+            ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200"><i class="fa-solid fa-circle-question text-[10px]"></i> ${emp.tanpaKeteranganCount} Hari</span>`
+            : `<span class="text-slate-400 font-semibold">0 Hari</span>`;
+
+          return `
+            <tr class="hover:bg-slate-50 transition-colors group">
+              <td class="py-2.5 px-3 whitespace-nowrap ${stickyNo}">${rowIdx + 1}</td>
+              <td class="py-2.5 px-3 whitespace-nowrap ${stickyNpk}">${emp.npk}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap font-bold text-slate-900">${emp.nama}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap text-slate-600 font-medium">${emp.cabang}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap font-bold text-slate-800">${emp.totalHari} Hari</td>
+              <td class="py-2.5 px-4 whitespace-nowrap">
+                <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  <i class="fa-solid fa-check text-[10px]"></i> ${emp.hadirCount} Hari
+                </span>
+              </td>
+              <td class="py-2.5 px-4 whitespace-nowrap font-bold text-emerald-700">${emp.onTimeCount}x</td>
+              <td class="py-2.5 px-4 whitespace-nowrap">${lateBadge}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap">${noInfoBadge}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-extrabold border ${pctClass}">
+                  ${emp.kehadiranPct}%
+                </span>
+              </td>
+              <td class="py-2.5 px-4 whitespace-nowrap font-bold text-slate-800">${emp.avgHours} Jam</td>
+              <td class="py-2.5 px-4 whitespace-nowrap text-right sticky right-0 bg-white group-hover:bg-slate-50 z-10 border-l border-slate-200 shadow-sm">
+                <button type="button" onclick="openEmployeeAttendanceDetailModal('${emp.npk}')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-bold border border-blue-200 transition shadow-2xs inline-flex items-center gap-1.5 cursor-pointer">
+                  <i class="fa-solid fa-calendar-days text-[11px]"></i>
+                  <span>Detail Log</span>
+                </button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+        return;
+      }
+
+      // =====================================================================
+      // MODE 2: LOG HARIAN MENTAH / ROW-LEVEL (ORIGINAL DATABASE ROWS)
+      // =====================================================================
       let list = branchRows;
 
       // 1. Filter pencarian teks
@@ -704,20 +935,8 @@
           if (compFilter === 'LATE' || compFilter === 'Terlambat') {
             return isLate;
           }
-          if (compFilter === 'ALPHA' || compFilter === 'Alpha' || compFilter === 'ALPA' || compFilter === 'Alpa') {
-            return !lateness.hasClockIn || lateness.text === 'Alpha' || lateness.text === 'Alpa' || ket.includes('alpa') || ket.includes('alpha');
-          }
-          if (compFilter === 'CUTI' || compFilter === 'Cuti') {
-            return ket.includes('cuti') || telatStr.includes('cuti');
-          }
-          if (compFilter === 'IZIN' || compFilter === 'Izin') {
-            return ket.includes('izin') || telatStr.includes('izin');
-          }
-          if (compFilter === 'SAKIT' || compFilter === 'Sakit') {
-            return ket.includes('sakit') || telatStr.includes('sakit');
-          }
-          if (compFilter === 'DINAS' || compFilter === 'Dinas') {
-            return ket.includes('dinas') || telatStr.includes('dinas');
+          if (compFilter === 'NO_INFO' || compFilter === 'Tanpa Keterangan' || compFilter === 'ALPHA' || compFilter === 'Alpha') {
+            return !lateness.hasClockIn || lateness.text === 'Tanpa Keterangan' || ket.includes('tanpa keterangan') || ket.includes('tidak clock in');
           }
           if (compFilter === 'LATE_30') {
             return isLate && (lateness.diffMinutes > 30 || (lateness.lateHours && lateness.lateHours > 0));
@@ -753,7 +972,7 @@
 
       const tbody = document.getElementById('abs-table-body');
       if (document.getElementById('abs-row-count')) {
-        document.getElementById('abs-row-count').textContent = `Menampilkan ${list.length} dari ${branchRows.length} data absensi (${cols.length} kolom)`;
+        document.getElementById('abs-row-count').textContent = `Menampilkan ${list.length} dari ${branchRows.length} data absensi (Log Harian Mentah • ${cols.length} kolom)`;
       }
 
       if (!list.length) {
@@ -792,6 +1011,190 @@
         return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
       }).join('');
     }
+
+    /**
+     * Modal Dialog Detail Presensi Harian Per Karyawan
+     */
+    function openEmployeeAttendanceDetailModal(targetNpk) {
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) return;
+      const cleanNpk = safeString(targetNpk).trim();
+      const rawAbsRows = currentDashboardPayload.rawTables.Data_Kehadiran || [];
+      
+      const empRecords = rawAbsRows.filter(r => {
+        const rNpk = safeString(getRowCellValue(r, 'NPK', SCHEMAS.Data_Kehadiran) || r['NPK'] || r['Personnel no.']).trim();
+        return rNpk === cleanNpk;
+      });
+
+      // Lookup data identitas karyawan
+      let empName = lookupEmployeeName(cleanNpk);
+      let empBranch = '-';
+      let empRole = '-';
+
+      if (empRecords.length > 0) {
+        const firstRow = empRecords[0];
+        if (!empName) {
+          empName = getRowCellValue(firstRow, 'Employee Name', SCHEMAS.Data_Kehadiran) || firstRow['Employee Name'] || firstRow['Nama'] || `Karyawan ${cleanNpk}`;
+        }
+        empBranch = getRowCellValue(firstRow, 'Cabang', SCHEMAS.Data_Kehadiran) || firstRow['Cabang'] || '-';
+      }
+
+      // Check Master_Karyawan untuk Jabatan/Divisi
+      const masterEmp = (currentDashboardPayload.employeeList || []).find(e => safeString(e.npk || e['Personnel no.']).trim() === cleanNpk) ||
+                        (currentDashboardPayload.rawTables?.Master_Karyawan || []).find(e => safeString(e['Personnel no.'] || e.npk).trim() === cleanNpk);
+      if (masterEmp) {
+        if (!empName || empName.startsWith('Karyawan ')) {
+          empName = getRowCellValue(masterEmp, 'Last name', SCHEMAS.Master_Karyawan) || masterEmp.nama || empName;
+        }
+        empBranch = getRowCellValue(masterEmp, 'P.subarea', SCHEMAS.Master_Karyawan) || masterEmp.cabang || empBranch;
+        empRole = getRowCellValue(masterEmp, 'Job Title', SCHEMAS.Master_Karyawan) || masterEmp.jabatan || masterEmp.divisi || '-';
+      }
+
+      // Populate elemen header modal
+      const avatarEl = document.getElementById('abs-modal-avatar');
+      if (avatarEl) {
+        avatarEl.textContent = (empName || 'DA').slice(0, 2).toUpperCase();
+      }
+      const nameEl = document.getElementById('abs-modal-name');
+      if (nameEl) nameEl.textContent = empName;
+      const branchEl = document.getElementById('abs-modal-branch');
+      if (branchEl) branchEl.textContent = `Cabang ${empBranch}`;
+      const metaEl = document.getElementById('abs-modal-meta');
+      if (metaEl) metaEl.textContent = `NPK: ${cleanNpk} • Jabatan/Divisi: ${empRole}`;
+
+      // Hitung statistik
+      let hadirCount = 0;
+      let onTimeCount = 0;
+      let lateCount = 0;
+      let tanpaKeteranganCount = 0;
+
+      // Urutkan rekaman berdasarkan tanggal
+      empRecords.sort((a, b) => {
+        const dateA = getRowCellValue(a, 'Date', SCHEMAS.Data_Kehadiran) || a['Date'] || '';
+        const dateB = getRowCellValue(b, 'Date', SCHEMAS.Data_Kehadiran) || b['Date'] || '';
+        return String(dateA).localeCompare(String(dateB));
+      });
+
+      const dayNames = ['Minggu', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu'];
+
+      const rowsHtml = empRecords.map((r, idx) => {
+        const rawDate = getRowCellValue(r, 'Date', SCHEMAS.Data_Kehadiran) || r['Date'] || r['Tanggal'] || '';
+        const dateFormatted = formatDatabaseDate(rawDate) || '-';
+
+        let dayName = '-';
+        if (rawDate) {
+          const parsedDate = parseExcelDate(rawDate);
+          if (parsedDate) {
+            const dObj = new Date(parsedDate);
+            if (!isNaN(dObj.getTime())) {
+              dayName = dayNames[dObj.getDay()] || '-';
+            }
+          }
+        }
+
+        const rawTimeIn = getRowCellValue(r, 'Time Clock In', SCHEMAS.Data_Kehadiran) || r['Time Clock In'] || r['Clock In'] || r['Time'] || r['Jam Masuk'] || '';
+        const rawStatus = getRowCellValue(r, 'Status Kehadiran', SCHEMAS.Data_Kehadiran) || r['Status Kehadiran'] || '';
+        const lateness = calculateLatenessInfo(rawStatus || rawTimeIn);
+
+        const rawTimeOut = getRowCellValue(r, 'Time Clock Out', SCHEMAS.Data_Kehadiran) || r['Time Clock Out'] || r['Jam Pulang'] || '';
+        const timeOutFormatted = formatDatabaseTime(rawTimeOut);
+        const timeInFormatted = formatDatabaseTime(rawTimeIn);
+
+        const ket = String(getRowCellValue(r, 'Keterangan', SCHEMAS.Data_Kehadiran) || r['Keterangan'] || '').toLowerCase();
+        const telatStr = String(rawStatus || '').toLowerCase();
+        const isLate = lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || telatStr.includes('telat');
+
+        if (lateness.hasClockIn) {
+          hadirCount++;
+          if (isLate) lateCount++;
+          else onTimeCount++;
+        } else {
+          tanpaKeteranganCount++;
+        }
+
+        const whRaw = getRowCellValue(r, 'Durasi Kerja (Work Hours)', SCHEMAS.Data_Kehadiran) || r['Durasi Kerja (Work Hours)'] || r['Work Hours'] || '';
+        const wh = safeFloat(whRaw, 0);
+        const durasiText = wh > 0 ? `${wh} Jam` : '-';
+
+        const needApp = String(getRowCellValue(r, 'Need CICO Approval', SCHEMAS.Data_Kehadiran) || r['Need CICO Approval'] || '').toUpperCase().trim() === 'YES';
+        const radIn = String(getRowCellValue(r, 'In Radius Clock in', SCHEMAS.Data_Kehadiran) || r['In Radius Clock in'] || '').toUpperCase().trim() === 'NO';
+        let radBadge = '<span class="text-slate-400 text-[10px]">Normal</span>';
+        if (needApp) {
+          radBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200">Need Approval</span>';
+        } else if (radIn) {
+          radBadge = '<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Luar Radius</span>';
+        }
+
+        const remarksText = getRowCellValue(r, 'Keterangan', SCHEMAS.Data_Kehadiran) || r['Keterangan'] || '-';
+
+        return `
+          <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-2.5 px-3 text-center text-slate-500 font-bold">${idx + 1}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap font-medium text-slate-900">${dateFormatted} <span class="text-[10px] text-slate-400 font-normal">(${dayName})</span></td>
+            <td class="py-2.5 px-3 whitespace-nowrap font-mono font-bold text-slate-800">${timeInFormatted}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap">${lateness.badgeHtml}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap font-mono font-bold text-slate-800">${timeOutFormatted}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap font-bold text-slate-700">${durasiText}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap">${radBadge}</td>
+            <td class="py-2.5 px-3 text-slate-600 truncate max-w-[150px]">${remarksText}</td>
+          </tr>
+        `;
+      }).join('');
+
+      const totalDays = empRecords.length;
+      const ratePct = totalDays > 0 ? Math.round((hadirCount / totalDays) * 100) : 0;
+
+      if (document.getElementById('abs-modal-rate')) {
+        document.getElementById('abs-modal-rate').textContent = `Kehadiran: ${ratePct}%`;
+      }
+      if (document.getElementById('abs-modal-total-days')) {
+        document.getElementById('abs-modal-total-days').textContent = `${totalDays} Hari`;
+      }
+      if (document.getElementById('abs-modal-hadir')) {
+        document.getElementById('abs-modal-hadir').textContent = `${hadirCount} Hari`;
+      }
+      if (document.getElementById('abs-modal-ontime')) {
+        document.getElementById('abs-modal-ontime').textContent = `${onTimeCount}x`;
+      }
+      if (document.getElementById('abs-modal-late')) {
+        document.getElementById('abs-modal-late').textContent = `${lateCount}x`;
+      }
+      if (document.getElementById('abs-modal-noinfo')) {
+        document.getElementById('abs-modal-noinfo').textContent = `${tanpaKeteranganCount} Hari`;
+      }
+
+      const tbody = document.getElementById('abs-modal-tbody');
+      if (tbody) {
+        if (empRecords.length === 0) {
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Tidak ada log presensi untuk karyawan ini.</td></tr>`;
+        } else {
+          tbody.innerHTML = rowsHtml;
+        }
+      }
+
+      const btnViewRaw = document.getElementById('abs-modal-btn-view-raw');
+      if (btnViewRaw) {
+        btnViewRaw.onclick = () => showEmployeeInRawAbsensi(cleanNpk);
+      }
+
+      document.getElementById('modal-abs-emp-detail').classList.remove('hidden');
+    }
+    window.openEmployeeAttendanceDetailModal = openEmployeeAttendanceDetailModal;
+
+    function showEmployeeInRawAbsensi(npk) {
+      closeModal('modal-abs-emp-detail');
+      if (currentAbsViewMode !== 'RAW') {
+        toggleAbsViewMode();
+      }
+      const searchInput = document.getElementById('abs-search-input');
+      if (searchInput) {
+        searchInput.value = npk;
+      }
+      filterAbsensiTable();
+      if (typeof showToast === 'function') {
+        showToast(`Menampilkan log presensi mentah untuk NPK ${npk}`);
+      }
+    }
+    window.showEmployeeInRawAbsensi = showEmployeeInRawAbsensi;
 
     // ----------------------------------------------------
     // C. Suggestion System / SS (Status Reward Dinamis dari Database)

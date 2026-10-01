@@ -726,14 +726,14 @@
           hours: 0,
           minutes: 0,
           timeFormatted: '-',
-          text: 'Alpha',
-          badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
-          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpha</span>'
+          text: 'Tanpa Keterangan',
+          badgeClass: 'bg-amber-50 text-amber-700 border border-amber-200',
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-circle-question text-[10px]"></i> Tanpa Keterangan</span>'
         };
       }
 
       const sRaw = String(timeVal).trim();
-      // Khusus 0.00.00 / 00:00:00 / 0 / 1899-12-30 (nol waktu / tidak clock in -> Alpha):
+      // Khusus 0.00.00 / 00:00:00 / 0 / 1899-12-30 (nol waktu / tidak clock in -> Tanpa Keterangan):
       if (
         timeVal === 0 || sRaw === '0' || sRaw === '0.00.00' || sRaw === '00:00:00' || 
         sRaw === '0:00:00' || sRaw === '0.00' || sRaw === '1899-12-30' || 
@@ -746,9 +746,9 @@
           hours: 0,
           minutes: 0,
           timeFormatted: '0.00.00',
-          text: 'Alpha',
-          badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
-          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpha</span>'
+          text: 'Tanpa Keterangan',
+          badgeClass: 'bg-amber-50 text-amber-700 border border-amber-200',
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-circle-question text-[10px]"></i> Tanpa Keterangan</span>'
         };
       }
 
@@ -757,7 +757,11 @@
         const sTrim = sRaw;
         const sLower = sTrim.toLowerCase();
 
-        if (sLower === 'tidak clock in' || sLower === 'tidak check in' || sLower === 'belum clock in' || sLower === 'belum check in') {
+        if (
+          sLower === 'tidak clock in' || sLower === 'tidak check in' || 
+          sLower === 'belum clock in' || sLower === 'belum check in' ||
+          sLower === 'tanpa keterangan' || sLower === 'alpa' || sLower === 'alpha'
+        ) {
           return {
             hasClockIn: false,
             isLate: false,
@@ -765,43 +769,24 @@
             hours: 0,
             minutes: 0,
             timeFormatted: '-',
-            text: 'Alpha',
-            badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
-            badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpha</span>'
+            text: 'Tanpa Keterangan',
+            badgeClass: 'bg-amber-50 text-amber-700 border border-amber-200',
+            badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-circle-question text-[10px]"></i> Tanpa Keterangan</span>'
           };
         }
 
-        const knownStatus = ['hadir', 'cuti', 'sakit', 'izin', 'dinas', 'alpa', 'alpha', 'wfh', 'wfo'];
+        const knownStatus = ['hadir', 'wfh', 'wfo'];
         if (knownStatus.includes(sLower)) {
-          let badgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
-          let icon = 'fa-solid fa-circle-check';
-          let isClockIn = true;
-          if (sLower === 'hadir' || sLower === 'wfo') {
-            badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
-            icon = 'fa-solid fa-check';
-          } else if (sLower === 'cuti' || sLower === 'izin') {
-            badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
-            icon = 'fa-solid fa-calendar-check';
-          } else if (sLower === 'sakit') {
-            badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
-            icon = 'fa-solid fa-notes-medical';
-          } else if (sLower === 'dinas') {
-            badgeColor = 'bg-purple-50 text-purple-700 border-purple-200';
-            icon = 'fa-solid fa-briefcase';
-          } else if (sLower === 'alpa' || sLower === 'alpha') {
-            badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
-            icon = 'fa-solid fa-xmark';
-            isClockIn = false;
-          }
-          const displayTxt = (sLower === 'alpa' || sLower === 'alpha') ? 'Alpha' : sTrim;
+          let badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+          let icon = 'fa-solid fa-check';
           return {
-            hasClockIn: isClockIn,
+            hasClockIn: true,
             isLate: false,
             diffMinutes: 0,
             timeFormatted: sTrim,
-            text: displayTxt,
+            text: 'Tepat Waktu',
             badgeClass: badgeColor,
-            badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeColor}"><i class="${icon} text-[10px]"></i> ${displayTxt}</span>`
+            badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeColor}"><i class="${icon} text-[10px]"></i> Tepat Waktu</span>`
           };
         }
 
@@ -881,9 +866,9 @@
           hours: 0,
           minutes: 0,
           timeFormatted: '0.00.00',
-          text: 'Alpha',
-          badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
-          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpha</span>'
+          text: 'Tanpa Keterangan',
+          badgeClass: 'bg-amber-50 text-amber-700 border border-amber-200',
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-circle-question text-[10px]"></i> Tanpa Keterangan</span>'
         };
       }
 
@@ -971,7 +956,7 @@
       if (info.timeFormatted === '0.00.00' || s === '1899-12-30') {
         return '0.00.00';
       }
-      if ((info.text === 'Alpha' || info.text === 'Alpa' || info.text === 'Tidak Clock In') && !info.hasClockIn) {
+      if ((info.text === 'Tanpa Keterangan' || info.text === 'Alpha' || info.text === 'Alpa' || info.text === 'Tidak Clock In') && !info.hasClockIn) {
         return (s === '0.00.00' || s === '00:00:00' || s === '1899-12-30' || s === '0') ? '0.00.00' : '-';
       }
       return info.timeFormatted || s;
