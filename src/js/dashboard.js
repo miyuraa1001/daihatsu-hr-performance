@@ -154,13 +154,13 @@
             "Name of organizational unit": e['Name of organizational unit'] || (e.divisi ? `${e.divisi} DSO` : 'Departemen DSO'),
             "Job Title": e['Job Title'] || e.jabatan || 'Staff',
             "Last name": e['Last name'] || e.nama || '',
-            "D.o.birth": findDOBirth(e, idx),
+            "D.o.birth": findDOBirth(e),
             "Gender text": e['Gender text'] || e.gender || 'Male',
             "Religious denomination": e['Religious denomination'] || e.agama || 'Islam',
-            "PS group": findPSGroup(e, idx),
-            "Lvl": findLvl(e, idx),
-            "Date": findDate(e, idx),
-            "P0001-STEXT": findP0001STEXT(e, idx),
+            "PS group": findPSGroup(e),
+            "Lvl": findLvl(e),
+            "Date": findDate(e),
+            "P0001-STEXT": findP0001STEXT(e),
             "Business area": safeString(e['Business area'] || e.kodeBA || 'D660'),
             "Status_Karyawan": statusVal
           };
@@ -172,25 +172,10 @@
           const statusVal = row['Status_Karyawan'] || row['Status Karyawan'] || emp['Status_Karyawan'] || emp.statusKaryawan || 'Aktif';
           row['Status_Karyawan'] = statusVal;
           if (emp) {
-            emp['Contract'] = row['Contract'] || 'Tetap';
-            emp.tipeKontrak = row['Contract'] || 'Tetap';
+            emp['Contract'] = row['Contract'] || emp['Contract'] || 'Tetap';
+            emp.tipeKontrak = row['Contract'] || emp.tipeKontrak || 'Tetap';
             emp['Status_Karyawan'] = statusVal;
             emp.statusKaryawan = statusVal;
-          }
-          if (!row['D.o.birth'] || row['D.o.birth'] === '1995-05-15') {
-            row['D.o.birth'] = findDOBirth(row, idx) || findDOBirth(emp, idx);
-          }
-          if (row['PS group'] === undefined || row['PS group'] === null || String(row['PS group']).trim() === '' || row['PS group'] === 'III/A') {
-            row['PS group'] = findPSGroup(row, idx) || findPSGroup(emp, idx);
-          }
-          if (row['Lvl'] === 'Staff') {
-            row['Lvl'] = findLvl(row, idx) || findLvl(emp, idx);
-          }
-          if (!row['Date'] || row['Date'] === '2021-01-01') {
-            row['Date'] = findDate(row, idx) || findDate(emp, idx);
-          }
-          if (!row['P0001-STEXT'] || row['P0001-STEXT'] === 'Staff Unit' || row['P0001-STEXT'] === emp.jabatan) {
-            row['P0001-STEXT'] = findP0001STEXT(row, idx) || findP0001STEXT(emp, idx);
           }
         });
       }

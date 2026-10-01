@@ -8,7 +8,7 @@
  * Master Karyawan, Presensi, SS, QCC, SP, dan KM Tables
  */
 
-    function findDOBirth(e, idx) {
+    function findDOBirth(e) {
       if (e) {
         const candidates = [
           'D.o.birth', 'd.o.birth', 'DOB', 'dob', 'D.O.Birth',
@@ -18,7 +18,7 @@
         for (const k of candidates) {
           if (e[k] !== undefined && e[k] !== null) {
             const val = String(e[k]).trim();
-            if (val !== '' && val !== '1995-05-15') {
+            if (val !== '') {
               return formatDatabaseDate(e[k]);
             }
           }
@@ -27,184 +27,76 @@
           const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
           if (norm === 'dobirth' || norm === 'dob' || norm === 'tgllahir' || norm === 'tanggallahir' || norm === 'birthdate' || norm === 'dateofbirth') {
             const val = String(e[k] || '').trim();
-            if (val !== '' && val !== '1995-05-15') {
+            if (val !== '') {
               return formatDatabaseDate(e[k]);
             }
           }
         }
       }
-
-      const known = matchKnownDatabaseEntry(e, idx);
-      if (known && known.dob) return formatDatabaseDate(known.dob);
-
       return "";
     }
 
-    // TABEL REFERENSI DATA MASTER DATABASE GOOGLE SHEETS / SAP (100% SESUAI SPREADSHEET ASLI)
-    const KNOWN_MASTER_DATABASE_ROWS = [
-      {
-        psGroup: "3",
-        lvl: "",
-        date: "01.04.1997",
-        p0001Stext: "DSO GL Service Lampung A Yani",
-        matchers: ["10123", "gl service", "ai foreman"]
-      },
-      {
-        psGroup: "4",
-        lvl: "",
-        date: "01.09.1999",
-        p0001Stext: "DSO Kacab Bandar Jaya",
-        matchers: ["kacab bandar jaya", "branch head bandarjaya", "ai branch head", "kacab bandarjaya"]
-      },
-      {
-        psGroup: "3",
-        lvl: "",
-        date: "01.03.2001",
-        p0001Stext: "DSO SA Lampung A Yani",
-        matchers: ["sa lampung a yani", "service advisor lampung", "ai service advisor"]
-      },
-      {
-        psGroup: "4",
-        lvl: "",
-        date: "20.03.2001",
-        p0001Stext: "DSO Kacab Prabumulih",
-        matchers: ["kacab prabumulih", "branch head prabumulih"]
-      },
-      {
-        psGroup: "4",
-        lvl: "",
-        date: "01.06.2001",
-        p0001Stext: "DSO Kacab Plb Veteran",
-        matchers: ["kacab plb veteran", "branch head veteran", "kacab veteran"]
-      },
-      {
-        psGroup: "4",
-        lvl: "",
-        date: "01.09.2001",
-        p0001Stext: "DSO Area Service Coordinator Sumbagsel",
-        matchers: ["area service coordinator", "coordinator sumbagsel"]
-      },
-      {
-        psGroup: "3",
-        lvl: "",
-        date: "01.12.2001",
-        p0001Stext: "DSO SA Jambi",
-        matchers: ["sa jambi", "service advisor jambi"]
-      }
-    ];
-
-    function matchKnownDatabaseEntry(e, idx) {
-      if (!e && (idx === undefined || idx === null || idx < 0)) return null;
-
-      // 1. Jika ada P0001-STEXT langsung pada object
-      const rawStext = String(e?.['P0001-STEXT'] || e?.stext || e?.p0001_stext || '').toLowerCase().trim();
-      if (rawStext) {
-        const found = KNOWN_MASTER_DATABASE_ROWS.find(item => item.p0001Stext.toLowerCase() === rawStext);
-        if (found) return found;
-      }
-
-      // 2. Cocokkan berdasarkan keyword unik (NPK, Jabatan, Cabang, dsb.)
-      if (e) {
-        const combined = [
-          e['Personnel no.'], e.npk, e.nik,
-          e['Job Title'], e.jabatan,
-          e['Last name'], e.nama,
-          e['P.subarea'], e.cabang,
-          e['Name of organizational unit'], e.divisi
-        ].filter(Boolean).map(v => String(v).toLowerCase()).join(' ');
-
-        for (const item of KNOWN_MASTER_DATABASE_ROWS) {
-          if (item.matchers.some(m => combined.includes(m.toLowerCase()))) {
-            return item;
-          }
-        }
-      }
-
-      // 3. Cocokkan berdasarkan nomor indeks baris database (0-indexed)
-      if (typeof idx === 'number' && idx >= 0 && idx < KNOWN_MASTER_DATABASE_ROWS.length) {
-        return KNOWN_MASTER_DATABASE_ROWS[idx];
-      }
-
-      return null;
-    }
-
-    function findPSGroup(e, idx) {
+    function findPSGroup(e) {
       if (e) {
         const candidates = ['PS group', 'ps group', 'PS Group', 'psGroup', 'ps_group', 'PS_group', 'PSGROUP', 'golongan', 'pangkat', 'group'];
         for (const k of candidates) {
           if (e[k] !== undefined && e[k] !== null) {
             const val = String(e[k]).trim();
-            if (val !== '' && val !== 'III/A') return val;
+            if (val !== '') return val;
           }
         }
         for (const k of Object.keys(e)) {
           const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
           if (norm === 'psgroup' || norm === 'golongan' || norm === 'ps' || norm === 'pangkat') {
             const val = String(e[k] || '').trim();
-            if (val !== '' && val !== 'III/A') return val;
+            if (val !== '') return val;
           }
         }
       }
-      
-      const known = matchKnownDatabaseEntry(e, idx);
-      if (known && known.psGroup) return known.psGroup;
-
-      // Fallback cerdas berdasarkan level jabatan
-      if (e) {
-        const jab = String(e['Job Title'] || e.jabatan || '').toLowerCase();
-        if (jab.includes('branch') || jab.includes('kacab') || jab.includes('head') || jab.includes('manager') || jab.includes('coordinator')) {
-          return "4";
-        }
-      }
-      return "3";
+      return "";
     }
 
-    function findLvl(e, idx) {
+    function findLvl(e) {
       if (e) {
         const candidates = ['Lvl', 'lvl', 'Level', 'level'];
         for (const k of candidates) {
           if (e[k] !== undefined && e[k] !== null) {
             const val = String(e[k]).trim();
-            if (val !== '' && val !== 'Staff') return val;
+            if (val !== '') return val;
           }
         }
         for (const k of Object.keys(e)) {
           const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
           if (norm === 'lvl' || norm === 'level') {
             const val = String(e[k] || '').trim();
-            if (val !== '' && val !== 'Staff') return val;
+            if (val !== '') return val;
           }
         }
       }
-      const known = matchKnownDatabaseEntry(e, idx);
-      if (known) return known.lvl; // Nilai database memang kosong/blank
       return "";
     }
 
-    function findDate(e, idx) {
+    function findDate(e) {
       if (e) {
         const candidates = ['Date', 'date', 'Tanggal', 'tanggal', 'joinDate', 'join_date', 'tglMasuk', 'tgl_masuk', 'effectiveDate', 'effective_date', 'tgl'];
         for (const k of candidates) {
           if (e[k] !== undefined && e[k] !== null) {
             const val = String(e[k]).trim();
-            if (val !== '' && val !== '2021-01-01') return formatDatabaseDate(e[k]);
+            if (val !== '') return formatDatabaseDate(e[k]);
           }
         }
         for (const k of Object.keys(e)) {
           const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
           if (norm === 'date' || norm === 'joindate' || norm === 'tglmasuk' || norm === 'tanggal') {
             const val = String(e[k] || '').trim();
-            if (val !== '' && val !== '2021-01-01') return formatDatabaseDate(e[k]);
+            if (val !== '') return formatDatabaseDate(e[k]);
           }
         }
       }
-      const known = matchKnownDatabaseEntry(e, idx);
-      if (known && known.date) return known.date;
-
-      return "01.01.2001";
+      return "";
     }
 
-    function findP0001STEXT(e, idx) {
+    function findP0001STEXT(e) {
       if (e) {
         const candidates = [
           'P0001-STEXT', 'p0001-stext', 'P0001 - STEXT', 'P0001_STEXT', 'p0001_stext',
@@ -214,37 +106,18 @@
         for (const k of candidates) {
           if (e[k] !== undefined && e[k] !== null) {
             const val = String(e[k]).trim();
-            if (val !== '' && val !== 'Staff Unit' && val !== (e.jabatan || '')) {
-              return val;
-            }
+            if (val !== '') return val;
           }
         }
         for (const k of Object.keys(e)) {
           const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
           if (norm === 'p0001stext' || norm === 'stext' || (norm.includes('p0001') && !norm.includes('jabatan'))) {
             const val = String(e[k] || '').trim();
-            if (val !== '' && val !== 'Staff Unit' && val !== (e.jabatan || '')) return val;
+            if (val !== '') return val;
           }
         }
       }
-
-      const known = matchKnownDatabaseEntry(e, idx);
-      if (known && known.p0001Stext) return known.p0001Stext;
-
-      // Format SAP standar Astra DSO: DSO [Jabatan] [Cabang]
-      if (e) {
-        const cabang = e['P.subarea'] || e.cabang || 'Lampung';
-        const jab = e['Job Title'] || e.jabatan || 'Staff';
-        if (jab.toLowerCase().includes('branch') || jab.toLowerCase().includes('kacab')) {
-          return `DSO Kacab ${cabang}`;
-        }
-        if (jab.toLowerCase().includes('service') || jab.toLowerCase().includes('sa')) {
-          return `DSO SA ${cabang}`;
-        }
-        return `DSO ${jab} ${cabang}`;
-      }
-
-      return "DSO Unit Operational";
+      return String(e?.['Job Title'] || e?.jabatan || '').trim();
     }
 
     function renderMasterKaryawanView(data) {
@@ -534,25 +407,6 @@
             ? row[col] 
             : getRowCellValue(row, col, SCHEMAS.Master_Karyawan);
 
-          if ((cellRaw === undefined || cellRaw === null || cellRaw === '' || cellRaw === '1995-05-15') && (col === 'D.o.birth' || col === 'Tanggal Lahir')) {
-            cellRaw = findDOBirth(row, targetIdx);
-          }
-          if ((cellRaw === undefined || cellRaw === null || cellRaw === '' || cellRaw === 'Operational') && col === 'Name') {
-            const dInfo = typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(row, targetIdx) : null;
-            if (dInfo && dInfo.divisionName) cellRaw = dInfo.divisionName;
-          }
-          if ((cellRaw === undefined || cellRaw === null || cellRaw === '') && col === 'PS group') {
-            cellRaw = findPSGroup(row, targetIdx);
-          }
-          if ((cellRaw === undefined || cellRaw === null || cellRaw === '') && col === 'Date') {
-            cellRaw = findDate(row, targetIdx);
-          }
-          if ((cellRaw === undefined || cellRaw === null || cellRaw === '') && col === 'P0001-STEXT') {
-            cellRaw = findP0001STEXT(row, targetIdx);
-          }
-          if ((cellRaw === undefined || cellRaw === null || cellRaw === '') && col === 'Lvl') {
-            cellRaw = findLvl(row, targetIdx);
-          }
           if ((cellRaw === undefined || cellRaw === null || cellRaw === '' || cellRaw === '-') && (col === 'Status_Karyawan' || col === 'Status Karyawan' || normalizeHeaderName(col) === 'status_karyawan' || normalizeHeaderName(col) === 'status karyawan')) {
             cellRaw = row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif';
             row['Status_Karyawan'] = cellRaw;

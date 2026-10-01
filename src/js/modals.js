@@ -769,12 +769,12 @@
         }
 
         exportRows = list.map((row, idx) => {
-          const dob = (row['D.o.birth'] !== undefined && row['D.o.birth'] !== null && String(row['D.o.birth']).trim() !== '' && row['D.o.birth'] !== '1995-05-15')
+          const dob = (row['D.o.birth'] !== undefined && row['D.o.birth'] !== null && String(row['D.o.birth']).trim() !== '')
             ? row['D.o.birth']
-            : findDOBirth(row, idx);
+            : findDOBirth(row);
           const joinDate = (row['Date'] !== undefined && row['Date'] !== null && String(row['Date']).trim() !== '')
             ? row['Date']
-            : findDate(row, idx);
+            : findDate(row);
 
           const umurVal = calculateAgeAndService(dob);
           const masaKerjaVal = calculateAgeAndService(joinDate);
@@ -791,12 +791,12 @@
               obj['D.o.birth'] = formatDatabaseDate(dob);
             } else if (col === 'Date') {
               obj['Date'] = formatDatabaseDate(joinDate);
-            } else if (col === 'PS group' && (!row[col] || row[col] === 'III/A')) {
-              obj['PS group'] = findPSGroup(row, idx);
-            } else if (col === 'Lvl' && (!row[col] || row[col] === 'Staff')) {
-              obj['Lvl'] = findLvl(row, idx);
-            } else if (col === 'P0001-STEXT' && (!row[col] || row[col] === 'Staff Unit')) {
-              obj['P0001-STEXT'] = findP0001STEXT(row, idx);
+            } else if (col === 'PS group') {
+              obj['PS group'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : findPSGroup(row);
+            } else if (col === 'Lvl') {
+              obj['Lvl'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : findLvl(row);
+            } else if (col === 'P0001-STEXT') {
+              obj['P0001-STEXT'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : findP0001STEXT(row);
             } else if (col === 'Status_Karyawan') {
               obj['Status_Karyawan'] = row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif';
             } else {
@@ -886,12 +886,12 @@
           }
 
           exportRows = rawRows.map((row, idx) => {
-            const dob = (row['D.o.birth'] !== undefined && row['D.o.birth'] !== null && String(row['D.o.birth']).trim() !== '' && row['D.o.birth'] !== '1995-05-15')
+            const dob = (row['D.o.birth'] !== undefined && row['D.o.birth'] !== null && String(row['D.o.birth']).trim() !== '')
               ? row['D.o.birth']
-              : findDOBirth(row, idx);
+              : findDOBirth(row);
             const joinDate = (row['Date'] !== undefined && row['Date'] !== null && String(row['Date']).trim() !== '')
               ? row['Date']
-              : findDate(row, idx);
+              : findDate(row);
 
             const umurVal = calculateAgeAndService(dob);
             const masaKerjaVal = calculateAgeAndService(joinDate);
@@ -906,12 +906,12 @@
                 obj['D.o.birth'] = formatDatabaseDate(dob);
               } else if (col === 'Date') {
                 obj['Date'] = formatDatabaseDate(joinDate);
-              } else if (col === 'PS group' && (!row[col] || row[col] === 'III/A')) {
-                obj['PS group'] = findPSGroup(row, idx);
-              } else if (col === 'Lvl' && (!row[col] || row[col] === 'Staff')) {
-                obj['Lvl'] = findLvl(row, idx);
-              } else if (col === 'P0001-STEXT' && (!row[col] || row[col] === 'Staff Unit')) {
-                obj['P0001-STEXT'] = findP0001STEXT(row, idx);
+              } else if (col === 'PS group') {
+                obj['PS group'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : findPSGroup(row);
+              } else if (col === 'Lvl') {
+                obj['Lvl'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : findLvl(row);
+              } else if (col === 'P0001-STEXT') {
+                obj['P0001-STEXT'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : findP0001STEXT(row);
               } else if (col === 'Status_Karyawan') {
                 obj['Status_Karyawan'] = row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif';
               } else {

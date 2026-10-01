@@ -696,34 +696,69 @@
         };
       }
 
-      // Check if timeVal is already a text estimate from Code.gs (e.g. "Tepat Waktu", "Telat 15 Menit")
-      if (typeof timeVal === 'string' && (timeVal.startsWith('Tepat') || timeVal.startsWith('Telat'))) {
-        const isLate = timeVal.startsWith('Telat');
-        if (!isLate) {
+      // Check if timeVal is already a text estimate or standard status
+      if (typeof timeVal === 'string') {
+        const sTrim = timeVal.trim();
+        const sLower = sTrim.toLowerCase();
+        const knownStatus = ['hadir', 'cuti', 'sakit', 'izin', 'dinas', 'alpa', 'alpha', 'wfh', 'wfo'];
+        if (knownStatus.includes(sLower)) {
+          let badgeColor = 'bg-slate-100 text-slate-700 border-slate-200';
+          let icon = 'fa-solid fa-circle-check';
+          if (sLower === 'hadir' || sLower === 'wfo') {
+            badgeColor = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+            icon = 'fa-solid fa-check';
+          } else if (sLower === 'cuti' || sLower === 'izin') {
+            badgeColor = 'bg-blue-50 text-blue-700 border-blue-200';
+            icon = 'fa-solid fa-calendar-check';
+          } else if (sLower === 'sakit') {
+            badgeColor = 'bg-amber-50 text-amber-700 border-amber-200';
+            icon = 'fa-solid fa-notes-medical';
+          } else if (sLower === 'dinas') {
+            badgeColor = 'bg-purple-50 text-purple-700 border-purple-200';
+            icon = 'fa-solid fa-briefcase';
+          } else if (sLower === 'alpa' || sLower === 'alpha') {
+            badgeColor = 'bg-rose-50 text-rose-700 border-rose-200';
+            icon = 'fa-solid fa-xmark';
+          }
           return {
             hasClockIn: true,
             isLate: false,
             diffMinutes: 0,
-            timeFormatted: '≤ 08:00',
-            text: 'Tepat Waktu',
-            badgeClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
-            badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-circle-check text-[10px]"></i> Tepat Waktu</span>'
+            timeFormatted: sTrim,
+            text: sTrim,
+            badgeClass: badgeColor,
+            badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeColor}"><i class="${icon} text-[10px]"></i> ${sTrim}</span>`
           };
-        } else {
-          const isSevere = timeVal.includes('Jam') || (parseInt(timeVal.replace(/[^0-9]/g, '') || '0', 10) > 30);
-          const badgeClass = isSevere 
-            ? 'bg-rose-50 text-rose-700 border border-rose-200' 
-            : 'bg-amber-50 text-amber-700 border border-amber-200';
-          const iconClass = isSevere ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-clock';
-          return {
-            hasClockIn: true,
-            isLate: true,
-            diffMinutes: isSevere ? 35 : 15,
-            timeFormatted: '> 08:00',
-            text: timeVal,
-            badgeClass: badgeClass,
-            badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}"><i class="${iconClass} text-[10px]"></i> ${timeVal}</span>`
-          };
+        }
+
+        if (sTrim.startsWith('Tepat') || sTrim.startsWith('Telat')) {
+          const isLate = sTrim.startsWith('Telat');
+          if (!isLate) {
+            return {
+              hasClockIn: true,
+              isLate: false,
+              diffMinutes: 0,
+              timeFormatted: '≤ 08:00',
+              text: 'Tepat Waktu',
+              badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+              badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-circle-check text-[10px]"></i> Tepat Waktu</span>'
+            };
+          } else {
+            const isSevere = sTrim.includes('Jam') || (parseInt(sTrim.replace(/[^0-9]/g, '') || '0', 10) > 30);
+            const badgeClass = isSevere 
+              ? 'bg-rose-50 text-rose-700 border border-rose-200' 
+              : 'bg-amber-50 text-amber-700 border border-amber-200';
+            const iconClass = isSevere ? 'fa-solid fa-triangle-exclamation' : 'fa-solid fa-clock';
+            return {
+              hasClockIn: true,
+              isLate: true,
+              diffMinutes: isSevere ? 35 : 15,
+              timeFormatted: '> 08:00',
+              text: sTrim,
+              badgeClass: badgeClass,
+              badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${badgeClass}"><i class="${iconClass} text-[10px]"></i> ${sTrim}</span>`
+            };
+          }
         }
       }
 
@@ -733,9 +768,10 @@
       if (timeVal instanceof Date && !isNaN(timeVal.getTime())) {
         h = timeVal.getHours();
         m = timeVal.getMinutes();
-      } else if (typeof timeVal === 'number' && timeVal >= 0 && timeVal < 1) {
-        const totalSec = Math.round(timeVal * 86400);
-        h = Math.floor(totalSec / 3600);
+      } else if (typeof timeVal === 'number' && !isNaN(timeVal)) {
+        const timeFraction = (timeVal >= 1) ? (timeVal % 1) : timeVal;
+        const totalSec = Math.round(timeFraction * 86400);
+        h = Math.floor(totalSec / 3600) % 24;
         m = Math.floor((totalSec % 3600) / 60);
       } else {
         const s = String(timeVal).trim();
@@ -750,10 +786,14 @@
             m = wibMinutes % 60;
           }
         } else {
-          const match = s.match(/(\d{1,2})[:\.](\d{2})/);
+          const match = s.match(/(?:^|\s|T)(\d{1,2})[:\.](\d{2})/);
           if (match) {
-            h = parseInt(match[1], 10);
-            m = parseInt(match[2], 10);
+            const parsedH = parseInt(match[1], 10);
+            const parsedM = parseInt(match[2], 10);
+            if (parsedH >= 0 && parsedH < 24 && parsedM >= 0 && parsedM < 60) {
+              h = parsedH;
+              m = parsedM;
+            }
           }
         }
       }
