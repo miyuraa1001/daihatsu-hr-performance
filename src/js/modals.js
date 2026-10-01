@@ -696,6 +696,123 @@
     }
     window.openDeleteKMFromDetail = openDeleteKMFromDetail;
 
+    function buildEmployeeAttendanceSummaryRows(attendanceRecords, fullPayload) {
+      const masterList = (fullPayload && fullPayload.employeeList) || 
+                         (window.masterFullPayload && window.masterFullPayload.employeeList) || 
+                         (currentDashboardPayload && currentDashboardPayload.employeeList) || [];
+      const masterRaw = (fullPayload && fullPayload.rawTables?.Master_Karyawan) || 
+                        (window.masterFullPayload && window.masterFullPayload.rawTables?.Master_Karyawan) || 
+                        (currentDashboardPayload && currentDashboardPayload.rawTables?.Master_Karyawan) || [];
+
+      const empMap = new Map();
+
+      attendanceRecords.forEach(r => {
+        const rawNpk = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+          ? (getRowCellValue(r, 'NPK', SCHEMAS.Data_Kehadiran) || r['NPK'] || '')
+          : (r['NPK'] || '');
+        const cleanNpk = safeString(rawNpk).trim();
+        if (!cleanNpk || cleanNpk === '-' || cleanNpk === '0') return;
+
+        if (!empMap.has(cleanNpk)) {
+          let empName = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+            ? (getRowCellValue(r, 'Employee Name', SCHEMAS.Data_Kehadiran) || r['Employee Name'] || r['Nama'] || '')
+            : (r['Employee Name'] || r['Nama'] || '');
+          let empBranch = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+            ? (getRowCellValue(r, 'Cabang', SCHEMAS.Data_Kehadiran) || r['Cabang'] || '-')
+            : (r['Cabang'] || '-');
+
+          const masterEmp = masterList.find(e => safeString(e.npk || e['Personnel no.']).trim() === cleanNpk) ||
+                            masterRaw.find(e => safeString(e['Personnel no.'] || e.npk).trim() === cleanNpk);
+          if (masterEmp) {
+            if (!empName || empName.startsWith('Karyawan ')) {
+              empName = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Master_Karyawan)
+                ? (getRowCellValue(masterEmp, 'Last name', SCHEMAS.Master_Karyawan) || masterEmp.nama || empName)
+                : (masterEmp.nama || masterEmp['Last name'] || empName);
+            }
+            if (!empBranch || empBranch === '-') {
+              empBranch = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Master_Karyawan)
+                ? (getRowCellValue(masterEmp, 'P.subarea', SCHEMAS.Master_Karyawan) || masterEmp.cabang || empBranch)
+                : (masterEmp.cabang || masterEmp['P.subarea'] || empBranch);
+            }
+          }
+
+          empMap.set(cleanNpk, {
+            npk: cleanNpk,
+            nama: empName || `Karyawan ${cleanNpk}`,
+            cabang: empBranch,
+            totalHari: 0,
+            hadirCount: 0,
+            onTimeCount: 0,
+            lateCount: 0,
+            tanpaKeteranganCount: 0,
+            totalWorkHours: 0,
+            validWorkHoursCount: 0
+          });
+        }
+
+        const emp = empMap.get(cleanNpk);
+        emp.totalHari++;
+
+        const rawTime = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+          ? (getRowCellValue(r, 'Time Clock In', SCHEMAS.Data_Kehadiran) || r['Time Clock In'] || r['Clock In'] || r['Time'] || r['Jam Masuk'] || '')
+          : (r['Time Clock In'] || r['Clock In'] || r['Time'] || r['Jam Masuk'] || '');
+        const existingEstimasi = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+          ? (getRowCellValue(r, 'Status Kehadiran', SCHEMAS.Data_Kehadiran) || r['Status Kehadiran'] || r['Estimasi Telat (Asumsi 08.00)'] || '')
+          : (r['Status Kehadiran'] || '');
+        const lateness = calculateLatenessInfo(existingEstimasi || rawTime);
+        const ket = String((typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+          ? (getRowCellValue(r, 'Keterangan', SCHEMAS.Data_Kehadiran) || r['Keterangan'] || '')
+          : (r['Keterangan'] || '')).toLowerCase();
+        const telatStr = String(existingEstimasi || '').toLowerCase();
+
+        const isLate = lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || telatStr.includes('telat');
+
+        if (lateness.hasClockIn) {
+          emp.hadirCount++;
+          if (isLate) {
+            emp.lateCount++;
+          } else {
+            emp.onTimeCount++;
+          }
+        } else {
+          emp.tanpaKeteranganCount++;
+        }
+
+        const whRaw = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+          ? (getRowCellValue(r, 'Durasi Kerja (Work Hours)', SCHEMAS.Data_Kehadiran) || r['Durasi Kerja (Work Hours)'] || r['Work Hours'] || r['Durasi Kerja'])
+          : (r['Durasi Kerja (Work Hours)'] || r['Work Hours'] || r['Durasi Kerja']);
+        const wh = safeFloat(whRaw, 0);
+        if (wh > 0) {
+          emp.totalWorkHours += wh;
+          emp.validWorkHoursCount++;
+        }
+      });
+
+      const empList = Array.from(empMap.values());
+      empList.sort((a, b) => a.nama.localeCompare(b.nama));
+
+      return empList.map((emp, idx) => {
+        const pct = emp.totalHari > 0 ? Math.round((emp.hadirCount / emp.totalHari) * 100) : 0;
+        const avgWh = emp.validWorkHoursCount > 0 ? (emp.totalWorkHours / emp.validWorkHoursCount).toFixed(1) : (emp.hadirCount > 0 ? '8.0' : '0.0');
+
+        return {
+          "No": idx + 1,
+          "NPK": emp.npk,
+          "Nama Karyawan": emp.nama,
+          "Cabang": emp.cabang,
+          "Total Hari Kerja": emp.totalHari,
+          "Masuk (Hadir)": emp.hadirCount,
+          "Tepat Waktu": emp.onTimeCount,
+          "Terlambat": emp.lateCount,
+          "Tanpa Keterangan": emp.tanpaKeteranganCount,
+          "Persentase Kehadiran (%)": `${pct}%`,
+          "Total Jam Kerja (Jam)": parseFloat(emp.totalWorkHours.toFixed(1)),
+          "Rata-rata Jam Kerja (Jam/Hari)": parseFloat(avgWh)
+        };
+      });
+    }
+    window.buildEmployeeAttendanceSummaryRows = buildEmployeeAttendanceSummaryRows;
+
     function exportModuleTableToExcel(targetSheet) {
       if (targetSheet === 'Data_Absensi') targetSheet = 'Data_Kehadiran';
       const schema = SCHEMAS[targetSheet];
@@ -805,9 +922,164 @@
           });
           return obj;
         });
+      } else if (targetSheet === 'Data_Kehadiran') {
+        const fullMaster = window.masterFullPayload || window.fullUnscopedPayload || currentDashboardPayload;
+        let attendanceRows = fullMaster.rawTables?.Data_Kehadiran || currentDashboardPayload.rawTables?.Data_Kehadiran || rawRows || [];
+
+        // Role-based branch filter
+        if (!isAdmin) {
+          attendanceRows = attendanceRows.filter(e => matchBranch(e, userBranchCode));
+        } else {
+          const selectedBranch = document.getElementById('branch-select')?.value || 'ALL';
+          if (selectedBranch !== 'ALL') {
+            attendanceRows = attendanceRows.filter(e => matchBranch(e, selectedBranch));
+          }
+        }
+
+        const selectedMonth = document.getElementById('month-select')?.value || 'ALL';
+        const selectedYear = document.getElementById('year-select')?.value || 'ALL';
+
+        // Detect target year
+        let targetYear = null;
+        if (selectedYear !== 'ALL') {
+          targetYear = parseInt(selectedYear, 10);
+        } else {
+          const yearCounts = {};
+          attendanceRows.forEach(r => {
+            const parsed = extractRowMonthYear(r);
+            if (parsed && parsed.year) {
+              yearCounts[parsed.year] = (yearCounts[parsed.year] || 0) + 1;
+            }
+          });
+          const years = Object.keys(yearCounts).map(Number).sort((a, b) => b - a);
+          targetYear = years.length > 0 ? years[0] : new Date().getFullYear();
+        }
+
+        // Filter rows by targetYear
+        let yearRows = attendanceRows;
+        if (targetYear) {
+          yearRows = attendanceRows.filter(r => {
+            const parsed = extractRowMonthYear(r);
+            return !parsed || parsed.year === targetYear;
+          });
+        }
+
+        const wb = XLSX.utils.book_new();
+
+        const monthList = [
+          { num: 1, name: "Januari" },
+          { num: 2, name: "Februari" },
+          { num: 3, name: "Maret" },
+          { num: 4, name: "April" },
+          { num: 5, name: "Mei" },
+          { num: 6, name: "Juni" },
+          { num: 7, name: "Juli" },
+          { num: 8, name: "Agustus" },
+          { num: 9, name: "September" },
+          { num: 10, name: "Oktober" },
+          { num: 11, name: "November" },
+          { num: 12, name: "Desember" }
+        ];
+
+        const rawCols = schema.columns.slice();
+        if (!rawCols.includes('No') && !rawCols.includes('no')) {
+          rawCols.unshift('No');
+        }
+
+        function formatRawAttendanceRow(row, idx) {
+          const obj = {};
+          rawCols.forEach(col => {
+            if (col === 'No' || col === 'no' || (typeof normalizeHeaderName === 'function' && normalizeHeaderName(col) === 'no')) {
+              obj[col] = idx + 1;
+            } else if (col === 'Time Clock In' || col === 'Time Clock Out') {
+              const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col] || '';
+              obj[col] = formatDatabaseTime(val);
+            } else if (col === 'Date Clock In' || col === 'Date Clock Out') {
+              const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col] || '';
+              obj[col] = (String(val).includes('1899-12-30') || String(val).includes('30.12.1899')) ? '' : formatDatabaseDate(val);
+            } else if (col === 'Date') {
+              const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col] || '';
+              obj[col] = formatDatabaseDate(val);
+            } else if (col === 'Status Kehadiran') {
+              const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col] || '';
+              const timeIn = getRowCellValue(row, 'Time Clock In', SCHEMAS.Data_Kehadiran) || row['Time Clock In'] || '';
+              const lateness = calculateLatenessInfo(val || timeIn);
+              obj[col] = lateness.text;
+            } else {
+              const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col];
+              obj[col] = (val !== undefined && val !== null) ? val : "";
+            }
+          });
+          return obj;
+        }
+
+        const summaryCols = [
+          "No",
+          "NPK",
+          "Nama Karyawan",
+          "Cabang",
+          "Total Hari Kerja",
+          "Masuk (Hadir)",
+          "Tepat Waktu",
+          "Terlambat",
+          "Tanpa Keterangan",
+          "Persentase Kehadiran (%)",
+          "Total Jam Kerja (Jam)",
+          "Rata-rata Jam Kerja (Jam/Hari)"
+        ];
+
+        if (selectedMonth === 'ALL') {
+          // 1. Sheet 1: Rekap Tahunan per Karyawan (1 Tahun Penuh)
+          const summaryRows = buildEmployeeAttendanceSummaryRows(yearRows, fullMaster);
+          const wsSummary = XLSX.utils.json_to_sheet(summaryRows.length ? summaryRows : [{}], { header: summaryCols });
+          XLSX.utils.book_append_sheet(wb, wsSummary, "Rekap_Tahunan");
+
+          // 2. Sheet 2 s/d 13: 12 Sheet Bulanan (Januari s/d Desember)
+          monthList.forEach(m => {
+            const mRows = yearRows.filter(r => {
+              const p = extractRowMonthYear(r);
+              return p && p.month === m.num;
+            });
+            const exportData = mRows.map((r, i) => formatRawAttendanceRow(r, i));
+            const wsMonth = exportData.length 
+              ? XLSX.utils.json_to_sheet(exportData, { header: rawCols })
+              : XLSX.utils.json_to_sheet([], { header: rawCols });
+            XLSX.utils.book_append_sheet(wb, wsMonth, m.name);
+          });
+
+          const fileName = `Data_Kehadiran_Tahunan_${targetYear || '2026'}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+          XLSX.writeFile(wb, fileName);
+          showToast(`Berkas ${fileName} berhasil diunduh: 1 Sheet Rekap Karyawan (1 Tahun) + 12 Sheet Bulanan (Januari - Desember)!`);
+          return;
+        } else {
+          // Single month export (e.g. Month = "Juni")
+          const monthMap = { 'januari': 1, 'februari': 2, 'maret': 3, 'april': 4, 'mei': 5, 'juni': 6, 'juli': 7, 'agustus': 8, 'september': 9, 'oktober': 10, 'november': 11, 'desember': 12 };
+          const targetMonthNum = monthMap[selectedMonth.toLowerCase()] || 6;
+          const monthRows = yearRows.filter(r => {
+            const p = extractRowMonthYear(r);
+            return p && p.month === targetMonthNum;
+          });
+
+          // Sheet 1: Rekap Karyawan Bulan Terpilih
+          const summaryRows = buildEmployeeAttendanceSummaryRows(monthRows.length ? monthRows : yearRows, fullMaster);
+          const wsSummary = XLSX.utils.json_to_sheet(summaryRows.length ? summaryRows : [{}], { header: summaryCols });
+          XLSX.utils.book_append_sheet(wb, wsSummary, `Rekap_${selectedMonth}`);
+
+          // Sheet 2: Log Mentah Bulan Terpilih
+          const exportData = monthRows.map((r, i) => formatRawAttendanceRow(r, i));
+          const wsMonth = exportData.length 
+            ? XLSX.utils.json_to_sheet(exportData, { header: rawCols })
+            : XLSX.utils.json_to_sheet([], { header: rawCols });
+          XLSX.utils.book_append_sheet(wb, wsMonth, selectedMonth);
+
+          const fileName = `Data_Kehadiran_${selectedMonth}_${targetYear || '2026'}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+          XLSX.writeFile(wb, fileName);
+          showToast(`Berkas ${fileName} berhasil diunduh (Sheet Rekap Karyawan & Sheet Log Harian ${selectedMonth})!`);
+          return;
+        }
       } else {
         exportColumns = schema.columns.slice();
-        if (!isAdmin && (targetSheet === 'Data_Kehadiran' || targetSheet === 'Data_SS' || targetSheet === 'Data_QCC' || targetSheet === 'Data_SP')) {
+        if (!isAdmin && (targetSheet === 'Data_SS' || targetSheet === 'Data_QCC' || targetSheet === 'Data_SP')) {
           rawRows = rawRows.filter(e => matchBranch(e, userBranchCode));
         }
 
@@ -822,13 +1094,13 @@
           });
           return obj;
         });
-      }
 
-      const ws = XLSX.utils.json_to_sheet(exportRows, { header: exportColumns });
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, schema.sheetName);
-      XLSX.writeFile(wb, `${schema.sheetName}_${new Date().toISOString().slice(0, 10)}.xlsx`);
-      showToast(`Berkas ${schema.sheetName}.xlsx berhasil diunduh (${exportRows.length} baris, ${exportColumns.length} kolom)! Kolom Umur & Masa Kerja terpisah.`);
+        const ws = XLSX.utils.json_to_sheet(exportRows, { header: exportColumns });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, schema.sheetName);
+        XLSX.writeFile(wb, `${schema.sheetName}_${new Date().toISOString().slice(0, 10)}.xlsx`);
+        showToast(`Berkas ${schema.sheetName}.xlsx berhasil diunduh (${exportRows.length} baris, ${exportColumns.length} kolom)!`);
+      }
     }
 
     // Ekspor Seluruh Modul ke dalam Satu Workbook Terpadu (6-in-1 Sheet)
@@ -1235,6 +1507,100 @@
       const ws = XLSX.utils.json_to_sheet(exportRows);
       const wb = XLSX.utils.book_new();
       XLSX.utils.book_append_sheet(wb, ws, "Rekap_Data_Kinerja");
+
+      // Jika filter Semua Bulan dipilih dan ada data kehadiran, sertakan juga 12 sheet bulanan dari Data_Kehadiran
+      const selectedMonth = document.getElementById('month-select')?.value || 'ALL';
+      const selectedYear = document.getElementById('year-select')?.value || 'ALL';
+      const fullMaster = window.masterFullPayload || window.fullUnscopedPayload || currentDashboardPayload;
+      let attendanceRows = fullMaster?.rawTables?.Data_Kehadiran || currentDashboardPayload?.rawTables?.Data_Kehadiran || [];
+
+      if (selectedMonth === 'ALL' && attendanceRows.length > 0) {
+        if (!isAdmin) {
+          attendanceRows = attendanceRows.filter(e => matchBranch(e, getUserBranchCode(loggedInUser)));
+        } else {
+          const selectedBranch = document.getElementById('branch-select')?.value || 'ALL';
+          if (selectedBranch !== 'ALL') {
+            attendanceRows = attendanceRows.filter(e => matchBranch(e, selectedBranch));
+          }
+        }
+
+        let targetYear = (selectedYear !== 'ALL') ? parseInt(selectedYear, 10) : null;
+        if (!targetYear) {
+          const yearCounts = {};
+          attendanceRows.forEach(r => {
+            const parsed = extractRowMonthYear(r);
+            if (parsed && parsed.year) yearCounts[parsed.year] = (yearCounts[parsed.year] || 0) + 1;
+          });
+          const years = Object.keys(yearCounts).map(Number).sort((a, b) => b - a);
+          targetYear = years.length > 0 ? years[0] : new Date().getFullYear();
+        }
+
+        const yearRows = attendanceRows.filter(r => {
+          const parsed = extractRowMonthYear(r);
+          return !parsed || parsed.year === targetYear;
+        });
+
+        const monthList = [
+          { num: 1, name: "Januari" },
+          { num: 2, name: "Februari" },
+          { num: 3, name: "Maret" },
+          { num: 4, name: "April" },
+          { num: 5, name: "Mei" },
+          { num: 6, name: "Juni" },
+          { num: 7, name: "Juli" },
+          { num: 8, name: "Agustus" },
+          { num: 9, name: "September" },
+          { num: 10, name: "Oktober" },
+          { num: 11, name: "November" },
+          { num: 12, name: "Desember" }
+        ];
+
+        const rawCols = (SCHEMAS.Data_Kehadiran?.columns || []).slice();
+        if (!rawCols.includes('No') && !rawCols.includes('no')) rawCols.unshift('No');
+
+        monthList.forEach(m => {
+          const mRows = yearRows.filter(r => {
+            const p = extractRowMonthYear(r);
+            return p && p.month === m.num;
+          });
+          const exportData = mRows.map((row, idx) => {
+            const obj = {};
+            rawCols.forEach(col => {
+              if (col === 'No' || col === 'no' || (typeof normalizeHeaderName === 'function' && normalizeHeaderName(col) === 'no')) {
+                obj[col] = idx + 1;
+              } else if (col === 'Time Clock In' || col === 'Time Clock Out') {
+                const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col] || '';
+                obj[col] = formatDatabaseTime(val);
+              } else if (col === 'Date Clock In' || col === 'Date Clock Out') {
+                const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col] || '';
+                obj[col] = (String(val).includes('1899-12-30') || String(val).includes('30.12.1899')) ? '' : formatDatabaseDate(val);
+              } else if (col === 'Date') {
+                const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col] || '';
+                obj[col] = formatDatabaseDate(val);
+              } else if (col === 'Status Kehadiran') {
+                const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col] || '';
+                const timeIn = getRowCellValue(row, 'Time Clock In', SCHEMAS.Data_Kehadiran) || row['Time Clock In'] || '';
+                const lateness = calculateLatenessInfo(val || timeIn);
+                obj[col] = lateness.text;
+              } else {
+                const val = getRowCellValue(row, col, SCHEMAS.Data_Kehadiran) || row[col];
+                obj[col] = (val !== undefined && val !== null) ? val : "";
+              }
+            });
+            return obj;
+          });
+
+          const wsMonth = exportData.length
+            ? XLSX.utils.json_to_sheet(exportData, { header: rawCols })
+            : XLSX.utils.json_to_sheet([], { header: rawCols });
+          XLSX.utils.book_append_sheet(wb, wsMonth, m.name);
+        });
+
+        XLSX.writeFile(wb, `${fileNamePrefix}_${targetYear}_${new Date().toISOString().slice(0,10)}.xlsx`);
+        showToast(`Berkas ${fileNamePrefix} berhasil diunduh: 1 Sheet Rekap Karyawan + 12 Sheet Bulanan (Januari - Desember)!`);
+        return;
+      }
+
       XLSX.writeFile(wb, `${fileNamePrefix}_${new Date().toISOString().slice(0,10)}.xlsx`);
       showToast("Berkas Excel berhasil diunduh! Kolom Umur & Masa Kerja dipisahkan secara rapi.");
     }

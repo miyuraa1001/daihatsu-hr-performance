@@ -1317,6 +1317,63 @@
       return true;
     }
 
+    function parseSingleDateMonthYear(rawDate) {
+      if (!rawDate && rawDate !== 0) return null;
+      const s = String(rawDate).trim();
+      if (!s || s === '-' || s === '1899-12-30' || s.startsWith('1899-12-30') || s === '30.12.1899' || s === '0' || s === '0.00.00') return null;
+
+      if (typeof rawDate === 'number' || (/^\d{5}$/.test(s) && Number(s) > 35000 && Number(s) < 65000)) {
+        const d = new Date(Math.round((Number(s) - 25569) * 86400 * 1000));
+        if (!isNaN(d.getTime()) && d.getFullYear() > 1899) {
+          return { year: d.getFullYear(), month: d.getMonth() + 1 };
+        }
+      }
+
+      const ymd = s.match(/^(\d{4})[-/. ](\d{1,2})[-/. ](\d{1,2})/);
+      if (ymd && parseInt(ymd[1], 10) > 1899) {
+        return { year: parseInt(ymd[1], 10), month: parseInt(ymd[2], 10) };
+      }
+
+      const dmy = s.match(/^(\d{1,2})[-/. ](\d{1,2})[-/. ](\d{4})/);
+      if (dmy && parseInt(dmy[3], 10) > 1899) {
+        return { year: parseInt(dmy[3], 10), month: parseInt(dmy[2], 10) };
+      }
+
+      const monthMap = { 'jan': 1, 'feb': 2, 'mar': 3, 'apr': 4, 'mei': 5, 'may': 5, 'jun': 6, 'jul': 7, 'agu': 8, 'aug': 8, 'sep': 9, 'okt': 10, 'oct': 10, 'nov': 11, 'des': 12, 'dec': 12 };
+      const lower = s.toLowerCase();
+      let m = null;
+      for (const [k, v] of Object.entries(monthMap)) {
+        if (lower.includes(k)) { m = v; break; }
+      }
+      const yr = s.match(/\b(20\d{2})\b/);
+      if (m && yr) return { year: parseInt(yr[1], 10), month: m };
+
+      return null;
+    }
+    window.parseSingleDateMonthYear = parseSingleDateMonthYear;
+
+    function extractRowMonthYear(row) {
+      if (!row) return null;
+      if (typeof row !== 'object') return parseSingleDateMonthYear(row);
+      const d1 = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+        ? (getRowCellValue(row, 'Date', SCHEMAS.Data_Kehadiran) || row['Date'] || row['Tanggal'])
+        : (row['Date'] || row['Tanggal']);
+      const res1 = parseSingleDateMonthYear(d1);
+      if (res1) return res1;
+
+      const d2 = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+        ? (getRowCellValue(row, 'Date Clock In', SCHEMAS.Data_Kehadiran) || row['Date Clock In'])
+        : row['Date Clock In'];
+      const res2 = parseSingleDateMonthYear(d2);
+      if (res2) return res2;
+
+      const d3 = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
+        ? (getRowCellValue(row, 'Date Clock Out', SCHEMAS.Data_Kehadiran) || row['Date Clock Out'])
+        : row['Date Clock Out'];
+      return parseSingleDateMonthYear(d3);
+    }
+    window.extractRowMonthYear = extractRowMonthYear;
+
     // Helper formatting cell values based on canonical column type
     function formatColumnCell(col, val, context = '') {
       const norm = normalizeHeaderName(col);
