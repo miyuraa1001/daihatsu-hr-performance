@@ -832,7 +832,8 @@
               <table class="w-full text-left text-xs">
                 <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
                   <tr>
-                    <th class="py-2.5 px-4 rounded-l-xl">NPK</th>
+                    <th class="py-2.5 px-3 text-center rounded-l-xl w-12 min-w-[48px]">No</th>
+                    <th class="py-2.5 px-4">NPK</th>
                     <th class="py-2.5 px-4">Nama Karyawan</th>
                     <th class="py-2.5 px-4">Cabang (BA)</th>
                     <th class="py-2.5 px-4">Divisi & Posisi</th>
@@ -871,6 +872,7 @@
               <table class="w-full text-left text-xs" id="pbk-export-table">
                 <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
                   <tr>
+                    <th class="py-3 px-3 text-center rounded-l-xl w-12 min-w-[48px]">No</th>
                     <th class="py-3 px-4">Karyawan</th>
                     <th class="py-3 px-4">Cabang</th>
                     <th class="py-3 px-4 text-center">Umur</th>
@@ -1026,7 +1028,7 @@
                 </select>
                 <button type="button" onclick="toggleColumnMode('mk')" id="btn-col-toggle-mk" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
                   <i class="fa-solid fa-table-columns"></i>
-                  <span id="btn-col-text-mk">Kolom Lengkap (16)</span>
+                  <span id="btn-col-text-mk">Kolom Lengkap (20)</span>
                 </button>
               </div>
               <span class="text-[11px] text-slate-400 font-medium" id="mk-row-count">Menampilkan 0 karyawan</span>
@@ -1224,7 +1226,7 @@
                 <!-- Column Mode Toggle -->
                 <button type="button" onclick="toggleColumnMode('abs')" id="btn-col-toggle-abs" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 shadow-2xs">
                   <i class="fa-solid fa-table-columns"></i>
-                  <span id="btn-col-text-abs">Kolom Lengkap (20)</span>
+                  <span id="btn-col-text-abs">Kolom Lengkap (21)</span>
                 </button>
               </div>
               <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-100/90 rounded-xl text-[11px] text-slate-600 font-bold border border-slate-200 shadow-2xs" id="abs-row-count">
@@ -1611,7 +1613,7 @@
                 </select>
                 <button type="button" onclick="toggleColumnMode('sp')" id="btn-col-toggle-sp" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
                   <i class="fa-solid fa-table-columns"></i>
-                  <span id="btn-col-text-sp">Kolom Lengkap (5)</span>
+                  <span id="btn-col-text-sp">Kolom Lengkap (6)</span>
                 </button>
               </div>
               <span class="text-[11px] text-slate-400 font-medium" id="sp-row-count">Menampilkan 0 catatan</span>
@@ -1723,7 +1725,7 @@
                 </select>
                 <button type="button" onclick="toggleColumnMode('km')" id="btn-col-toggle-km" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
                   <i class="fa-solid fa-table-columns"></i>
-                  <span id="btn-col-text-km">Kolom Ringkas (4)</span>
+                  <span id="btn-col-text-km">Kolom Ringkas (6)</span>
                 </button>
               </div>
               <span class="text-[11px] text-slate-400 font-medium" id="km-row-count">Menampilkan 0 catatan</span>

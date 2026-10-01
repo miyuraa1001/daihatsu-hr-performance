@@ -326,8 +326,8 @@
     function toggleColumnMode(moduleKey) {
       columnViewMode[moduleKey] = (columnViewMode[moduleKey] === 'FULL') ? 'COMPACT' : 'FULL';
       const isFull = columnViewMode[moduleKey] === 'FULL';
-      const colCounts = { mk: 19, abs: 20, ss: 21, qcc: 29, sp: 5, km: 5 };
-      const compactCounts = { mk: 6, abs: 9, ss: 8, qcc: 8, sp: 5, km: 5 };
+      const colCounts = { mk: 20, abs: 21, ss: 21, qcc: 29, sp: 6, km: 6 };
+      const compactCounts = { mk: 10, abs: 10, ss: 8, qcc: 8, sp: 5, km: 6 };
       const btnText = document.getElementById(`btn-col-text-${moduleKey}`);
       if (btnText) {
         btnText.textContent = isFull ? `Kolom Lengkap (${colCounts[moduleKey]})` : `Kolom Ringkas (${compactCounts[moduleKey] || 4})`;
@@ -1271,7 +1271,10 @@
         const info = calculateLatenessInfo(val);
         return info.badgeHtml;
       }
-      if (norm === 'personnel no.' || norm === 'npk' || norm === 'no' || norm.includes('registrasi') || norm.includes('kode ba') || norm === 'business area') {
+      if (norm === 'no' || norm === 'nomor') {
+        return `<span class="font-mono font-bold text-slate-500">${val}</span>`;
+      }
+      if (norm === 'personnel no.' || norm === 'npk' || norm.includes('registrasi') || norm.includes('kode ba') || norm === 'business area') {
         return `<span class="font-mono font-semibold">${val}</span>`;
       }
       return String(val);

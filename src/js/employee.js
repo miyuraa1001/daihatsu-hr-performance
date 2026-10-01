@@ -491,14 +491,17 @@
       }
 
       const isFull = columnViewMode.mk === 'FULL';
-      let cols = isFull 
+      let rawCols = isFull 
         ? SCHEMAS.Master_Karyawan.columns.slice() 
         : ["Personnel no.", "Last name", "P.subarea", "Wilayah", "Contract", "Job Title", "Name of organizational unit", "Business area", "Status_Karyawan"];
 
       // Jika role User (Kacab), sembunyikan kolom Tanggal_Resign & Alasan_Resign
       if (!isAdmin) {
-        cols = cols.filter(c => c !== 'Tanggal_Resign' && c !== 'Alasan_Resign');
+        rawCols = rawCols.filter(c => c !== 'Tanggal_Resign' && c !== 'Alasan_Resign');
       }
+
+      // Kolom 'No' selalu urut di paling depan antarmuka
+      let cols = ["No", ...rawCols.filter(c => c !== 'No')];
 
       // Render Header
       renderTableHeader('mk-table-header', cols, true);
@@ -520,8 +523,13 @@
         const cells = cols.map((col, idx) => {
           const isFirst = idx === 0;
           const stickyClass = isFirst 
-            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
             : 'text-slate-600';
+
+          if (col === 'No' || normalizeHeaderName(col) === 'no') {
+            return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
+          }
+
           let cellRaw = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') 
             ? row[col] 
             : getRowCellValue(row, col, SCHEMAS.Master_Karyawan);
@@ -866,9 +874,10 @@
       }
 
       const isFull = columnViewMode.abs === 'FULL';
-      const cols = isFull 
+      const rawCols = isFull 
         ? [...SCHEMAS.Data_Kehadiran.columns.slice(0, 7), "Status Kehadiran", ...SCHEMAS.Data_Kehadiran.columns.slice(7)]
         : ["NPK", "Employee Name", "Cabang", "Date", "Time Clock In", "Status Kehadiran", "Time Clock Out", "Durasi Kerja (Work Hours)", "Keterangan"];
+      const cols = ["No", ...rawCols.filter(c => c !== 'No')];
 
       // Render Header
       renderTableHeader('abs-table-header', cols, true);
@@ -883,12 +892,16 @@
         return;
       }
 
-      tbody.innerHTML = list.map(row => {
+      tbody.innerHTML = list.map((row, rowIdx) => {
         const cells = cols.map((col, idx) => {
           const isFirst = idx === 0;
           const stickyClass = isFirst 
-            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
             : 'text-slate-600';
+
+          if (col === 'No' || normalizeHeaderName(col) === 'no') {
+            return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
+          }
           
           let val;
           if (col === 'Status Kehadiran' || col === 'Estimasi Telat (Asumsi 08.00)') {
@@ -1223,12 +1236,15 @@
         return;
       }
 
-      tbody.innerHTML = list.map(row => {
+      tbody.innerHTML = list.map((row, rowIdx) => {
         const cells = cols.map((col, idx) => {
           const isFirst = idx === 0;
           const stickyClass = isFirst 
-            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
             : 'text-slate-600';
+          if (col === 'No' || normalizeHeaderName(col) === 'no') {
+            return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
+          }
           const rawVal = getRowCellValue(row, col, SCHEMAS.Data_SS);
           const val = formatColumnCell(col, rawVal);
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
@@ -1509,12 +1525,15 @@
         return;
       }
 
-      tbody.innerHTML = list.map(row => {
+      tbody.innerHTML = list.map((row, rowIdx) => {
         const cells = cols.map((col, idx) => {
           const isFirst = idx === 0;
           const stickyClass = isFirst 
-            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
             : 'text-slate-600';
+          if (col === 'No' || normalizeHeaderName(col) === 'no') {
+            return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
+          }
           const rawVal = getRowCellValue(row, col, SCHEMAS.Data_QCC);
           const val = formatColumnCell(col, rawVal);
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
@@ -1597,7 +1616,8 @@
       }
 
       const isFull = columnViewMode.sp === 'FULL';
-      const cols = isFull ? SCHEMAS.Data_SP.columns : ["NPK", "Nama", "Tingkat SP", "Alasan"];
+      const rawCols = isFull ? SCHEMAS.Data_SP.columns : ["NPK", "Nama", "Tingkat SP", "Alasan"];
+      const cols = ["No", ...rawCols.filter(c => c !== 'No')];
 
       // Render Header
       renderTableHeader('sp-table-header', cols, true);
@@ -1612,12 +1632,15 @@
         return;
       }
 
-      tbody.innerHTML = list.map(row => {
+      tbody.innerHTML = list.map((row, rowIdx) => {
         const cells = cols.map((col, idx) => {
           const isFirst = idx === 0;
           const stickyClass = isFirst 
-            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
             : 'text-slate-600';
+          if (col === 'No' || normalizeHeaderName(col) === 'no') {
+            return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
+          }
           const val = formatColumnCell(col, row[col]);
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
@@ -1688,8 +1711,8 @@
         );
       }
 
-      // Sesuai spreadsheet: NPK, NAMA, JUDUL, TANGGAL, TIME
-      const cols = ["NPK", "NAMA", "JUDUL", "TANGGAL", "TIME"];
+      // Sesuai spreadsheet: No, NPK, NAMA, JUDUL, TANGGAL, TIME
+      const cols = ["No", "NPK", "NAMA", "JUDUL", "TANGGAL", "TIME"];
 
       // Render Header dengan label kolom aksi 'Detail'
       renderTableHeader('km-table-header', cols, true, 'Detail');
@@ -1729,7 +1752,7 @@
         return;
       }
 
-      tbody.innerHTML = list.map(row => {
+      tbody.innerHTML = list.map((row, rowIdx) => {
         const rowNpk = safeString(row['NPK'] || row['Personnel no.'] || row['npk']);
         // Pastikan nama otomatis terisi jika NPK tersedia
         if ((!row['NAMA'] || row['NAMA'] === '-' || String(row['NAMA']).trim() === '') && rowNpk) {
@@ -1740,8 +1763,12 @@
         const cells = cols.map((col, idx) => {
           const isFirst = idx === 0;
           const stickyClass = isFirst 
-            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm' 
+            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
             : 'text-slate-600';
+
+          if (col === 'No' || normalizeHeaderName(col) === 'no') {
+            return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
+          }
           let rawCell = row[col] !== undefined ? row[col] : (row[col.toLowerCase()] !== undefined ? row[col.toLowerCase()] : (row[col.toUpperCase()] !== undefined ? row[col.toUpperCase()] : (typeof capitalizeFirst === 'function' ? row[capitalizeFirst(col)] : '')));
           if ((col === 'NAMA' || col === 'Nama') && (!rawCell || rawCell === '-' || String(rawCell).trim() === '') && rowNpk) {
             rawCell = (typeof lookupEmployeeName === 'function' ? lookupEmployeeName(rowNpk) : '') || rawCell;
@@ -1782,13 +1809,13 @@
         });
       }
 
-      const totalCols = isAdmin ? 12 : 11;
+      const totalCols = isAdmin ? 13 : 12;
       if (!displayList || displayList.length === 0) {
         tbody.innerHTML = `<tr><td colspan="${totalCols}" class="text-center py-6 text-slate-400">Tidak ada karyawan yang sesuai kriteria di cabang ini.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = displayList.map(e => {
+      tbody.innerHTML = displayList.map((e, rowIdx) => {
         const umur = e.umurText || calculateAgeAndService(e.tglLahir || e['D.o.birth']);
         const masaKerja = e.masaKerjaText || calculateAgeAndService(e.joinDate || e['Date']);
         const status = (e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim();
@@ -1803,6 +1830,7 @@
 
         return `
           <tr class="hover:bg-slate-50 transition-colors">
+            <td class="py-3 px-3 text-center font-mono font-bold text-slate-400">${rowIdx + 1}</td>
             <td class="py-3 px-4 font-mono font-bold text-slate-600">${e.npk}</td>
             <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
             <td class="py-3 px-4 text-slate-500">${e.cabang} (${e.kodeBA || '-'})</td>
@@ -1848,13 +1876,13 @@
         });
       }
 
-      const totalCols = isAdmin ? 11 : 10;
+      const totalCols = isAdmin ? 12 : 11;
       if (!displayList || displayList.length === 0) {
         tbody.innerHTML = `<tr><td colspan="${totalCols}" class="text-center py-6 text-slate-400">Data kinerja staf belum tersedia.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = displayList.map(emp => {
+      tbody.innerHTML = displayList.map((emp, rowIdx) => {
         const umur = emp.umurText || calculateAgeAndService(emp.tglLahir || emp['D.o.birth']);
         const masaKerja = emp.masaKerjaText || calculateAgeAndService(emp.joinDate || emp['Date']);
         const status = (emp.statusKaryawan || emp.Status_Karyawan || 'Aktif').trim();
@@ -1869,6 +1897,7 @@
 
         return `
           <tr class="hover:bg-slate-50">
+            <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-400">${rowIdx + 1}</td>
             <td class="py-3.5 px-4 font-semibold text-slate-900">${emp.nama} <span class="font-mono text-slate-400 text-[10px] block">${emp.npk}</span></td>
             <td class="py-3.5 px-4 text-slate-600">${emp.cabang}</td>
             <td class="py-3.5 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${umur}</td>

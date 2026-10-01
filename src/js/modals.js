@@ -238,7 +238,11 @@
         const norm = normalizeHeaderName(col);
         
         let inputHtml = '';
-        if (norm === 'contract') {
+        if (norm === 'no' || norm === 'nomor') {
+          inputHtml = `
+            <input type="text" name="${col}" value="${rowIndex + 1}" readonly class="w-full px-3 py-2 bg-slate-100 text-slate-500 border border-slate-200 rounded-xl text-xs font-bold cursor-not-allowed">
+          `;
+        } else if (norm === 'contract') {
           const normVal = normalizeContractCategory(val);
           inputHtml = `
             <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
@@ -739,6 +743,7 @@
 
         // Definisi urutan kolom ekspor baku dengan kolom Umur & Masa Kerja terpisah
         exportColumns = [
+          "No",
           "Personnel no.",
           "P.subarea",
           "Wilayah",
@@ -776,7 +781,9 @@
 
           const obj = {};
           exportColumns.forEach(col => {
-            if (col === 'Umur') {
+            if (col === 'No') {
+              obj['No'] = idx + 1;
+            } else if (col === 'Umur') {
               obj['Umur'] = (umurVal && umurVal !== '-') ? umurVal : "";
             } else if (col === 'Masa Kerja') {
               obj['Masa Kerja'] = (masaKerjaVal && masaKerjaVal !== '-') ? masaKerjaVal : "";
@@ -804,10 +811,14 @@
           rawRows = rawRows.filter(e => matchBranch(e, userBranchCode));
         }
 
-        exportRows = rawRows.map(row => {
+        exportRows = rawRows.map((row, idx) => {
           const obj = {};
           exportColumns.forEach(col => {
-            obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
+            if (col === 'No' || col === 'no' || (typeof normalizeHeaderName === 'function' && normalizeHeaderName(col) === 'no')) {
+              obj[col] = idx + 1;
+            } else {
+              obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
+            }
           });
           return obj;
         });

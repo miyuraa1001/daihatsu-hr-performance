@@ -301,8 +301,10 @@
       if (!tr) return;
       tr.innerHTML = columns.map((col, idx) => {
         const isFirst = stickyFirst && idx === 0;
+        const isNo = col === 'No' || col === 'no' || (typeof normalizeHeaderName === 'function' && normalizeHeaderName(col) === 'no');
         const stickyClass = isFirst ? 'sticky left-0 bg-slate-100 z-20 border-r border-slate-200 shadow-sm' : '';
-        return `<th class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${col}</th>`;
+        const alignClass = isNo ? 'text-center w-12 min-w-[48px] px-2 sm:px-3' : 'px-4';
+        return `<th class="py-2.5 whitespace-nowrap ${stickyClass} ${alignClass}">${col}</th>`;
       }).join('') + `<th class="py-2.5 px-4 text-center whitespace-nowrap">${actionLabel}</th>`;
     }
 
