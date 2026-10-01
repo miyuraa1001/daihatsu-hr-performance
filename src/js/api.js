@@ -1436,6 +1436,10 @@
         }
         return `<span class="font-mono font-bold text-slate-800">${timeStr}</span>`;
       }
+      if (norm.includes('estimasi telat') || norm.includes('keterlambatan')) {
+        const info = calculateLatenessInfo(val);
+        return info.badgeHtml;
+      }
       if (norm === 'no' || norm === 'nomor') {
         return `<span class="font-mono font-bold text-slate-500">${val}</span>`;
       }
