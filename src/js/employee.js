@@ -1189,7 +1189,14 @@
         btnViewRaw.onclick = () => showEmployeeInRawAbsensi(cleanNpk);
       }
 
-      document.getElementById('modal-abs-emp-detail').classList.remove('hidden');
+      const modalEl = document.getElementById('modal-abs-emp-detail');
+      if (modalEl) {
+        modalEl.classList.remove('hidden');
+        if (typeof modalEl.querySelector === 'function') {
+          const scrollContainer = modalEl.querySelector('.overflow-y-auto');
+          if (scrollContainer) scrollContainer.scrollTop = 0;
+        }
+      }
     }
     window.openEmployeeAttendanceDetailModal = openEmployeeAttendanceDetailModal;
 
