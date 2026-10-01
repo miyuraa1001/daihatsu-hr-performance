@@ -1075,10 +1075,10 @@
             </div>
           </div>
 
-          <!-- Cards Summary Absensi (5 Kategori Baku Monitoring HO & HRD) -->
-          <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+          <!-- Cards Summary Absensi (4 Kategori Monitoring HO & HRD) -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <!-- 1. Total Presensi & Log -->
-            <div onclick="quickFilterAbsensi('ALL')" title="Klik untuk tampilkan semua log presensi" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+            <div id="abs-kpi-card-all" onclick="quickFilterAbsensi('ALL')" title="Klik untuk tampilkan semua log presensi" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
               <div class="flex items-center justify-between mb-1.5">
                 <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Total Presensi</span>
                 <div class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs border border-blue-100 flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -1099,7 +1099,7 @@
             </div>
 
             <!-- 2. Tepat Waktu (≤ 08.00 WIB) -->
-            <div onclick="quickFilterAbsensi('ON_TIME')" title="Klik untuk filter hanya check-in tepat waktu" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+            <div id="abs-kpi-card-ontime" onclick="quickFilterAbsensi('ON_TIME')" title="Klik untuk filter hanya check-in tepat waktu" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-emerald-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
               <div class="flex items-center justify-between mb-1.5">
                 <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Tepat Waktu (≤08.00)</span>
                 <div class="w-7 h-7 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs border border-emerald-100 flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -1120,7 +1120,7 @@
             </div>
 
             <!-- 3. Terlambat Masuk (> 08.00 WIB) -->
-            <div onclick="quickFilterAbsensi('LATE')" title="Klik untuk filter daftar karyawan telat" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-amber-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+            <div id="abs-kpi-card-late" onclick="quickFilterAbsensi('LATE')" title="Klik untuk filter daftar karyawan telat" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-amber-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
               <div class="flex items-center justify-between mb-1.5">
                 <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Terlambat (>08.00)</span>
                 <div class="w-7 h-7 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs border border-amber-100 flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -1141,7 +1141,7 @@
             </div>
 
             <!-- 4. Rata-rata Jam Kerja -->
-            <div onclick="quickFilterAbsensi('UNDER_HOURS')" title="Klik untuk filter jam kerja kurang dari 8 jam" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
+            <div id="abs-kpi-card-hours" onclick="quickFilterAbsensi('UNDER_HOURS')" title="Klik untuk filter jam kerja kurang dari 8 jam" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-indigo-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
               <div class="flex items-center justify-between mb-1.5">
                 <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Jam Kerja (Durasi)</span>
                 <div class="w-7 h-7 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs border border-indigo-100 flex-shrink-0 group-hover:scale-105 transition-transform">
@@ -1161,28 +1161,11 @@
               </div>
             </div>
 
-            <!-- 5. Perlu Approval / CICO Anomali -->
-            <div onclick="quickFilterAbsensi('NEED_APPROVAL')" title="Klik untuk filter presensi yang perlu persetujuan / di luar radius" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-rose-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between col-span-2 sm:col-span-2 md:col-span-1 lg:col-span-1">
-              <div class="flex items-center justify-between mb-1.5">
-                <span class="text-[9px] font-extrabold text-slate-400 uppercase tracking-wider block">Perlu Approval / CICO</span>
-                <div class="w-7 h-7 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-xs border border-rose-100 flex-shrink-0 group-hover:scale-105 transition-transform">
-                  <i class="fa-solid fa-bell-concierge"></i>
-                </div>
-              </div>
-              <div>
-                <div class="flex items-baseline gap-1">
-                  <span class="text-xl sm:text-2xl font-black text-rose-600" id="abs-kpi-anomali-count">0</span>
-                  <span class="text-[11px] font-bold text-slate-400">Record</span>
-                </div>
-                <p class="text-[10px] text-slate-500 font-semibold mt-0.5 truncate" id="abs-kpi-anomali-desc">Luar Radius / Pending CICO</p>
-              </div>
-              <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between">
-                <span class="text-[9px] font-bold text-slate-400">Tindakan HRD</span>
-                <span class="text-[9px] font-extrabold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-200" id="abs-kpi-anomali-status">0 Menunggu</span>
-              </div>
-            </div>
-
-            <!-- Legacy fallback elements for safety -->
+            <!-- Fallback elements for safety -->
+            <span id="abs-kpi-anomali-count" class="hidden"></span>
+            <span id="abs-kpi-anomali-desc" class="hidden"></span>
+            <span id="abs-kpi-anomali-status" class="hidden"></span>
+            <span id="abs-kpi-card-anomali" class="hidden"></span>
             <span id="abs-card-rate" class="hidden"></span>
             <span id="abs-card-alpha" class="hidden"></span>
             <span id="abs-card-telat" class="hidden"></span>
@@ -1221,7 +1204,6 @@
                       <option value="LATE_30">Telat > 30 Menit</option>
                       <option value="LATE_60">Telat > 1 Jam</option>
                       <option value="UNDER_HOURS">Jam Kerja Kurang (&lt; 8 Jam)</option>
-                      <option value="NEED_APPROVAL">Perlu Approval CICO</option>
                     </select>
                     <i class="fa-solid fa-chevron-down text-[8px] text-slate-400 pointer-events-none -ml-3"></i>
                   </div>
