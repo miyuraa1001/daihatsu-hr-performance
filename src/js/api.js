@@ -1301,4 +1301,4 @@
         headers: canonicalColumns,
         dataRows: formattedDataRows
       });
-    }
+    }
