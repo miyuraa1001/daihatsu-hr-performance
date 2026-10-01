@@ -853,7 +853,6 @@
 
         tbody.innerHTML = empList.map((emp, rowIdx) => {
           const stickyNo = 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]';
-          const stickyNpk = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-800 shadow-sm px-3 whitespace-nowrap';
 
           const pctClass = emp.kehadiranPct >= 95 
             ? 'bg-emerald-50 text-emerald-700 border-emerald-200' 
@@ -861,35 +860,49 @@
 
           const lateBadge = emp.lateCount > 0 
             ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-700 border border-amber-200"><i class="fa-solid fa-clock text-[10px]"></i> ${emp.lateCount}x</span>`
-            : `<span class="text-slate-400 font-semibold">0x</span>`;
+            : `<span class="text-slate-400 font-semibold text-xs">0x</span>`;
 
           const noInfoBadge = emp.tanpaKeteranganCount > 0
             ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-50 text-amber-800 border border-amber-200"><i class="fa-solid fa-circle-question text-[10px]"></i> ${emp.tanpaKeteranganCount} Hari</span>`
-            : `<span class="text-slate-400 font-semibold">0 Hari</span>`;
+            : `<span class="text-slate-400 font-semibold text-xs">0 Hari</span>`;
+
+          const avatarInitials = (emp.nama || 'KA').replace(/[^a-zA-Z]/g, '').slice(0, 2).toUpperCase() || 'KA';
 
           return `
             <tr class="hover:bg-slate-50 transition-colors group">
               <td class="py-2.5 px-3 whitespace-nowrap ${stickyNo}">${rowIdx + 1}</td>
-              <td class="py-2.5 px-3 whitespace-nowrap ${stickyNpk}">${emp.npk}</td>
-              <td class="py-2.5 px-4 whitespace-nowrap font-bold text-slate-900">${emp.nama}</td>
-              <td class="py-2.5 px-4 whitespace-nowrap text-slate-600 font-medium">${emp.cabang}</td>
-              <td class="py-2.5 px-4 whitespace-nowrap font-bold text-slate-800">${emp.totalHari} Hari</td>
-              <td class="py-2.5 px-4 whitespace-nowrap">
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap font-mono font-bold text-slate-700">${emp.npk}</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap">
+                <div class="flex items-center gap-2.5 min-w-[170px]">
+                  <div class="w-7 h-7 rounded-lg bg-red-50 text-red-600 font-black text-[10px] flex items-center justify-center border border-red-100 flex-shrink-0 shadow-2xs">
+                    ${avatarInitials}
+                  </div>
+                  <div class="min-w-0">
+                    <span class="font-bold text-slate-900 block truncate leading-tight text-xs sm:text-sm">${emp.nama}</span>
+                    <span class="text-[10px] text-slate-400 font-medium block truncate mt-0.5">NPK: ${emp.npk}</span>
+                  </div>
+                </div>
+              </td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap">
+                <span class="px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-100 text-slate-700 border border-slate-200/80 whitespace-nowrap">${emp.cabang}</span>
+              </td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap font-bold text-slate-800 text-center">${emp.totalHari} Hari</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap text-center">
                 <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                  <i class="fa-solid fa-check text-[10px]"></i> ${emp.hadirCount} Hari
+                  <i class="fa-solid fa-circle-check text-[10px]"></i> ${emp.hadirCount} Hari
                 </span>
               </td>
-              <td class="py-2.5 px-4 whitespace-nowrap font-bold text-emerald-700">${emp.onTimeCount}x</td>
-              <td class="py-2.5 px-4 whitespace-nowrap">${lateBadge}</td>
-              <td class="py-2.5 px-4 whitespace-nowrap">${noInfoBadge}</td>
-              <td class="py-2.5 px-4 whitespace-nowrap">
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap font-bold text-emerald-700 text-center">${emp.onTimeCount}x</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap text-center">${lateBadge}</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap text-center">${noInfoBadge}</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap text-center">
                 <span class="inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-extrabold border ${pctClass}">
                   ${emp.kehadiranPct}%
                 </span>
               </td>
-              <td class="py-2.5 px-4 whitespace-nowrap font-bold text-slate-800">${emp.avgHours} Jam</td>
-              <td class="py-2.5 px-4 whitespace-nowrap text-right sticky right-0 bg-white group-hover:bg-slate-50 z-10 border-l border-slate-200 shadow-sm">
-                <button type="button" onclick="openEmployeeAttendanceDetailModal('${emp.npk}')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-bold border border-blue-200 transition shadow-2xs inline-flex items-center gap-1.5 cursor-pointer">
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap font-bold text-slate-800 text-center">${emp.avgHours} Jam</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap text-center">
+                <button type="button" onclick="openEmployeeAttendanceDetailModal('${emp.npk}')" class="px-2.5 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-bold border border-blue-200 transition shadow-2xs inline-flex items-center gap-1.5 cursor-pointer hover:shadow-xs active:scale-95">
                   <i class="fa-solid fa-calendar-days text-[11px]"></i>
                   <span>Detail Log</span>
                 </button>
@@ -1130,11 +1143,11 @@
           <tr class="hover:bg-slate-50 transition-colors">
             <td class="py-2.5 px-3 text-center text-slate-500 font-bold">${idx + 1}</td>
             <td class="py-2.5 px-3 whitespace-nowrap font-medium text-slate-900">${dateFormatted} <span class="text-[10px] text-slate-400 font-normal">(${dayName})</span></td>
-            <td class="py-2.5 px-3 whitespace-nowrap font-mono font-bold text-slate-800">${timeInFormatted}</td>
-            <td class="py-2.5 px-3 whitespace-nowrap">${lateness.badgeHtml}</td>
-            <td class="py-2.5 px-3 whitespace-nowrap font-mono font-bold text-slate-800">${timeOutFormatted}</td>
-            <td class="py-2.5 px-3 whitespace-nowrap font-bold text-slate-700">${durasiText}</td>
-            <td class="py-2.5 px-3 whitespace-nowrap">${radBadge}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap font-mono font-bold text-slate-800 text-center">${timeInFormatted}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap text-center">${lateness.badgeHtml}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap font-mono font-bold text-slate-800 text-center">${timeOutFormatted}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap font-bold text-slate-700 text-center">${durasiText}</td>
+            <td class="py-2.5 px-3 whitespace-nowrap text-center">${radBadge}</td>
             <td class="py-2.5 px-3 text-slate-600 truncate max-w-[150px]">${remarksText}</td>
           </tr>
         `;

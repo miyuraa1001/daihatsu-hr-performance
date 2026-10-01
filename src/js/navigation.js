@@ -303,7 +303,14 @@
         const isFirst = stickyFirst && idx === 0;
         const isNo = col === 'No' || col === 'no' || (typeof normalizeHeaderName === 'function' && normalizeHeaderName(col) === 'no');
         const stickyClass = isFirst ? 'sticky left-0 bg-slate-100 z-20 border-r border-slate-200 shadow-sm' : '';
-        const alignClass = isNo ? 'text-center w-12 min-w-[48px] px-2 sm:px-3' : 'px-4';
+        const normCol = typeof normalizeHeaderName === 'function' ? normalizeHeaderName(col) : String(col).toLowerCase().trim();
+        const isCentered = isNo || normCol.includes('total') || normCol.includes('masuk') || 
+                           normCol.includes('tepat') || normCol.includes('telat') || 
+                           normCol.includes('tanpa keterangan') || normCol.includes('%') || 
+                           normCol.includes('durasi') || normCol.includes('work hours') || 
+                           normCol.includes('jam kerja') || normCol === 'status_karyawan' ||
+                           normCol === 'status kehadiran';
+        const alignClass = isNo ? 'text-center w-12 min-w-[48px] px-2 sm:px-3' : (isCentered ? 'text-center px-3 sm:px-4' : 'text-left px-3 sm:px-4');
         return `<th class="py-2.5 whitespace-nowrap ${stickyClass} ${alignClass}">${col}</th>`;
       }).join('') + `<th class="py-2.5 px-4 text-center whitespace-nowrap">${actionLabel}</th>`;
     }
