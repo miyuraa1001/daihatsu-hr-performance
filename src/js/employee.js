@@ -2089,27 +2089,33 @@
       }
 
       tbody.innerHTML = displayList.map((e, rowIdx) => {
+        const npk = e.npk || e['Personnel no.'] || e['NPK'] || '-';
+        const nama = e.nama || e['Last name'] || e['Nama'] || e['Nama Lengkap'] || '-';
+        const cabang = e.cabang || e['P.subarea'] || e['Cabang'] || '-';
+        const kodeBA = e.kodeBA || e['Business area'] || e['Kode BA'] || '-';
+        const divisi = e.divisi || e['Name'] || (typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(e).divisionName : '-');
+        const jabatan = e.jabatan || e['Job Title'] || '-';
         const umur = e.umurText || calculateAgeAndService(e.tglLahir || e['D.o.birth']);
         const masaKerja = e.masaKerjaText || calculateAgeAndService(e.joinDate || e['Date']);
-        const status = (e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim();
+        const status = String(e.statusKaryawan || e.Status_Karyawan || e['Status_Karyawan'] || 'Aktif').trim();
         const isResign = status.toLowerCase() === 'resign';
         const statusBadge = isResign
           ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-user-xmark mr-1 text-[9px]"></i>Resign</span>`
           : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-user-check mr-1 text-[9px]"></i>Aktif</span>`;
 
         const resignInfo = (isAdmin && isResign)
-          ? `<div class="text-[10px] leading-tight"><span class="font-bold text-rose-600 block">${e.tanggalResign || '-'}</span><span class="text-slate-400 truncate max-w-[140px] block" title="${e.alasanResign || '-'}">${e.alasanResign || '-'}</span></div>`
+          ? `<div class="text-[10px] leading-tight"><span class="font-bold text-rose-600 block">${e.tanggalResign || e['Tanggal_Resign'] || '-'}</span><span class="text-slate-400 truncate max-w-[140px] block" title="${e.alasanResign || e['Alasan_Resign'] || '-'}">${e.alasanResign || e['Alasan_Resign'] || '-'}</span></div>`
           : (isAdmin ? `<span class="text-slate-300 text-xs">-</span>` : '');
 
         return `
           <tr class="hover:bg-slate-50 transition-colors">
             <td class="py-3 px-3 text-center font-mono font-bold text-slate-400">${rowIdx + 1}</td>
-            <td class="py-3 px-4 font-mono font-bold text-slate-600">${e.npk}</td>
-            <td class="py-3 px-4 font-semibold text-slate-900">${e.nama}</td>
-            <td class="py-3 px-4 text-slate-500">${e.cabang} (${e.kodeBA || '-'})</td>
+            <td class="py-3 px-4 font-mono font-bold text-slate-600">${npk}</td>
+            <td class="py-3 px-4 font-semibold text-slate-900">${nama}</td>
+            <td class="py-3 px-4 text-slate-500">${cabang} (${kodeBA})</td>
             <td class="py-3 px-4">
-              <span class="font-medium text-slate-800">${e.divisi || (typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(e).divisionName : '-')}</span>
-              <span class="text-[10px] text-slate-400 block">${e.jabatan || '-'}</span>
+              <span class="font-medium text-slate-800">${divisi}</span>
+              <span class="text-[10px] text-slate-400 block">${jabatan}</span>
             </td>
             <td class="py-3 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${umur}</td>
             <td class="py-3 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${masaKerja}</td>
@@ -2121,7 +2127,7 @@
               ${e.spAktif ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-[10px]">${e.spAktif}</span>` : `<span class="text-emerald-600 text-xs font-bold">-</span>`}
             </td>
             <td class="py-3 px-4 text-center">
-              <button onclick="openPBKModal('${e.npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
+              <button onclick="openPBKModal('${npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
                 Detail Kinerja
               </button>
             </td>

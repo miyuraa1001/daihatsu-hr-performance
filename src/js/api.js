@@ -1036,8 +1036,12 @@
      */
     function isUserAdmin(user) {
       if (!user) return false;
-      if (user.isAllBranch === true) return true;
       const role = String(user.role || '').toLowerCase();
+      // Kacab secara tegas BUKAN Admin
+      if (role.includes('kacab') || role.includes('kepala cabang') || role === 'branch_manager' || role === 'bm' || role === 'user') {
+        return false;
+      }
+      if (user.isAllBranch === true) return true;
       const username = String(user.username || user.npk || '').toLowerCase();
       const jabatan = String(user.jabatan || '').toLowerCase();
       
@@ -1155,23 +1159,27 @@
       }
 
       // 1. Cek langsung kode BA
-      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || 
-        (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? (getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS)) : '') || '';
+      let rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['business area'] || item['business_area'] || item['_kodeBA'] || '';
+      if (!rawCode && typeof getRowCellValue === 'function') {
+        rawCode = getRowCellValue(item, 'Business area') || getRowCellValue(item, 'Kode BA') || '';
+      }
       if (rawCode && rawCode !== '-' && rawCode !== '0') {
         const norm = resolveBACode(rawCode);
         if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
       }
 
       // 2. Cek teks nama cabang (P.subarea / Cabang)
-      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || 
-        (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? (getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Cabang', SCHEMAS.Data_SS)) : '') || '';
+      let rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['p.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || '';
+      if (!rawCabang && typeof getRowCellValue === 'function') {
+        rawCabang = getRowCellValue(item, 'P.subarea') || getRowCellValue(item, 'Cabang') || getRowCellValue(item, 'Cabang/Departemen') || '';
+      }
       if (rawCabang && rawCabang !== '-' && rawCabang !== '0') {
         const norm = resolveBACode(rawCabang);
         if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
       }
 
       // 3. Cek Wilayah (jika menyebut Lampung)
-      const rawWilayah = item.wilayah || item['Wilayah'] || (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? getRowCellValue(item, 'Wilayah', SCHEMAS.Master_Karyawan) : '') || '';
+      const rawWilayah = item.wilayah || item['Wilayah'] || item['wilayah'] || (typeof getRowCellValue === 'function' ? getRowCellValue(item, 'Wilayah') : '') || '';
       if (rawWilayah && String(rawWilayah).toLowerCase().includes('lampung')) {
         return true;
       }
@@ -1249,8 +1257,10 @@
       const targetCode = (targetInfo ? targetInfo.code : String(targetBranchCode)).toUpperCase().trim();
 
       // 1. Ekstraksi kode cabang / Business Area dari objek (OTORITATIF & PALING UTAMA)
-      const rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['_kodeBA'] || 
-        (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? (getRowCellValue(item, 'Kode BA', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Kode BA', SCHEMAS.Data_SS)) : '') || '';
+      let rawCode = item.kodeBA || item.kode_ba || item['Kode BA'] || item['Business area'] || item['Business Area'] || item['business area'] || item['business_area'] || item['_kodeBA'] || '';
+      if (!rawCode && typeof getRowCellValue === 'function') {
+        rawCode = getRowCellValue(item, 'Business area') || getRowCellValue(item, 'Kode BA') || '';
+      }
       if (rawCode && rawCode !== '-' && rawCode !== '0') {
         const norm = resolveBACode(rawCode);
         if (norm) {
@@ -1259,8 +1269,10 @@
       }
 
       // 2. Ekstraksi teks cabang dari objek (P.subarea / Cabang)
-      const rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || 
-        (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' ? (getRowCellValue(item, 'Cabang/Departemen', SCHEMAS.Data_QCC) || getRowCellValue(item, 'Cabang', SCHEMAS.Data_SS)) : '') || '';
+      let rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['p.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || '';
+      if (!rawCabang && typeof getRowCellValue === 'function') {
+        rawCabang = getRowCellValue(item, 'P.subarea') || getRowCellValue(item, 'Cabang') || getRowCellValue(item, 'Cabang/Departemen') || '';
+      }
       if (rawCabang && rawCabang !== '-' && rawCabang !== '0') {
         const norm = resolveBACode(rawCabang);
         if (norm) {

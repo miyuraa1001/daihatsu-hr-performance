@@ -133,10 +133,51 @@
       if (!payload) return;
       if (!payload.rawTables) payload.rawTables = {};
 
+      // 1. Pastikan employeeList tersinkronisasi dua arah dengan rawTables.Master_Karyawan
+      if (!Array.isArray(payload.employeeList) || payload.employeeList.length === 0) {
+        if (Array.isArray(payload.rawTables.Master_Karyawan) && payload.rawTables.Master_Karyawan.length > 0) {
+          payload.employeeList = payload.rawTables.Master_Karyawan.map(row => {
+            const dob = row['D.o.birth'] || row['Date of Birth'] || row['Tgl Lahir'] || '';
+            const jDate = row['Date'] || row['Tgl Masuk'] || row['Join Date'] || '';
+            const contractVal = row['Contract'] || 'Tetap';
+            const statusVal = row['Status_Karyawan'] || 'Aktif';
+            const baVal = safeString(row['Business area'] || row['Business Area'] || row['Kode BA'] || row.kodeBA || '');
+            const cabangVal = row['P.subarea'] || row['Cabang'] || row.cabang || '';
+            return {
+              npk: safeString(row['Personnel no.'] || row['NPK'] || row.npk),
+              nama: row['Last name'] || row['Nama'] || row['Nama Lengkap'] || row.nama || '',
+              cabang: cabangVal,
+              wilayah: row['Wilayah'] || row.wilayah || 'DSO Lampung',
+              kodeBA: baVal,
+              divisi: row['Name'] || row['Divisi'] || row.divisi || '',
+              jabatan: row['Job Title'] || row['Jabatan'] || row.jabatan || '',
+              tipeKontrak: contractVal,
+              'Contract': contractVal,
+              statusKaryawan: statusVal,
+              Status_Karyawan: statusVal,
+              tanggalResign: row['Tanggal_Resign'] || '',
+              alasanResign: row['Alasan_Resign'] || '',
+              umurText: calculateAgeAndService(dob),
+              masaKerjaText: calculateAgeAndService(jDate),
+              joinDate: jDate,
+              tglLahir: dob,
+              gender: row['Gender text'] || '',
+              agama: row['Religious denomination'] || '',
+              psGroup: row['PS group'] || '',
+              lvl: row['Lvl'] || '',
+              stext: row['P0001-STEXT'] || '',
+              raw: row
+            };
+          });
+        } else {
+          payload.employeeList = [];
+        }
+      }
+
       const employees = payload.employeeList || [];
       const qccs = payload.qccList || [];
 
-      // 1. Master_Karyawan (16 Columns - 100% Identik Database)
+      // 2. Master_Karyawan (16 Columns - 100% Identik Database)
       if (!payload.rawTables.Master_Karyawan || !payload.rawTables.Master_Karyawan.length) {
         payload.rawTables.Master_Karyawan = employees.map((e, idx) => {
           const contractVal = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap';
@@ -168,8 +209,8 @@
       } else {
         payload.rawTables.Master_Karyawan.forEach((row, idx) => {
           const npk = safeString(row['Personnel no.']);
-          const emp = employees.find(e => safeString(e.npk || e['Personnel no.']) === npk) || employees[idx] || {};
-          const statusVal = row['Status_Karyawan'] || row['Status Karyawan'] || emp['Status_Karyawan'] || emp.statusKaryawan || 'Aktif';
+          const emp = employees.find(e => safeString(e.npk || e['Personnel no.']) === npk) || employees[idx];
+          const statusVal = row['Status_Karyawan'] || row['Status Karyawan'] || (emp ? (emp['Status_Karyawan'] || emp.statusKaryawan) : '') || 'Aktif';
           row['Status_Karyawan'] = statusVal;
           if (emp) {
             emp['Contract'] = row['Contract'] || emp['Contract'] || 'Tetap';
@@ -556,8 +597,28 @@
       if (shouldShowLoader && loader) loader.classList.remove('hidden');
 
       try {
+        // Query user universal untuk backend Google Apps Script:
+        // Google Apps Script menyaring baris karyawan dengan kodeBA === item['Business area'].
+        // Jika di sheet tertulis "660" (angka atau teks), sedangkan assignedBACodes user hanya ["D660"],
+        // maka backend Apps Script akan mengeliminasi seluruh karyawan sebelum dikirim ke frontend!
+        // Karena itu kita kirim queryUser dengan assignedBACodes lengkap (D660-D664 & 660-664),
+        // agar backend Apps Script mengirimkan seluruh master data secara utuh tanpa terpangkas,
+        // kemudian RBAC frontend mengisolasi ketat sesuai cabang wewenang Kacab.
+        const backendQueryUser = {
+          ...loggedInUser,
+          role: 'Admin',
+          isAllBranch: true,
+          assignedBACodes: [
+            "D660", "D661", "D662", "D663", "D664",
+            "660", "661", "662", "663", "664",
+            "0660", "0661", "0662", "0663", "0664",
+            "Lampung A Yani", "Lampung S Hatta", "Bandarjaya", "Kotabumi", "Lampung Timur",
+            "Lampung Utara", "Sukadana"
+          ]
+        };
+
         const res = await callBackendAPI("GET_DASHBOARD", {
-          user: loggedInUser,
+          user: backendQueryUser,
           branch: queryBranch,
           period: 'ALL'
         });
@@ -603,9 +664,17 @@
       // Selalu gunakan masterFullPayload sebagai sumber data baku tanpa terdistorsi
       const master = window.masterFullPayload || window.fullUnscopedPayload || data;
 
+      // Pastikan master memiliki employeeList yang sinkron dengan rawTables.Master_Karyawan
+      if ((!master.employeeList || master.employeeList.length === 0) && master.rawTables?.Master_Karyawan?.length > 0) {
+        initializeStandardTables(master);
+      }
+      const allMasterEmps = (master.employeeList && master.employeeList.length > 0)
+        ? master.employeeList
+        : (master.rawTables?.Master_Karyawan || []);
+
       // 1. Filter ketat per cabang (Eksklusif D660, D661, D662, D663, D664)
-      let scopedEmployees = (master.employeeList || []).filter(e => matchBranch(e, targetBranch));
-      let scopedQCC = (master.qccList || []).filter(q => matchBranch(q, targetBranch));
+      let scopedEmployees = allMasterEmps.filter(e => matchBranch(e, targetBranch));
+      let scopedQCC = (master.qccList || master.rawTables?.Data_QCC || []).filter(q => matchBranch(q, targetBranch));
 
       const rawSource = master.rawTables || {};
       const scopedRawTables = {
