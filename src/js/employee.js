@@ -704,8 +704,20 @@
           if (compFilter === 'LATE' || compFilter === 'Terlambat') {
             return isLate;
           }
-          if (compFilter === 'ALPA' || compFilter === 'Alpa') {
-            return !lateness.hasClockIn || lateness.text === 'Alpa' || ket.includes('alpa') || ket.includes('alpha');
+          if (compFilter === 'ALPHA' || compFilter === 'Alpha' || compFilter === 'ALPA' || compFilter === 'Alpa') {
+            return !lateness.hasClockIn || lateness.text === 'Alpha' || lateness.text === 'Alpa' || ket.includes('alpa') || ket.includes('alpha');
+          }
+          if (compFilter === 'CUTI' || compFilter === 'Cuti') {
+            return ket.includes('cuti') || telatStr.includes('cuti');
+          }
+          if (compFilter === 'IZIN' || compFilter === 'Izin') {
+            return ket.includes('izin') || telatStr.includes('izin');
+          }
+          if (compFilter === 'SAKIT' || compFilter === 'Sakit') {
+            return ket.includes('sakit') || telatStr.includes('sakit');
+          }
+          if (compFilter === 'DINAS' || compFilter === 'Dinas') {
+            return ket.includes('dinas') || telatStr.includes('dinas');
           }
           if (compFilter === 'LATE_30') {
             return isLate && (lateness.diffMinutes > 30 || (lateness.lateHours && lateness.lateHours > 0));

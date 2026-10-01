@@ -345,7 +345,7 @@
           const estStr = String(existingEstimasi || '').toLowerCase();
 
           const isLate = lateness.isLate || ket.includes('terlambat') || ket.includes('telat') || estStr.includes('telat');
-          const isAlpha = lateness.text === 'Alpa' || ket.includes('alpha') || ket.includes('alpa') || ket.includes('mangkir') || (!lateness.hasClockIn && (ket.includes('tidak') || ket.includes('absen') || !ket));
+          const isAlpha = lateness.text === 'Alpha' || lateness.text === 'Alpa' || ket.includes('alpha') || ket.includes('alpa') || ket.includes('mangkir') || (!lateness.hasClockIn && (ket.includes('tidak') || ket.includes('absen') || !ket));
 
           if (isLate) {
             totalSeringTelat++;
@@ -934,7 +934,7 @@
               const lateness = calculateLatenessInfo(est || rawTime);
               const ket = String(getRowCellValue(r, 'Keterangan', SCHEMAS.Data_Kehadiran) || r['Keterangan'] || '').toLowerCase();
               if (lateness.isLate || ket.includes('terlambat') || ket.includes('telat')) late++;
-              else if (ket.includes('alpha') || ket.includes('alpa') || ket.includes('mangkir') || lateness.text === 'Alpa' || !lateness.hasClockIn) alpha++;
+              else if (ket.includes('alpha') || ket.includes('alpa') || ket.includes('mangkir') || lateness.text === 'Alpha' || lateness.text === 'Alpa' || !lateness.hasClockIn) alpha++;
             });
             e.kehadiranPct = Math.round(((empAbs.length - late - alpha) / empAbs.length) * 100);
             e.telat = late;

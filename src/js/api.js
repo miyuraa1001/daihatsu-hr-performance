@@ -726,14 +726,14 @@
           hours: 0,
           minutes: 0,
           timeFormatted: '-',
-          text: 'Alpa',
+          text: 'Alpha',
           badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
-          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpa</span>'
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpha</span>'
         };
       }
 
       const sRaw = String(timeVal).trim();
-      // Khusus 0.00.00 / 00:00:00 / 0 / 1899-12-30 (nol waktu / tidak clock in -> Alpa):
+      // Khusus 0.00.00 / 00:00:00 / 0 / 1899-12-30 (nol waktu / tidak clock in -> Alpha):
       if (
         timeVal === 0 || sRaw === '0' || sRaw === '0.00.00' || sRaw === '00:00:00' || 
         sRaw === '0:00:00' || sRaw === '0.00' || sRaw === '1899-12-30' || 
@@ -746,9 +746,9 @@
           hours: 0,
           minutes: 0,
           timeFormatted: '0.00.00',
-          text: 'Alpa',
+          text: 'Alpha',
           badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
-          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpa</span>'
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpha</span>'
         };
       }
 
@@ -765,9 +765,9 @@
             hours: 0,
             minutes: 0,
             timeFormatted: '-',
-            text: 'Alpa',
+            text: 'Alpha',
             badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
-            badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpa</span>'
+            badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpha</span>'
           };
         }
 
@@ -793,7 +793,7 @@
             icon = 'fa-solid fa-xmark';
             isClockIn = false;
           }
-          const displayTxt = (sLower === 'alpa' || sLower === 'alpha') ? 'Alpa' : sTrim;
+          const displayTxt = (sLower === 'alpa' || sLower === 'alpha') ? 'Alpha' : sTrim;
           return {
             hasClockIn: isClockIn,
             isLate: false,
@@ -881,9 +881,9 @@
           hours: 0,
           minutes: 0,
           timeFormatted: '0.00.00',
-          text: 'Alpa',
+          text: 'Alpha',
           badgeClass: 'bg-rose-50 text-rose-700 border border-rose-200',
-          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpa</span>'
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-xmark text-[10px]"></i> Alpha</span>'
         };
       }
 
@@ -971,7 +971,7 @@
       if (info.timeFormatted === '0.00.00' || s === '1899-12-30') {
         return '0.00.00';
       }
-      if ((info.text === 'Alpa' || info.text === 'Tidak Clock In') && !info.hasClockIn) {
+      if ((info.text === 'Alpha' || info.text === 'Alpa' || info.text === 'Tidak Clock In') && !info.hasClockIn) {
         return (s === '0.00.00' || s === '00:00:00' || s === '1899-12-30' || s === '0') ? '0.00.00' : '-';
       }
       return info.timeFormatted || s;
