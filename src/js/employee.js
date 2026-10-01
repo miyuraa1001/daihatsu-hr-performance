@@ -546,26 +546,7 @@
         }
       }
 
-      if (document.getElementById('abs-kpi-anomali-count')) document.getElementById('abs-kpi-anomali-count').textContent = totalAnomali.toLocaleString('id-ID');
-      if (document.getElementById('abs-kpi-anomali-desc')) {
-        if (totalAnomali === 0) document.getElementById('abs-kpi-anomali-desc').textContent = "Semua Presensi Normal";
-        else if (needApprovalCount > 0 && outRadiusCount > 0) document.getElementById('abs-kpi-anomali-desc').textContent = `${needApprovalCount} Butuh Approval, ${outRadiusCount} Luar Radius`;
-        else if (needApprovalCount > 0) document.getElementById('abs-kpi-anomali-desc').textContent = `${needApprovalCount} Butuh Approval CICO`;
-        else if (outRadiusCount > 0) document.getElementById('abs-kpi-anomali-desc').textContent = `${outRadiusCount} Check-in Luar Radius`;
-        else if (noClockOutCount > 0) document.getElementById('abs-kpi-anomali-desc').textContent = `${noClockOutCount} Belum Clock Out`;
-        else document.getElementById('abs-kpi-anomali-desc').textContent = `${totalAnomali} Memerlukan Verifikasi`;
-      }
-
-      const anomaliBadge = document.getElementById('abs-kpi-anomali-status');
-      if (anomaliBadge) {
-        if (totalAnomali === 0) {
-          anomaliBadge.className = "text-[9px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md border border-emerald-200";
-          anomaliBadge.textContent = "Semua Verified";
-        } else {
-          anomaliBadge.className = "text-[9px] font-extrabold text-rose-700 bg-rose-50 px-1.5 py-0.5 rounded-md border border-rose-200";
-          anomaliBadge.textContent = `${totalAnomali} Menunggu`;
-        }
-      }
+      // Anomali KPI removed — elements kept hidden, no update needed
 
       if (typeof highlightActiveAbsensiKpi === 'function') {
         highlightActiveAbsensiKpi(activeFilter);
