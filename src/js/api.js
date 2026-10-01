@@ -383,21 +383,33 @@
     }
 
     function parseExcelDate(val) {
-      if (!val) return "";
+      if (!val && val !== 0) return "";
+      if (val === null || val === undefined || val === '' || val === '-' || val === 'null' || val === 'undefined') return "";
+      const s = String(val).trim();
+      if (s === '1899-12-30' || s.startsWith('1899-12-30') || s === '30.12.1899' || s.startsWith('30.12.1899') || s === '30/12/1899' || s === '0' || s === '0.00.00' || s === '00:00:00') {
+        return "";
+      }
       if (val instanceof Date) {
+        if (val.getFullYear() <= 1899) return "";
         return val.toISOString().slice(0, 10);
       }
       if (typeof val === 'number') {
+        if (val <= 0 || val < 1) return "";
         const date = new Date(Math.round((val - 25569) * 86400 * 1000));
+        if (date.getFullYear() <= 1899) return "";
         return date.toISOString().slice(0, 10);
       }
-      const s = String(val).trim();
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+        if (parseInt(s.slice(0, 4), 10) <= 1899) return "";
+        return s;
+      }
       const parts = s.split(/[\/\-\.]/);
       if (parts.length === 3) {
         if (parts[0].length === 4) {
+          if (parseInt(parts[0], 10) <= 1899) return "";
           return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
         } else if (parts[2].length === 4) {
+          if (parseInt(parts[2], 10) <= 1899) return "";
           return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
         }
       }
@@ -409,6 +421,7 @@
       if (!dateVal && dateVal !== 0) return "-";
       let str = String(dateVal).trim();
       if (!str || str === "-" || str === "null" || str === "undefined") return "-";
+      if (str === '1899-12-30' || str.startsWith('1899-12-30') || str === '30.12.1899' || str.startsWith('30.12.1899') || str === '0') return "-";
 
       let d = null;
       if (dateVal instanceof Date && !isNaN(dateVal.getTime())) {
@@ -430,7 +443,7 @@
         }
       }
 
-      if (!d || isNaN(d.getTime())) return "-";
+      if (!d || isNaN(d.getTime()) || d.getFullYear() <= 1899) return "-";
 
       const today = new Date();
       let years = today.getFullYear() - d.getFullYear();
@@ -447,8 +460,13 @@
     }
 
     function parseExcelTime(val) {
-      if (!val) return "";
+      if (val === null || val === undefined || val === '' || val === '-' || val === 'null' || val === 'undefined') return "";
+      const s = String(val).trim();
+      if (s === '0.00.00' || s === '00:00:00' || s === '0:00:00' || s === '0.00' || s === '0' || s === '1899-12-30' || s === '30.12.1899' || (s.startsWith('1899-12-30') && !s.includes(':'))) {
+        return "0.00.00";
+      }
       if (typeof val === 'number') {
+        if (val === 0) return "0.00.00";
         const totalSeconds = Math.round(val * 24 * 3600);
         const hours = Math.floor(totalSeconds / 3600) % 24;
         const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -458,7 +476,7 @@
         }
         return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}`;
       }
-      return String(val).trim();
+      return s;
     }
 
     function safeFloat(val, fallback = 0) {
@@ -637,15 +655,27 @@
     }
 
     function formatDatabaseDate(val) {
-      if (!val) return "";
+      if (!val && val !== 0) return "";
+      if (val === null || val === undefined || val === '' || val === '-' || val === 'null' || val === 'undefined') return "";
+      
+      const s = String(val).trim();
+      // Nilai epoch nol Excel/Google Sheets (1899-12-30 / 30.12.1899 / 0) dalam kolom tanggal adalah data kosong
+      if (
+        s === '1899-12-30' || s.startsWith('1899-12-30') || 
+        s === '30.12.1899' || s.startsWith('30.12.1899') || 
+        s === '30/12/1899' || s === '0' || s === '0.00.00' || s === '00:00:00'
+      ) {
+        return "";
+      }
+
       if (val instanceof Date && !isNaN(val)) {
+        const y = val.getFullYear();
+        if (y <= 1899 || (y === 1900 && val.getMonth() === 0 && val.getDate() === 0)) return "";
         const d = String(val.getDate()).padStart(2, '0');
         const m = String(val.getMonth() + 1).padStart(2, '0');
-        const y = val.getFullYear();
         return `${d}.${m}.${y}`;
       }
-      const s = String(val).trim();
-      if (!s) return "";
+
       // Format 6 digit DDMMYY (misal password login / format tglLahir sistem HR Astra)
       if (/^\d{6}$/.test(s)) {
         const d = s.slice(0, 2);
@@ -666,11 +696,14 @@
       }
       if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
         const parts = s.slice(0, 10).split('-');
+        if (parseInt(parts[0], 10) <= 1899) return "";
         return `${parts[2]}.${parts[1]}.${parts[0]}`;
       }
       if (typeof val === 'number') {
+        if (val === 0 || val < 1) return "";
         const date = new Date(Math.round((val - 25569) * 86400 * 1000));
         if (!isNaN(date.getTime())) {
+          if (date.getFullYear() <= 1899) return "";
           const d = String(date.getDate()).padStart(2, '0');
           const m = String(date.getMonth() + 1).padStart(2, '0');
           const y = date.getFullYear();
@@ -682,7 +715,10 @@
 
     // Helper Perhitungan Estimasi Keterlambatan Absensi (Asumsi Jam Masuk 08.00 WIB)
     function calculateLatenessInfo(timeVal, targetHour = 8, targetMinute = 0) {
-      if (timeVal === null || timeVal === undefined || timeVal === '' || timeVal === '-') {
+      if (
+        timeVal === null || timeVal === undefined || timeVal === '' || timeVal === '-' ||
+        timeVal === 'null' || timeVal === 'undefined'
+      ) {
         return {
           hasClockIn: false,
           isLate: false,
@@ -696,9 +732,29 @@
         };
       }
 
+      const sRaw = String(timeVal).trim();
+      // Khusus 0.00.00 / 00:00:00 / 0 / 1899-12-30 (nol waktu / tidak clock in):
+      if (
+        timeVal === 0 || sRaw === '0' || sRaw === '0.00.00' || sRaw === '00:00:00' || 
+        sRaw === '0:00:00' || sRaw === '0.00' || sRaw === '1899-12-30' || 
+        sRaw === '30.12.1899' || (sRaw.startsWith('1899-12-30') && !sRaw.includes(':'))
+      ) {
+        return {
+          hasClockIn: false,
+          isLate: false,
+          diffMinutes: 0,
+          hours: 0,
+          minutes: 0,
+          timeFormatted: '0.00.00',
+          text: 'Tidak Clock In',
+          badgeClass: 'bg-slate-100 text-slate-500 border border-slate-200',
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200"><i class="fa-solid fa-minus text-[10px]"></i> Tidak Clock In</span>'
+        };
+      }
+
       // Check if timeVal is already a text estimate or standard status
       if (typeof timeVal === 'string') {
-        const sTrim = timeVal.trim();
+        const sTrim = sRaw;
         const sLower = sTrim.toLowerCase();
         const knownStatus = ['hadir', 'cuti', 'sakit', 'izin', 'dinas', 'alpa', 'alpha', 'wfh', 'wfo'];
         if (knownStatus.includes(sLower)) {
@@ -740,7 +796,7 @@
               diffMinutes: 0,
               timeFormatted: '≤ 08:00',
               text: 'Tepat Waktu',
-              badgeClass: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+              badgeClass: 'bg-emerald-50 text-emerald-700 border border-emerald-200',
               badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-circle-check text-[10px]"></i> Tepat Waktu</span>'
             };
           } else {
@@ -774,7 +830,7 @@
         h = Math.floor(totalSec / 3600) % 24;
         m = Math.floor((totalSec % 3600) / 60);
       } else {
-        const s = String(timeVal).trim();
+        const s = sRaw;
         if (s.includes('T') && s.endsWith('Z')) {
           const d = new Date(s);
           if (!isNaN(d.getTime())) {
@@ -798,6 +854,21 @@
         }
       }
 
+      // Jika h = 0 dan m = 0 dan berasal dari 1899 epoch tanpa penanda jam spesifik
+      if (h === 0 && m === 0 && sRaw.startsWith('1899-12-') && !sRaw.includes(':')) {
+        return {
+          hasClockIn: false,
+          isLate: false,
+          diffMinutes: 0,
+          hours: 0,
+          minutes: 0,
+          timeFormatted: '0.00.00',
+          text: 'Tidak Clock In',
+          badgeClass: 'bg-slate-100 text-slate-500 border border-slate-200',
+          badgeHtml: '<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200"><i class="fa-solid fa-minus text-[10px]"></i> Tidak Clock In</span>'
+        };
+      }
+
       if (h === -1 || m === -1 || isNaN(h) || isNaN(m)) {
         return {
           hasClockIn: false,
@@ -805,10 +876,10 @@
           diffMinutes: 0,
           hours: 0,
           minutes: 0,
-          timeFormatted: String(timeVal),
+          timeFormatted: sRaw === '1899-12-30' ? '0.00.00' : sRaw,
           text: 'Format Tidak Valid',
           badgeClass: 'bg-slate-100 text-slate-500 border border-slate-200',
-          badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">${String(timeVal)}</span>`
+          badgeHtml: `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-slate-100 text-slate-500 border border-slate-200">${sRaw === '1899-12-30' ? '0.00.00' : sRaw}</span>`
         };
       }
 
@@ -864,9 +935,28 @@
     }
 
     function formatDatabaseTime(val) {
-      if (val === null || val === undefined || val === '' || val === '-') return '-';
+      if (val === null || val === undefined || val === '' || val === '-' || val === 'null' || val === 'undefined') return '-';
+      
+      const s = String(val).trim();
+      if (
+        s === '0.00.00' || s === '00:00:00' || s === '0:00:00' || s === '0.00' || s === '0' ||
+        s === '1899-12-30' || s === '30.12.1899' || (s.startsWith('1899-12-30') && !s.includes(':'))
+      ) {
+        return '0.00.00';
+      }
+      if (val === 0) return '0.00.00';
+
       const info = calculateLatenessInfo(val);
-      return info.hasClockIn ? info.timeFormatted : String(val);
+      if (info.hasClockIn && info.timeFormatted && info.timeFormatted !== '-') {
+        return info.timeFormatted;
+      }
+      if (info.timeFormatted === '0.00.00' || s === '1899-12-30') {
+        return '0.00.00';
+      }
+      if (info.text === 'Tidak Clock In' && !info.hasClockIn) {
+        return (s === '0.00.00' || s === '00:00:00' || s === '1899-12-30' || s === '0') ? '0.00.00' : '-';
+      }
+      return info.timeFormatted || s;
     }
 
     async function callBackendAPI(actionName, payload = {}) {
@@ -1236,6 +1326,8 @@
       }
 
       if (val === null || val === undefined || val === '') return '<span class="text-slate-300">-</span>';
+      const sVal = String(val).trim();
+      if (sVal === '' || sVal === '-' || sVal === 'null' || sVal === 'undefined') return '<span class="text-slate-300">-</span>';
       
       if (norm === 'contract' || norm === 'status kontrak' || norm === 'status kepegawaian') {
         const cat = normalizeContractCategory(val);
@@ -1284,6 +1376,9 @@
       }
       if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob') {
         const dateStr = formatDatabaseDate(val);
+        if (!dateStr || dateStr === '-') {
+          return '<span class="text-slate-300">-</span>';
+        }
         const ageStr = calculateAgeAndService(val);
         if (ageStr !== '-') {
           return `<div><span class="font-medium text-slate-800">${dateStr}</span><span class="text-[10px] text-slate-400 block">${ageStr}</span></div>`;
@@ -1292,6 +1387,9 @@
       }
       if (norm === 'date' || norm === 'tanggal' || norm === 'tgl' || norm.includes('date clock')) {
         const dateStr = formatDatabaseDate(val);
+        if (!dateStr || dateStr === '-') {
+          return '<span class="text-slate-300">-</span>';
+        }
         // Kalkulasi masa kerja HANYA untuk tanggal masuk (join date) di Master Karyawan, TIDAK untuk data absensi/kehadiran
         if (norm === 'date' && context === 'Master_Karyawan') {
           const serviceStr = calculateAgeAndService(val);
@@ -1302,10 +1400,17 @@
         return dateStr;
       }
       if (norm === 'time' || norm === 'jam') {
-        return `<span class="font-mono font-bold text-slate-800">${val}</span>`;
+        const timeStr = formatDatabaseTime(val);
+        if (!timeStr || timeStr === '-') {
+          return '<span class="text-slate-300">-</span>';
+        }
+        return `<span class="font-mono font-bold text-slate-800">${timeStr}</span>`;
       }
       if (norm.includes('time clock in') || norm.includes('time clock out') || norm === 'time in' || norm === 'time out') {
         const timeStr = formatDatabaseTime(val);
+        if (!timeStr || timeStr === '-') {
+          return '<span class="text-slate-300">-</span>';
+        }
         return `<span class="font-mono font-bold text-slate-800">${timeStr}</span>`;
       }
       if (norm.includes('estimasi telat') || norm.includes('keterlambatan')) {

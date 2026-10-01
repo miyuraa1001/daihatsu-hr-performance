@@ -1442,11 +1442,11 @@
         }
 
         const tableRows = absRows.map((r, i) => {
-          const tgl = formatDatabaseDate(r['Date'] || r['Tanggal']) || r['Date'] || '-';
+          const tgl = formatDatabaseDate(r['Date'] || r['Tanggal']) || '-';
           const clockInRaw = r['Time Clock In'] || r['Clock In'] || '-';
           const clockOutRaw = r['Time Clock Out'] || r['Clock Out'] || '-';
           const lateness = calculateLatenessInfo(clockInRaw);
-          const clockIn = lateness.hasClockIn ? lateness.timeFormatted : clockInRaw;
+          const clockIn = formatDatabaseTime(clockInRaw);
           const clockOut = formatDatabaseTime(clockOutRaw);
           const durasi = r['Durasi Kerja (Work Hours)'] || r['Durasi Kerja'] || '-';
           const lokasi = r['Assigned Work Location'] || r['Cabang'] || '-';

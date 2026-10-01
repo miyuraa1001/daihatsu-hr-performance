@@ -1209,4 +1209,4 @@
         cardHover: 'hover:bg-slate-100/60 hover:border-slate-300',
         barColor: 'bg-slate-400'
       };
-    }
+    }
