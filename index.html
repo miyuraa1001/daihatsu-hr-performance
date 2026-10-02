@@ -208,10 +208,10 @@
 
         <!-- Kesiapan Data Kinerja Cabang Sidebar Widget -->
         <div class="p-4 mt-auto">
-          <div class="bg-gradient-to-br from-[#E60012] to-[#99000B] rounded-2xl p-4 text-white shadow-lg relative overflow-hidden">
+          <div class="bg-gradient-to-br from-[#E60012] to-[#99000B] rounded-2xl p-4 text-white shadow-lg relative overflow-hidden cursor-pointer hover:shadow-xl hover:scale-[1.01] active:scale-[0.99] transition-all group" id="sidebar-readiness-card" onclick="switchView('pbk'); if (typeof closeSidebarMobile === 'function') closeSidebarMobile();">
             <div class="flex items-center justify-between mb-2">
-              <h4 class="text-[10px] font-bold tracking-wider uppercase opacity-90">Kesiapan Data Cabang</h4>
-              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <h4 class="text-[10px] font-bold tracking-wider uppercase opacity-90 group-hover:text-amber-200 transition-colors">Kesiapan Data Cabang</h4>
+              <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" id="sidebar-readiness-dot"></span>
             </div>
             
             <div class="flex items-center gap-3 my-2">
@@ -224,16 +224,25 @@
                   <span id="sidebar-readiness-pct" class="text-xs font-black">100%</span>
                 </div>
               </div>
-              <div>
-                <p class="text-[11px] font-extrabold leading-tight" id="sidebar-readiness-title">Data Siap Diambil</p>
-                <p class="text-[9px] text-red-100 mt-0.5" id="sidebar-readiness-status">Database Terhubung</p>
+              <div class="min-w-0">
+                <p class="text-[11px] font-extrabold leading-tight truncate" id="sidebar-readiness-title">Data Siap Diambil</p>
+                <p class="text-[9px] text-red-100 mt-0.5 truncate" id="sidebar-readiness-status">Database Terhubung</p>
               </div>
             </div>
 
-            <div class="space-y-1 pt-2 border-t border-white/20 text-[10px]">
-              <div class="flex items-center justify-between"><span><i class="fa-solid fa-circle-check text-emerald-300 mr-1"></i> Data Master</span> <span class="font-bold" id="ready-karyawan">OK</span></div>
-              <div class="flex items-center justify-between"><span><i class="fa-solid fa-circle-check text-emerald-300 mr-1"></i> Data Absensi</span> <span class="font-bold" id="ready-absensi">OK</span></div>
-              <div class="flex items-center justify-between"><span><i class="fa-solid fa-circle-check text-emerald-300 mr-1"></i> Data SS & QCC</span> <span class="font-bold" id="ready-kaizen">OK</span></div>
+            <div class="space-y-1.5 pt-2 border-t border-white/20 text-[10px]">
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-300 w-3 text-center" id="ready-karyawan-icon"></i> Data Master</span> 
+                <span class="font-bold font-mono" id="ready-karyawan">OK</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-300 w-3 text-center" id="ready-absensi-icon"></i> Data Absensi</span> 
+                <span class="font-bold font-mono" id="ready-absensi">OK</span>
+              </div>
+              <div class="flex items-center justify-between">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-300 w-3 text-center" id="ready-kaizen-icon"></i> Data SS & QCC</span> 
+                <span class="font-bold font-mono" id="ready-kaizen">OK</span>
+              </div>
             </div>
           </div>
 

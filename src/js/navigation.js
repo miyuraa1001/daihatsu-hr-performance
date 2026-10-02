@@ -316,37 +316,258 @@
     }
 
 
-    function updateSidebarReadiness(data) {
-      if (!data) return;
-      const s = data.summary || {};
-      const hasKaryawan = (s.totalKaryawan || 0) > 0;
-      const hasAbsensi = (s.avgAttendance || 0) > 0;
-      const hasKaizen = (s.totalSS || 0) > 0 || (s.totalQCCCircles || 0) > 0;
+    /**
+     * Memperbarui Widget Kesiapan Data Cabang pada Sidebar secara Real-Time Kumulatif 12 Bulan Menuju PBK Akhir Tahun.
+     * Evaluasi berbasis data tahun berjalan (atau tahun terpilih) untuk cabang wewenang aktif.
+     */
+    function updateSidebarReadiness(data = null) {
+      try {
+        // 1. Dapatkan dataset master lengkap (tanpa terpotong oleh filter bulan yang sedang aktif di view tabel)
+        const master = window.masterFullPayload || window.fullUnscopedPayload || (typeof currentDashboardPayload !== 'undefined' ? currentDashboardPayload : null) || data;
+        if (!master) return;
+        const rawTables = master.rawTables || {};
 
-      let score = 0;
-      if (hasKaryawan) score += 35;
-      if (hasAbsensi) score += 35;
-      if (hasKaizen) score += 30;
+        // 2. Tentukan Cabang Sasaran (Isolasi Hak Akses Kacab vs Admin)
+        const isAdmin = typeof isUserAdmin === 'function' && isUserAdmin(typeof loggedInUser !== 'undefined' ? loggedInUser : null);
+        const userBranchCode = (typeof getUserBranchCode === 'function' && typeof loggedInUser !== 'undefined') ? getUserBranchCode(loggedInUser) : null;
+        const selectedBranch = document.getElementById('branch-select')?.value || 'ALL';
+        const targetBranch = (!isAdmin && userBranchCode) ? userBranchCode : selectedBranch;
 
-      const pctEl = document.getElementById('sidebar-readiness-pct');
-      const circleEl = document.getElementById('sidebar-readiness-circle');
-      if (pctEl) pctEl.textContent = `${score}%`;
-      if (circleEl) circleEl.setAttribute('stroke-dasharray', `${score}, 100`);
+        // 3. Tentukan Tahun Sasaran PBK (Tahun berjalan atau tahun terpilih pada filter)
+        const selectedYear = document.getElementById('year-select')?.value || 'ALL';
+        const currentYear = new Date().getFullYear();
+        let targetYear = (selectedYear !== 'ALL') ? parseInt(selectedYear, 10) : currentYear;
 
-      const statusTitleEl = document.getElementById('sidebar-readiness-title');
-      const statusSubEl = document.getElementById('sidebar-readiness-status');
-      if (score >= 100) {
-        if (statusTitleEl) statusTitleEl.textContent = 'Data Siap Diambil';
-        if (statusSubEl) statusSubEl.textContent = 'Siap Acuan PBK';
-      } else {
-        if (statusTitleEl) statusTitleEl.textContent = 'Data Sebagian';
-        if (statusSubEl) statusSubEl.textContent = 'Sinkronisasi Spreadsheet...';
+        // Helper peta nama bulan baku Bahasa Indonesia
+        const NAMED_MONTHS_MAP = {
+          'januari': 1, 'jan': 1,
+          'februari': 2, 'feb': 2,
+          'maret': 3, 'mar': 3,
+          'april': 4, 'apr': 4,
+          'mei': 5, 'may': 5,
+          'juni': 6, 'jun': 6,
+          'juli': 7, 'jul': 7,
+          'agustus': 8, 'agu': 8, 'agt': 8, 'aug': 8,
+          'september': 9, 'sep': 9,
+          'oktober': 10, 'okt': 10, 'oct': 10,
+          'november': 11, 'nov': 11,
+          'desember': 12, 'des': 12, 'dec': 12
+        };
+
+        const parseRowDateInfo = (row, defaultYear) => {
+          if (!row) return null;
+          const candidateFields = [
+            'Date', 'Tanggal', 'Date Clock In', 'Date Clock Out',
+            'Diterima Bulan', 'L 1-8 diterima', 'Pendaftaran diterima',
+            'Tgl Masuk', 'Tgl', 'periode', 'tahun'
+          ];
+
+          for (const f of candidateFields) {
+            const val = (typeof getRowCellValue === 'function') ? getRowCellValue(row, f) : row[f];
+            const checkVal = (val !== undefined && val !== null && val !== '') ? val : row[f];
+            if (checkVal === undefined || checkVal === null || checkVal === '') continue;
+
+            const str = String(checkVal).trim();
+            if (!str || str === '-' || str.startsWith('1899')) continue;
+
+            // Excel serial number (misal: 46190 -> 2026-06)
+            if (typeof checkVal === 'number' || (/^\d{5}$/.test(str) && Number(str) > 35000 && Number(str) < 65000)) {
+              const d = new Date(Math.round((Number(str) - 25569) * 86400 * 1000));
+              if (!isNaN(d.getTime()) && d.getFullYear() > 1899) {
+                return { year: d.getFullYear(), month: d.getMonth() + 1 };
+              }
+            }
+
+            // YMD (YYYY-MM-DD atau YYYY/MM/DD)
+            const ymd = str.match(/^(\d{4})[-/. ](\d{1,2})[-/. ](\d{1,2})/);
+            if (ymd && parseInt(ymd[1], 10) > 1899) {
+              return { year: parseInt(ymd[1], 10), month: parseInt(ymd[2], 10) };
+            }
+
+            // DMY (DD-MM-YYYY atau DD/MM/YYYY)
+            const dmy = str.match(/^(\d{1,2})[-/. ](\d{1,2})[-/. ](\d{4})/);
+            if (dmy && parseInt(dmy[3], 10) > 1899) {
+              return { year: parseInt(dmy[3], 10), month: parseInt(dmy[2], 10) };
+            }
+
+            // Nama bulan tekstual (misal: "Juni", "Juni 2026")
+            const lower = str.toLowerCase();
+            let mFound = null;
+            for (const [mName, mNum] of Object.entries(NAMED_MONTHS_MAP)) {
+              const regex = new RegExp(`\\b${mName}\\b|\\b${mName}`, 'i');
+              if (regex.test(lower)) {
+                mFound = mNum;
+                break;
+              }
+            }
+
+            if (!mFound) {
+              const myMatch = str.match(/^(\d{1,2})[-/](\d{4})$/);
+              if (myMatch) {
+                const m = parseInt(myMatch[1], 10);
+                if (m >= 1 && m <= 12) return { year: parseInt(myMatch[2], 10), month: m };
+              }
+              const ymMatch = str.match(/^(\d{4})[-/](\d{1,2})$/);
+              if (ymMatch) {
+                const m = parseInt(ymMatch[2], 10);
+                if (m >= 1 && m <= 12) return { year: parseInt(ymMatch[1], 10), month: m };
+              }
+            }
+
+            if (mFound) {
+              const yrMatch = str.match(/\b(20\d{2})\b/);
+              if (yrMatch) return { year: parseInt(yrMatch[1], 10), month: mFound };
+
+              const otherStr = `${row['No.BPH'] || ''} ${row['No.Berita Acara'] || ''} ${row['Tahun'] || ''} ${row['Year'] || ''}`;
+              const yrMatch2 = otherStr.match(/\b(20\d{2})\b/);
+              if (yrMatch2) return { year: parseInt(yrMatch2[1], 10), month: mFound };
+
+              return { year: defaultYear, month: mFound };
+            }
+          }
+          return null;
+        };
+
+        // 4. Analisis Master Karyawan
+        const allEmps = (rawTables.Master_Karyawan && rawTables.Master_Karyawan.length > 0)
+          ? rawTables.Master_Karyawan
+          : (master.employeeList || []);
+        const branchEmps = (typeof matchBranch === 'function')
+          ? allEmps.filter(e => matchBranch(e, targetBranch))
+          : allEmps;
+        const hasMaster = branchEmps.length > 0;
+
+        // Jika selectedYear === 'ALL', cari tahun paling relevan yang memiliki data kehadiran / master
+        if (selectedYear === 'ALL') {
+          const detectedYears = new Set();
+          const allAttRows = rawTables.Data_Kehadiran || [];
+          for (let i = 0; i < Math.min(allAttRows.length, 500); i++) {
+            const info = parseRowDateInfo(allAttRows[i], currentYear);
+            if (info && info.year >= 2020) detectedYears.add(info.year);
+          }
+          if (detectedYears.has(currentYear)) {
+            targetYear = currentYear;
+          } else if (detectedYears.size > 0) {
+            const sorted = Array.from(detectedYears).sort((a, b) => b - a);
+            targetYear = sorted[0];
+          } else {
+            targetYear = currentYear;
+          }
+        }
+
+        // 5. Analisis Data Absensi (Bulan 1 s/d 12)
+        const absensiMonths = new Set();
+        const rawAttendance = rawTables.Data_Kehadiran || [];
+        rawAttendance.forEach(row => {
+          if (typeof matchBranch === 'function' && !matchBranch(row, targetBranch)) return;
+          const info = parseRowDateInfo(row, targetYear);
+          if (info && info.year === targetYear && info.month >= 1 && info.month <= 12) {
+            absensiMonths.add(info.month);
+          }
+        });
+
+        // 6. Analisis Data SS & QCC (Kaizen) (Bulan 1 s/d 12)
+        const kaizenMonths = new Set();
+        let kaizenCount = 0;
+        const rawSS = rawTables.Data_SS || [];
+        const rawQCC = rawTables.Data_QCC || [];
+
+        rawSS.forEach(row => {
+          if (typeof matchBranch === 'function' && !matchBranch(row, targetBranch)) return;
+          const info = parseRowDateInfo(row, targetYear);
+          if (info && info.year === targetYear && info.month >= 1 && info.month <= 12) {
+            kaizenMonths.add(info.month);
+            kaizenCount++;
+          }
+        });
+
+        rawQCC.forEach(row => {
+          if (typeof matchBranch === 'function' && !matchBranch(row, targetBranch)) return;
+          const info = parseRowDateInfo(row, targetYear);
+          if (info && info.year === targetYear && info.month >= 1 && info.month <= 12) {
+            kaizenMonths.add(info.month);
+            kaizenCount++;
+          }
+        });
+
+        // 7. Hitung Progres Kumulatif Menuju 100% Akhir Tahun (12 Bulan PBK)
+        // PBK dievaluasi penuh di akhir tahun berdasarkan kelengkapan 12 bulan data presensi/kinerja cabang.
+        const monthsCollected = hasMaster ? absensiMonths.size : 0;
+        const score = Math.min(100, Math.round((monthsCollected / 12) * 100));
+
+        // 8. Perbarui Elemen UI Kesiapan Data Cabang
+        const pctEl = document.getElementById('sidebar-readiness-pct');
+        const circleEl = document.getElementById('sidebar-readiness-circle');
+        if (pctEl) pctEl.textContent = `${score}%`;
+        if (circleEl) circleEl.setAttribute('stroke-dasharray', `${score}, 100`);
+
+        const statusTitleEl = document.getElementById('sidebar-readiness-title');
+        const statusSubEl = document.getElementById('sidebar-readiness-status');
+        const cardEl = document.getElementById('sidebar-readiness-card');
+        const dotEl = document.getElementById('sidebar-readiness-dot');
+
+        if (score >= 100) {
+          if (statusTitleEl) statusTitleEl.textContent = 'Data Siap Diambil';
+          if (statusSubEl) statusSubEl.textContent = `Siap Acuan PBK ${targetYear}`;
+          if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-emerald-400 animate-pulse';
+        } else if (score > 0) {
+          if (statusTitleEl) statusTitleEl.textContent = `Progres PBK: ${monthsCollected}/12 Bln`;
+          if (statusSubEl) statusSubEl.textContent = `Tahun ${targetYear} (${score}% Terkumpul)`;
+          if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-amber-400 animate-pulse';
+        } else {
+          if (statusTitleEl) statusTitleEl.textContent = 'Data Belum Terkumpul';
+          if (statusSubEl) statusSubEl.textContent = `Tahun ${targetYear} (0/12 Bulan)`;
+          if (dotEl) dotEl.className = 'w-2 h-2 rounded-full bg-rose-400 animate-pulse';
+        }
+
+        if (cardEl) {
+          cardEl.title = `Kesiapan Data PBK Tahun ${targetYear}: ${monthsCollected} dari 12 Bulan Terdata (${score}%)`;
+        }
+
+        // Checklists
+        const readyKaryawanEl = document.getElementById('ready-karyawan');
+        const readyKaryawanIcon = document.getElementById('ready-karyawan-icon');
+        if (readyKaryawanEl) readyKaryawanEl.textContent = hasMaster ? 'OK' : 'KOSONG';
+        if (readyKaryawanIcon) {
+          readyKaryawanIcon.className = hasMaster
+            ? 'fa-solid fa-circle-check text-emerald-300 w-3 text-center'
+            : 'fa-solid fa-circle-xmark text-rose-300 w-3 text-center';
+        }
+
+        const readyAbsensiEl = document.getElementById('ready-absensi');
+        const readyAbsensiIcon = document.getElementById('ready-absensi-icon');
+        if (readyAbsensiEl) {
+          readyAbsensiEl.textContent = `${absensiMonths.size}/12 Bln`;
+        }
+        if (readyAbsensiIcon) {
+          if (absensiMonths.size >= 12) {
+            readyAbsensiIcon.className = 'fa-solid fa-circle-check text-emerald-300 w-3 text-center';
+          } else if (absensiMonths.size > 0) {
+            readyAbsensiIcon.className = 'fa-solid fa-clock text-amber-300 w-3 text-center';
+          } else {
+            readyAbsensiIcon.className = 'fa-solid fa-circle-xmark text-rose-300 w-3 text-center';
+          }
+        }
+
+        const readyKaizenEl = document.getElementById('ready-kaizen');
+        const readyKaizenIcon = document.getElementById('ready-kaizen-icon');
+        if (readyKaizenEl) {
+          readyKaizenEl.textContent = (kaizenMonths.size > 0) ? `${kaizenMonths.size}/12 Bln` : '0/12 Bln';
+        }
+        if (readyKaizenIcon) {
+          if (kaizenMonths.size >= 12) {
+            readyKaizenIcon.className = 'fa-solid fa-circle-check text-emerald-300 w-3 text-center';
+          } else if (kaizenMonths.size > 0) {
+            readyKaizenIcon.className = 'fa-solid fa-circle-check text-emerald-300 w-3 text-center';
+          } else {
+            readyKaizenIcon.className = 'fa-solid fa-circle-xmark text-rose-300 w-3 text-center';
+          }
+        }
+      } catch (err) {
+        console.error("Error in updateSidebarReadiness:", err);
       }
-
-      if (document.getElementById('ready-karyawan')) document.getElementById('ready-karyawan').textContent = hasKaryawan ? 'OK' : 'KOSONG';
-      if (document.getElementById('ready-absensi')) document.getElementById('ready-absensi').textContent = hasAbsensi ? 'OK' : 'KOSONG';
-      if (document.getElementById('ready-kaizen')) document.getElementById('ready-kaizen').textContent = hasKaizen ? 'OK' : 'KOSONG';
     }
+    window.updateSidebarReadiness = updateSidebarReadiness;
 
 
     function switchView(viewId) {
