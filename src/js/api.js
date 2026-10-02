@@ -277,6 +277,7 @@
         }
       }
     };
+    window.SCHEMAS = SCHEMAS;
 
     // Mode Kolom (Tampilan Penuh vs Ringkas)
     const columnViewMode = {

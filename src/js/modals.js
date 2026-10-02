@@ -896,6 +896,30 @@
           }
         }
 
+        // Terapkan filter pencarian tabel jika user sedang mencari di input
+        const q = (document.getElementById('mk-search-input')?.value || '').toLowerCase().trim();
+        if (q) {
+          list = list.filter((e, rowIdx) => {
+            return String(e['Personnel no.'] || e.npk || '').toLowerCase().includes(q) || 
+              String(e['Last name'] || e.nama || '').toLowerCase().includes(q) ||
+              String(e['Job Title'] || e.jabatan || '').toLowerCase().includes(q) ||
+              String(e['P.subarea'] || e.cabang || '').toLowerCase().includes(q) ||
+              String(e['Business area'] || e.kodeBA || '').toLowerCase().includes(q) ||
+              String(e['Status_Karyawan'] || e.statusKaryawan || '').toLowerCase().includes(q);
+          });
+        }
+
+        // Terapkan filter kontrak jika ada
+        const contractFilter = document.getElementById('mk-filter-kontrak')?.value || 'ALL';
+        if (contractFilter !== 'ALL') {
+          const targetNorm = normalizeContractCategory(contractFilter).toLowerCase();
+          list = list.filter(e => {
+            const raw = String(e['Contract'] || e.tipeKontrak || 'Tetap / Permanent').trim();
+            const rawNorm = normalizeContractCategory(raw).toLowerCase();
+            return rawNorm === targetNorm || raw.toLowerCase() === contractFilter.toLowerCase();
+          });
+        }
+
         // Definisi urutan kolom ekspor baku dengan kolom Umur & Masa Kerja terpisah
         exportColumns = [
           "No",
@@ -920,24 +944,41 @@
           "Status_Karyawan"
         ];
         if (isAdmin) {
-          exportColumns.push("Tanggal_Resign", "Alasan_Resign");
+          exportColumns.push("Tanggal_Resign", "Alasan_Resign", "Lampiran_Alasan_PHK");
         }
 
         exportRows = list.map((row, idx) => {
           const dob = (row['D.o.birth'] !== undefined && row['D.o.birth'] !== null && String(row['D.o.birth']).trim() !== '')
             ? row['D.o.birth']
-            : findDOBirth(row);
+            : (row.tglLahir || row.dob || (typeof findDOBirth === 'function' ? findDOBirth(row) : ''));
           const joinDate = (row['Date'] !== undefined && row['Date'] !== null && String(row['Date']).trim() !== '')
             ? row['Date']
-            : findDate(row);
+            : (row.joinDate || (typeof findDate === 'function' ? findDate(row) : ''));
 
-          const umurVal = calculateAgeAndService(dob);
-          const masaKerjaVal = calculateAgeAndService(joinDate);
+          const umurVal = row.umurText || calculateAgeAndService(dob);
+          const masaKerjaVal = row.masaKerjaText || calculateAgeAndService(joinDate);
+          const alasanResignVal = row['Alasan_Resign'] || row.alasanResign || '';
 
           const obj = {};
           exportColumns.forEach(col => {
             if (col === 'No') {
               obj['No'] = idx + 1;
+            } else if (col === 'Personnel no.') {
+              obj['Personnel no.'] = safeString(row['Personnel no.'] || row.npk);
+            } else if (col === 'P.subarea') {
+              obj['P.subarea'] = row['P.subarea'] || row.cabang || '';
+            } else if (col === 'Wilayah') {
+              obj['Wilayah'] = row['Wilayah'] || row.wilayah || '';
+            } else if (col === 'Contract') {
+              obj['Contract'] = row['Contract'] || row.tipeKontrak || 'Tetap / Permanent';
+            } else if (col === 'Name') {
+              obj['Name'] = row['Name'] || row.divisi || '';
+            } else if (col === 'Name of organizational unit') {
+              obj['Name of organizational unit'] = row['Name of organizational unit'] || row.divisi || '';
+            } else if (col === 'Job Title') {
+              obj['Job Title'] = row['Job Title'] || row.jabatan || '';
+            } else if (col === 'Last name') {
+              obj['Last name'] = row['Last name'] || row.nama || '';
             } else if (col === 'Umur') {
               obj['Umur'] = (umurVal && umurVal !== '-') ? umurVal : "";
             } else if (col === 'Masa Kerja') {
@@ -946,20 +987,40 @@
               obj['D.o.birth'] = formatDatabaseDate(dob);
             } else if (col === 'Date') {
               obj['Date'] = formatDatabaseDate(joinDate);
+            } else if (col === 'Gender text') {
+              obj['Gender text'] = row['Gender text'] || row.gender || '';
+            } else if (col === 'Religious denomination') {
+              obj['Religious denomination'] = row['Religious denomination'] || row.agama || '';
             } else if (col === 'PS group') {
-              obj['PS group'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : findPSGroup(row);
+              obj['PS group'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : (row.psGroup || (typeof findPSGroup === 'function' ? findPSGroup(row) : ''));
             } else if (col === 'Lvl') {
-              obj['Lvl'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : findLvl(row);
+              obj['Lvl'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : (row.lvl || (typeof findLvl === 'function' ? findLvl(row) : ''));
             } else if (col === 'P0001-STEXT') {
-              obj['P0001-STEXT'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : findP0001STEXT(row);
+              obj['P0001-STEXT'] = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') ? row[col] : (row.stext || (typeof findP0001STEXT === 'function' ? findP0001STEXT(row) : ''));
+            } else if (col === 'Business area') {
+              obj['Business area'] = safeString(row['Business area'] || row.kodeBA);
             } else if (col === 'Status_Karyawan') {
               obj['Status_Karyawan'] = row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif';
+            } else if (col === 'Tanggal_Resign') {
+              obj['Tanggal_Resign'] = formatDatabaseDate(row['Tanggal_Resign'] || row.tanggalResign) || '';
+            } else if (col === 'Alasan_Resign') {
+              obj['Alasan_Resign'] = alasanResignVal;
+            } else if (col === 'Lampiran_Alasan_PHK') {
+              obj['Lampiran_Alasan_PHK'] = (alasanResignVal && typeof getPPHKAttachment === 'function') ? getPPHKAttachment(alasanResignVal) : '';
             } else {
               obj[col] = (row[col] !== undefined && row[col] !== null) ? row[col] : "";
             }
           });
           return obj;
         });
+
+        const ws = XLSX.utils.json_to_sheet(exportRows, { header: exportColumns });
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Master_Karyawan");
+        const fileName = `Master_Karyawan_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        XLSX.writeFile(wb, fileName);
+        showToast(`Berkas ${fileName} berhasil diunduh (${exportRows.length} baris, ${exportColumns.length} kolom)!`);
+        return;
       } else if (targetSheet === 'Data_Kehadiran') {
         const fullMaster = window.masterFullPayload || window.fullUnscopedPayload || currentDashboardPayload;
         let attendanceRows = fullMaster.rawTables?.Data_Kehadiran || currentDashboardPayload.rawTables?.Data_Kehadiran || rawRows || [];
