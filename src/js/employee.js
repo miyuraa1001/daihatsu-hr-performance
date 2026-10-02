@@ -1205,7 +1205,7 @@
       
       if (s.includes('ibra') || s.includes('lunas') || s.includes('cair')) {
         return {
-          key: 'IBRA/Lunas',
+          key: 'IBRA / Lunas',
           displayName: 'IBRA / Lunas',
           icon: 'fa-solid fa-circle-check',
           textColor: 'text-emerald-700',
@@ -1293,27 +1293,45 @@
       if (!select) return;
 
       const currentVal = select.value || 'ALL';
+      const currentValNorm = currentVal.toLowerCase().replace(/[^a-z0-9]/g, '');
+
       const standardStatuses = [
         'Proses Penilaian',
         'Berita Acara',
-        'Dikembalikan',
-        'Revisi',
         'BPH',
-        'IBRA/Lunas'
+        'IBRA / Lunas',
+        'Revisi',
+        'Dikembalikan'
       ];
-      const foundStatuses = new Set(standardStatuses);
+      
+      const filterMap = new Map();
+      standardStatuses.forEach(st => {
+        const meta = getSSRewardStatusMeta(st);
+        filterMap.set(meta.key, meta.displayName);
+      });
 
       rawRows.forEach(r => {
         const rawSt = getRowCellValue(r, 'Status Reward', SCHEMAS.Data_SS) || r['Status Reward'];
         if (rawSt && String(rawSt).trim() && String(rawSt).trim() !== '-') {
-          foundStatuses.add(String(rawSt).trim());
+          const meta = getSSRewardStatusMeta(rawSt);
+          const metaNorm = meta.key.toLowerCase().replace(/[^a-z0-9]/g, '');
+          let exists = false;
+          filterMap.forEach((_, key) => {
+            if (key.toLowerCase().replace(/[^a-z0-9]/g, '') === metaNorm) {
+              exists = true;
+            }
+          });
+          if (!exists) {
+            filterMap.set(meta.key, meta.displayName);
+          }
         }
       });
 
       let html = `<option value="ALL">Semua Status Reward</option>`;
-      foundStatuses.forEach(st => {
-        const selected = (currentVal.toLowerCase() === st.toLowerCase()) ? 'selected' : '';
-        html += `<option value="${st}" ${selected}>${st}</option>`;
+      filterMap.forEach((displayName, key) => {
+        const keyNorm = key.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const isSel = (currentValNorm === keyNorm);
+        html += `<option value="${key}" ${isSel ? 'selected' : ''}>${displayName}</option>`;
       });
 
       select.innerHTML = html;
@@ -1323,12 +1341,16 @@
       const select = document.getElementById('ss-filter-part');
       if (!select) return;
 
-      if (statusKey === 'ALL' || select.value.toLowerCase() === statusKey.toLowerCase()) {
+      const targetNorm = String(statusKey || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const currentNorm = String(select.value || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+      if (targetNorm === 'all' || targetNorm === currentNorm) {
         select.value = 'ALL';
       } else {
         let matched = false;
         for (let i = 0; i < select.options.length; i++) {
-          if (select.options[i].value.toLowerCase() === statusKey.toLowerCase()) {
+          const optNorm = String(select.options[i].value).toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (optNorm === targetNorm) {
             select.selectedIndex = i;
             matched = true;
             break;
@@ -1354,18 +1376,35 @@
         'Proses Penilaian',
         'Berita Acara',
         'BPH',
-        'IBRA/Lunas',
+        'IBRA / Lunas',
         'Revisi',
         'Dikembalikan'
       ];
 
-      const allStatuses = [...standardStatuses];
-      Object.keys(statusCount).forEach(k => {
-        const exists = allStatuses.some(s => s.toLowerCase() === k.toLowerCase());
-        if (!exists && k && k !== '-') allStatuses.push(k);
+      // Gunakan Map kanonikal agar tidak pernah ada duplikasi status
+      const canonicalMap = new Map();
+      standardStatuses.forEach(st => {
+        const meta = getSSRewardStatusMeta(st);
+        canonicalMap.set(meta.key, meta);
       });
 
-      const activeFilter = (document.getElementById('ss-filter-part')?.value || 'ALL').toLowerCase();
+      // Tambahkan status baru hanya bila tidak cocok dengan status standar mana pun
+      Object.keys(statusCount).forEach(k => {
+        if (!k || k === '-') return;
+        const meta = getSSRewardStatusMeta(k);
+        const metaNorm = meta.key.toLowerCase().replace(/[^a-z0-9]/g, '');
+        let alreadyExists = false;
+        canonicalMap.forEach((_, existingKey) => {
+          if (existingKey.toLowerCase().replace(/[^a-z0-9]/g, '') === metaNorm) {
+            alreadyExists = true;
+          }
+        });
+        if (!alreadyExists) {
+          canonicalMap.set(meta.key, meta);
+        }
+      });
+
+      const activeFilter = (document.getElementById('ss-filter-part')?.value || 'ALL').toLowerCase().replace(/[^a-z0-9]/g, '');
 
       const resetBtn = document.getElementById('ss-btn-reset-filter');
       if (resetBtn) {
@@ -1378,19 +1417,19 @@
 
       container.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5';
 
-      container.innerHTML = allStatuses.map(st => {
-        const meta = getSSRewardStatusMeta(st);
+      container.innerHTML = Array.from(canonicalMap.values()).map(meta => {
         let count = 0;
+        const metaNorm = meta.key.toLowerCase().replace(/[^a-z0-9]/g, '');
+
         Object.keys(statusCount).forEach(k => {
-          const kNorm = k.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const metaKeyNorm = meta.key.toLowerCase().replace(/[^a-z0-9]/g, '');
-          const stNorm = st.toLowerCase().replace(/[^a-z0-9]/g, '');
-          if (kNorm === metaKeyNorm || kNorm === stNorm) {
+          const kMeta = getSSRewardStatusMeta(k);
+          const kNorm = kMeta.key.toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (kNorm === metaNorm) {
             count += Number(statusCount[k]) || 0;
           }
         });
 
-        const isActive = activeFilter !== 'all' && (activeFilter === meta.key.toLowerCase() || activeFilter === st.toLowerCase());
+        const isActive = activeFilter !== 'all' && (activeFilter === metaNorm);
         const ringClass = isActive 
           ? 'ring-2 ring-offset-2 ring-slate-800 font-black shadow-md scale-[1.02] border-slate-400' 
           : 'shadow-2xs hover:shadow-xs hover:border-slate-300';
