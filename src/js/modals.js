@@ -1782,7 +1782,7 @@
         });
 
         const statBanner = `
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
+          <div class="grid grid-cols-3 gap-2 mb-3">
             <div class="bg-emerald-50 p-2 rounded-xl border border-emerald-200 text-center">
               <span class="text-[9px] font-bold text-emerald-700 block uppercase">Total Hari Presensi</span>
               <span class="text-base font-extrabold text-emerald-900">${absRows.length} Hari</span>
@@ -1794,10 +1794,6 @@
             <div class="bg-amber-50 p-2 rounded-xl border border-amber-200 text-center">
               <span class="text-[9px] font-bold text-amber-700 block uppercase">Terlambat Masuk</span>
               <span class="text-base font-extrabold text-amber-900">${telatCount} Kali</span>
-            </div>
-            <div class="bg-blue-50 p-2 rounded-xl border border-blue-200 text-center">
-              <span class="text-[9px] font-bold text-blue-700 block uppercase">Target Jam Masuk</span>
-              <span class="text-base font-extrabold text-blue-900">08:00 WIB</span>
             </div>
           </div>
         `;
