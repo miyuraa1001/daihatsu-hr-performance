@@ -2055,7 +2055,7 @@
           </div>
         </div>
         <div class="flex items-center gap-2">
-          <span class="px-2.5 py-1 bg-red-50 text-[#E60012] border border-red-100 rounded-full text-[10px] font-bold">
+          <span id="modal-emp-status-badge" class="px-2.5 py-1 bg-red-50 text-[#E60012] border border-red-100 rounded-full text-[10px] font-bold">
             Data Acuan PBK
           </span>
         </div>
@@ -2063,6 +2063,40 @@
 
       <!-- VIEW 1: SUMMARY CARDS (6 CARDS DENGAN DRILL-DOWN INTERAKTIF) -->
       <div id="pbk-view-summary" class="space-y-4 overflow-y-auto pr-1 scrollbar-thin">
+        <!-- Resign Notification Card (Shown when status is Resign) -->
+        <div id="modal-emp-resign-banner" class="hidden bg-gradient-to-br from-rose-50 via-rose-50/80 to-amber-50/60 border border-rose-200 rounded-2xl p-4 shadow-sm space-y-2.5 animate-in fade-in">
+          <div class="flex items-center justify-between pb-2 border-b border-rose-200/80 flex-wrap gap-2">
+            <div class="flex items-center gap-2">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-600 text-white shadow-2xs uppercase flex items-center gap-1.5">
+                <i class="fa-solid fa-user-slash"></i>
+                Status: Resign / PPHK
+              </span>
+              <span class="text-xs font-bold text-rose-900" id="modal-resign-date-display">Tanggal Efektif: -</span>
+            </div>
+            <span class="text-[10px] font-bold text-rose-700 bg-white px-2.5 py-0.5 rounded-lg border border-rose-200 shadow-2xs">
+              <i class="fa-solid fa-file-contract mr-1"></i>Formulir PPHK PT Astra Daihatsu Motor
+            </span>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-0.5">
+            <div class="bg-white p-3 rounded-xl border border-rose-200 shadow-2xs">
+              <span class="text-[10px] font-bold text-rose-600 block uppercase flex items-center gap-1">
+                <i class="fa-solid fa-tag"></i> Alasan PHK (Kolom 1 PPHK)
+              </span>
+              <span class="text-xs font-black text-slate-900 mt-1 block" id="modal-resign-reason-display">-</span>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-rose-200 shadow-2xs">
+              <span class="text-[10px] font-bold text-amber-700 block uppercase flex items-center gap-1">
+                <i class="fa-solid fa-file-circle-check text-amber-600"></i> Lampiran Dokumen Wajib (Kolom 2 PPHK)
+              </span>
+              <span class="text-xs font-bold text-slate-800 mt-1 block leading-relaxed" id="modal-resign-attachment-display">-</span>
+            </div>
+          </div>
+          <div class="text-[10px] text-rose-800 bg-rose-100/50 p-2 rounded-xl flex items-center gap-1.5 font-medium">
+            <i class="fa-solid fa-circle-info text-rose-600"></i>
+            <span>Karyawan ini telah non-aktif. Data kinerja di bawah adalah rekam jejak historis selama bertugas di cabang.</span>
+          </div>
+        </div>
+
         <div class="flex items-center justify-between">
           <p class="text-[11px] font-bold text-slate-500 flex items-center gap-1.5">
             <i class="fa-solid fa-arrow-pointer text-blue-600"></i> Klik card di bawah untuk membuka form data rincian:
@@ -2206,10 +2240,10 @@
         <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">
           <div>
             <span class="text-[10px] text-slate-400 block font-bold uppercase tracking-wider">Status Validasi Data</span>
-            <span class="text-xs font-extrabold text-emerald-600 flex items-center gap-1.5 mt-0.5">
+            <span class="text-xs font-extrabold text-emerald-600 flex items-center gap-1.5 mt-0.5" id="modal-emp-validation-status">
               <i class="fa-solid fa-circle-check"></i> Terverifikasi Database HRD DSO Lampung
             </span>
-            <span class="text-[10px] text-slate-400 block mt-0.5">*Penilaian akhir PBK dinilai langsung oleh Kepala Cabang pada lembar resmi</span>
+            <span class="text-[10px] text-slate-400 block mt-0.5" id="modal-emp-validation-desc">*Penilaian akhir PBK dinilai langsung oleh Kepala Cabang pada lembar resmi</span>
           </div>
           <button onclick="closeModal('modal-pbk-detail')" class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition">Tutup Detail</button>
         </div>
@@ -2222,7 +2256,10 @@
           <button onclick="showPBKSummaryView()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl text-xs flex items-center gap-1.5 transition">
             <i class="fa-solid fa-arrow-left"></i> Kembali ke Ringkasan
           </button>
-          <span id="pbk-drilldown-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold"></span>
+          <div class="flex items-center gap-2">
+            <span id="pbk-drilldown-resign-badge" class="hidden px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-800 border border-rose-300"><i class="fa-solid fa-user-xmark mr-1"></i>Resign / PPHK</span>
+            <span id="pbk-drilldown-badge" class="px-2.5 py-1 rounded-full text-[10px] font-bold"></span>
+          </div>
         </div>
 
         <!-- Section Title & Subtitle -->

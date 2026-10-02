@@ -1832,11 +1832,55 @@
       const empCabang = getRowCellValue(emp, 'P.subarea', SCHEMAS.Master_Karyawan) || emp.cabang || '-';
       const empJabatan = getRowCellValue(emp, 'Job Title', SCHEMAS.Master_Karyawan) || emp.jabatan || emp.divisi || '-';
       const empContract = getRowCellValue(emp, 'Contract', SCHEMAS.Master_Karyawan) || emp.tipeKontrak || 'Tetap';
+      const statusKaryawan = getRowCellValue(emp, 'Status_Karyawan', SCHEMAS.Master_Karyawan) || emp.statusKaryawan || emp.Status_Karyawan || 'Aktif';
+      const isResign = String(statusKaryawan).trim().toLowerCase() === 'resign';
+      const tglResign = formatDatabaseDate(getRowCellValue(emp, 'Tanggal_Resign', SCHEMAS.Master_Karyawan)) || emp.tanggalResign || emp.Tanggal_Resign || '-';
+      const alasanResign = getRowCellValue(emp, 'Alasan_Resign', SCHEMAS.Master_Karyawan) || emp.alasanResign || emp.Alasan_Resign || '-';
+      const lampiranPPHK = (typeof getPPHKAttachment === 'function') ? getPPHKAttachment(alasanResign) : '-';
 
-      document.getElementById('modal-emp-avatar').textContent = empNama.slice(0, 2).toUpperCase();
+      const avatarEl = document.getElementById('modal-emp-avatar');
+      if (avatarEl) {
+        avatarEl.textContent = empNama.slice(0, 2).toUpperCase();
+        if (isResign) {
+          avatarEl.className = "w-11 h-11 rounded-2xl bg-rose-700 text-white flex items-center justify-center font-black text-base shadow-sm ring-2 ring-rose-300";
+        } else {
+          avatarEl.className = "w-11 h-11 rounded-2xl bg-[#E60012] text-white flex items-center justify-center font-black text-base shadow-sm";
+        }
+      }
+
       document.getElementById('modal-emp-name').textContent = empNama;
       const empDivisi = emp.divisi || (typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(emp).divisionName : '-');
-      document.getElementById('modal-emp-role').textContent = `NPK: ${empNpk} • ${empDivisi} • ${empJabatan} • Cabang ${empCabang}`;
+      document.getElementById('modal-emp-role').textContent = isResign
+        ? `NPK: ${empNpk} • ${empDivisi} • ${empJabatan} • Cabang ${empCabang} • [Non-Aktif / Resign]`
+        : `NPK: ${empNpk} • ${empDivisi} • ${empJabatan} • Cabang ${empCabang}`;
+
+      // Status Badge di Modal Header
+      const statusBadgeEl = document.getElementById('modal-emp-status-badge');
+      if (statusBadgeEl) {
+        if (isResign) {
+          statusBadgeEl.className = "px-2.5 py-1 bg-rose-100 text-rose-800 border border-rose-300 rounded-full text-[10px] font-black flex items-center gap-1 shadow-2xs";
+          statusBadgeEl.innerHTML = '<i class="fa-solid fa-user-xmark"></i> Status: Resign / PPHK';
+        } else {
+          statusBadgeEl.className = "px-2.5 py-1 bg-red-50 text-[#E60012] border border-red-100 rounded-full text-[10px] font-bold";
+          statusBadgeEl.textContent = "Data Acuan PBK";
+        }
+      }
+
+      // Resign Information Banner
+      const resignBannerEl = document.getElementById('modal-emp-resign-banner');
+      if (resignBannerEl) {
+        if (isResign) {
+          resignBannerEl.classList.remove('hidden');
+          const dateDisp = document.getElementById('modal-resign-date-display');
+          if (dateDisp) dateDisp.textContent = `Tanggal Efektif: ${tglResign}`;
+          const reasonDisp = document.getElementById('modal-resign-reason-display');
+          if (reasonDisp) reasonDisp.textContent = alasanResign || 'Pengunduran Diri / Pemutusan Hubungan Kerja';
+          const attachDisp = document.getElementById('modal-resign-attachment-display');
+          if (attachDisp) attachDisp.textContent = lampiranPPHK || '-';
+        } else {
+          resignBannerEl.classList.add('hidden');
+        }
+      }
 
       // 1. Hitung Kehadiran & Telat
       const absRows = (currentDashboardPayload.rawTables?.Data_Kehadiran || []).filter(r => 
@@ -1897,7 +1941,20 @@
       }
 
       // 4. Contract
-      document.getElementById('modal-emp-kontrak').textContent = empContract;
+      const kontrakEl = document.getElementById('modal-emp-kontrak');
+      if (kontrakEl) {
+        kontrakEl.textContent = isResign ? `${empContract} (Resign)` : empContract;
+      }
+      const contractSubEl = document.getElementById('modal-emp-contract-sub');
+      if (contractSubEl) {
+        if (isResign) {
+          contractSubEl.textContent = `Efektif: ${tglResign}`;
+          contractSubEl.className = "px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-200/90 text-rose-900 border border-rose-300";
+        } else {
+          contractSubEl.textContent = "Profil Master";
+          contractSubEl.className = "px-2 py-0.5 rounded-full text-[9px] font-black bg-blue-200/70 text-blue-900 border border-blue-300/80";
+        }
+      }
 
       // 5. Kedisiplinan / SP
       const spRows = (currentDashboardPayload.rawTables?.Data_SP || []).filter(r => 
@@ -1923,12 +1980,34 @@
       // Catatan
       const notesEl = document.getElementById('modal-emp-notes');
       if (notesEl) {
-        if (spStatus !== 'Bersih') {
+        if (isResign) {
+          notesEl.innerHTML = `<span class="text-rose-700 font-bold">Karyawan Non-Aktif (Resign / PPHK).</span> Alasan pengakhiran kerja: <strong>${alasanResign || '-'}</strong> per tanggal <strong>${tglResign || '-'}</strong>. Rekam jejak penilaian PBK diarsipkan untuk audit dan evaluasi historis cabang DSO.`;
+        } else if (spStatus !== 'Bersih') {
           notesEl.textContent = `Tercatat sanksi aktif ${spStatus}: ${emp.spAlasan || spRows[0]?.Alasan || 'Perlu pembinaan disiplin kerja berkala.'}`;
         } else if (telatCount > 0) {
           notesEl.textContent = `Disiplin kerja cukup baik. Terdapat ${telatCount}x catatan terlambat jam masuk kerja yang perlu diperbaiki.`;
         } else {
           notesEl.textContent = `Disiplin kerja sangat baik. Selalu tepat waktu tanpa pelanggaran atau catatan sanksi.`;
+        }
+      }
+
+      // Validasi Footer
+      const valStatusEl = document.getElementById('modal-emp-validation-status');
+      const valDescEl = document.getElementById('modal-emp-validation-desc');
+      if (valStatusEl) {
+        if (isResign) {
+          valStatusEl.className = "text-xs font-extrabold text-amber-700 flex items-center gap-1.5 mt-0.5";
+          valStatusEl.innerHTML = '<i class="fa-solid fa-clock-rotate-left text-amber-600"></i> Rekam Jejak Diarsipkan (Status Resign / Non-Aktif)';
+        } else {
+          valStatusEl.className = "text-xs font-extrabold text-emerald-600 flex items-center gap-1.5 mt-0.5";
+          valStatusEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> Terverifikasi Database HRD DSO Lampung';
+        }
+      }
+      if (valDescEl) {
+        if (isResign) {
+          valDescEl.textContent = "*Data historis dibekukan sesuai tanggal pengajuan PPHK PT Astra Daihatsu Motor";
+        } else {
+          valDescEl.textContent = "*Penilaian akhir PBK dinilai langsung oleh Kepala Cabang pada lembar resmi";
         }
       }
 
@@ -1948,11 +2027,24 @@
 
       const empNama = getRowCellValue(emp, 'Last name', SCHEMAS.Master_Karyawan) || emp.nama || 'Karyawan';
       const empNpk = getRowCellValue(emp, 'Personnel no.', SCHEMAS.Master_Karyawan) || emp.npk || currentActivePBKNpk;
+      const statusKaryawan = getRowCellValue(emp, 'Status_Karyawan', SCHEMAS.Master_Karyawan) || emp.statusKaryawan || emp.Status_Karyawan || 'Aktif';
+      const isResign = String(statusKaryawan).trim().toLowerCase() === 'resign';
+      const tglResign = formatDatabaseDate(getRowCellValue(emp, 'Tanggal_Resign', SCHEMAS.Master_Karyawan)) || emp.tanggalResign || emp.Tanggal_Resign || '-';
 
       const summaryView = document.getElementById('pbk-view-summary');
       const drilldownView = document.getElementById('pbk-view-drilldown');
       if (summaryView) summaryView.classList.add('hidden');
       if (drilldownView) drilldownView.classList.remove('hidden');
+
+      const resignDrillBadge = document.getElementById('pbk-drilldown-resign-badge');
+      if (resignDrillBadge) {
+        if (isResign) {
+          resignDrillBadge.classList.remove('hidden');
+          resignDrillBadge.innerHTML = `<i class="fa-solid fa-user-xmark mr-1"></i>Status: Resign (Efektif: ${tglResign})`;
+        } else {
+          resignDrillBadge.classList.add('hidden');
+        }
+      }
 
       const badgeEl = document.getElementById('pbk-drilldown-badge');
       const titleEl = document.getElementById('pbk-drilldown-title');
@@ -2248,9 +2340,8 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Kepegawaian</span>
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Kontrak</span>
-                <span class="text-xs font-black text-blue-700 mt-0.5 block">${contract}</span>
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Kontrak & Kepegawaian</span>
+                <span class="text-xs font-black ${isResign ? 'text-rose-700' : 'text-blue-700'} mt-0.5 block">${contract} ${isResign ? '(Resign)' : ''}</span>
               </div>
               <div class="bg-white p-3 rounded-xl border border-slate-200">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase">Jabatan / Job Title</span>

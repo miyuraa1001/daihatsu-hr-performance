@@ -1043,17 +1043,36 @@
         empRole = getRowCellValue(masterEmp, 'Job Title', SCHEMAS.Master_Karyawan) || masterEmp.jabatan || masterEmp.divisi || '-';
       }
 
+      const isResign = masterEmp ? (String(getRowCellValue(masterEmp, 'Status_Karyawan', SCHEMAS.Master_Karyawan) || masterEmp.statusKaryawan || masterEmp.Status_Karyawan || '').trim().toLowerCase() === 'resign') : false;
+
       // Populate elemen header modal
       const avatarEl = document.getElementById('abs-modal-avatar');
       if (avatarEl) {
         avatarEl.textContent = (empName || 'DA').slice(0, 2).toUpperCase();
+        if (isResign) {
+          avatarEl.className = "w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-rose-700 text-white flex items-center justify-center font-black text-base sm:text-xl shadow-sm ring-2 ring-rose-200 flex-shrink-0";
+        } else {
+          avatarEl.className = "w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center font-black text-base sm:text-xl shadow-sm flex-shrink-0";
+        }
       }
       const nameEl = document.getElementById('abs-modal-name');
       if (nameEl) nameEl.textContent = empName;
       const branchEl = document.getElementById('abs-modal-branch');
-      if (branchEl) branchEl.textContent = `Cabang ${empBranch}`;
+      if (branchEl) {
+        if (isResign) {
+          branchEl.className = "px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-100 text-rose-800 border border-rose-200";
+          branchEl.textContent = `Cabang ${empBranch} • Resign`;
+        } else {
+          branchEl.className = "px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-blue-50 text-blue-800 border border-blue-200";
+          branchEl.textContent = `Cabang ${empBranch}`;
+        }
+      }
       const metaEl = document.getElementById('abs-modal-meta');
-      if (metaEl) metaEl.textContent = `NPK: ${cleanNpk} • Jabatan/Divisi: ${empRole}`;
+      if (metaEl) {
+        metaEl.textContent = isResign
+          ? `NPK: ${cleanNpk} • Jabatan/Divisi: ${empRole} • [Status: Resign / PPHK]`
+          : `NPK: ${cleanNpk} • Jabatan/Divisi: ${empRole}`;
+      }
 
       // Hitung statistik
       let hadirCount = 0;
