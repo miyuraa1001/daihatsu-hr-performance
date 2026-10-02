@@ -1353,10 +1353,10 @@
       const standardStatuses = [
         'Proses Penilaian',
         'Berita Acara',
-        'Dikembalikan',
-        'Revisi',
         'BPH',
-        'IBRA/Lunas'
+        'IBRA/Lunas',
+        'Revisi',
+        'Dikembalikan'
       ];
 
       const allStatuses = [...standardStatuses];
@@ -1454,8 +1454,6 @@
 
       // Hitung dan update status KPI sesuai cabang yang sedang disaring
       const currentBranchStatusCount = {};
-      let countLunas = 0;
-      let countProses = 0;
 
       list.forEach(r => {
         const rawSt = getRowCellValue(r, 'Status Reward', SCHEMAS.Data_SS) || r['Status Reward'] || '';
@@ -1463,23 +1461,9 @@
         if (st && st !== '-') {
           currentBranchStatusCount[st] = (currentBranchStatusCount[st] || 0) + 1;
         }
-
-        const stLower = st.toLowerCase();
-        if (stLower.includes('ibra') || stLower.includes('lunas') || stLower.includes('approved') || stLower.includes('cair')) {
-          countLunas++;
-        } else if (stLower.includes('proses') || stLower.includes('penilaian') || stLower.includes('berita') || stLower.includes('ba') || stLower.includes('bph')) {
-          countProses++;
-        }
       });
 
       renderModuleSSRewardKPI(currentBranchStatusCount);
-
-      if (document.getElementById('ss-card-lunas')) {
-        document.getElementById('ss-card-lunas').textContent = countLunas;
-      }
-      if (document.getElementById('ss-card-in-review')) {
-        document.getElementById('ss-card-in-review').textContent = countProses;
-      }
 
       // Update Realisasi Target Cabang
       const s = currentDashboardPayload?.summary || {};

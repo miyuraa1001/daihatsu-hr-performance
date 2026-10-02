@@ -1278,91 +1278,50 @@
             </div>
           </div>
 
-          <!-- Cards Summary SS (Row 1: 4 Key Executive Performance Cards) -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-3.5">
+          <!-- Cards Summary SS (Row 1: 2 Executive Performance Cards) -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <!-- 1. Total Usulan Ide SS -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Total Usulan SS</span>
+                  <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Total Usulan Inovasi SS</span>
                   <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xs border border-amber-100 flex-shrink-0">
                     <i class="fa-solid fa-lightbulb"></i>
                   </div>
                 </div>
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-2xl sm:text-3xl font-black text-slate-900" id="ss-card-total">0</span>
-                  <span class="text-xs font-bold text-slate-400" id="ss-card-target-denom">/ 0 Target</span>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-3xl sm:text-4xl font-black text-slate-900 leading-none" id="ss-card-total">0</span>
+                  <span class="text-xs sm:text-sm font-bold text-slate-400" id="ss-card-target-denom">/ 0 Target</span>
+                  <span class="text-xs font-semibold text-slate-500">Ide Masuk</span>
                 </div>
-                <div class="w-full bg-slate-100 rounded-full h-2 mt-2.5 overflow-hidden">
+                <div class="w-full bg-slate-100 rounded-full h-2 mt-3 overflow-hidden shadow-inner">
                   <div id="ss-card-prog-bar" class="bg-gradient-to-r from-amber-500 to-amber-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
                 </div>
               </div>
-              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
-                <span class="text-slate-400 font-medium">Realisasi Target</span>
-                <span id="ss-card-target-pct" class="font-extrabold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">0%</span>
+              <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span class="text-[11px] text-slate-400 font-medium">Realisasi Target Bulanan</span>
+                <span id="ss-card-target-pct" class="font-extrabold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 text-[11px]">0%</span>
               </div>
             </div>
 
             <!-- 2. Tingkat Partisipasi Staf -->
-            <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between">
+            <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col justify-between">
               <div>
                 <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Tingkat Partisipasi</span>
+                  <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Tingkat Partisipasi Staf</span>
                   <div class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs border border-blue-100 flex-shrink-0">
                     <i class="fa-solid fa-users"></i>
                   </div>
                 </div>
-                <div class="flex items-baseline gap-1">
-                  <span class="text-2xl sm:text-3xl font-black text-blue-600" id="ss-card-part-rate">0%</span>
-                  <span class="text-xs font-bold text-slate-400">Aktif</span>
+                <div class="flex items-baseline gap-2">
+                  <span class="text-3xl sm:text-4xl font-black text-blue-600 leading-none" id="ss-card-part-rate">0%</span>
+                  <span class="text-xs font-bold text-slate-400">Karyawan Aktif</span>
                 </div>
-                <p class="text-[11px] text-slate-500 font-medium mt-1 leading-tight">Karyawan yang mengajukan minimal 1 ide perbaikan</p>
+                <p class="text-[11px] text-slate-500 font-medium mt-2 leading-relaxed">Persentase karyawan cabang yang mengajukan minimal 1 usulan ide Kaizen.</p>
               </div>
-              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
-                <span class="text-slate-400 font-medium">Standar Kaizen</span>
-                <span class="font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200">&ge; 80% Optimal</span>
-              </div>
-            </div>
-
-            <!-- 3. Reward Cair / Lunas (IBRA) -->
-            <div onclick="selectSSRewardFilter('IBRA/Lunas')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between cursor-pointer hover:border-emerald-300 hover:shadow-md transition-all group">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Reward Cair (Lunas)</span>
-                  <div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs border border-emerald-100 flex-shrink-0 group-hover:scale-105 transition-transform">
-                    <i class="fa-solid fa-circle-check"></i>
-                  </div>
-                </div>
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-2xl sm:text-3xl font-black text-emerald-700" id="ss-card-lunas">0</span>
-                  <span class="text-xs font-bold text-slate-400">Ide Selesai</span>
-                </div>
-                <p class="text-[11px] text-slate-500 font-medium mt-1 leading-tight">Reward usulan telah disetujui & dicairkan ke AstraPay</p>
-              </div>
-              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
-                <span class="text-slate-400 font-medium">Status SOP</span>
-                <span class="font-extrabold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">IBRA / Lunas</span>
-              </div>
-            </div>
-
-            <!-- 4. Ide Dalam Proses (Pipeline) -->
-            <div onclick="selectSSRewardFilter('Proses Penilaian')" class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex flex-col justify-between cursor-pointer hover:border-indigo-300 hover:shadow-md transition-all group">
-              <div>
-                <div class="flex items-center justify-between mb-2">
-                  <span class="text-[10px] font-extrabold text-slate-400 uppercase tracking-wider block">Dalam Proses Review</span>
-                  <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs border border-indigo-100 flex-shrink-0 group-hover:scale-105 transition-transform">
-                    <i class="fa-solid fa-clock-rotate-left"></i>
-                  </div>
-                </div>
-                <div class="flex items-baseline gap-1.5">
-                  <span class="text-2xl sm:text-3xl font-black text-indigo-700" id="ss-card-in-review">0</span>
-                  <span class="text-xs font-bold text-slate-400">Ide Berjalan</span>
-                </div>
-                <p class="text-[11px] text-slate-500 font-medium mt-1 leading-tight">Dalam tahap penilaian tim CPD, Berita Acara, atau BPH</p>
-              </div>
-              <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px]">
-                <span class="text-slate-400 font-medium">Pipeline Reward</span>
-                <span class="font-extrabold text-indigo-800 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">On Progress</span>
+              <div class="mt-3.5 pt-2.5 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span class="text-[11px] text-slate-400 font-medium">Standar Partisipasi Kaizen</span>
+                <span class="font-extrabold text-blue-700 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-200 text-[11px]">&ge; 80% Optimal</span>
               </div>
             </div>
           </div>
