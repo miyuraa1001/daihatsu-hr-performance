@@ -55,9 +55,9 @@
           "date": ["date", "tanggal masuk", "tgl masuk", "effective date", "tanggal"],
           "p0001-stext": ["p0001-stext", "stext", "deskripsi jabatan", "struktur"],
           "business area": ["business area", "kode ba", "ba", "kode cabang", "ba code"],
-          "status_karyawan": ["status_karyawan", "status karyawan", "status kerja", "status aktif", "status keaktifan", "status_keaktifan"],
-          "tanggal_resign": ["tanggal_resign", "tgl resign", "tgl keluar", "tanggal keluar", "date of resignation", "resign date"],
-          "alasan_resign": ["alasan_resign", "alasan keluar", "alasan", "keterangan resign", "reason of resignation"]
+          "status_karyawan": ["status_karyawan", "status karyawan", "status kerja", "status aktif", "status keaktifan", "status_keaktifan", "status", "status pegawai", "keterangan status"],
+          "tanggal_resign": ["tanggal_resign", "tgl resign", "tgl keluar", "tanggal keluar", "date of resignation", "resign date", "tgl phk", "tanggal phk", "tgl berhenti", "tanggal berhenti"],
+          "alasan_resign": ["alasan_resign", "alasan keluar", "alasan", "keterangan resign", "reason of resignation", "alasan phk", "lampiran alasan phk", "alasan pphk"]
         }
       },
       Data_Kehadiran: {
@@ -287,6 +287,66 @@
       sp: 'FULL',
       km: 'COMPACT'
     };
+
+    // ========================================================
+    // STANDAR ALASAN PHK / RESIGN & LAMPIRAN DOKUMEN (PPHK ADM)
+    // Sesuai Formulir Resmi PPHK PT Astra Daihatsu Motor
+    // Kolom 1 = Alasan PHK, Kolom 2 = Lampiran Alasan PHK
+    // ========================================================
+    const STANDARD_PPHK_REASONS = [
+      {
+        reason: "Gagal Masa Percobaan",
+        attachment: "Form Evaluasi Karyawan"
+      },
+      {
+        reason: "Mengundurkan Diri",
+        attachment: "Surat Pengunduran Diri Karyawan"
+      },
+      {
+        reason: "Dikualifikasikan Mengundurkan Diri",
+        attachment: "Tanda Terima Surat Pemanggilan 1 & 2 + Surat Pemberitahuan PPHK Kpd Karyawan"
+      },
+      {
+        reason: "Berakhirnya Hubungan Kerja Waktu Tertentu",
+        attachment: "Form Evaluasi Karyawan"
+      },
+      {
+        reason: "Sakit Berkepanjangan",
+        attachment: "Surat Rekomendasi Dokter + Surat Pemberitahuan PPHK Kpd Karyawan"
+      },
+      {
+        reason: "Meninggal Dunia",
+        attachment: "Surat Kematian"
+      },
+      {
+        reason: "Karyawan Di Tahan Oleh Pihak Berwajib",
+        attachment: "Surat Putusan Pengadilan / Surat Penahanan + Surat Pemberitahuan PPHK Kpd Karyawan"
+      },
+      {
+        reason: "Gagal Target Sales",
+        attachment: "Form Evaluasi Karyawan"
+      },
+      {
+        reason: "Pelanggaran Tata Tertib Kerja",
+        attachment: "SP 1/SP 2/SP 3, Perjanjian Bersama & Risalah Perundingan Bipartit"
+      },
+      {
+        reason: "Alasan Mendesak",
+        attachment: "Perjanjian Bersama & Risalah Perundingan Bipartit"
+      }
+    ];
+
+    function getPPHKAttachment(reason) {
+      if (!reason || reason === '-') return "-";
+      const norm = String(reason).trim().toLowerCase();
+      const found = STANDARD_PPHK_REASONS.find(item => {
+        const itemNorm = item.reason.toLowerCase();
+        return norm === itemNorm || norm.includes(itemNorm) || itemNorm.includes(norm);
+      });
+      return found ? found.attachment : "Dokumen Pengajuan PPHK Sesuai SOP ADM";
+    }
+    window.STANDARD_PPHK_REASONS = STANDARD_PPHK_REASONS;
+    window.getPPHKAttachment = getPPHKAttachment;
 
         function lookupEmployeeName(npk) {
       if (!npk) return '';

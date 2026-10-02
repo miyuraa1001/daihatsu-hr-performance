@@ -279,6 +279,28 @@
               <option value="Resign" ${isResign ? 'selected' : ''}>Resign</option>
             </select>
           `;
+        } else if (norm === 'alasan_resign' || norm === 'alasan phk' || norm === 'keterangan resign' || norm === 'alasan keluar') {
+          const pphkList = window.STANDARD_PPHK_REASONS || [];
+          const optHtml = pphkList.map(item => {
+            const isSel = (val && (val.toLowerCase() === item.reason.toLowerCase() || val.toLowerCase().includes(item.reason.toLowerCase())));
+            return `<option value="${item.reason}" ${isSel ? 'selected' : ''}>${item.reason}</option>`;
+          }).join('');
+          const initialAttachment = typeof getPPHKAttachment === 'function' ? getPPHKAttachment(val) : '-';
+          inputHtml = `
+            <div>
+              <select name="${col}" id="edit-alasan-resign-select" onchange="updateEditResignAttachmentHint(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
+                <option value="">-- Pilih Alasan PHK / Resign (PPHK ADM) --</option>
+                ${optHtml}
+              </select>
+              <div id="edit-resign-attachment-box" class="mt-1.5 p-2 bg-amber-50/90 rounded-xl border border-amber-200 text-[11px] text-amber-900 ${val ? '' : 'hidden'}">
+                <div class="font-bold flex items-center gap-1 text-amber-800">
+                  <i class="fa-solid fa-file-circle-check text-amber-600"></i>
+                  <span>Lampiran Dokumen Wajib (Kolom 2 PPHK):</span>
+                </div>
+                <div id="edit-resign-attachment-text" class="mt-0.5 text-slate-800 font-semibold leading-relaxed">${initialAttachment}</div>
+              </div>
+            </div>
+          `;
         } else if (norm === 'status' && sheetName === 'Data_QCC') {
           inputHtml = `
             <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
@@ -309,6 +331,20 @@
 
       document.getElementById('modal-edit-row').classList.remove('hidden');
     }
+
+    function updateEditResignAttachmentHint(val) {
+      const box = document.getElementById('edit-resign-attachment-box');
+      const text = document.getElementById('edit-resign-attachment-text');
+      if (!box || !text) return;
+      if (!val || val === '-') {
+        box.classList.add('hidden');
+        text.textContent = '';
+      } else {
+        box.classList.remove('hidden');
+        text.textContent = typeof getPPHKAttachment === 'function' ? getPPHKAttachment(val) : 'Dokumen Pengajuan PPHK Sesuai SOP ADM';
+      }
+    }
+    window.updateEditResignAttachmentHint = updateEditResignAttachmentHint;
 
     function submitEditRowForm() {
       const form = document.getElementById('form-edit-row');
@@ -386,6 +422,8 @@
           emp.stext = targetRow['P0001-STEXT'] || emp.stext;
           emp.statusKaryawan = targetRow['Status_Karyawan'] || 'Aktif';
           emp['Status_Karyawan'] = targetRow['Status_Karyawan'] || 'Aktif';
+          emp.tanggalResign = targetRow['Tanggal_Resign'] || emp.tanggalResign || '';
+          emp.alasanResign = targetRow['Alasan_Resign'] || emp.alasanResign || '';
         }
         currentDashboardPayload.summary = computeBranchSummary(
           currentDashboardPayload.employeeList,
@@ -1331,6 +1369,34 @@
 
               rowObj[col] = castSchemaValue(col, cellVal, i);
             });
+
+            // Deteksi Keterangan Resign otomatis pada baris yang diunggah
+            if (targetSheet === 'Master_Karyawan') {
+              const rawStatus = String(rowObj['Status_Karyawan'] || '').trim().toLowerCase();
+              let inferredResign = false;
+              let inferredReason = '';
+              for (let c = 0; c < rowData.length; c++) {
+                const cellStr = String(rowData[c] || '').trim();
+                const cellLower = cellStr.toLowerCase();
+                if (cellLower.includes('resign') || cellLower.includes('phk') || cellLower.includes('mengundurkan diri') || cellLower.includes('keluar') || cellLower.includes('berhenti')) {
+                  inferredResign = true;
+                  if (!inferredReason && window.STANDARD_PPHK_REASONS) {
+                    const found = window.STANDARD_PPHK_REASONS.find(p => cellLower.includes(p.reason.toLowerCase()) || p.reason.toLowerCase().includes(cellLower));
+                    if (found) inferredReason = found.reason;
+                  }
+                  if (!inferredReason && cellStr.length > 3 && cellStr.length < 100) {
+                    inferredReason = cellStr;
+                  }
+                }
+              }
+              if (rawStatus === 'resign' || inferredResign) {
+                rowObj['Status_Karyawan'] = 'Resign';
+                if (!rowObj['Alasan_Resign'] && inferredReason) {
+                  rowObj['Alasan_Resign'] = inferredReason;
+                }
+              }
+            }
+
             parsedObjects.push(rowObj);
           }
 
@@ -1341,7 +1407,76 @@
             return;
           }
 
-          // 3. Sinkronisasi data ke state tabel frontend seketika
+          // 3. Khusus Master_Karyawan: Deteksi Omitted/Missing Employees (Contoh: 149 vs 145 = 4 hilang)
+          if (targetSheet === 'Master_Karyawan') {
+            const prevMasterRows = (currentDashboardPayload?.rawTables?.Master_Karyawan || window.masterFullPayload?.rawTables?.Master_Karyawan || []);
+            const prevEmployeeList = (currentDashboardPayload?.employeeList || window.masterFullPayload?.employeeList || []);
+
+            const prevActiveMap = new Map();
+            prevMasterRows.forEach(row => {
+              const npk = safeString(row['Personnel no.'] || row['NPK']);
+              const st = String(row['Status_Karyawan'] || 'Aktif').trim().toLowerCase();
+              if (npk && st !== 'resign') {
+                prevActiveMap.set(npk, row);
+              }
+            });
+            prevEmployeeList.forEach(emp => {
+              const npk = safeString(emp.npk || emp['Personnel no.']);
+              const st = String(emp.statusKaryawan || emp.Status_Karyawan || 'Aktif').trim().toLowerCase();
+              if (npk && st !== 'resign' && !prevActiveMap.has(npk)) {
+                prevActiveMap.set(npk, emp);
+              }
+            });
+
+            const newNpkSet = new Set(
+              parsedObjects.map(obj => safeString(obj['Personnel no.'] || obj['NPK'])).filter(Boolean)
+            );
+
+            const newlyMissing = [];
+            prevActiveMap.forEach((prevItem, npk) => {
+              if (!newNpkSet.has(npk)) {
+                const preservedRow = {};
+                canonicalColumns.forEach(col => {
+                  preservedRow[col] = prevItem[col] !== undefined ? prevItem[col] : (prevItem[normalizeHeaderName(col)] || '');
+                });
+                preservedRow['Personnel no.'] = npk;
+                preservedRow['Status_Karyawan'] = 'Aktif';
+                preservedRow._isPendingResignReview = true;
+                parsedObjects.push(preservedRow);
+
+                newlyMissing.push({
+                  npk: npk,
+                  nama: prevItem['Last name'] || prevItem.nama || 'Karyawan',
+                  cabang: prevItem['P.subarea'] || prevItem.cabang || '-',
+                  kodeBA: safeString(prevItem['Business area'] || prevItem.kodeBA || ''),
+                  divisi: prevItem['Name'] || prevItem.divisi || '-',
+                  jabatan: prevItem['Job Title'] || prevItem.jabatan || '-',
+                  tipeKontrak: prevItem['Contract'] || prevItem.tipeKontrak || 'Tetap',
+                  missedAt: new Date().toISOString()
+                });
+              }
+            });
+
+            let currentPending = typeof getPendingResignReviews === 'function' ? getPendingResignReviews() : [];
+            currentPending = currentPending.filter(p => !newNpkSet.has(safeString(p.npk || p['Personnel no.'])));
+            newlyMissing.forEach(item => {
+              if (!currentPending.some(p => safeString(p.npk || p['Personnel no.']) === item.npk)) {
+                currentPending.push(item);
+              }
+            });
+            if (typeof savePendingResignReviews === 'function') {
+              savePendingResignReviews(currentPending);
+            }
+
+            if (newlyMissing.length > 0) {
+              setTimeout(() => {
+                showToast(`⚠️ Ditemukan ${newlyMissing.length} karyawan aktif sebelumnya yang tidak ada di berkas baru. Disimpan ke Pengingat Tinjauan Status Admin.`, 7000);
+                if (typeof openResignReviewModal === 'function') openResignReviewModal();
+              }, 1200);
+            }
+          }
+
+          // 4. Sinkronisasi data ke state tabel frontend seketika
           if (!currentDashboardPayload.rawTables) currentDashboardPayload.rawTables = {};
           currentDashboardPayload.rawTables[targetSheet] = parsedObjects;
 
@@ -1364,6 +1499,8 @@
               const stKaryawan = obj['Status_Karyawan'] || existing.statusKaryawan || 'Aktif';
               const dob = obj['D.o.birth'] || existing.tglLahir || '';
               const jDate = obj['Date'] || existing.joinDate || '';
+              const isPending = !!obj._isPendingResignReview || !!existing.isPendingResignReview;
+
               return {
                 ...existing,
                 npk: safeString(obj['Personnel no.']),
@@ -1377,6 +1514,7 @@
                 'Contract': contractVal,
                 statusKaryawan: stKaryawan,
                 Status_Karyawan: stKaryawan,
+                isPendingResignReview: isPending,
                 tanggalResign: obj['Tanggal_Resign'] || existing.tanggalResign || '',
                 alasanResign: obj['Alasan_Resign'] || existing.alasanResign || '',
                 umurText: calculateAgeAndService(dob),
@@ -1399,6 +1537,7 @@
             );
 
             renderMasterKaryawanView(currentDashboardPayload);
+            if (typeof updateResignReviewBanner === 'function') updateResignReviewBanner();
           }
           else if (targetSheet === 'Data_Kehadiran') filterAbsensiTable();
           else if (targetSheet === 'Data_SS') filterSSTable();
@@ -1983,8 +2122,57 @@
         const psGroup = getRowCellValue(emp, 'PS group', SCHEMAS.Master_Karyawan) || emp.psGroup || '-';
         const lvl = getRowCellValue(emp, 'Lvl', SCHEMAS.Master_Karyawan) || emp.lvl || '-';
 
+        const statusKaryawan = getRowCellValue(emp, 'Status_Karyawan', SCHEMAS.Master_Karyawan) || emp.statusKaryawan || emp.Status_Karyawan || 'Aktif';
+        const isResign = String(statusKaryawan).trim().toLowerCase() === 'resign';
+        const tglResign = formatDatabaseDate(getRowCellValue(emp, 'Tanggal_Resign', SCHEMAS.Master_Karyawan)) || emp.tanggalResign || '-';
+        const alasanResign = getRowCellValue(emp, 'Alasan_Resign', SCHEMAS.Master_Karyawan) || emp.alasanResign || '-';
+        const lampiranPPHK = (typeof getPPHKAttachment === 'function') ? getPPHKAttachment(alasanResign) : '-';
+
         contentEl.innerHTML = `
           <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200 text-xs space-y-3">
+            <!-- Status Kepegawaian & Resign Insight -->
+            ${isResign ? `
+              <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3.5 shadow-2xs">
+                <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-rose-200/80 flex-wrap gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-200 text-rose-900 border border-rose-300 uppercase flex items-center gap-1.5">
+                      <i class="fa-solid fa-user-xmark"></i>
+                      Status: Resign / PPHK
+                    </span>
+                    <span class="text-xs font-bold text-rose-800">Tanggal Efektif: ${tglResign}</span>
+                  </div>
+                  <span class="text-[10px] font-bold text-rose-700 bg-white px-2.5 py-0.5 rounded-lg border border-rose-200 shadow-2xs">
+                    <i class="fa-solid fa-shield-halved mr-1"></i>SOP PPHK PT Astra Daihatsu Motor
+                  </span>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1.5">
+                  <div class="bg-white p-3 rounded-xl border border-rose-200">
+                    <span class="text-[10px] font-bold text-rose-600 block uppercase flex items-center gap-1">
+                      <i class="fa-solid fa-tag"></i> Alasan PHK / Resign (Kolom 1 PPHK)
+                    </span>
+                    <span class="text-xs font-black text-slate-900 mt-1 block">${alasanResign}</span>
+                  </div>
+                  <div class="bg-white p-3 rounded-xl border border-rose-200">
+                    <span class="text-[10px] font-bold text-amber-700 block uppercase flex items-center gap-1">
+                      <i class="fa-solid fa-file-circle-check text-amber-600"></i> Lampiran Dokumen Wajib (Kolom 2 PPHK)
+                    </span>
+                    <span class="text-xs font-bold text-slate-800 mt-1 block leading-relaxed">${lampiranPPHK}</span>
+                  </div>
+                </div>
+              </div>
+            ` : `
+              <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-between shadow-2xs">
+                <div class="flex items-center gap-2.5">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                  <span class="text-xs font-extrabold text-emerald-950">Status Kepegawaian: Aktif</span>
+                  <span class="text-[11px] text-emerald-700 font-medium hidden sm:inline">• Karyawan aktif bertugas di unit kerja terkait</span>
+                </div>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                  <i class="fa-solid fa-user-check mr-1"></i>Aktif Bekerja
+                </span>
+              </div>
+            `}
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div class="bg-white p-3 rounded-xl border border-slate-200">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase">NPK / Personnel No.</span>
@@ -1998,7 +2186,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Kepegawaian</span>
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Kontrak</span>
                 <span class="text-xs font-black text-blue-700 mt-0.5 block">${contract}</span>
               </div>
               <div class="bg-white p-3 rounded-xl border border-slate-200">
@@ -2578,3 +2766,343 @@ pause
     window.openAddKMModal = openAddKMModal;
     window.handleKMNPKLookup = handleKMNPKLookup;
     window.submitAddKMForm = submitAddKMForm;
+
+    // ========================================================
+    // MODUL TINJAUAN & PENGINGAT STATUS RESIGN KARYAWAN (ADMIN)
+    // ========================================================
+    const PENDING_RESIGN_STORAGE_KEY = 'dperform_pending_resign_review';
+
+    function getPendingResignReviews() {
+      try {
+        const raw = localStorage.getItem(PENDING_RESIGN_STORAGE_KEY);
+        if (!raw) return [];
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function savePendingResignReviews(list) {
+      try {
+        localStorage.setItem(PENDING_RESIGN_STORAGE_KEY, JSON.stringify(list || []));
+      } catch (e) {}
+      updateResignReviewBanner();
+    }
+
+    function updateResignReviewBanner() {
+      const isAdmin = typeof isUserAdmin === 'function' && isUserAdmin(loggedInUser);
+      const banner = document.getElementById('admin-resign-review-banner');
+      const dashBtn = document.getElementById('btn-dash-resign-review');
+      const badgeCount = document.getElementById('resign-review-count-badge');
+      const btnText = document.getElementById('btn-resign-review-text');
+      const dashBadge = document.getElementById('badge-dash-resign-review');
+      const modalBadge = document.getElementById('resign-review-modal-badge');
+
+      const pendingList = getPendingResignReviews();
+      const count = pendingList.length;
+
+      if (!isAdmin || count === 0) {
+        if (banner) banner.classList.add('hidden');
+        if (dashBtn) dashBtn.classList.add('hidden');
+        return;
+      }
+
+      if (banner) banner.classList.remove('hidden');
+      if (dashBtn) dashBtn.classList.remove('hidden');
+
+      const countText = `${count} Karyawan`;
+      if (badgeCount) badgeCount.textContent = countText;
+      if (btnText) btnText.textContent = `Tinjau Karyawan (${count})`;
+      if (dashBadge) dashBadge.textContent = `${count} Tinjau Resign`;
+      if (modalBadge) modalBadge.textContent = countText;
+    }
+
+    function openResignReviewModal() {
+      if (typeof isUserAdmin === 'function' && !isUserAdmin(loggedInUser)) {
+        showToast("Akses ditolak: Hanya Admin yang dapat meninjau data resign.");
+        return;
+      }
+      renderResignReviewModalItems();
+      const modal = document.getElementById('modal-resign-review');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function renderResignReviewModalItems() {
+      const container = document.getElementById('resign-review-items-container');
+      const modalBadge = document.getElementById('resign-review-modal-badge');
+      if (!container) return;
+
+      const pendingList = getPendingResignReviews();
+      if (modalBadge) modalBadge.textContent = `${pendingList.length} Karyawan`;
+
+      if (!pendingList.length) {
+        container.innerHTML = `
+          <div class="p-8 text-center bg-slate-50 rounded-2xl border border-slate-200">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl mx-auto mb-2.5">
+              <i class="fa-solid fa-clipboard-check"></i>
+            </div>
+            <h4 class="text-sm font-bold text-slate-800">Semua Data Telah Ditinjau</h4>
+            <p class="text-xs text-slate-500 mt-1">Tidak ada karyawan yang menunggu konfirmasi status resign saat ini.</p>
+          </div>
+        `;
+        return;
+      }
+
+      const todayStr = new Date().toISOString().split('T')[0];
+      const pphkList = window.STANDARD_PPHK_REASONS || [];
+
+      container.innerHTML = pendingList.map(emp => {
+        const npk = safeString(emp.npk || emp['Personnel no.']);
+        const nama = emp.nama || emp['Last name'] || 'Karyawan';
+        const cabang = emp.cabang || emp['P.subarea'] || '-';
+        const kodeBA = emp.kodeBA || emp['Business area'] || '';
+        const jabatan = emp.jabatan || emp['Job Title'] || '-';
+        const divisi = emp.divisi || emp['Name'] || '-';
+        const missedDate = emp.missedAt ? new Date(emp.missedAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Bulan Berjalan';
+
+        const pphkOptions = pphkList.map(item => `<option value="${item.reason}">${item.reason}</option>`).join('');
+
+        return `
+          <div class="p-3.5 bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl transition space-y-3" id="resign-card-${npk}">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+              <div class="flex items-start gap-3">
+                <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 font-black flex items-center justify-center text-xs flex-shrink-0 border border-amber-300">
+                  ${nama.slice(0, 2).toUpperCase()}
+                </div>
+                <div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span class="font-extrabold text-slate-900 text-sm">${nama}</span>
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-200 text-slate-700">${npk}</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                      <i class="fa-solid fa-clock mr-1"></i>Omit / Tidak di Berkas Baru (${missedDate})
+                    </span>
+                  </div>
+                  <div class="text-[11px] text-slate-500 font-medium mt-0.5 flex items-center gap-2 flex-wrap">
+                    <span><i class="fa-solid fa-building mr-1"></i>Cabang: <b>${cabang}</b> ${kodeBA ? '(' + kodeBA + ')' : ''}</span>
+                    <span>•</span>
+                    <span><i class="fa-solid fa-briefcase mr-1"></i>${divisi} / ${jabatan}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 flex-shrink-0 self-end sm:self-center">
+                <button type="button" onclick="confirmEmployeeKeepActive('${npk}')" class="px-3 py-1.5 bg-white hover:bg-emerald-50 text-emerald-700 border border-emerald-300 font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs transition cursor-pointer">
+                  <i class="fa-solid fa-check text-[10px]"></i>
+                  <span>Tetap Aktif</span>
+                </button>
+                <button type="button" onclick="toggleResignInlineForm('${npk}')" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs transition cursor-pointer">
+                  <i class="fa-solid fa-user-xmark text-[10px]"></i>
+                  <span>Tandai Resign</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Inline Resign Form -->
+            <div id="inline-resign-form-${npk}" class="hidden p-3 bg-white border border-rose-200 rounded-xl space-y-2.5 animate-in fade-in duration-150">
+              <div class="text-[11px] font-black text-rose-900 flex items-center gap-1.5 border-b border-rose-100 pb-1.5">
+                <i class="fa-solid fa-file-pen text-rose-600"></i>
+                <span>Formulir Penetapan PPHK Resmi (SOP ADM) untuk ${nama}</span>
+              </div>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-700 mb-1">Tanggal Efektif Resign / PHK:</label>
+                  <input type="date" id="inline-date-${npk}" value="${todayStr}" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500">
+                </div>
+                <div>
+                  <label class="block text-[10px] font-bold text-slate-700 mb-1">Alasan PHK (Kolom 1 Formulir PPHK):</label>
+                  <select id="inline-reason-${npk}" onchange="updateInlineAttachmentHint('${npk}', this.value)" class="w-full px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-rose-500 bg-white">
+                    <option value="">-- Pilih Alasan PHK Resmi --</option>
+                    ${pphkOptions}
+                  </select>
+                </div>
+              </div>
+
+              <!-- Dynamic Attachment Preview -->
+              <div id="inline-attachment-box-${npk}" class="hidden p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-950">
+                <div class="font-bold flex items-center gap-1 text-amber-900">
+                  <i class="fa-solid fa-paperclip text-amber-600"></i>
+                  <span>Lampiran Dokumen Wajib (Kolom 2 PPHK):</span>
+                </div>
+                <div id="inline-attachment-text-${npk}" class="mt-0.5 text-slate-800 font-semibold leading-relaxed"></div>
+              </div>
+
+              <div class="flex items-center justify-end gap-2 pt-1">
+                <button type="button" onclick="toggleResignInlineForm('${npk}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold rounded-lg text-[11px] transition cursor-pointer">
+                  Batal
+                </button>
+                <button type="button" onclick="submitEmployeeResignAction('${npk}')" class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 shadow-2xs transition cursor-pointer">
+                  <i class="fa-solid fa-floppy-disk text-[10px]"></i>
+                  <span>Simpan Status Resign</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function toggleResignInlineForm(npk) {
+      const formEl = document.getElementById(`inline-resign-form-${npk}`);
+      if (!formEl) return;
+      if (formEl.classList.contains('hidden')) {
+        formEl.classList.remove('hidden');
+      } else {
+        formEl.classList.add('hidden');
+      }
+    }
+
+    function updateInlineAttachmentHint(npk, reason) {
+      const box = document.getElementById(`inline-attachment-box-${npk}`);
+      const text = document.getElementById(`inline-attachment-text-${npk}`);
+      if (!box || !text) return;
+      if (!reason || reason === '-') {
+        box.classList.add('hidden');
+        text.textContent = '';
+      } else {
+        box.classList.remove('hidden');
+        text.textContent = typeof getPPHKAttachment === 'function' ? getPPHKAttachment(reason) : reason;
+      }
+    }
+
+    async function submitEmployeeResignAction(npk) {
+      const cleanNpk = safeString(npk);
+      const dateInput = document.getElementById(`inline-date-${cleanNpk}`);
+      const reasonSelect = document.getElementById(`inline-reason-${cleanNpk}`);
+
+      const tanggalResign = dateInput ? dateInput.value : new Date().toISOString().split('T')[0];
+      const alasanResign = reasonSelect ? reasonSelect.value : '';
+
+      if (!alasanResign) {
+        alert("Harap pilih Alasan PHK / Resign sesuai formulir PPHK standar.");
+        return;
+      }
+
+      // Update in rawTables.Master_Karyawan
+      const masterRows = currentDashboardPayload?.rawTables?.Master_Karyawan || [];
+      let foundRow = masterRows.find(r => safeString(r['Personnel no.'] || r['NPK']) === cleanNpk);
+
+      if (!foundRow && window.masterFullPayload?.rawTables?.Master_Karyawan) {
+        foundRow = window.masterFullPayload.rawTables.Master_Karyawan.find(r => safeString(r['Personnel no.'] || r['NPK']) === cleanNpk);
+        if (foundRow) masterRows.push(foundRow);
+      }
+
+      if (foundRow) {
+        foundRow['Status_Karyawan'] = 'Resign';
+        foundRow['Tanggal_Resign'] = tanggalResign;
+        foundRow['Alasan_Resign'] = alasanResign;
+      }
+
+      // Update in employeeList
+      const empList = currentDashboardPayload?.employeeList || [];
+      let emp = empList.find(e => safeString(e.npk || e['Personnel no.']) === cleanNpk);
+      if (emp) {
+        emp.statusKaryawan = 'Resign';
+        emp.Status_Karyawan = 'Resign';
+        emp.tanggalResign = tanggalResign;
+        emp.alasanResign = alasanResign;
+        emp.isPendingResignReview = false;
+      }
+
+      // Remove from pending reviews
+      let pendingList = getPendingResignReviews();
+      pendingList = pendingList.filter(p => safeString(p.npk || p['Personnel no.']) !== cleanNpk);
+      savePendingResignReviews(pendingList);
+
+      // Re-compute and refresh
+      if (typeof computeBranchSummary === 'function' && currentDashboardPayload) {
+        currentDashboardPayload.summary = computeBranchSummary(
+          currentDashboardPayload.employeeList,
+          currentDashboardPayload.qccList,
+          currentDashboardPayload.summary
+        );
+      }
+      if (typeof renderMasterKaryawanView === 'function') renderMasterKaryawanView(currentDashboardPayload);
+      if (typeof renderAllDashboardData === 'function') renderAllDashboardData(window.masterFullPayload || currentDashboardPayload);
+      if (typeof filterEmployeeTable === 'function') filterEmployeeTable();
+
+      renderResignReviewModalItems();
+      if (pendingList.length === 0) {
+        closeModal('modal-resign-review');
+      }
+
+      const lampiran = typeof getPPHKAttachment === 'function' ? getPPHKAttachment(alasanResign) : '';
+      showToast(`✅ Status ${emp?.nama || cleanNpk} berhasil diubah ke Resign (${alasanResign}). Lampiran: ${lampiran}`, 5000);
+
+      try {
+        await syncSheetToBackend('Master_Karyawan');
+      } catch(e) {}
+    }
+
+    function confirmEmployeeKeepActive(npk) {
+      const cleanNpk = safeString(npk);
+
+      const masterRows = currentDashboardPayload?.rawTables?.Master_Karyawan || [];
+      const foundRow = masterRows.find(r => safeString(r['Personnel no.'] || r['NPK']) === cleanNpk);
+      if (foundRow) {
+        foundRow['Status_Karyawan'] = 'Aktif';
+      }
+
+      const empList = currentDashboardPayload?.employeeList || [];
+      const emp = empList.find(e => safeString(e.npk || e['Personnel no.']) === cleanNpk);
+      if (emp) {
+        emp.statusKaryawan = 'Aktif';
+        emp.Status_Karyawan = 'Aktif';
+        emp.isPendingResignReview = false;
+      }
+
+      let pendingList = getPendingResignReviews();
+      pendingList = pendingList.filter(p => safeString(p.npk || p['Personnel no.']) !== cleanNpk);
+      savePendingResignReviews(pendingList);
+
+      if (typeof renderMasterKaryawanView === 'function') renderMasterKaryawanView(currentDashboardPayload);
+      if (typeof filterEmployeeTable === 'function') filterEmployeeTable();
+
+      renderResignReviewModalItems();
+      if (pendingList.length === 0) {
+        closeModal('modal-resign-review');
+      }
+
+      showToast(`✅ Karyawan ${emp?.nama || cleanNpk} dikonfirmasi tetap Aktif.`);
+    }
+
+    function bulkConfirmKeepAllActive() {
+      const pendingList = getPendingResignReviews();
+      if (!pendingList.length) {
+        closeModal('modal-resign-review');
+        return;
+      }
+
+      const masterRows = currentDashboardPayload?.rawTables?.Master_Karyawan || [];
+      const empList = currentDashboardPayload?.employeeList || [];
+
+      pendingList.forEach(p => {
+        const cleanNpk = safeString(p.npk || p['Personnel no.']);
+        const row = masterRows.find(r => safeString(r['Personnel no.'] || r['NPK']) === cleanNpk);
+        if (row) row['Status_Karyawan'] = 'Aktif';
+        const emp = empList.find(e => safeString(e.npk || e['Personnel no.']) === cleanNpk);
+        if (emp) {
+          emp.statusKaryawan = 'Aktif';
+          emp.Status_Karyawan = 'Aktif';
+          emp.isPendingResignReview = false;
+        }
+      });
+
+      savePendingResignReviews([]);
+      if (typeof renderMasterKaryawanView === 'function') renderMasterKaryawanView(currentDashboardPayload);
+      if (typeof filterEmployeeTable === 'function') filterEmployeeTable();
+
+      closeModal('modal-resign-review');
+      showToast(`✅ Seluruh ${pendingList.length} karyawan dikonfirmasi tetap Aktif.`);
+    }
+
+    // Expose resign review functions
+    window.openResignReviewModal = openResignReviewModal;
+    window.renderResignReviewModalItems = renderResignReviewModalItems;
+    window.toggleResignInlineForm = toggleResignInlineForm;
+    window.updateInlineAttachmentHint = updateInlineAttachmentHint;
+    window.submitEmployeeResignAction = submitEmployeeResignAction;
+    window.confirmEmployeeKeepActive = confirmEmployeeKeepActive;
+    window.bulkConfirmKeepAllActive = bulkConfirmKeepAllActive;
+    window.getPendingResignReviews = getPendingResignReviews;
+    window.savePendingResignReviews = savePendingResignReviews;
+    window.updateResignReviewBanner = updateResignReviewBanner;

@@ -1040,6 +1040,7 @@
       try { renderSPView(currentDashboardPayload); } catch (e) { console.error("renderSPView error:", e); }
       try { renderKMView(currentDashboardPayload); } catch (e) { console.error("renderKMView error:", e); }
       try { updateSidebarReadiness(currentDashboardPayload); } catch (e) { console.error("updateSidebarReadiness error:", e); }
+      try { if (typeof updateResignReviewBanner === 'function') updateResignReviewBanner(); } catch (e) { console.error("updateResignReviewBanner error:", e); }
     }
 
     // ----------------------------------------------------
