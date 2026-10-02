@@ -1407,6 +1407,7 @@
             return;
           }
 
+          // 3. Sinkronisasi data ke state tabel frontend seketika
           // 3. Khusus Master_Karyawan: Deteksi Omitted/Missing Employees (Contoh: 149 vs 145 = 4 hilang)
           if (targetSheet === 'Master_Karyawan') {
             const prevMasterRows = (currentDashboardPayload?.rawTables?.Master_Karyawan || window.masterFullPayload?.rawTables?.Master_Karyawan || []);
@@ -2186,6 +2187,7 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <div class="bg-white p-3 rounded-xl border border-slate-200">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Kepegawaian</span>
                 <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Kontrak</span>
                 <span class="text-xs font-black text-blue-700 mt-0.5 block">${contract}</span>
               </div>
