@@ -1323,7 +1323,7 @@
       const select = document.getElementById('ss-filter-part');
       if (!select) return;
 
-      if (select.value.toLowerCase() === statusKey.toLowerCase()) {
+      if (statusKey === 'ALL' || select.value.toLowerCase() === statusKey.toLowerCase()) {
         select.value = 'ALL';
       } else {
         let matched = false;
@@ -1367,6 +1367,17 @@
 
       const activeFilter = (document.getElementById('ss-filter-part')?.value || 'ALL').toLowerCase();
 
+      const resetBtn = document.getElementById('ss-btn-reset-filter');
+      if (resetBtn) {
+        if (activeFilter && activeFilter !== 'all') {
+          resetBtn.classList.remove('hidden');
+        } else {
+          resetBtn.classList.add('hidden');
+        }
+      }
+
+      container.className = 'grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5';
+
       container.innerHTML = allStatuses.map(st => {
         const meta = getSSRewardStatusMeta(st);
         let count = 0;
@@ -1380,19 +1391,21 @@
         });
 
         const isActive = activeFilter !== 'all' && (activeFilter === meta.key.toLowerCase() || activeFilter === st.toLowerCase());
-        const ringClass = isActive ? 'ring-2 ring-offset-1 ring-slate-800 font-black shadow-md' : 'shadow-2xs';
+        const ringClass = isActive 
+          ? 'ring-2 ring-offset-2 ring-slate-800 font-black shadow-md scale-[1.02] border-slate-400' 
+          : 'shadow-2xs hover:shadow-xs hover:border-slate-300';
 
         return `
           <div onclick="selectSSRewardFilter('${meta.key}')" 
                title="${meta.desc} (Klik untuk menyaring tabel)"
-               class="p-2 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between ${meta.cardBg} ${ringClass}">
-            <div class="flex items-center justify-between gap-1 mb-1">
-              <span class="text-[10px] font-bold ${meta.textColor} truncate" title="${meta.displayName}">${meta.displayName}</span>
-              <i class="${meta.icon} text-xs ${meta.textColor} opacity-85 flex-shrink-0"></i>
+               class="p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between ${meta.cardBg} ${ringClass} group">
+            <div class="flex items-center justify-between gap-1 mb-1.5">
+              <span class="text-[11px] font-bold ${meta.textColor} leading-tight" title="${meta.displayName}">${meta.displayName}</span>
+              <i class="${meta.icon} text-xs ${meta.textColor} opacity-80 group-hover:scale-110 transition-transform flex-shrink-0"></i>
             </div>
-            <div class="flex items-baseline justify-between mt-auto">
-              <span class="text-base sm:text-lg font-black ${meta.countColor}">${count}</span>
-              <span class="text-[9px] font-semibold text-slate-400">Ide</span>
+            <div class="flex items-baseline justify-between mt-auto pt-1">
+              <span class="text-lg sm:text-xl font-black ${meta.countColor}">${count}</span>
+              <span class="text-[10px] font-bold text-slate-400">Ide</span>
             </div>
           </div>
         `;
@@ -1409,6 +1422,7 @@
       
       const ssPct = (s.targetSS > 0) ? Math.min(Math.round(((s.totalSS || 0) / s.targetSS) * 100), 100) : 0;
       if (document.getElementById('ss-card-prog-bar')) document.getElementById('ss-card-prog-bar').style.width = `${ssPct}%`;
+      if (document.getElementById('ss-card-target-pct')) document.getElementById('ss-card-target-pct').textContent = `${ssPct}%`;
       
       if (document.getElementById('ss-card-part-rate')) document.getElementById('ss-card-part-rate').textContent = `${s.ssParticipationRate || 0}%`;
 
@@ -1440,14 +1454,50 @@
 
       // Hitung dan update status KPI sesuai cabang yang sedang disaring
       const currentBranchStatusCount = {};
+      let countLunas = 0;
+      let countProses = 0;
+
       list.forEach(r => {
         const rawSt = getRowCellValue(r, 'Status Reward', SCHEMAS.Data_SS) || r['Status Reward'] || '';
         const st = String(rawSt).trim();
         if (st && st !== '-') {
           currentBranchStatusCount[st] = (currentBranchStatusCount[st] || 0) + 1;
         }
+
+        const stLower = st.toLowerCase();
+        if (stLower.includes('ibra') || stLower.includes('lunas') || stLower.includes('approved') || stLower.includes('cair')) {
+          countLunas++;
+        } else if (stLower.includes('proses') || stLower.includes('penilaian') || stLower.includes('berita') || stLower.includes('ba') || stLower.includes('bph')) {
+          countProses++;
+        }
       });
+
       renderModuleSSRewardKPI(currentBranchStatusCount);
+
+      if (document.getElementById('ss-card-lunas')) {
+        document.getElementById('ss-card-lunas').textContent = countLunas;
+      }
+      if (document.getElementById('ss-card-in-review')) {
+        document.getElementById('ss-card-in-review').textContent = countProses;
+      }
+
+      // Update Realisasi Target Cabang
+      const s = currentDashboardPayload?.summary || {};
+      const targetSS = s.targetSS || (list.length > 0 ? list.length : 10);
+      const ssPct = (targetSS > 0) ? Math.min(Math.round((list.length / targetSS) * 100), 100) : 0;
+      
+      if (document.getElementById('ss-card-total')) {
+        document.getElementById('ss-card-total').textContent = list.length;
+      }
+      if (document.getElementById('ss-card-target-denom')) {
+        document.getElementById('ss-card-target-denom').textContent = `/ ${targetSS} Target`;
+      }
+      if (document.getElementById('ss-card-prog-bar')) {
+        document.getElementById('ss-card-prog-bar').style.width = `${ssPct}%`;
+      }
+      if (document.getElementById('ss-card-target-pct')) {
+        document.getElementById('ss-card-target-pct').textContent = `${ssPct}%`;
+      }
 
       if (q) {
         list = list.filter(e => {
