@@ -210,6 +210,275 @@
       `;
     }
 
+    const EDIT_FORM_SECTIONS = {
+      Master_Karyawan: [
+        {
+          id: 'sec_mk_identitas',
+          title: 'Identitas & Profil Karyawan',
+          desc: 'Nomor induk kepegawaian (NPK), nama lengkap, dan data biodata',
+          icon: 'fa-id-card',
+          iconBg: 'bg-blue-50',
+          iconColor: 'text-blue-600',
+          iconBorder: 'border-blue-200',
+          columns: ['No', 'Personnel no.', 'Last name', 'Gender text', 'Religious denomination', 'D.o.birth']
+        },
+        {
+          id: 'sec_mk_organisasi',
+          title: 'Organisasi & Penempatan Kerja',
+          desc: 'Informasi cabang, divisi kerja, job title, level, dan grade organisasi',
+          icon: 'fa-building',
+          iconBg: 'bg-indigo-50',
+          iconColor: 'text-indigo-600',
+          iconBorder: 'border-indigo-200',
+          columns: ['Business area', 'P.subarea', 'Wilayah', 'Name of organizational unit', 'Name', 'Job Title', 'Lvl', 'PS group', 'P0001-STEXT']
+        },
+        {
+          id: 'sec_mk_status',
+          title: 'Status Kepegawaian & Disiplin',
+          desc: 'Tipe kontrak kerja, tanggal masuk, serta riwayat kelulusan/pengunduran diri',
+          icon: 'fa-file-signature',
+          iconBg: 'bg-emerald-50',
+          iconColor: 'text-emerald-600',
+          iconBorder: 'border-emerald-200',
+          columns: ['Date', 'Contract', 'Status_Karyawan', 'Tanggal_Resign', 'Alasan_Resign']
+        }
+      ],
+      Data_Kehadiran: [
+        {
+          id: 'sec_abs_identitas',
+          title: 'Identitas Karyawan & Cabang',
+          desc: 'NPK, nama pegawai, serta area cabang operasional',
+          icon: 'fa-user-clock',
+          iconBg: 'bg-blue-50',
+          iconColor: 'text-blue-600',
+          iconBorder: 'border-blue-200',
+          columns: ['No', 'Personnel no.', 'NPK', 'Employee Name', 'Business area', 'Cabang', 'Wilayah']
+        },
+        {
+          id: 'sec_abs_waktu',
+          title: 'Presensi & Durasi Jam Kerja',
+          desc: 'Catatan tanggal, jam clock in/out, estimasi status keterlambatan & jam kerja',
+          icon: 'fa-clock',
+          iconBg: 'bg-amber-50',
+          iconColor: 'text-amber-600',
+          iconBorder: 'border-amber-200',
+          columns: ['Date', 'Time Clock In', 'Time Clock Out', 'Durasi Kerja (Work Hours)', 'Status Kehadiran', 'Estimasi Telat (Asumsi 08.00)']
+        },
+        {
+          id: 'sec_abs_lokasi',
+          title: 'Verifikasi Lokasi & Keterangan',
+          desc: 'Pengecekan geofencing koordinat presensi dan perizinan CICO',
+          icon: 'fa-map-pin',
+          iconBg: 'bg-purple-50',
+          iconColor: 'text-purple-600',
+          iconBorder: 'border-purple-200',
+          columns: ['In Radius Clock in', 'In Radius Clock Out', 'Need CICO Approval', 'Latitude Clock In', 'Longitude Clock In', 'Latitude Clock Out', 'Longitude Clock Out', 'Keterangan']
+        }
+      ],
+      Data_SS: [
+        {
+          id: 'sec_ss_usulan',
+          title: 'Informasi Usulan Kaizen (Suggestion System)',
+          desc: 'Nomor registrasi inovasi, inisiator, unit cabang, dan tema usulan perbaikan',
+          icon: 'fa-lightbulb',
+          iconBg: 'bg-amber-50',
+          iconColor: 'text-amber-600',
+          iconBorder: 'border-amber-200',
+          columns: ['No', 'Registrasi', 'Nama', 'NPK', 'Cabang', 'Cabang/Departemen', 'Kode BA', 'Bagian', 'Tema', 'Kategori', 'Diterima Bulan']
+        },
+        {
+          id: 'sec_ss_fasilitator',
+          title: 'Fasilitator & Pendampingan',
+          desc: 'Data pembimbing usulan dan pendamping ide inovasi',
+          icon: 'fa-user-group',
+          iconBg: 'bg-blue-50',
+          iconColor: 'text-blue-600',
+          iconBorder: 'border-blue-200',
+          columns: ['Fasilitator', 'NPK Fasilitator']
+        },
+        {
+          id: 'sec_ss_reward',
+          title: 'Evaluasi SOP ADM & Reward',
+          desc: 'Verifikasi status pencairan reward, nomor berita acara, akun AstraPay, & BPH',
+          icon: 'fa-award',
+          iconBg: 'bg-emerald-50',
+          iconColor: 'text-emerald-600',
+          iconBorder: 'border-emerald-200',
+          columns: ['Status Reward', 'Reward', 'No.Akun AstraPay', 'Nama Akun', 'No.Berita Acara', 'No.BPH', 'Distribusi Reward', 'Keterangan']
+        }
+      ],
+      Data_QCC: [
+        {
+          id: 'sec_qcc_tim',
+          title: 'Profil Circle & Struktur Gugus Kendali Mutu',
+          desc: 'Data kelompok perbaikan mutu, penempatan cabang, circle leader, fasilitator & anggota',
+          icon: 'fa-users-gear',
+          iconBg: 'bg-indigo-50',
+          iconColor: 'text-indigo-600',
+          iconBorder: 'border-indigo-200',
+          columns: ['No', 'No.Registrasi', 'Nama Tim', 'Cabang/Departemen', 'Kode BA', 'Bagian', 'Leader', 'Fasilitator', 'Anggota 1', 'Anggota 2', 'Anggota 3', 'Anggota 4', 'Anggota 5', 'Anggota 6']
+        },
+        {
+          id: 'sec_qcc_proyek',
+          title: 'Tema Perbaikan & Siklus PDCA',
+          desc: 'Tema proyek mutu, kategori kaizen, tahapan PDCA, jadwal pelaksanaan, & administrasi reward',
+          icon: 'fa-chart-pie',
+          iconBg: 'bg-emerald-50',
+          iconColor: 'text-emerald-600',
+          iconBorder: 'border-emerald-200',
+          columns: ['Tema', 'Kategori', 'Status', 'Bulan Registrasi', 'Start', 'Target Selesai', 'No. Berita Acara', 'No. BPH', 'Distribusi Reward Circle', 'Distribusi Reward Fasilitator', 'Keterangan']
+        }
+      ],
+      Data_SP: [
+        {
+          id: 'sec_sp_data',
+          title: 'Catatan Kedisiplinan & Sanksi Karyawan',
+          desc: 'Pencatatan pelanggaran peraturan kerja, tingkat surat peringatan, dan kronologi alasan sanksi',
+          icon: 'fa-gavel',
+          iconBg: 'bg-rose-50',
+          iconColor: 'text-rose-600',
+          iconBorder: 'border-rose-200',
+          columns: ['No', 'NPK', 'Nama', 'Kode BA', 'Tingkat SP', 'Alasan']
+        }
+      ],
+      Knowledge_management: [
+        {
+          id: 'sec_km_data',
+          title: 'Dokumen Repositori Berbagi Pengetahuan (Knowledge Management)',
+          desc: 'Pencatatan materi sharing session, penyaji, tanggal, dan waktu submit',
+          icon: 'fa-book-open',
+          iconBg: 'bg-cyan-50',
+          iconColor: 'text-cyan-600',
+          iconBorder: 'border-cyan-200',
+          columns: ['No', 'NPK', 'NAMA', 'JUDUL', 'TANGGAL', 'TIME']
+        }
+      ],
+      Data_KM: [
+        {
+          id: 'sec_km_data',
+          title: 'Dokumen Repositori Berbagi Pengetahuan (Knowledge Management)',
+          desc: 'Pencatatan materi sharing session, penyaji, tanggal, dan waktu submit',
+          icon: 'fa-book-open',
+          iconBg: 'bg-cyan-50',
+          iconColor: 'text-cyan-600',
+          iconBorder: 'border-cyan-200',
+          columns: ['No', 'NPK', 'NAMA', 'JUDUL', 'TANGGAL', 'TIME']
+        }
+      ]
+    };
+    window.EDIT_FORM_SECTIONS = EDIT_FORM_SECTIONS;
+
+    function renderFieldInput(col, row, schema, sheetName, rowIndex) {
+      const val = String(getRowCellValue(row, col, schema) || '');
+      const norm = normalizeHeaderName(col);
+      
+      let inputHtml = '';
+      if (norm === 'no' || norm === 'nomor') {
+        inputHtml = `
+          <input type="text" name="${col}" value="${rowIndex + 1}" readonly class="w-full px-3 py-2 bg-slate-100/90 text-slate-500 border border-slate-200 rounded-xl text-xs font-bold cursor-not-allowed">
+        `;
+      } else if (norm === 'contract') {
+        const normVal = normalizeContractCategory(val);
+        inputHtml = `
+          <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">
+            <option value="Tetap / Permanent" ${normVal === 'Tetap / Permanent' ? 'selected' : ''}>Tetap / Permanent</option>
+            <option value="Kontrak / PKWT" ${normVal === 'Kontrak / PKWT' ? 'selected' : ''}>Kontrak / PKWT</option>
+            <option value="On probation" ${normVal === 'On probation' ? 'selected' : ''}>On probation</option>
+            <option value="Magang/Intern" ${normVal === 'Magang/Intern' ? 'selected' : ''}>Magang/Intern</option>
+          </select>
+        `;
+      } else if (norm === 'gender text') {
+        const isMale = val.toLowerCase().includes('male') || val.toLowerCase().includes('laki');
+        inputHtml = `
+          <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">
+            <option value="Male" ${isMale ? 'selected' : ''}>Male</option>
+            <option value="Female" ${!isMale ? 'selected' : ''}>Female</option>
+          </select>
+        `;
+      } else if (norm === 'tingkat sp') {
+        inputHtml = `
+          <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">
+            <option value="-" ${(!val || val === '-') ? 'selected' : ''}>- (Tidak Ada SP)</option>
+            <option value="Teguran Lisan" ${val === 'Teguran Lisan' ? 'selected' : ''}>Teguran Lisan</option>
+            <option value="SP 1" ${val === 'SP 1' ? 'selected' : ''}>SP 1</option>
+            <option value="SP 2" ${val === 'SP 2' ? 'selected' : ''}>SP 2</option>
+            <option value="SP 3" ${val === 'SP 3' ? 'selected' : ''}>SP 3</option>
+            <option value="SPPT" ${val === 'SPPT' ? 'selected' : ''}>SPPT</option>
+          </select>
+        `;
+      } else if (norm === 'status_karyawan' || norm === 'status karyawan') {
+        const isResign = val.toLowerCase().trim() === 'resign';
+        inputHtml = `
+          <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">
+            <option value="Aktif" ${!isResign ? 'selected' : ''}>Aktif</option>
+            <option value="Resign" ${isResign ? 'selected' : ''}>Resign</option>
+          </select>
+        `;
+      } else if (norm === 'status reward' || norm === 'status_reward') {
+        const stdStatuses = ['Proses Penilaian', 'Berita Acara', 'BPH', 'IBRA / Lunas', 'Revisi', 'Dikembalikan'];
+        const isCustom = val && !stdStatuses.some(s => s.toLowerCase() === val.toLowerCase());
+        inputHtml = `
+          <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">
+            ${stdStatuses.map(s => `<option value="${s}" ${val.toLowerCase() === s.toLowerCase() ? 'selected' : ''}>${s}</option>`).join('')}
+            ${isCustom ? `<option value="${val}" selected>${val}</option>` : ''}
+          </select>
+        `;
+      } else if (norm === 'alasan_resign' || norm === 'alasan phk' || norm === 'keterangan resign' || norm === 'alasan keluar') {
+        const pphkList = window.STANDARD_PPHK_REASONS || [];
+        const optHtml = pphkList.map(item => {
+          const isSel = (val && (val.toLowerCase() === item.reason.toLowerCase() || val.toLowerCase().includes(item.reason.toLowerCase())));
+          return `<option value="${item.reason}" ${isSel ? 'selected' : ''}>${item.reason}</option>`;
+        }).join('');
+        const initialAttachment = typeof getPPHKAttachment === 'function' ? getPPHKAttachment(val) : '-';
+        inputHtml = `
+          <div>
+            <select name="${col}" id="edit-alasan-resign-select" onchange="updateEditResignAttachmentHint(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">
+              <option value="">-- Pilih Alasan PHK / Resign (PPHK ADM) --</option>
+              ${optHtml}
+            </select>
+            <div id="edit-resign-attachment-box" class="mt-2 p-2.5 bg-amber-50/95 rounded-xl border border-amber-200 text-[11px] text-amber-900 shadow-2xs ${val ? '' : 'hidden'}">
+              <div class="font-bold flex items-center gap-1.5 text-amber-800">
+                <i class="fa-solid fa-file-circle-check text-amber-600"></i>
+                <span>Lampiran Dokumen Wajib (Kolom 2 PPHK):</span>
+              </div>
+              <div id="edit-resign-attachment-text" class="mt-1 text-slate-800 font-semibold leading-relaxed">${initialAttachment}</div>
+            </div>
+          </div>
+        `;
+      } else if (norm === 'status' && sheetName === 'Data_QCC') {
+        inputHtml = `
+          <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">
+            <option value="Plan" ${val.toLowerCase() === 'plan' ? 'selected' : ''}>Plan</option>
+            <option value="Do" ${val.toLowerCase() === 'do' ? 'selected' : ''}>Do</option>
+            <option value="Check" ${val.toLowerCase() === 'check' ? 'selected' : ''}>Check</option>
+            <option value="Action" ${val.toLowerCase() === 'action' ? 'selected' : ''}>Action</option>
+          </select>
+        `;
+      } else if (norm.includes('date') || norm === 'd.o.birth' || norm.includes('tgl') || norm.includes('tanggal')) {
+        const dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(val) : val;
+        inputHtml = `<input type="date" name="${col}" value="${dateVal}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+      } else if (norm.includes('time') || norm.includes('jam')) {
+        inputHtml = `<input type="time" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+      } else if (norm.includes('durasi kerja') || norm.includes('work hours')) {
+        inputHtml = `<input type="number" step="0.1" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+      } else {
+        const escapedVal = val.replace(/"/g, '&quot;');
+        inputHtml = `<input type="text" name="${col}" value="${escapedVal}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+      }
+
+      const isWideField = norm === 'alasan_resign' || norm === 'alasan phk' || norm === 'keterangan' || norm === 'tema' || norm === 'judul' || norm === 'alasan';
+      const colSpanClass = isWideField ? 'sm:col-span-2 md:col-span-3' : '';
+
+      return `
+        <div class="${colSpanClass}">
+          <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
+            <span>${col}</span>
+          </label>
+          ${inputHtml}
+        </div>
+      `;
+    }
+
     function openEditRowModal(sheetName, rowIndex) {
       if (!isUserAdmin(loggedInUser)) {
         showToast("Akses ditolak: Hanya Admin yang memiliki wewenang mengedit data.");
@@ -233,102 +502,95 @@
       }
 
       const container = document.getElementById('edit-row-fields-grid');
-      container.innerHTML = schema.columns.map(col => {
-        const val = String(getRowCellValue(row, col, schema) || '');
-        const norm = normalizeHeaderName(col);
-        
-        let inputHtml = '';
-        if (norm === 'no' || norm === 'nomor') {
-          inputHtml = `
-            <input type="text" name="${col}" value="${rowIndex + 1}" readonly class="w-full px-3 py-2 bg-slate-100 text-slate-500 border border-slate-200 rounded-xl text-xs font-bold cursor-not-allowed">
-          `;
-        } else if (norm === 'contract') {
-          const normVal = normalizeContractCategory(val);
-          inputHtml = `
-            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
-              <option value="Tetap / Permanent" ${normVal === 'Tetap / Permanent' ? 'selected' : ''}>Tetap / Permanent</option>
-              <option value="Kontrak / PKWT" ${normVal === 'Kontrak / PKWT' ? 'selected' : ''}>Kontrak / PKWT</option>
-              <option value="On probation" ${normVal === 'On probation' ? 'selected' : ''}>On probation</option>
-              <option value="Magang/Intern" ${normVal === 'Magang/Intern' ? 'selected' : ''}>Magang/Intern</option>
-            </select>
-          `;
-        } else if (norm === 'gender text') {
-          const isMale = val.toLowerCase().includes('male') || val.toLowerCase().includes('laki');
-          inputHtml = `
-            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
-              <option value="Male" ${isMale ? 'selected' : ''}>Male</option>
-              <option value="Female" ${!isMale ? 'selected' : ''}>Female</option>
-            </select>
-          `;
-        } else if (norm === 'tingkat sp') {
-          inputHtml = `
-            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
-              <option value="-" ${(!val || val === '-') ? 'selected' : ''}>- (Tidak Ada SP)</option>
-              <option value="Teguran Lisan" ${val === 'Teguran Lisan' ? 'selected' : ''}>Teguran Lisan</option>
-              <option value="SP 1" ${val === 'SP 1' ? 'selected' : ''}>SP 1</option>
-              <option value="SP 2" ${val === 'SP 2' ? 'selected' : ''}>SP 2</option>
-              <option value="SP 3" ${val === 'SP 3' ? 'selected' : ''}>SP 3</option>
-              <option value="SPPT" ${val === 'SPPT' ? 'selected' : ''}>SPPT</option>
-            </select>
-          `;
-        } else if (norm === 'status_karyawan' || norm === 'status karyawan') {
-          const isResign = val.toLowerCase().trim() === 'resign';
-          inputHtml = `
-            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
-              <option value="Aktif" ${!isResign ? 'selected' : ''}>Aktif</option>
-              <option value="Resign" ${isResign ? 'selected' : ''}>Resign</option>
-            </select>
-          `;
-        } else if (norm === 'alasan_resign' || norm === 'alasan phk' || norm === 'keterangan resign' || norm === 'alasan keluar') {
-          const pphkList = window.STANDARD_PPHK_REASONS || [];
-          const optHtml = pphkList.map(item => {
-            const isSel = (val && (val.toLowerCase() === item.reason.toLowerCase() || val.toLowerCase().includes(item.reason.toLowerCase())));
-            return `<option value="${item.reason}" ${isSel ? 'selected' : ''}>${item.reason}</option>`;
-          }).join('');
-          const initialAttachment = typeof getPPHKAttachment === 'function' ? getPPHKAttachment(val) : '-';
-          inputHtml = `
-            <div>
-              <select name="${col}" id="edit-alasan-resign-select" onchange="updateEditResignAttachmentHint(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
-                <option value="">-- Pilih Alasan PHK / Resign (PPHK ADM) --</option>
-                ${optHtml}
-              </select>
-              <div id="edit-resign-attachment-box" class="mt-1.5 p-2 bg-amber-50/90 rounded-xl border border-amber-200 text-[11px] text-amber-900 ${val ? '' : 'hidden'}">
-                <div class="font-bold flex items-center gap-1 text-amber-800">
-                  <i class="fa-solid fa-file-circle-check text-amber-600"></i>
-                  <span>Lampiran Dokumen Wajib (Kolom 2 PPHK):</span>
-                </div>
-                <div id="edit-resign-attachment-text" class="mt-0.5 text-slate-800 font-semibold leading-relaxed">${initialAttachment}</div>
-              </div>
-            </div>
-          `;
-        } else if (norm === 'status' && sheetName === 'Data_QCC') {
-          inputHtml = `
-            <select name="${col}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">
-              <option value="Plan" ${val.toLowerCase() === 'plan' ? 'selected' : ''}>Plan</option>
-              <option value="Do" ${val.toLowerCase() === 'do' ? 'selected' : ''}>Do</option>
-              <option value="Check" ${val.toLowerCase() === 'check' ? 'selected' : ''}>Check</option>
-              <option value="Action" ${val.toLowerCase() === 'action' ? 'selected' : ''}>Action</option>
-            </select>
-          `;
-        } else if (norm.includes('date') || norm === 'd.o.birth' || norm.includes('tgl') || norm.includes('tanggal')) {
-          const dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(val) : val;
-          inputHtml = `<input type="date" name="${col}" value="${dateVal}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
-        } else if (norm.includes('time') || norm.includes('jam')) {
-          inputHtml = `<input type="time" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
-        } else if (norm.includes('durasi kerja') || norm.includes('work hours')) {
-          inputHtml = `<input type="number" step="0.1" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
-        } else {
-          const escapedVal = val.replace(/"/g, '&quot;');
-          inputHtml = `<input type="text" name="${col}" value="${escapedVal}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+      const sections = EDIT_FORM_SECTIONS[sheetName] || [
+        {
+          id: 'sec_default',
+          title: `Data Baris ${schema.title}`,
+          desc: 'Daftar kolom atribut data',
+          icon: 'fa-table-list',
+          iconBg: 'bg-slate-100',
+          iconColor: 'text-slate-600',
+          iconBorder: 'border-slate-200',
+          columns: schema.columns
         }
+      ];
 
-        return `
-          <div>
-            <label class="block text-[11px] font-bold text-slate-700 mb-1">${col}</label>
-            ${inputHtml}
+      const assignedCols = new Set();
+      let sectionsHtml = '';
+
+      sections.forEach(sec => {
+        const secCols = schema.columns.filter(col => {
+          const norm = normalizeHeaderName(col);
+          const inSec = sec.columns.some(sc => normalizeHeaderName(sc) === norm);
+          if (inSec) assignedCols.add(col);
+          return inSec;
+        });
+
+        if (secCols.length === 0) return;
+
+        const inputsHtml = secCols.map(col => renderFieldInput(col, row, schema, sheetName, rowIndex)).join('');
+
+        sectionsHtml += `
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition hover:border-slate-300">
+            <div class="px-4 py-3 bg-gradient-to-r from-slate-50 via-slate-50/80 to-white border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg ${sec.iconBg} ${sec.iconColor} flex items-center justify-center text-xs border ${sec.iconBorder} flex-shrink-0 shadow-2xs">
+                  <i class="fa-solid ${sec.icon}"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-extrabold text-slate-800 leading-tight">${sec.title}</h4>
+                  <p class="text-[10px] text-slate-500 font-medium">${sec.desc}</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/70 flex-shrink-0">
+                ${secCols.length} Kolom
+              </span>
+            </div>
+            <div class="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              ${inputsHtml}
+            </div>
           </div>
         `;
-      }).join('');
+      });
+
+      // Kolom sisa / kolom tambahan jika ada
+      const unassigned = schema.columns.filter(col => !assignedCols.has(col));
+      if (unassigned.length > 0) {
+        const extraInputs = unassigned.map(col => renderFieldInput(col, row, schema, sheetName, rowIndex)).join('');
+        sectionsHtml += `
+          <div class="bg-white rounded-2xl border border-slate-200/90 shadow-2xs overflow-hidden transition hover:border-slate-300">
+            <div class="px-4 py-3 bg-gradient-to-r from-slate-50 to-white border-b border-slate-100 flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg bg-slate-100 text-slate-600 flex items-center justify-center text-xs border border-slate-200 flex-shrink-0 shadow-2xs">
+                  <i class="fa-solid fa-folder-open"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-extrabold text-slate-800 leading-tight">Informasi Tambahan</h4>
+                  <p class="text-[10px] text-slate-500 font-medium">Atribut dan metadata tambahan</p>
+                </div>
+              </div>
+              <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200/70 flex-shrink-0">
+                ${unassigned.length} Kolom
+              </span>
+            </div>
+            <div class="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+              ${extraInputs}
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = sectionsHtml;
+
+      // Update lampiran hint PPHK jika ada nilai awal
+      const resignCol = schema.columns.find(c => {
+        const n = normalizeHeaderName(c);
+        return n === 'alasan_resign' || n === 'alasan phk' || n === 'keterangan resign';
+      });
+      if (resignCol) {
+        const initialResignReason = String(getRowCellValue(row, resignCol, schema) || '');
+        updateEditResignAttachmentHint(initialResignReason);
+      }
 
       document.getElementById('modal-edit-row').classList.remove('hidden');
     }

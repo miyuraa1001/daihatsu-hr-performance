@@ -1042,6 +1042,7 @@
       try { renderKMView(currentDashboardPayload); } catch (e) { console.error("renderKMView error:", e); }
       try { updateSidebarReadiness(currentDashboardPayload); } catch (e) { console.error("updateSidebarReadiness error:", e); }
       try { if (typeof updateResignReviewBanner === 'function') updateResignReviewBanner(); } catch (e) { console.error("updateResignReviewBanner error:", e); }
+      try { if (typeof initAllColumnToggleButtons === 'function') initAllColumnToggleButtons(); } catch (e) { console.error("initAllColumnToggleButtons error:", e); }
     }
 
     // ----------------------------------------------------

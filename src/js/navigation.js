@@ -603,7 +603,10 @@
         if (document.getElementById('page-subtitle')) document.getElementById('page-subtitle').textContent = viewMeta[viewId].subtitle;
       }
 
-      // Sinkronkan data tabel saat modul dibuka
+      // Sinkronkan data tabel dan state tombol kolom saat modul dibuka
+      if (typeof initAllColumnToggleButtons === 'function') {
+        initAllColumnToggleButtons();
+      }
       if (currentDashboardPayload) {
         if (viewId === 'master-karyawan') filterMasterKaryawanTable();
         else if (viewId === 'absensi') filterAbsensiTable();

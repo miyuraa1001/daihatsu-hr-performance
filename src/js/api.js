@@ -279,15 +279,16 @@
     };
     window.SCHEMAS = SCHEMAS;
 
-    // Mode Kolom (Tampilan Penuh vs Ringkas)
+    // Mode Kolom (Tampilan Penuh vs Ringkas - Default COMPACT untuk kenyamanan visual)
     const columnViewMode = {
-      mk: 'FULL',
-      abs: 'FULL',
-      ss: 'FULL',
-      qcc: 'FULL',
-      sp: 'FULL',
+      mk: 'COMPACT',
+      abs: 'COMPACT',
+      ss: 'COMPACT',
+      qcc: 'COMPACT',
+      sp: 'COMPACT',
       km: 'COMPACT'
     };
+    window.columnViewMode = columnViewMode;
 
     // ========================================================
     // STANDAR ALASAN PHK / RESIGN & LAMPIRAN DOKUMEN (PPHK ADM)
@@ -384,15 +385,29 @@
     }
     window.lookupEmployeeName = lookupEmployeeName;
 
+    function updateColumnToggleButton(moduleKey) {
+      const isFull = columnViewMode[moduleKey] === 'FULL';
+      const colCounts = { mk: 19, abs: 20, ss: 21, qcc: 29, sp: 6, km: 6 };
+      const compactCounts = { mk: 8, abs: 10, ss: 8, qcc: 8, sp: 6, km: 6 };
+      const btn = document.getElementById(`btn-col-toggle-${moduleKey}`);
+      const btnText = document.getElementById(`btn-col-text-${moduleKey}`);
+      if (btn) {
+        const icon = btn.querySelector('i');
+        if (isFull) {
+          btn.className = "px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-95";
+          if (icon) icon.className = "fa-solid fa-compress text-[11px]";
+          if (btnText) btnText.textContent = `Mode Ringkas (${compactCounts[moduleKey] || 8} Kolom)`;
+        } else {
+          btn.className = "px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center gap-1.5 shadow-2xs cursor-pointer active:scale-95";
+          if (icon) icon.className = "fa-solid fa-table-columns text-[11px]";
+          if (btnText) btnText.textContent = `Semua Kolom (${colCounts[moduleKey] || 20})`;
+        }
+      }
+    }
+
     function toggleColumnMode(moduleKey) {
       columnViewMode[moduleKey] = (columnViewMode[moduleKey] === 'FULL') ? 'COMPACT' : 'FULL';
-      const isFull = columnViewMode[moduleKey] === 'FULL';
-      const colCounts = { mk: 20, abs: 21, ss: 21, qcc: 29, sp: 6, km: 6 };
-      const compactCounts = { mk: 10, abs: 10, ss: 8, qcc: 8, sp: 5, km: 6 };
-      const btnText = document.getElementById(`btn-col-text-${moduleKey}`);
-      if (btnText) {
-        btnText.textContent = isFull ? `Kolom Lengkap (${colCounts[moduleKey]})` : `Kolom Ringkas (${compactCounts[moduleKey] || 4})`;
-      }
+      updateColumnToggleButton(moduleKey);
 
       if (moduleKey === 'mk') filterMasterKaryawanTable();
       else if (moduleKey === 'abs') filterAbsensiTable();
@@ -401,6 +416,16 @@
       else if (moduleKey === 'sp') filterSPTable();
       else if (moduleKey === 'km') filterKMTable();
     }
+
+    function initAllColumnToggleButtons() {
+      ['mk', 'abs', 'ss', 'qcc', 'sp', 'km'].forEach(k => {
+        updateColumnToggleButton(k);
+      });
+    }
+
+    window.toggleColumnMode = toggleColumnMode;
+    window.updateColumnToggleButton = updateColumnToggleButton;
+    window.initAllColumnToggleButtons = initAllColumnToggleButtons;
 
     // Filter status cepat karyawan dashboard (Admin only)
     let currentEmployeeStatusFilter = 'ALL';

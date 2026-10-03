@@ -2076,8 +2076,11 @@
         );
       }
 
-      // Sesuai spreadsheet: No, NPK, NAMA, JUDUL, TANGGAL, TIME
-      const cols = ["No", "NPK", "NAMA", "JUDUL", "TANGGAL", "TIME"];
+      const isFull = columnViewMode.km === 'FULL';
+      const rawCols = isFull 
+        ? (SCHEMAS.Knowledge_management?.columns || ["NPK", "NAMA", "JUDUL", "TANGGAL", "TIME"])
+        : ["NPK", "NAMA", "JUDUL", "TANGGAL", "TIME"];
+      const cols = ["No", ...rawCols.filter(c => c !== 'No')];
 
       // Render Header dengan label kolom aksi 'Detail'
       renderTableHeader('km-table-header', cols, true, 'Detail');

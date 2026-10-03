@@ -2818,13 +2818,13 @@
   </div>
   <!-- MODAL: EDIT ROW DATA (KHUSUS ADMIN) -->
   <div id="modal-edit-row" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-3xl p-5 sm:p-6 w-full max-w-2xl shadow-2xl border border-slate-100 relative my-auto max-h-[90vh] flex flex-col">
+    <div class="bg-white rounded-3xl p-5 sm:p-7 w-full max-w-4xl lg:max-w-5xl shadow-2xl border border-slate-100 relative my-auto max-h-[92vh] flex flex-col">
       <button onclick="closeModal('modal-edit-row')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
       <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100 flex-shrink-0">
-        <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg border border-amber-200 flex-shrink-0">
+        <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg border border-amber-200 flex-shrink-0 shadow-2xs">
           <i class="fa-solid fa-pen-to-square"></i>
         </div>
         <div class="min-w-0">
@@ -2833,12 +2833,12 @@
         </div>
       </div>
 
-      <!-- Form Inputs Container (Scrollable) -->
-      <form id="form-edit-row" onsubmit="handleSaveRowEdit(event)" class="overflow-y-auto pr-1 space-y-3 flex-1">
+      <!-- Form Inputs Container (Scrollable Card Sections) -->
+      <form id="form-edit-row" onsubmit="handleSaveRowEdit(event)" class="overflow-y-auto pr-1 space-y-4 flex-1 scrollbar-thin">
         <input type="hidden" id="edit-row-sheet">
         <input type="hidden" id="edit-row-index">
-        <div id="edit-row-fields-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-          <!-- Dynamically populated fields -->
+        <div id="edit-row-fields-grid" class="space-y-4 text-xs pr-0.5">
+          <!-- Dynamically populated categorized card sections -->
         </div>
       </form>
 
