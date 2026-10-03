@@ -311,7 +311,8 @@
             </select>
           `;
         } else if (norm.includes('date') || norm === 'd.o.birth' || norm.includes('tgl') || norm.includes('tanggal')) {
-          inputHtml = `<input type="date" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+          const dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(val) : val;
+          inputHtml = `<input type="date" name="${col}" value="${dateVal}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
         } else if (norm.includes('time') || norm.includes('jam')) {
           inputHtml = `<input type="time" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
         } else if (norm.includes('durasi kerja') || norm.includes('work hours')) {
@@ -357,7 +358,7 @@
       }
     }
 
-        async function handleSaveRowEdit(event) {
+    async function handleSaveRowEdit(event) {
       if (event) event.preventDefault();
       if (!isUserAdmin(loggedInUser)) {
         showToast("Akses ditolak: Hanya Admin yang dapat menyimpan perubahan.");
@@ -388,43 +389,73 @@
         }
       });
 
-      // Update di masterFullPayload jika ada baris yang sama
+      // Dapatkan identitas unik baris untuk persistensi lokal dan update remote
+      const rowKey = typeof getRowIdentifier === 'function' 
+        ? getRowIdentifier(sheetName, targetRow, rowIndex)
+        : String(targetRow['Personnel no.'] || targetRow['NPK'] || targetRow['Registrasi'] || rowIndex);
+      const keyInfo = typeof getKeyFieldAndValue === 'function'
+        ? getKeyFieldAndValue(sheetName, targetRow)
+        : { keyField: '', keyValue: '' };
+
+      // 1. Simpan ke Local Persistence (localStorage) seketika agar tahan reload (F5)
+      if (typeof saveLocalEdit === 'function') {
+        saveLocalEdit(sheetName, rowKey, targetRow);
+        if (sheetName === 'Master_Karyawan' && targetRow['Personnel no.']) {
+          saveLocalEdit(sheetName, String(targetRow['Personnel no.']).trim(), targetRow);
+        }
+      }
+
+      // 2. Update di masterFullPayload dan fullUnscopedPayload
       [window.masterFullPayload, window.fullUnscopedPayload].forEach(payload => {
         if (payload?.rawTables?.[sheetName]) {
           const idx = payload.rawTables[sheetName].indexOf(targetRow);
           if (idx !== -1) {
             payload.rawTables[sheetName][idx] = targetRow;
-          } else if (payload.rawTables[sheetName][rowIndex]) {
-            payload.rawTables[sheetName][rowIndex] = targetRow;
+          } else {
+            const foundIdx = payload.rawTables[sheetName].findIndex((r, i) => {
+              const k = typeof getRowIdentifier === 'function' ? getRowIdentifier(sheetName, r, i) : '';
+              return k && k === rowKey;
+            });
+            if (foundIdx !== -1) {
+              payload.rawTables[sheetName][foundIdx] = targetRow;
+            } else if (payload.rawTables[sheetName][rowIndex]) {
+              payload.rawTables[sheetName][rowIndex] = targetRow;
+            }
           }
         }
       });
 
-      // Sinkronkan ke modul terkait secara realtime
+      // 3. Sinkronkan ke modul terkait secara realtime (termasuk employeeList di semua payload)
       if (sheetName === 'Master_Karyawan') {
         const npk = safeString(targetRow['Personnel no.']);
-        const emp = (currentDashboardPayload.employeeList || []).find(e => safeString(e.npk || e['Personnel no.']) === npk);
-        if (emp) {
-          emp.nama = targetRow['Last name'] || emp.nama;
-          emp.cabang = targetRow['P.subarea'] || emp.cabang;
-          emp.wilayah = targetRow['Wilayah'] || emp.wilayah;
-          emp.kodeBA = safeString(targetRow['Business area'] || emp.kodeBA);
-          emp.divisi = targetRow['Name'] || emp.divisi;
-          emp.jabatan = targetRow['Job Title'] || emp.jabatan;
-          emp.tipeKontrak = targetRow['Contract'] || emp.tipeKontrak;
-          emp['Contract'] = targetRow['Contract'];
-          emp.joinDate = targetRow['Date'] || emp.joinDate;
-          emp.tglLahir = targetRow['D.o.birth'] || emp.tglLahir;
-          emp.gender = targetRow['Gender text'] || emp.gender;
-          emp.agama = targetRow['Religious denomination'] || emp.agama;
-          emp.psGroup = targetRow['PS group'] || emp.psGroup;
-          emp.lvl = targetRow['Lvl'] || emp.lvl;
-          emp.stext = targetRow['P0001-STEXT'] || emp.stext;
-          emp.statusKaryawan = targetRow['Status_Karyawan'] || 'Aktif';
-          emp['Status_Karyawan'] = targetRow['Status_Karyawan'] || 'Aktif';
-          emp.tanggalResign = targetRow['Tanggal_Resign'] || emp.tanggalResign || '';
-          emp.alasanResign = targetRow['Alasan_Resign'] || emp.alasanResign || '';
-        }
+        [currentDashboardPayload, window.masterFullPayload, window.fullUnscopedPayload].forEach(payload => {
+          if (Array.isArray(payload?.employeeList)) {
+            const emp = payload.employeeList.find(e => safeString(e.npk || e['Personnel no.']) === npk);
+            if (emp) {
+              emp.nama = targetRow['Last name'] || emp.nama;
+              emp.cabang = targetRow['P.subarea'] || emp.cabang;
+              emp.wilayah = targetRow['Wilayah'] || emp.wilayah;
+              emp.kodeBA = safeString(targetRow['Business area'] || emp.kodeBA);
+              emp.divisi = targetRow['Name'] || emp.divisi;
+              emp.jabatan = targetRow['Job Title'] || emp.jabatan;
+              emp.tipeKontrak = targetRow['Contract'] || emp.tipeKontrak;
+              emp['Contract'] = targetRow['Contract'];
+              emp.joinDate = targetRow['Date'] || emp.joinDate;
+              emp.tglLahir = targetRow['D.o.birth'] || emp.tglLahir;
+              emp.gender = targetRow['Gender text'] || emp.gender;
+              emp.agama = targetRow['Religious denomination'] || emp.agama;
+              emp.psGroup = targetRow['PS group'] || emp.psGroup;
+              emp.lvl = targetRow['Lvl'] || emp.lvl;
+              emp.stext = targetRow['P0001-STEXT'] || emp.stext;
+              emp.statusKaryawan = targetRow['Status_Karyawan'] || 'Aktif';
+              emp['Status_Karyawan'] = targetRow['Status_Karyawan'] || 'Aktif';
+              emp.tanggalResign = targetRow['Tanggal_Resign'] || emp.tanggalResign || '';
+              emp['Tanggal_Resign'] = emp.tanggalResign;
+              emp.alasanResign = targetRow['Alasan_Resign'] || emp.alasanResign || '';
+              emp['Alasan_Resign'] = emp.alasanResign;
+            }
+          }
+        });
         currentDashboardPayload.summary = computeBranchSummary(
           currentDashboardPayload.employeeList,
           currentDashboardPayload.qccList,
@@ -443,11 +474,15 @@
         if (typeof filterQCCTable === 'function') filterQCCTable();
       } else if (sheetName === 'Data_SP') {
         const npk = safeString(targetRow['NPK']);
-        const emp = (currentDashboardPayload.employeeList || []).find(e => safeString(e.npk || e['Personnel no.']) === npk);
-        if (emp) {
-          emp.spAktif = (targetRow['Tingkat SP'] && targetRow['Tingkat SP'] !== '-') ? targetRow['Tingkat SP'] : '';
-          emp.spAlasan = targetRow['Alasan'] || '';
-        }
+        [currentDashboardPayload, window.masterFullPayload, window.fullUnscopedPayload].forEach(payload => {
+          if (Array.isArray(payload?.employeeList)) {
+            const emp = payload.employeeList.find(e => safeString(e.npk || e['Personnel no.']) === npk);
+            if (emp) {
+              emp.spAktif = (targetRow['Tingkat SP'] && targetRow['Tingkat SP'] !== '-') ? targetRow['Tingkat SP'] : '';
+              emp.spAlasan = targetRow['Alasan'] || '';
+            }
+          }
+        });
         currentDashboardPayload.summary = computeBranchSummary(
           currentDashboardPayload.employeeList,
           currentDashboardPayload.qccList,
@@ -470,7 +505,7 @@
         if (typeof filterKMTable === 'function') filterKMTable();
       }
 
-            // Selalu perbarui metrik dashboard utama secara instan agar realtime
+      // Selalu perbarui metrik dashboard utama secara instan agar realtime
       if (typeof computeBranchSummary === 'function' && currentDashboardPayload) {
         currentDashboardPayload.summary = computeBranchSummary(
           currentDashboardPayload.employeeList,
@@ -484,17 +519,17 @@
       }
 
       closeModal('modal-edit-row');
-      showToast("✅ Perubahan berhasil disimpan seketika!");
+      showToast("💾 Perubahan berhasil disimpan! Menyinkronkan ke Google Sheets...", 3000);
 
       try {
-        const res = await syncSheetToBackend(sheetName);
-        if (res.success) {
+        const res = await updateRowInBackend(sheetName, targetRow, rowIndex, keyInfo.keyField, keyInfo.keyValue);
+        if (res && res.success) {
           showToast(`✅ Data ${schema.title} berhasil disinkronkan ke Google Sheets!`);
         } else {
-          showToast(`⚠️ Data tersimpan di aplikasi, status sync: ${res.message || 'Offline'}`);
+          showToast(`⚠️ Data tersimpan di aplikasi (Status sync database: ${res?.message || 'Offline'})`);
         }
       } catch (err) {
-        showToast(`⚠️ Data tersimpan di aplikasi, gagal sinkron: ${err.message}`);
+        showToast(`⚠️ Data tersimpan di aplikasi (Gagal sync Google Sheets: ${err.message})`);
       } finally {
         if (btnSave) {
           btnSave.disabled = false;
@@ -526,7 +561,7 @@
       document.getElementById('modal-delete-row').classList.remove('hidden');
     }
 
-        async function handleConfirmDeleteRow() {
+    async function handleConfirmDeleteRow() {
       if (!isUserAdmin(loggedInUser)) {
         showToast("Akses ditolak: Hanya Admin yang dapat menghapus data.");
         return;
@@ -547,23 +582,45 @@
       }
 
       const npk = safeString(targetRow['Personnel no.'] || targetRow['NPK']);
+      const rowKey = typeof getRowIdentifier === 'function'
+        ? getRowIdentifier(sheetName, targetRow, rowIndex)
+        : String(npk || targetRow['Registrasi'] || rowIndex);
+      const keyInfo = typeof getKeyFieldAndValue === 'function'
+        ? getKeyFieldAndValue(sheetName, targetRow)
+        : { keyField: '', keyValue: '' };
 
-      // 1. Hapus dari currentDashboardPayload.rawTables
+      // 1. Catat penghapusan ke Local Persistence (localStorage) seketika
+      if (typeof saveLocalDelete === 'function') {
+        saveLocalDelete(sheetName, rowKey);
+        if (sheetName === 'Master_Karyawan' && npk) {
+          saveLocalDelete(sheetName, npk);
+        }
+      }
+
+      // 2. Hapus dari currentDashboardPayload.rawTables
       currentDashboardPayload.rawTables[sheetName].splice(rowIndex, 1);
 
-      // 2. Hapus juga dari window.masterFullPayload dan window.fullUnscopedPayload
+      // 3. Hapus juga dari window.masterFullPayload dan window.fullUnscopedPayload
       [window.masterFullPayload, window.fullUnscopedPayload].forEach(payload => {
         if (payload?.rawTables?.[sheetName]) {
           const idx = payload.rawTables[sheetName].indexOf(targetRow);
           if (idx !== -1) {
             payload.rawTables[sheetName].splice(idx, 1);
-          } else if (payload.rawTables[sheetName][rowIndex]) {
-            payload.rawTables[sheetName].splice(rowIndex, 1);
+          } else {
+            const foundIdx = payload.rawTables[sheetName].findIndex((r, i) => {
+              const k = typeof getRowIdentifier === 'function' ? getRowIdentifier(sheetName, r, i) : '';
+              return k && k === rowKey;
+            });
+            if (foundIdx !== -1) {
+              payload.rawTables[sheetName].splice(foundIdx, 1);
+            } else if (payload.rawTables[sheetName][rowIndex]) {
+              payload.rawTables[sheetName].splice(rowIndex, 1);
+            }
           }
         }
       });
 
-      // 3. Sinkronkan ke modul spesifik & update tampilan secara realtime
+      // 4. Sinkronkan ke modul spesifik & update tampilan secara realtime
       if (sheetName === 'Master_Karyawan') {
         if (npk) {
           if (currentDashboardPayload.employeeList) {
@@ -591,11 +648,15 @@
         if (typeof filterQCCTable === 'function') filterQCCTable();
       } else if (sheetName === 'Data_SP') {
         if (npk) {
-          const emp = (currentDashboardPayload.employeeList || []).find(e => safeString(e.npk || e['Personnel no.']) === npk);
-          if (emp) {
-            emp.spAktif = '';
-            emp.spAlasan = '';
-          }
+          [currentDashboardPayload, window.masterFullPayload, window.fullUnscopedPayload].forEach(payload => {
+            if (Array.isArray(payload?.employeeList)) {
+              const emp = payload.employeeList.find(e => safeString(e.npk || e['Personnel no.']) === npk);
+              if (emp) {
+                emp.spAktif = '';
+                emp.spAlasan = '';
+              }
+            }
+          });
         }
         currentDashboardPayload.summary = computeBranchSummary(
           currentDashboardPayload.employeeList,
@@ -619,7 +680,7 @@
         if (typeof filterKMTable === 'function') filterKMTable();
       }
 
-            // Selalu perbarui metrik dashboard utama secara instan agar realtime
+      // Selalu perbarui metrik dashboard utama secara instan agar realtime
       if (typeof computeBranchSummary === 'function' && currentDashboardPayload) {
         currentDashboardPayload.summary = computeBranchSummary(
           currentDashboardPayload.employeeList,
@@ -633,17 +694,17 @@
       }
 
       closeModal('modal-delete-row');
-      showToast("✅ Baris data berhasil dihapus seketika!");
+      showToast("🗑️ Baris data dihapus! Menyinkronkan ke Google Sheets...", 3000);
 
       try {
-        const res = await syncSheetToBackend(sheetName);
-        if (res.success) {
-          showToast(`✅ Data ${schema.title} berhasil disinkronkan ke Google Sheets!`);
+        const res = await deleteRowInBackend(sheetName, rowIndex, keyInfo.keyField, keyInfo.keyValue);
+        if (res && res.success) {
+          showToast(`✅ Data ${schema.title} berhasil dihapus dari Google Sheets!`);
         } else {
-          showToast(`⚠️ Data terhapus di aplikasi, status sync: ${res.message || 'Offline'}`);
+          showToast(`⚠️ Data terhapus di aplikasi (Status sync database: ${res?.message || 'Offline'})`);
         }
       } catch (err) {
-        showToast(`⚠️ Data terhapus di aplikasi, gagal sinkron: ${err.message}`);
+        showToast(`⚠️ Data terhapus di aplikasi (Gagal sync Google Sheets: ${err.message})`);
       } finally {
         if (btnDelete) {
           btnDelete.disabled = false;
@@ -3144,18 +3205,24 @@ pause
         foundRow['Status_Karyawan'] = 'Resign';
         foundRow['Tanggal_Resign'] = tanggalResign;
         foundRow['Alasan_Resign'] = alasanResign;
+        if (typeof saveLocalEdit === 'function') {
+          saveLocalEdit('Master_Karyawan', cleanNpk, foundRow);
+        }
       }
 
-      // Update in employeeList
-      const empList = currentDashboardPayload?.employeeList || [];
-      let emp = empList.find(e => safeString(e.npk || e['Personnel no.']) === cleanNpk);
-      if (emp) {
-        emp.statusKaryawan = 'Resign';
-        emp.Status_Karyawan = 'Resign';
-        emp.tanggalResign = tanggalResign;
-        emp.alasanResign = alasanResign;
-        emp.isPendingResignReview = false;
-      }
+      // Update in employeeList across all payloads
+      [currentDashboardPayload, window.masterFullPayload, window.fullUnscopedPayload].forEach(payload => {
+        if (Array.isArray(payload?.employeeList)) {
+          const emp = payload.employeeList.find(e => safeString(e.npk || e['Personnel no.']) === cleanNpk);
+          if (emp) {
+            emp.statusKaryawan = 'Resign';
+            emp.Status_Karyawan = 'Resign';
+            emp.tanggalResign = tanggalResign;
+            emp.alasanResign = alasanResign;
+            emp.isPendingResignReview = false;
+          }
+        }
+      });
 
       // Remove from pending reviews
       let pendingList = getPendingResignReviews();
@@ -3180,10 +3247,14 @@ pause
       }
 
       const lampiran = typeof getPPHKAttachment === 'function' ? getPPHKAttachment(alasanResign) : '';
-      showToast(`✅ Status ${emp?.nama || cleanNpk} berhasil diubah ke Resign (${alasanResign}). Lampiran: ${lampiran}`, 5000);
+      showToast(`✅ Status ${cleanNpk} berhasil diubah ke Resign (${alasanResign}). Lampiran: ${lampiran}`, 5000);
 
       try {
-        await syncSheetToBackend('Master_Karyawan');
+        if (typeof updateRowInBackend === 'function' && foundRow) {
+          await updateRowInBackend('Master_Karyawan', foundRow, -1, 'Personnel no.', cleanNpk);
+        } else {
+          await syncSheetToBackend('Master_Karyawan');
+        }
       } catch(e) {}
     }
 

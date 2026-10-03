@@ -476,6 +476,7 @@
       }
       return s;
     }
+    window.parseExcelDate = parseExcelDate;
 
     // Perhitungan Dinamis Umur & Masa Kerja (Per Hari Ini)
     function calculateAgeAndService(dateVal) {
@@ -1612,10 +1613,207 @@
     // ========================================================
     // SINKRONISASI DATABASE & CRUD ROW DATA (KHUSUS ADMIN)
     // ========================================================
+    const LOCAL_EDITS_KEY = 'dperform_local_edits_v1';
+
+    function getLocalEdits() {
+      try {
+        const raw = localStorage.getItem(LOCAL_EDITS_KEY);
+        return raw ? JSON.parse(raw) : { updates: {}, deletes: {} };
+      } catch (e) {
+        console.warn('Gagal membaca local edits:', e);
+        return { updates: {}, deletes: {} };
+      }
+    }
+
+    function saveLocalEdit(sheetName, rowKey, rowData) {
+      if (!sheetName || !rowKey || !rowData) return;
+      try {
+        const edits = getLocalEdits();
+        if (!edits.updates) edits.updates = {};
+        if (!edits.updates[sheetName]) edits.updates[sheetName] = {};
+        edits.updates[sheetName][String(rowKey)] = JSON.parse(JSON.stringify(rowData));
+        if (edits.deletes?.[sheetName]) {
+          edits.deletes[sheetName] = edits.deletes[sheetName].filter(k => String(k) !== String(rowKey));
+        }
+        localStorage.setItem(LOCAL_EDITS_KEY, JSON.stringify(edits));
+      } catch (e) {
+        console.warn('Gagal menyimpan local edit:', e);
+      }
+    }
+
+    function saveLocalDelete(sheetName, rowKey) {
+      if (!sheetName || !rowKey) return;
+      try {
+        const edits = getLocalEdits();
+        if (!edits.deletes) edits.deletes = {};
+        if (!edits.deletes[sheetName]) edits.deletes[sheetName] = [];
+        const sKey = String(rowKey);
+        if (!edits.deletes[sheetName].includes(sKey)) {
+          edits.deletes[sheetName].push(sKey);
+        }
+        if (edits.updates?.[sheetName]?.[sKey]) {
+          delete edits.updates[sheetName][sKey];
+        }
+        localStorage.setItem(LOCAL_EDITS_KEY, JSON.stringify(edits));
+      } catch (e) {
+        console.warn('Gagal menyimpan local delete:', e);
+      }
+    }
+
+    function clearLocalEdits() {
+      try {
+        localStorage.removeItem(LOCAL_EDITS_KEY);
+      } catch (e) {}
+    }
+
+    function getRowIdentifier(sheetName, row, fallbackIndex) {
+      if (!row) return String(fallbackIndex !== undefined ? fallbackIndex : '');
+      const sName = sheetName || '';
+      if (sName === 'Master_Karyawan') {
+        const npk = String(row['Personnel no.'] || row['NPK'] || row['NIK'] || '').trim();
+        return npk || String(fallbackIndex !== undefined ? fallbackIndex : '');
+      }
+      if (sName === 'Data_SS') {
+        const reg = String(row['Registrasi'] || row['No.Registrasi'] || row['No'] || '').trim();
+        return reg || String(fallbackIndex !== undefined ? fallbackIndex : '');
+      }
+      if (sName === 'Data_QCC') {
+        const reg = String(row['No.Registrasi'] || row['Nama Tim'] || '').trim();
+        return reg || String(fallbackIndex !== undefined ? fallbackIndex : '');
+      }
+      if (sName === 'Data_SP') {
+        const npk = String(row['NPK'] || row['Personnel no.'] || '').trim();
+        const sp = String(row['Tingkat SP'] || '').trim();
+        return npk ? (sp ? `${npk}_${sp}` : npk) : String(fallbackIndex !== undefined ? fallbackIndex : '');
+      }
+      if (sName === 'Knowledge_management' || sName === 'Data_KM') {
+        const npk = String(row['NPK'] || row['Personnel no.'] || '').trim();
+        const judul = String(row['JUDUL'] || row['Judul'] || '').trim();
+        return (npk && judul) ? `${npk}_${judul}` : (npk || String(fallbackIndex !== undefined ? fallbackIndex : ''));
+      }
+      if (sName === 'Data_Kehadiran') {
+        const npk = String(row['Personnel no.'] || row['NPK'] || '').trim();
+        const date = String(row['Date Clock In'] || row['Date'] || '').trim();
+        return (npk && date) ? `${npk}_${date}` : (npk || String(fallbackIndex !== undefined ? fallbackIndex : ''));
+      }
+      return String(fallbackIndex !== undefined ? fallbackIndex : '');
+    }
+
+    function getKeyFieldAndValue(sheetName, row) {
+      if (!row) return { keyField: '', keyValue: '' };
+      const sName = sheetName || '';
+      if (sName === 'Master_Karyawan') {
+        const npk = String(row['Personnel no.'] || row['NPK'] || row['NIK'] || '').trim();
+        return { keyField: 'Personnel no.', keyValue: npk };
+      }
+      if (sName === 'Data_SS') {
+        const reg = String(row['Registrasi'] || row['No.Registrasi'] || row['No'] || '').trim();
+        return { keyField: 'Registrasi', keyValue: reg };
+      }
+      if (sName === 'Data_QCC') {
+        const reg = String(row['No.Registrasi'] || row['Nama Tim'] || '').trim();
+        return { keyField: 'No.Registrasi', keyValue: reg };
+      }
+      if (sName === 'Data_SP') {
+        const npk = String(row['NPK'] || row['Personnel no.'] || '').trim();
+        return { keyField: 'NPK', keyValue: npk };
+      }
+      if (sName === 'Knowledge_management' || sName === 'Data_KM') {
+        const npk = String(row['NPK'] || row['Personnel no.'] || '').trim();
+        return { keyField: 'NPK', keyValue: npk };
+      }
+      if (sName === 'Data_Kehadiran') {
+        const npk = String(row['Personnel no.'] || row['NPK'] || '').trim();
+        return { keyField: 'Personnel no.', keyValue: npk };
+      }
+      return { keyField: '', keyValue: '' };
+    }
+
+    function applyLocalEditsToPayload(payload) {
+      if (!payload || !payload.rawTables) return payload;
+      const edits = getLocalEdits();
+      if (!edits) return payload;
+
+      const sheets = Object.keys(payload.rawTables);
+      sheets.forEach(sheetName => {
+        let rows = payload.rawTables[sheetName];
+        if (!Array.isArray(rows)) return;
+
+        // 1. Terapkan Deletions
+        const deletes = edits.deletes?.[sheetName] || [];
+        if (deletes.length > 0) {
+          const deleteSet = new Set(deletes.map(k => String(k)));
+          payload.rawTables[sheetName] = rows.filter((r, idx) => {
+            const key = getRowIdentifier(sheetName, r, idx);
+            return !deleteSet.has(key);
+          });
+          rows = payload.rawTables[sheetName];
+        }
+
+        // 2. Terapkan Updates
+        const updates = edits.updates?.[sheetName] || {};
+        const updateKeys = Object.keys(updates);
+        if (updateKeys.length > 0) {
+          rows.forEach((r, idx) => {
+            const key = getRowIdentifier(sheetName, r, idx);
+            if (updates[key]) {
+              Object.assign(r, updates[key]);
+            }
+          });
+        }
+      });
+
+      // 3. Khusus Master_Karyawan: Sinkronkan update ke payload.employeeList
+      if (edits.updates?.Master_Karyawan && Array.isArray(payload.employeeList)) {
+        const empUpdates = edits.updates.Master_Karyawan;
+        payload.employeeList.forEach(emp => {
+          const npk = String(emp.npk || emp['Personnel no.'] || '').trim();
+          if (empUpdates[npk]) {
+            const row = empUpdates[npk];
+            emp.nama = row['Last name'] || emp.nama;
+            emp.cabang = row['P.subarea'] || emp.cabang;
+            emp.wilayah = row['Wilayah'] || emp.wilayah;
+            emp.kodeBA = String(row['Business area'] || emp.kodeBA);
+            emp.divisi = row['Name'] || emp.divisi;
+            emp.jabatan = row['Job Title'] || emp.jabatan;
+            emp.tipeKontrak = row['Contract'] || emp.tipeKontrak;
+            emp['Contract'] = row['Contract'];
+            emp.joinDate = row['Date'] || emp.joinDate;
+            emp.tglLahir = row['D.o.birth'] || emp.tglLahir;
+            emp.gender = row['Gender text'] || emp.gender;
+            emp.agama = row['Religious denomination'] || emp.agama;
+            emp.psGroup = row['PS group'] || emp.psGroup;
+            emp.lvl = row['Lvl'] || emp.lvl;
+            emp.stext = row['P0001-STEXT'] || emp.stext;
+            emp.statusKaryawan = row['Status_Karyawan'] || emp.statusKaryawan || 'Aktif';
+            emp['Status_Karyawan'] = emp.statusKaryawan;
+            emp.tanggalResign = row['Tanggal_Resign'] || emp.tanggalResign || '';
+            emp['Tanggal_Resign'] = emp.tanggalResign;
+            emp.alasanResign = row['Alasan_Resign'] || emp.alasanResign || '';
+            emp['Alasan_Resign'] = emp.alasanResign;
+          }
+        });
+      }
+
+      // Khusus Master_Karyawan: filter deleted dari employeeList
+      if (edits.deletes?.Master_Karyawan && Array.isArray(payload.employeeList)) {
+        const delSet = new Set(edits.deletes.Master_Karyawan.map(k => String(k)));
+        payload.employeeList = payload.employeeList.filter(e => {
+          const npk = String(e.npk || e['Personnel no.'] || '').trim();
+          return !delSet.has(npk);
+        });
+      }
+
+      return payload;
+    }
+
     async function syncSheetToBackend(targetSheet) {
       const schema = SCHEMAS[targetSheet];
       if (!schema) return { success: false, message: 'Skema tabel tidak ditemukan.' };
-      let rawRows = (currentDashboardPayload?.rawTables && (currentDashboardPayload.rawTables[targetSheet] || currentDashboardPayload.rawTables[schema.sheetName])) || [];
+      
+      // Utamakan masterFullPayload agar mencakup seluruh cabang (tidak terpotong oleh filter scoped)
+      const sourcePayload = window.masterFullPayload || window.fullUnscopedPayload || currentDashboardPayload;
+      let rawRows = (sourcePayload?.rawTables && (sourcePayload.rawTables[targetSheet] || sourcePayload.rawTables[schema.sheetName])) || [];
       if (!Array.isArray(rawRows)) rawRows = [];
       const canonicalColumns = schema.columns;
       const formattedDataRows = rawRows.map(obj => canonicalColumns.map(col => {
@@ -1634,3 +1832,106 @@
         dataRows: formattedDataRows
       });
     }
+
+    async function updateRowInBackend(sheetName, rowData, rowIndex, keyField, keyValue) {
+      const schema = SCHEMAS[sheetName];
+      const targetSheet = schema ? schema.sheetName : sheetName;
+
+      try {
+        const res = await callBackendAPI("UPDATE_ROW", {
+          targetSheet: targetSheet,
+          keyField: keyField || '',
+          keyValue: keyValue || '',
+          rowIndex: typeof rowIndex === 'number' ? rowIndex : -1,
+          rowData: rowData
+        });
+
+        if (res && res.success) {
+          return { success: true, method: 'direct', message: res.message || 'Row berhasil diupdate di database.' };
+        }
+
+        // Jika endpoint UPDATE_ROW belum ada di versi script aktif pengguna, otomatis fallback ke syncSheetToBackend
+        if (res && res.message && (res.message.includes('Action tidak dikenali') || res.message.includes('Action not found'))) {
+          console.warn('UPDATE_ROW tidak didukung script aktif, mencoba syncSheetToBackend...');
+          const fallbackRes = await syncSheetToBackend(sheetName);
+          return {
+            success: fallbackRes.success,
+            method: 'fallback_sync',
+            message: fallbackRes.success
+              ? 'Tersinkron ke Google Sheets via sheet sync.'
+              : (fallbackRes.message || 'Gagal sinkron via fallback.')
+          };
+        }
+
+        return res || { success: false, message: 'Respon kosong dari server.' };
+      } catch (err) {
+        console.warn('Gagal call UPDATE_ROW, fallback ke syncSheetToBackend:', err);
+        try {
+          const fallbackRes = await syncSheetToBackend(sheetName);
+          return {
+            success: fallbackRes.success,
+            method: 'fallback_sync',
+            message: fallbackRes.success ? 'Tersinkron ke Google Sheets via fallback.' : fallbackRes.message
+          };
+        } catch (e2) {
+          return { success: false, message: err.message };
+        }
+      }
+    }
+
+    async function deleteRowInBackend(sheetName, rowIndex, keyField, keyValue, secondaryField, secondaryValue) {
+      const schema = SCHEMAS[sheetName];
+      const targetSheet = schema ? schema.sheetName : sheetName;
+
+      try {
+        const res = await callBackendAPI("DELETE_ROW", {
+          targetSheet: targetSheet,
+          keyField: keyField || '',
+          keyValue: keyValue || '',
+          rowIndex: typeof rowIndex === 'number' ? rowIndex : -1,
+          secondaryField: secondaryField || '',
+          secondaryValue: secondaryValue || ''
+        });
+
+        if (res && res.success) {
+          return { success: true, method: 'direct', message: res.message || 'Row berhasil dihapus dari database.' };
+        }
+
+        if (res && res.message && (res.message.includes('Action tidak dikenali') || res.message.includes('Action not found'))) {
+          console.warn('DELETE_ROW tidak didukung script aktif, mencoba syncSheetToBackend...');
+          const fallbackRes = await syncSheetToBackend(sheetName);
+          return {
+            success: fallbackRes.success,
+            method: 'fallback_sync',
+            message: fallbackRes.success ? 'Data dihapus via sheet sync.' : fallbackRes.message
+          };
+        }
+
+        return res || { success: false, message: 'Respon kosong dari server.' };
+      } catch (err) {
+        console.warn('Gagal call DELETE_ROW, fallback ke syncSheetToBackend:', err);
+        try {
+          const fallbackRes = await syncSheetToBackend(sheetName);
+          return {
+            success: fallbackRes.success,
+            method: 'fallback_sync',
+            message: fallbackRes.success ? 'Data dihapus via fallback sync.' : fallbackRes.message
+          };
+        } catch (e2) {
+          return { success: false, message: err.message };
+        }
+      }
+    }
+
+    // Expose Global Helper Functions
+    window.getLocalEdits = getLocalEdits;
+    window.saveLocalEdit = saveLocalEdit;
+    window.saveLocalDelete = saveLocalDelete;
+    window.clearLocalEdits = clearLocalEdits;
+    window.getRowIdentifier = getRowIdentifier;
+    window.getKeyFieldAndValue = getKeyFieldAndValue;
+    window.applyLocalEditsToPayload = applyLocalEditsToPayload;
+    window.syncSheetToBackend = syncSheetToBackend;
+    window.updateRowInBackend = updateRowInBackend;
+    window.deleteRowInBackend = deleteRowInBackend;
+

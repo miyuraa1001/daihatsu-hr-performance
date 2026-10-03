@@ -573,10 +573,11 @@
         });
       }
 
-      // Bersihkan cache usang dari localStorage agar tidak membangkitkan data yang sudah dihapus di database
-      try {
-        localStorage.removeItem('dperform_km_cache');
-      } catch(e) {}
+      // Terapkan perubahan baris (edit & delete) dari penyimpanan lokal browser (localStorage)
+      // sehingga semua editan Admin tetap persisten saat halaman di-reload (F5)
+      if (typeof applyLocalEditsToPayload === 'function') {
+        applyLocalEditsToPayload(fullCopy);
+      }
 
       window.masterFullPayload = fullCopy;
       window.fullUnscopedPayload = fullCopy;
