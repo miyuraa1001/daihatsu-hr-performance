@@ -1456,9 +1456,9 @@
         return `
           <div onclick="selectSSRewardFilter('${meta.key}')" 
                title="${meta.desc} (Klik untuk menyaring tabel)"
-               class="p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between ${meta.cardBg} ${ringClass} group">
-            <div class="flex items-center justify-between gap-1 mb-1.5">
-              <span class="text-[11px] font-bold ${meta.textColor} leading-tight" title="${meta.displayName}">${meta.displayName}</span>
+               class="p-2.5 sm:p-3 rounded-xl border transition-all cursor-pointer select-none flex flex-col justify-between ${meta.cardBg} ${ringClass} group min-w-0 overflow-hidden">
+            <div class="flex items-center justify-between gap-1 mb-1.5 min-w-0">
+              <span class="text-[11px] font-bold ${meta.textColor} leading-tight truncate block" title="${meta.displayName}">${meta.displayName}</span>
               <i class="${meta.icon} text-xs ${meta.textColor} opacity-80 group-hover:scale-110 transition-transform flex-shrink-0"></i>
             </div>
             <div class="flex items-baseline justify-between mt-auto pt-1">

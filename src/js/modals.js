@@ -368,9 +368,85 @@
     };
     window.EDIT_FORM_SECTIONS = EDIT_FORM_SECTIONS;
 
+    const COLUMN_DISPLAY_LABELS = {
+      'Personnel no.': 'NPK Pegawai',
+      'First name': 'Nama Depan',
+      'Last name': 'Nama Lengkap',
+      'Name of organizational unit': 'Unit Organisasi',
+      'Organizational Unit': 'Kode Unit Organisasi',
+      'Organizational unit text': 'Nama Unit Organisasi',
+      'Job': 'Kode Jabatan',
+      'Job Title': 'Jabatan / Posisi',
+      'Job text': 'Jabatan / Posisi',
+      'Contract': 'Status Kontrak',
+      'D.o.birth': 'Tanggal Lahir',
+      'Place of birth': 'Tempat Lahir',
+      'Entry': 'Tanggal Masuk',
+      'Gender Text': 'Jenis Kelamin',
+      'Gender text': 'Jenis Kelamin',
+      'Religious denomination': 'Agama',
+      'Business Area': 'Kode Business Area (BA)',
+      'Business area': 'Kode Business Area (BA)',
+      'BA Description': 'Nama Cabang / Business Area',
+      'P.subarea': 'Subarea Cabang',
+      'PS group': 'Golongan (PS Group)',
+      'Lvl': 'Level Jabatan',
+      'Time Clock In': 'Jam Masuk (Clock-In)',
+      'Time Clock Out': 'Jam Pulang (Clock-Out)',
+      'Clock In': 'Jam Masuk',
+      'Clock Out': 'Jam Pulang',
+      'Time': 'Jam Masuk',
+      'Date': 'Tanggal',
+      'Tanggal': 'Tanggal',
+      'TANGGAL': 'Tanggal',
+      'Estimasi Telat (Asumsi 08.00)': 'Estimasi Telat',
+      'Status Kehadiran': 'Status Kehadiran',
+      'Durasi Kerja (Work Hours)': 'Durasi Kerja (Jam)',
+      'Durasi Kerja (Jam)': 'Durasi Kerja (Jam)',
+      'Durasi Kerja': 'Durasi Kerja',
+      'Work Hours': 'Jam Kerja',
+      'Location': 'Lokasi Presensi',
+      'Assigned Work Location': 'Lokasi Penugasan',
+      'Keterangan': 'Keterangan Presensi',
+      'Status Reward': 'Status Reward',
+      'Status_Reward': 'Status Reward',
+      'Reward': 'Besaran Reward (Rp)',
+      'Distribusi Reward': 'Distribusi Reward',
+      'Distribusi Reward Fasilitator': 'Reward Fasilitator',
+      'No. BA': 'No. Berita Acara (BA)',
+      'No. BPH': 'No. Dokumen BPH',
+      'No. Reg': 'No. Registrasi',
+      'No.Registrasi': 'No. Registrasi',
+      'No Registrasi': 'No. Registrasi',
+      'Nama Tim': 'Nama Circle / Tim',
+      'Tema': 'Tema Perbaikan',
+      'Tema Ide': 'Tema Usulan Kaizen',
+      'Judul': 'Judul Inovasi / Riset',
+      'JUDUL': 'Judul Materi / SOP',
+      'TIME': 'Waktu Sesi',
+      'NPK Leader': 'NPK Leader',
+      'Leader NPK': 'NPK Leader',
+      'Leader': 'Nama Leader',
+      'Fasilitator': 'Nama Fasilitator',
+      'Tingkat SP': 'Tingkat Sanksi Disiplin (SP)',
+      'Tanggal Pelanggaran': 'Tanggal Surat SP',
+      'Alasan SP': 'Alasan Pelanggaran / SP',
+      'Alasan': 'Alasan Sanksi / PHK',
+      'Masa Berlaku': 'Masa Berlaku SP',
+      'Status_Karyawan': 'Status Karyawan',
+      'Status Karyawan': 'Status Karyawan',
+      'Tanggal_Resign': 'Tanggal Efektif Resign',
+      'Alasan_Resign': 'Alasan Resign / PHK (PPHK)',
+      'Lampiran_PPHK': 'Lampiran Dokumen PPHK',
+      'AstraPay': 'No. AstraPay',
+      'Nama AstraPay': 'Nama Akun AstraPay',
+      'No. AstraPay': 'No. AstraPay'
+    };
+
     function renderFieldInput(col, row, schema, sheetName, rowIndex) {
       const val = String(getRowCellValue(row, col, schema) || '');
       const norm = normalizeHeaderName(col);
+      const displayLabel = COLUMN_DISPLAY_LABELS[col] || col;
       
       let inputHtml = '';
       if (norm === 'no' || norm === 'nomor') {
@@ -467,12 +543,13 @@
       }
 
       const isWideField = norm === 'alasan_resign' || norm === 'alasan phk' || norm === 'keterangan' || norm === 'tema' || norm === 'judul' || norm === 'alasan';
-      const colSpanClass = isWideField ? 'sm:col-span-2 md:col-span-3' : '';
+      const colSpanClass = isWideField ? 'sm:col-span-2 lg:col-span-3' : '';
 
       return `
-        <div class="${colSpanClass}">
-          <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between">
-            <span>${col}</span>
+        <div class="${colSpanClass} min-w-0">
+          <label class="block text-[11px] font-bold text-slate-700 mb-1 flex items-center justify-between min-w-0" title="${col}">
+            <span class="truncate">${displayLabel}</span>
+            ${norm === 'no' || norm === 'nomor' ? '<span class="text-[9px] text-slate-400 font-normal flex-shrink-0 ml-1">Auto</span>' : ''}
           </label>
           ${inputHtml}
         </div>
@@ -546,7 +623,7 @@
                 ${secCols.length} Kolom
               </span>
             </div>
-            <div class="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               ${inputsHtml}
             </div>
           </div>
@@ -573,7 +650,7 @@
                 ${unassigned.length} Kolom
               </span>
             </div>
-            <div class="p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
               ${extraInputs}
             </div>
           </div>
@@ -2173,9 +2250,14 @@
 
       document.getElementById('modal-emp-name').textContent = empNama;
       const empDivisi = emp.divisi || (typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(emp).divisionName : '-');
-      document.getElementById('modal-emp-role').textContent = isResign
-        ? `NPK: ${empNpk} • ${empDivisi} • ${empJabatan} • Cabang ${empCabang} • [Non-Aktif / Resign]`
-        : `NPK: ${empNpk} • ${empDivisi} • ${empJabatan} • Cabang ${empCabang}`;
+      const roleEl = document.getElementById('modal-emp-role');
+      if (roleEl) {
+        const fullRoleStr = isResign
+          ? `NPK: ${empNpk} • ${empDivisi} • ${empJabatan} • Cabang ${empCabang} • [Non-Aktif / Resign]`
+          : `NPK: ${empNpk} • ${empDivisi} • ${empJabatan} • Cabang ${empCabang}`;
+        roleEl.textContent = fullRoleStr;
+        roleEl.title = fullRoleStr;
+      }
 
       // Status Badge di Modal Header
       const statusBadgeEl = document.getElementById('modal-emp-status-badge');
@@ -2266,16 +2348,20 @@
       // 4. Contract
       const kontrakEl = document.getElementById('modal-emp-kontrak');
       if (kontrakEl) {
-        kontrakEl.textContent = isResign ? `${empContract} (Resign)` : empContract;
+        const displayKontrak = isResign ? `${empContract} (Resign)` : empContract;
+        kontrakEl.textContent = displayKontrak;
+        kontrakEl.title = displayKontrak;
       }
       const contractSubEl = document.getElementById('modal-emp-contract-sub');
       if (contractSubEl) {
         if (isResign) {
-          contractSubEl.textContent = `Efektif: ${tglResign}`;
-          contractSubEl.className = "px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-200/90 text-rose-900 border border-rose-300";
+          contractSubEl.textContent = "Status: Resign";
+          contractSubEl.title = `Tanggal Efektif Resign: ${tglResign}`;
+          contractSubEl.className = "px-2 py-0.5 rounded-full text-[9px] font-black bg-rose-200/90 text-rose-900 border border-rose-300 truncate max-w-full inline-block";
         } else {
           contractSubEl.textContent = "Profil Master";
-          contractSubEl.className = "px-2 py-0.5 rounded-full text-[9px] font-black bg-blue-200/70 text-blue-900 border border-blue-300/80";
+          contractSubEl.title = "Profil Master Karyawan";
+          contractSubEl.className = "px-2 py-0.5 rounded-full text-[9px] font-black bg-blue-200/70 text-blue-900 border border-blue-300/80 truncate max-w-full inline-block";
         }
       }
 
@@ -2399,17 +2485,17 @@
 
         const statBanner = `
           <div class="grid grid-cols-3 gap-2 mb-3">
-            <div class="bg-emerald-50 p-2 rounded-xl border border-emerald-200 text-center">
-              <span class="text-[9px] font-bold text-emerald-700 block uppercase">Total Hari Presensi</span>
-              <span class="text-base font-extrabold text-emerald-900">${absRows.length} Hari</span>
+            <div class="bg-emerald-50 p-2 rounded-xl border border-emerald-200 text-center min-w-0 overflow-hidden">
+              <span class="text-[9px] font-bold text-emerald-700 block uppercase truncate" title="Total Hari Presensi">Total Hari</span>
+              <span class="text-base font-extrabold text-emerald-900 truncate block">${absRows.length} Hari</span>
             </div>
-            <div class="bg-teal-50 p-2 rounded-xl border border-teal-200 text-center">
-              <span class="text-[9px] font-bold text-teal-700 block uppercase">Tepat Waktu</span>
-              <span class="text-base font-extrabold text-teal-900">${onTimeCount} Hari</span>
+            <div class="bg-teal-50 p-2 rounded-xl border border-teal-200 text-center min-w-0 overflow-hidden">
+              <span class="text-[9px] font-bold text-teal-700 block uppercase truncate" title="Tepat Waktu">Tepat Waktu</span>
+              <span class="text-base font-extrabold text-teal-900 truncate block">${onTimeCount} Hari</span>
             </div>
-            <div class="bg-amber-50 p-2 rounded-xl border border-amber-200 text-center">
-              <span class="text-[9px] font-bold text-amber-700 block uppercase">Terlambat Masuk</span>
-              <span class="text-base font-extrabold text-amber-900">${telatCount} Kali</span>
+            <div class="bg-amber-50 p-2 rounded-xl border border-amber-200 text-center min-w-0 overflow-hidden">
+              <span class="text-[9px] font-bold text-amber-700 block uppercase truncate" title="Terlambat Masuk">Terlambat</span>
+              <span class="text-base font-extrabold text-amber-900 truncate block">${telatCount} Kali</span>
             </div>
           </div>
         `;
@@ -2651,62 +2737,62 @@
             `}
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">NPK / Personnel No.</span>
-                <span class="text-sm font-black text-slate-900 font-mono mt-0.5 block">${empNpk}</span>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">NPK / Personnel No.</span>
+                <span class="text-sm font-black text-slate-900 font-mono mt-0.5 block truncate" title="${empNpk}">${empNpk}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Nama Lengkap</span>
-                <span class="text-sm font-black text-slate-900 mt-0.5 block">${empNama}</span>
-              </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Status Kontrak & Kepegawaian</span>
-                <span class="text-xs font-black ${isResign ? 'text-rose-700' : 'text-blue-700'} mt-0.5 block">${contract} ${isResign ? '(Resign)' : ''}</span>
-              </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Jabatan / Job Title</span>
-                <span class="text-xs font-extrabold text-slate-800 mt-0.5 block">${jabatan}</span>
-              </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Unit Organisasi</span>
-                <span class="text-xs font-extrabold text-slate-800 mt-0.5 block">${unitOrg}</span>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Nama Lengkap</span>
+                <span class="text-sm font-black text-slate-900 mt-0.5 block truncate" title="${empNama}">${empNama}</span>
               </div>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Cabang / Subarea</span>
-                <span class="text-xs font-bold text-slate-800 mt-0.5 block">${cabang}</span>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Status Kontrak & Kepegawaian</span>
+                <span class="text-xs font-black ${isResign ? 'text-rose-700' : 'text-blue-700'} mt-0.5 block truncate" title="${contract} ${isResign ? '(Resign)' : ''}">${contract} ${isResign ? '(Resign)' : ''}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Kode Business Area</span>
-                <span class="text-xs font-bold text-slate-800 font-mono mt-0.5 block">${baCode}</span>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Jabatan / Job Title</span>
+                <span class="text-xs font-extrabold text-slate-800 mt-0.5 block truncate" title="${jabatan}">${jabatan}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Tanggal Masuk (Join)</span>
-                <span class="text-xs font-bold text-slate-800 mt-0.5 block">${joinDate}</span>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Unit Organisasi</span>
+                <span class="text-xs font-extrabold text-slate-800 mt-0.5 block truncate" title="${unitOrg}">${unitOrg}</span>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Cabang / Subarea</span>
+                <span class="text-xs font-bold text-slate-800 mt-0.5 block truncate" title="${cabang}">${cabang}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Kode Business Area</span>
+                <span class="text-xs font-bold text-slate-800 font-mono mt-0.5 block truncate" title="${baCode}">${baCode}</span>
+              </div>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Tanggal Masuk (Join)</span>
+                <span class="text-xs font-bold text-slate-800 mt-0.5 block truncate" title="${joinDate}">${joinDate}</span>
               </div>
             </div>
 
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Tgl Lahir (D.o.b)</span>
-                <span class="text-xs font-semibold text-slate-800 mt-0.5 block">${dob}</span>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Tgl Lahir (D.o.b)</span>
+                <span class="text-xs font-semibold text-slate-800 mt-0.5 block truncate" title="${dob}">${dob}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Gender</span>
-                <span class="text-xs font-semibold text-slate-800 mt-0.5 block">${gender}</span>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Gender</span>
+                <span class="text-xs font-semibold text-slate-800 mt-0.5 block truncate" title="${gender}">${gender}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Agama</span>
-                <span class="text-xs font-semibold text-slate-800 mt-0.5 block">${agama}</span>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Agama</span>
+                <span class="text-xs font-semibold text-slate-800 mt-0.5 block truncate" title="${agama}">${agama}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200">
-                <span class="text-[10px] font-bold text-slate-400 block uppercase">Gol / Level</span>
-                <span class="text-xs font-semibold text-slate-800 mt-0.5 block">${psGroup} / ${lvl}</span>
+              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+                <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Gol / Level</span>
+                <span class="text-xs font-semibold text-slate-800 mt-0.5 block truncate" title="${psGroup} / ${lvl}">${psGroup} / ${lvl}</span>
               </div>
             </div>
           </div>
@@ -3343,22 +3429,22 @@ pause
         return `
           <div class="p-3.5 bg-slate-50 hover:bg-slate-100/70 border border-slate-200 rounded-2xl transition space-y-3" id="resign-card-${npk}">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-              <div class="flex items-start gap-3">
+              <div class="flex items-start gap-3 min-w-0 flex-1">
                 <div class="w-9 h-9 rounded-xl bg-amber-100 text-amber-800 font-black flex items-center justify-center text-xs flex-shrink-0 border border-amber-300">
                   ${nama.slice(0, 2).toUpperCase()}
                 </div>
-                <div>
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <span class="font-extrabold text-slate-900 text-sm">${nama}</span>
-                    <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-200 text-slate-700">${npk}</span>
-                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-2 flex-wrap min-w-0">
+                    <span class="font-extrabold text-slate-900 text-sm truncate max-w-full">${nama}</span>
+                    <span class="px-2 py-0.5 rounded-md text-[10px] font-mono font-bold bg-slate-200 text-slate-700 flex-shrink-0">${npk}</span>
+                    <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200 flex-shrink-0">
                       <i class="fa-solid fa-clock mr-1"></i>Omit / Tidak di Berkas Baru (${missedDate})
                     </span>
                   </div>
-                  <div class="text-[11px] text-slate-500 font-medium mt-0.5 flex items-center gap-2 flex-wrap">
-                    <span><i class="fa-solid fa-building mr-1"></i>Cabang: <b>${cabang}</b> ${kodeBA ? '(' + kodeBA + ')' : ''}</span>
+                  <div class="text-[11px] text-slate-500 font-medium mt-0.5 flex items-center gap-2 flex-wrap min-w-0">
+                    <span class="truncate"><i class="fa-solid fa-building mr-1"></i>Cabang: <b>${cabang}</b> ${kodeBA ? '(' + kodeBA + ')' : ''}</span>
                     <span>•</span>
-                    <span><i class="fa-solid fa-briefcase mr-1"></i>${divisi} / ${jabatan}</span>
+                    <span class="truncate"><i class="fa-solid fa-briefcase mr-1"></i>${divisi} / ${jabatan}</span>
                   </div>
                 </div>
               </div>
