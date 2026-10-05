@@ -307,6 +307,25 @@
     }
     if (typeof window !== 'undefined') window.syncContractFilters = syncContractFilters;
 
+    function filterBySpecificContract(contractName) {
+      const select = document.getElementById('mk-filter-kontrak');
+      if (!select) return;
+      if (select.value === contractName) {
+        select.value = 'ALL';
+      } else {
+        const hasOption = Array.from(select.options || []).some(o => o.value === contractName);
+        if (!hasOption) {
+          const opt = document.createElement('option');
+          opt.value = contractName;
+          opt.textContent = contractName;
+          select.appendChild(opt);
+        }
+        select.value = contractName;
+      }
+      filterMasterKaryawanTable();
+    }
+    if (typeof window !== 'undefined') window.filterBySpecificContract = filterBySpecificContract;
+
     // Safety stubs
     function openMasterKaryawanFilterModal() {}
     function setColumnViewModeChoice() {}
@@ -526,41 +545,134 @@
         document.getElementById('mk-sales-ratio-detail').textContent = `(${salesCount} Sales : ${supportCount} Support)`;
       }
 
-      // 6. Status Kepegawaian & Donut Chart SVG
-      const countTetap = sourceList.filter(e => {
-        const c = String(getRowCellValue(e, 'Contract', SCHEMAS.Master_Karyawan) || e.Contract || e.tipeKontrak || '').toLowerCase();
-        return c.includes('tetap') || c.includes('permanent');
-      }).length;
-      const countPKWT = sourceList.filter(e => {
-        const c = String(getRowCellValue(e, 'Contract', SCHEMAS.Master_Karyawan) || e.Contract || e.tipeKontrak || '').toLowerCase();
-        return c.includes('pkwt') || c.includes('kontrak') || c.includes('contract');
-      }).length;
+      // 6. Status Kepegawaian & Multi-segment Donut Chart SVG (Mencakup Semua Kategori Kontrak)
+      const contractGroupMap = {};
+      STANDARD_CONTRACT_CATEGORIES.forEach(cat => {
+        contractGroupMap[cat] = 0;
+      });
 
+      sourceList.forEach(e => {
+        const raw = String(getRowCellValue(e, 'Contract', SCHEMAS.Master_Karyawan) || e.Contract || e.tipeKontrak || 'Tetap / Permanent').trim();
+        const norm = normalizeContractCategory(raw);
+        contractGroupMap[norm] = (contractGroupMap[norm] || 0) + 1;
+      });
+
+      const contractMetaConfig = {
+        'Tetap / Permanent': { name: 'Tetap', fullName: 'Tetap / Permanent', color: '#2563eb' },
+        'Kontrak / PKWT': { name: 'PKWT', fullName: 'Kontrak / PKWT', color: '#f59e0b' },
+        'On probation': { name: 'Probation', fullName: 'On probation', color: '#f97316' },
+        'Magang/Intern': { name: 'Magang', fullName: 'Magang/Intern', color: '#10b981' },
+        'Contracters': { name: 'Mitra', fullName: 'Contracters', color: '#8b5cf6' }
+      };
+
+      const fallbackColors = ['#06b6d4', '#ec4899', '#84cc16', '#64748b'];
+      let fallbackColorIdx = 0;
+
+      const activeContractList = [];
+      Object.keys(contractGroupMap).forEach(catKey => {
+        const count = contractGroupMap[catKey] || 0;
+        // Selalu tampilkan Tetap & PKWT, serta kategori lain yang jumlahnya > 0
+        if (count > 0 || catKey === 'Tetap / Permanent' || catKey === 'Kontrak / PKWT') {
+          let meta = contractMetaConfig[catKey];
+          if (!meta) {
+            meta = {
+              name: catKey.length > 12 ? catKey.slice(0, 11) + '..' : catKey,
+              fullName: catKey,
+              color: fallbackColors[fallbackColorIdx++ % fallbackColors.length]
+            };
+          }
+          const pct = totalEmployees ? Math.round((count / totalEmployees) * 100) : 0;
+          activeContractList.push({
+            key: catKey,
+            name: meta.name,
+            fullName: meta.fullName,
+            color: meta.color,
+            count: count,
+            pct: pct
+          });
+        }
+      });
+
+      // Urutkan: Tetap pertama, PKWT kedua, lalu kategori lain berdasarkan jumlah terbanyak
+      activeContractList.sort((a, b) => {
+        if (a.key === 'Tetap / Permanent') return -1;
+        if (b.key === 'Tetap / Permanent') return 1;
+        if (a.key === 'Kontrak / PKWT') return -1;
+        if (b.key === 'Kontrak / PKWT') return 1;
+        return b.count - a.count;
+      });
+
+      // Render daftar status kontrak ke DOM
+      const contractListContainer = document.getElementById('mk-contract-status-list');
+      if (contractListContainer) {
+        contractListContainer.innerHTML = activeContractList.map(item => {
+          let pctIdAttr = '';
+          let cntIdAttr = '';
+          if (item.key === 'Tetap / Permanent') {
+            pctIdAttr = 'id="mk-stat-tetap-pct"';
+            cntIdAttr = 'id="mk-stat-tetap-cnt"';
+          } else if (item.key === 'Kontrak / PKWT') {
+            pctIdAttr = 'id="mk-stat-pkwt-pct"';
+            cntIdAttr = 'id="mk-stat-pkwt-cnt"';
+          }
+          return `
+            <div class="flex items-center justify-between gap-1.5 text-[11px] leading-tight py-0.5 px-1.5 rounded-lg hover:bg-slate-50 transition cursor-pointer group" onclick="filterBySpecificContract('${item.fullName}')" title="Klik untuk memfilter: ${item.fullName}">
+              <div class="flex items-center gap-1.5 min-w-0">
+                <span class="w-2 h-2 rounded-full flex-shrink-0 group-hover:scale-125 transition-transform" style="background-color: ${item.color}"></span>
+                <span class="text-slate-600 font-semibold truncate text-[11px]">${item.name}</span>
+              </div>
+              <div class="flex items-center gap-1 text-right flex-shrink-0">
+                <span ${pctIdAttr} class="font-extrabold text-slate-800 text-[11px]">${item.pct}%</span>
+                <span ${cntIdAttr} class="text-[10px] text-slate-400 font-medium">(${item.count} Org)</span>
+              </div>
+            </div>
+          `;
+        }).join('');
+      }
+
+      // Backwards compatibility for old element IDs if referenced elsewhere
+      const countTetap = contractGroupMap['Tetap / Permanent'] || 0;
+      const countPKWT = contractGroupMap['Kontrak / PKWT'] || 0;
       const pctTetap = totalEmployees ? Math.round((countTetap / totalEmployees) * 100) : 0;
       const pctPKWT = totalEmployees ? Math.round((countPKWT / totalEmployees) * 100) : 0;
-
-      if (document.getElementById('mk-stat-tetap-pct')) document.getElementById('mk-stat-tetap-pct').textContent = `${pctTetap}%`;
-      if (document.getElementById('mk-stat-tetap-cnt')) document.getElementById('mk-stat-tetap-cnt').textContent = `(${countTetap} Org)`;
-      if (document.getElementById('mk-stat-pkwt-pct')) document.getElementById('mk-stat-pkwt-pct').textContent = `${pctPKWT}%`;
-      if (document.getElementById('mk-stat-pkwt-cnt')) document.getElementById('mk-stat-pkwt-cnt').textContent = `(${countPKWT} Org)`;
-
-      // Backwards compatibility for old element IDs if referenced
       if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = countTetap;
       if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = countPKWT;
       if (document.getElementById('mk-card-tetap-pct')) document.getElementById('mk-card-tetap-pct').textContent = `${pctTetap}%`;
       if (document.getElementById('mk-card-pkwt-pct')) document.getElementById('mk-card-pkwt-pct').textContent = `${pctPKWT}%`;
 
-      // Render Donut Chart SVG
+      // Render Multi-segment Donut Chart SVG
       const donutContainer = document.getElementById('mk-donut-chart-container');
       if (donutContainer) {
-        const circumference = 94.25;
-        const tetapDash = ((pctTetap / 100) * circumference).toFixed(1);
-        donutContainer.innerHTML = `
-          <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 40 40">
-            <circle cx="20" cy="20" r="15" stroke="#e2e8f0" stroke-width="4.5" fill="none" />
-            <circle cx="20" cy="20" r="15" stroke="#6366f1" stroke-width="4.5" stroke-dasharray="${tetapDash} ${circumference}" stroke-dashoffset="0" stroke-linecap="round" fill="none" />
-          </svg>
-        `;
+        if (!totalEmployees) {
+          donutContainer.innerHTML = `
+            <svg class="w-14 h-14" viewBox="0 0 42 42">
+              <circle cx="21" cy="21" r="15.9155" stroke="#f1f5f9" stroke-width="4.5" fill="none" />
+            </svg>
+            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <span class="text-[10px] font-bold text-slate-300">0</span>
+            </div>
+          `;
+        } else {
+          let accumulatedPct = 0;
+          const slices = activeContractList.filter(item => item.count > 0).map(item => {
+            const exactPct = (item.count / totalEmployees) * 100;
+            const dashArray = `${exactPct.toFixed(2)} ${(100 - exactPct).toFixed(2)}`;
+            const dashOffset = (-accumulatedPct).toFixed(2);
+            accumulatedPct += exactPct;
+            return `<circle cx="21" cy="21" r="15.9155" stroke="${item.color}" stroke-width="4.5" stroke-dasharray="${dashArray}" stroke-dashoffset="${dashOffset}" fill="none" class="transition-all duration-500"></circle>`;
+          }).join('');
+
+          donutContainer.innerHTML = `
+            <svg class="w-14 h-14 transform -rotate-90" viewBox="0 0 42 42">
+              <circle cx="21" cy="21" r="15.9155" stroke="#f1f5f9" stroke-width="4.5" fill="none" />
+              ${slices}
+            </svg>
+            <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
+              <span class="text-[10px] font-black text-slate-800 leading-none">${totalEmployees}</span>
+              <span class="text-[7.5px] font-bold text-slate-400 leading-none mt-0.5">Pegawai</span>
+            </div>
+          `;
+        }
       }
 
       // 7. Jabatan Terbanyak (Top 4)
