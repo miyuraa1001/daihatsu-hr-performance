@@ -120,6 +120,236 @@
       return String(e?.['Job Title'] || e?.jabatan || '').trim();
     }
 
+    /**
+     * Klasifikasi Karyawan ke dalam 3 Pilar Utama DSO:
+     * - Sales: Sales Team (VSO, Wiraniaga, Counter, Marketing, dsb.)
+     * - Service: Service & Bengkel (Mechanic, Service Advisor, Workshop, Foreman, dsb.)
+     * - Admin: Admin & Support (Administrator, GA, Part Admin, Finance, dsb.)
+     */
+    function classifyEmployeePilar(e, idx = 0) {
+      if (!e) return 'Admin';
+
+      let jobTitle = String(e['Job Title'] || e.jabatan || e.posisi || '').trim();
+      let stext = '';
+      if (typeof findP0001STEXT === 'function') {
+        stext = String(e['P0001-STEXT'] || findP0001STEXT(e, idx) || '').trim();
+      } else {
+        stext = String(e['P0001-STEXT'] || e.stext || '').trim();
+      }
+      const orgUnit = String(e['Name of organizational unit'] || e.unit || '').trim();
+      const nameVal = String(e['Name'] || e.divisi || e.departemen || '').trim();
+
+      const jtLower = jobTitle.toLowerCase();
+      const combined = `${jobTitle} ${stext} ${orgUnit} ${nameVal}`.toLowerCase();
+
+      // 1. Prioritas Admin & Support: Pastikan title seperti "Part Admin", "Service Admin", dsb. masuk ke Admin
+      if (
+        jtLower.includes('admin') || 
+        jtLower.includes('general affair') || 
+        jtLower.includes(' ga') || 
+        jtLower.startsWith('ga ') ||
+        jtLower.includes('finance') || 
+        jtLower.includes('keuangan') || 
+        jtLower.includes('accounting') || 
+        jtLower.includes('akuntansi') || 
+        jtLower.includes('cashier') || 
+        jtLower.includes('kasir') || 
+        jtLower.includes('hr') || 
+        jtLower.includes('personalia') || 
+        jtLower.includes('it ') || 
+        jtLower.includes('information tech') || 
+        jtLower.includes('logistik') || 
+        jtLower.includes('driver') || 
+        jtLower.includes('office boy') || 
+        jtLower.includes('security')
+      ) {
+        return 'Admin';
+      }
+
+      // 2. Service & Bengkel
+      if (
+        jtLower.includes('mechanic') || 
+        jtLower.includes('mekanik') || 
+        jtLower.includes('service advisor') || 
+        /\bsa\b/i.test(jtLower) || 
+        jtLower.includes('workshop head') || 
+        jtLower.includes('workshop') || 
+        jtLower.includes('foreman') || 
+        jtLower.includes('teknisi') || 
+        jtLower.includes('technician') || 
+        jtLower.includes('toolman') || 
+        jtLower.includes('partman') || 
+        jtLower.includes('bengkel') || 
+        jtLower.includes('pdi') ||
+        (jtLower.includes('service') && !jtLower.includes('sales'))
+      ) {
+        return 'Service';
+      }
+
+      // 3. Sales Team
+      if (
+        jtLower.includes('sales') || 
+        jtLower.includes('wiraniaga') || 
+        jtLower.includes('counter') || 
+        jtLower.includes('marketing') || 
+        jtLower.includes('vso') || 
+        jtLower.includes('showroom') ||
+        jtLower.includes('supervisor') ||
+        jtLower.includes('spv') ||
+        jtLower.includes('branch manager') ||
+        jtLower.includes('kepala cabang')
+      ) {
+        return 'Sales';
+      }
+
+      // Fallback berdasarkan gabungan teks
+      if (combined.includes('service') || combined.includes('bengkel') || combined.includes('workshop')) {
+        return 'Service';
+      }
+      if (combined.includes('sales') || combined.includes('vso') || combined.includes('penjualan')) {
+        return 'Sales';
+      }
+
+      return 'Admin';
+    }
+    if (typeof window !== 'undefined') window.classifyEmployeePilar = classifyEmployeePilar;
+
+    // Filter & View State Master Karyawan
+    let activePilarFilter = null; // 'Sales', 'Service', 'Admin', or null
+    let quickJobSearchQuery = '';
+    let currentMKViewMode = 'table'; // 'table' or 'card'
+
+    function filterByPilar(pilar) {
+      if (activePilarFilter === pilar) {
+        activePilarFilter = null;
+      } else {
+        activePilarFilter = pilar;
+      }
+      updatePilarCardStyles();
+      filterMasterKaryawanTable();
+    }
+    if (typeof window !== 'undefined') window.filterByPilar = filterByPilar;
+
+    function updatePilarCardStyles() {
+      const cards = {
+        Sales: document.getElementById('mk-pilar-card-sales'),
+        Service: document.getElementById('mk-pilar-card-service'),
+        Admin: document.getElementById('mk-pilar-card-admin')
+      };
+
+      Object.keys(cards).forEach(k => {
+        const el = cards[k];
+        if (!el) return;
+        el.classList.remove('ring-2', 'ring-rose-500', 'ring-blue-500', 'ring-amber-500', 'bg-rose-50/40', 'bg-blue-50/40', 'bg-amber-50/40');
+        if (activePilarFilter === k) {
+          if (k === 'Sales') el.classList.add('ring-2', 'ring-rose-500', 'bg-rose-50/40');
+          if (k === 'Service') el.classList.add('ring-2', 'ring-blue-500', 'bg-blue-50/40');
+          if (k === 'Admin') el.classList.add('ring-2', 'ring-amber-500', 'bg-amber-50/40');
+        }
+      });
+    }
+    if (typeof window !== 'undefined') window.updatePilarCardStyles = updatePilarCardStyles;
+
+    function resetMasterKaryawanFilters() {
+      activePilarFilter = null;
+      quickJobSearchQuery = '';
+      const quickInput = document.getElementById('mk-quick-job-input');
+      if (quickInput) quickInput.value = '';
+      const searchInput = document.getElementById('mk-search-input');
+      if (searchInput) searchInput.value = '';
+      const searchInputExtra = document.getElementById('mk-search-input-extra');
+      if (searchInputExtra) searchInputExtra.value = '';
+      const contractSelect = document.getElementById('mk-filter-kontrak');
+      if (contractSelect) contractSelect.value = 'ALL';
+      const contractSelectExtra = document.getElementById('mk-filter-kontrak-extra');
+      if (contractSelectExtra) contractSelectExtra.value = 'ALL';
+      updatePilarCardStyles();
+      filterMasterKaryawanTable();
+    }
+    if (typeof window !== 'undefined') window.resetMasterKaryawanFilters = resetMasterKaryawanFilters;
+
+    function onQuickJobSearchInput(val) {
+      quickJobSearchQuery = String(val || '').trim();
+      filterMasterKaryawanTable();
+    }
+    if (typeof window !== 'undefined') window.onQuickJobSearchInput = onQuickJobSearchInput;
+
+    function filterBySpecificJob(jobTitle) {
+      const quickInput = document.getElementById('mk-quick-job-input');
+      if (quickInput) quickInput.value = jobTitle;
+      quickJobSearchQuery = jobTitle;
+      filterMasterKaryawanTable();
+    }
+    if (typeof window !== 'undefined') window.filterBySpecificJob = filterBySpecificJob;
+
+    function toggleOtherJobsList() {
+      const container = document.getElementById('mk-other-jobs-container');
+      const icon = document.getElementById('mk-icon-other-jobs');
+      if (!container) return;
+      const isHidden = container.classList.contains('hidden');
+      if (isHidden) {
+        container.classList.remove('hidden');
+        if (icon) icon.className = 'fa-solid fa-chevron-up text-[10px]';
+      } else {
+        container.classList.add('hidden');
+        if (icon) icon.className = 'fa-solid fa-chevron-down text-[10px]';
+      }
+    }
+    if (typeof window !== 'undefined') window.toggleOtherJobsList = toggleOtherJobsList;
+
+    function toggleExtraFilters() {
+      const panel = document.getElementById('mk-extra-filters-panel');
+      if (panel) {
+        panel.classList.toggle('hidden');
+      }
+    }
+    if (typeof window !== 'undefined') window.toggleExtraFilters = toggleExtraFilters;
+
+    function syncSearchInputs(val) {
+      const mainSearch = document.getElementById('mk-search-input');
+      if (mainSearch) mainSearch.value = val;
+      filterMasterKaryawanTable();
+    }
+    if (typeof window !== 'undefined') window.syncSearchInputs = syncSearchInputs;
+
+    function syncContractFilters(val) {
+      const mainContract = document.getElementById('mk-filter-kontrak');
+      if (mainContract) mainContract.value = val;
+      filterMasterKaryawanTable();
+    }
+    if (typeof window !== 'undefined') window.syncContractFilters = syncContractFilters;
+
+    function setMKViewMode(mode) {
+      currentMKViewMode = mode;
+      const btnTable = document.getElementById('mk-view-btn-table');
+      const btnCard = document.getElementById('mk-view-btn-card');
+      const tableWrap = document.getElementById('mk-table-wrapper');
+      const cardWrap = document.getElementById('mk-card-view-wrapper');
+
+      if (mode === 'table') {
+        if (btnTable) btnTable.className = 'px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-[#7f1d1d] text-white shadow-2xs cursor-pointer';
+        if (btnCard) btnCard.className = 'px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        if (tableWrap) tableWrap.classList.remove('hidden');
+        if (cardWrap) cardWrap.classList.add('hidden');
+      } else {
+        if (btnTable) btnTable.className = 'px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer';
+        if (btnCard) btnCard.className = 'px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-[#7f1d1d] text-white shadow-2xs cursor-pointer';
+        if (tableWrap) tableWrap.classList.add('hidden');
+        if (cardWrap) cardWrap.classList.remove('hidden');
+      }
+      filterMasterKaryawanTable();
+    }
+    if (typeof window !== 'undefined') window.setMKViewMode = setMKViewMode;
+
+    function toggleSelectAllMK(masterCheck) {
+      const isChecked = masterCheck.checked;
+      const rowChecks = document.querySelectorAll('.mk-row-checkbox');
+      rowChecks.forEach(cb => {
+        cb.checked = isChecked;
+      });
+    }
+    if (typeof window !== 'undefined') window.toggleSelectAllMK = toggleSelectAllMK;
+
     function renderMasterKaryawanView(data) {
       if (!data) return;
       const s = data.summary || {};
@@ -135,118 +365,233 @@
         sourceList = sourceList.filter(r => matchBranch(r, targetBranch));
       }
 
+      // Role Kacab hanya melihat karyawan aktif
+      if (!isAdmin) {
+        sourceList = sourceList.filter(e => {
+          const st = String(e['Status_Karyawan'] || e.statusKaryawan || 'Aktif').trim().toLowerCase();
+          return st !== 'resign';
+        });
+      }
+
       const totalEmployees = sourceList.length || s.totalKaryawan || 0;
 
-      // 1. Total Karyawan Card
+      // 1. Total Karyawan Badges
+      if (document.getElementById('mk-badge-total-karyawan')) {
+        document.getElementById('mk-badge-total-karyawan').textContent = `Total: ${totalEmployees} Karyawan`;
+      }
       if (document.getElementById('mk-card-total')) {
         document.getElementById('mk-card-total').textContent = totalEmployees;
       }
-      
-      let branchDesc = '';
-      if (isAdmin && activeBranchVal === 'ALL') {
-        branchDesc = 'Wilayah DSO Lampung (Semua Cabang)';
-      } else {
-        const info = resolveBranchInfo(activeBranchVal !== 'ALL' ? activeBranchVal : getUserBranchCode(loggedInUser));
-        branchDesc = `Cabang ${info ? info.name : (sourceList[0]?.cabang || sourceList[0]?.['P.subarea'] || 'Aktif')}`;
-      }
-      if (document.getElementById('mk-card-branch-desc')) {
-        document.getElementById('mk-card-branch-desc').textContent = branchDesc;
-      }
 
-      // 2. Status Kepegawaian (Contract Insight) - Berdasarkan Kolom Contract
-      const contractGroupMap = {};
-      STANDARD_CONTRACT_CATEGORIES.forEach(cat => {
-        contractGroupMap[cat] = 0;
+      // 2. Klasifikasi ke 3 Pilar DSO
+      const salesList = [];
+      const serviceList = [];
+      const adminList = [];
+
+      sourceList.forEach((e, idx) => {
+        const pilar = classifyEmployeePilar(e, idx);
+        if (pilar === 'Sales') salesList.push(e);
+        else if (pilar === 'Service') serviceList.push(e);
+        else adminList.push(e);
       });
 
-      sourceList.forEach(r => {
-        let rawVal = String(getRowCellValue(r, 'Contract', SCHEMAS.Master_Karyawan) || 'Tetap / Permanent').trim();
-        let groupKey = normalizeContractCategory(rawVal);
-        contractGroupMap[groupKey] = (contractGroupMap[groupKey] || 0) + 1;
-      });
+      const salesCount = salesList.length;
+      const serviceCount = serviceList.length;
+      const adminCount = adminList.length;
 
-      const totalContract = Object.values(contractGroupMap).reduce((a, b) => a + b, 0) || totalEmployees || 1;
-      const contractListEl = document.getElementById('mk-contract-group-list');
+      const salesPct = totalEmployees ? Math.round((salesCount / totalEmployees) * 100) : 0;
+      const servicePct = totalEmployees ? Math.round((serviceCount / totalEmployees) * 100) : 0;
+      const adminPct = totalEmployees ? Math.round((adminCount / totalEmployees) * 100) : 0;
 
-      if (contractListEl) {
-        const standardCats = STANDARD_CONTRACT_CATEGORIES;
-        const extraCats = Object.keys(contractGroupMap).filter(k => !standardCats.includes(k) && contractGroupMap[k] > 0);
-        const allCatsToRender = [...standardCats, ...extraCats];
+      // Badges pada 3 Pilar Card
+      if (document.getElementById('mk-sales-badge')) {
+        document.getElementById('mk-sales-badge').textContent = `${salesCount} Org (${salesPct}%)`;
+      }
+      if (document.getElementById('mk-service-badge')) {
+        document.getElementById('mk-service-badge').textContent = `${serviceCount} Org (${servicePct}%)`;
+      }
+      if (document.getElementById('mk-admin-badge')) {
+        document.getElementById('mk-admin-badge').textContent = `${adminCount} Org (${adminPct}%)`;
+      }
 
-        contractListEl.innerHTML = allCatsToRender.map(grpName => {
-          const count = contractGroupMap[grpName] || 0;
-          const meta = getContractMeta(grpName);
-          const pct = totalContract ? Math.round((count / totalContract) * 100) : 0;
-
+      // Helper Jabatan Kunci per Pilar (Top 3)
+      function renderKeyJobsList(empList, totalPilar) {
+        const map = {};
+        empList.forEach(e => {
+          let jt = (getRowCellValue(e, 'Job Title', SCHEMAS.Master_Karyawan) || e.jabatan || 'Staff').trim();
+          if (!jt || jt === '-' || jt === 'undefined') jt = 'Staff';
+          map[jt] = (map[jt] || 0) + 1;
+        });
+        const sorted = Object.entries(map).sort((a, b) => b[1] - a[1]).slice(0, 3);
+        if (!sorted.length) {
+          return `<div class="text-slate-400 text-xs py-1 text-center italic">Belum ada jabatan</div>`;
+        }
+        return sorted.map(([jt, count]) => {
+          const pct = totalPilar ? Math.round((count / totalPilar) * 100) : 0;
           return `
-            <div class="flex items-center gap-2 p-2 sm:p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs">
-              <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-lg ${meta.iconBg} flex items-center justify-center text-[10px] sm:text-xs border ${meta.iconBorder} shadow-2xs flex-shrink-0">
-                <i class="${meta.icon}"></i>
-              </div>
-              <div class="min-w-0 flex-1 text-left">
-                <div class="flex items-center justify-between gap-1 leading-tight">
-                  <span class="text-[10px] sm:text-xs font-bold text-slate-800 truncate" title="${meta.displayName}">${meta.displayName}</span>
-                  <span class="px-1.5 py-0.2 rounded text-[8px] sm:text-[9px] font-black ${meta.badgeBg} border flex-shrink-0">${pct}%</span>
-                </div>
-                <div class="flex items-baseline gap-1 mt-0.5">
-                  <span class="text-xs sm:text-sm font-black text-slate-900 leading-none">${count}</span>
-                  <span class="text-[8px] sm:text-[10px] font-medium text-slate-400">Org</span>
-                </div>
+            <div class="flex items-center justify-between text-xs py-0.5 text-slate-600">
+              <span class="truncate pr-2 font-medium" title="${jt}">${jt}</span>
+              <div class="flex items-baseline flex-shrink-0">
+                <span class="font-bold text-slate-800">${count}</span>
+                <span class="text-slate-400 text-[11px] ml-1">(${pct}%)</span>
               </div>
             </div>
           `;
         }).join('');
       }
 
-      // 3. Distribusi Jabatan (Job Title) - Berdasarkan Kolom Job Title (Semua masuk kelompok)
-      const jobMap = {};
-      sourceList.forEach(r => {
-        let jt = (getRowCellValue(r, 'Job Title', SCHEMAS.Master_Karyawan) || r.jabatan || '').trim();
-        if (!jt || jt === '-' || jt === 'undefined') jt = 'Staff Unit';
-        jobMap[jt] = (jobMap[jt] || 0) + 1;
-      });
-
-      const sortedJobs = Object.entries(jobMap).sort((a, b) => b[1] - a[1]);
-      const totalJobs = Object.values(jobMap).reduce((a, b) => a + b, 0) || totalEmployees || 1;
-      const jobListEl = document.getElementById('mk-jobtitle-group-list');
-      const jobBadgeEl = document.getElementById('mk-jobtitle-badge-count');
-      if (jobBadgeEl) {
-        jobBadgeEl.innerHTML = `<i class="fa-solid fa-id-card text-[8px]"></i> ${sortedJobs.length} Kelompok Jabatan`;
+      if (document.getElementById('mk-sales-key-jobs')) {
+        document.getElementById('mk-sales-key-jobs').innerHTML = renderKeyJobsList(salesList, salesCount);
+      }
+      if (document.getElementById('mk-service-key-jobs')) {
+        document.getElementById('mk-service-key-jobs').innerHTML = renderKeyJobsList(serviceList, serviceCount);
+      }
+      if (document.getElementById('mk-admin-key-jobs')) {
+        document.getElementById('mk-admin-key-jobs').innerHTML = renderKeyJobsList(adminList, adminCount);
       }
 
-      if (jobListEl) {
-        if (sortedJobs.length === 0) {
-          jobListEl.innerHTML = `<div class="col-span-full text-center py-3 text-slate-400 text-xs">Belum ada data jabatan</div>`;
+      // 3. Continuous Multi-Segment Pill Bar (Komposisi Fungsi Kerja)
+      const barSales = document.getElementById('mk-bar-sales');
+      const barService = document.getElementById('mk-bar-service');
+      const barAdmin = document.getElementById('mk-bar-admin');
+
+      if (barSales) {
+        barSales.style.width = `${Math.max(12, salesPct)}%`;
+        const text = document.getElementById('mk-bar-sales-text');
+        if (text) text.textContent = `${salesPct}% (${salesCount} Org)`;
+      }
+      if (barService) {
+        barService.style.width = `${Math.max(12, servicePct)}%`;
+        const text = document.getElementById('mk-bar-service-text');
+        if (text) text.textContent = `${servicePct}% (${serviceCount} Org)`;
+      }
+      if (barAdmin) {
+        barAdmin.style.width = `${Math.max(12, adminPct)}%`;
+        const text = document.getElementById('mk-bar-admin-text');
+        if (text) text.textContent = `${adminPct}% (${adminCount} Org)`;
+      }
+
+      // 4. Semua Jabatan & Collapsible List
+      const allJobsMap = {};
+      sourceList.forEach(e => {
+        let jt = (getRowCellValue(e, 'Job Title', SCHEMAS.Master_Karyawan) || e.jabatan || 'Staff').trim();
+        if (!jt || jt === '-' || jt === 'undefined') jt = 'Staff';
+        allJobsMap[jt] = (allJobsMap[jt] || 0) + 1;
+      });
+
+      const sortedAllJobs = Object.entries(allJobsMap).sort((a, b) => b[1] - a[1]);
+      const otherJobs = sortedAllJobs.slice(3); // Di luar 3 jabatan teratas
+      const otherJobsCount = otherJobs.length;
+
+      if (document.getElementById('mk-text-other-jobs')) {
+        document.getElementById('mk-text-other-jobs').textContent = `Tampilkan ${otherJobsCount} Jabatan Lainnya`;
+      }
+
+      const otherJobsGrid = document.getElementById('mk-other-jobs-grid');
+      if (otherJobsGrid) {
+        if (!otherJobs.length) {
+          otherJobsGrid.innerHTML = `<div class="col-span-full text-slate-400 text-xs text-center py-2">Semua jabatan telah tertera di atas.</div>`;
         } else {
-          jobListEl.innerHTML = sortedJobs.map(([jobName, count]) => {
-            const meta = getJobTitleMeta(jobName);
-            const pct = totalJobs ? Math.round((count / totalJobs) * 100) : 0;
+          otherJobsGrid.innerHTML = otherJobs.map(([jt, count]) => {
+            const pct = totalEmployees ? Math.round((count / totalEmployees) * 100) : 0;
+            const pilar = classifyEmployeePilar({ 'Job Title': jt });
+            const badgeColor = pilar === 'Sales' ? 'bg-rose-50 text-rose-600 border-rose-200' : (pilar === 'Service' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-amber-50 text-amber-700 border-amber-200');
             return `
-              <div class="flex flex-col justify-between p-1.5 sm:p-2.5 rounded-xl bg-slate-50/90 border border-slate-200/80 hover:bg-white hover:border-slate-300 hover:shadow-xs ${meta.cardHover} transition min-w-0 shadow-2xs">
-                <!-- Top row: Icon (kiri) + Persen (kanan) -->
-                <div class="flex items-center justify-between w-full mb-1 sm:mb-1.5">
-                  <div class="w-5 h-5 sm:w-6.5 sm:h-6.5 rounded-md ${meta.iconBg} flex items-center justify-center text-[9px] sm:text-xs border ${meta.iconBorder} shadow-2xs flex-shrink-0">
-                    <i class="${meta.icon}"></i>
-                  </div>
-                  <span class="px-1 sm:px-1.5 py-0.2 sm:py-0.5 rounded text-[8px] sm:text-[10px] font-black ${meta.badgeBg} border flex-shrink-0">
-                    ${pct}%
-                  </span>
+              <div onclick="filterBySpecificJob('${jt.replace(/'/g, "\\'")}')" class="p-2 rounded-xl bg-slate-50 hover:bg-white border border-slate-200 hover:border-slate-300 hover:shadow-2xs transition cursor-pointer flex flex-col justify-between">
+                <div class="flex items-center justify-between gap-1 mb-1">
+                  <span class="px-1.5 py-0.2 rounded text-[9px] font-bold ${badgeColor} border">${pilar}</span>
+                  <span class="text-[10px] font-black text-slate-700">${pct}%</span>
                 </div>
+                <div class="font-bold text-xs text-slate-800 truncate" title="${jt}">${jt}</div>
+                <div class="text-[10px] text-slate-400 font-medium mt-0.5">${count} Orang</div>
+              </div>
+            `;
+          }).join('');
+        }
+      }
 
-                <!-- Middle: Nama (Title & Subtitle rapi) -->
-                <div class="w-full mb-0.5 sm:mb-1 min-w-0 text-left">
-                  <div class="text-[10px] sm:text-xs font-bold text-slate-800 leading-tight truncate" title="${meta.displayName}">
-                    ${meta.displayName}
-                  </div>
-                  <div class="text-[8px] sm:text-[9px] font-medium text-slate-400 leading-tight truncate mt-0.5" title="${jobName}">
-                    ${jobName}
-                  </div>
+      // 5. Rasio Tenaga Penjual vs Support
+      const supportCount = serviceCount + adminCount;
+      const salesRatio = totalEmployees ? Math.round((salesCount / totalEmployees) * 100) : 0;
+      const supportRatio = totalEmployees ? (100 - salesRatio) : 0;
+
+      if (document.getElementById('mk-sales-ratio-text')) {
+        document.getElementById('mk-sales-ratio-text').textContent = `${salesRatio}% : ${supportRatio}%`;
+      }
+      if (document.getElementById('mk-sales-ratio-detail')) {
+        document.getElementById('mk-sales-ratio-detail').textContent = `(${salesCount} Sales : ${supportCount} Support)`;
+      }
+
+      // 6. Status Kepegawaian & Donut Chart SVG
+      const countTetap = sourceList.filter(e => {
+        const c = String(getRowCellValue(e, 'Contract', SCHEMAS.Master_Karyawan) || e.Contract || e.tipeKontrak || '').toLowerCase();
+        return c.includes('tetap') || c.includes('permanent');
+      }).length;
+      const countPKWT = sourceList.filter(e => {
+        const c = String(getRowCellValue(e, 'Contract', SCHEMAS.Master_Karyawan) || e.Contract || e.tipeKontrak || '').toLowerCase();
+        return c.includes('pkwt') || c.includes('kontrak') || c.includes('contract');
+      }).length;
+
+      const pctTetap = totalEmployees ? Math.round((countTetap / totalEmployees) * 100) : 0;
+      const pctPKWT = totalEmployees ? Math.round((countPKWT / totalEmployees) * 100) : 0;
+
+      if (document.getElementById('mk-stat-tetap-pct')) document.getElementById('mk-stat-tetap-pct').textContent = `${pctTetap}%`;
+      if (document.getElementById('mk-stat-tetap-cnt')) document.getElementById('mk-stat-tetap-cnt').textContent = `(${countTetap} Org)`;
+      if (document.getElementById('mk-stat-pkwt-pct')) document.getElementById('mk-stat-pkwt-pct').textContent = `${pctPKWT}%`;
+      if (document.getElementById('mk-stat-pkwt-cnt')) document.getElementById('mk-stat-pkwt-cnt').textContent = `(${countPKWT} Org)`;
+
+      // Backwards compatibility for old element IDs if referenced
+      if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = countTetap;
+      if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = countPKWT;
+      if (document.getElementById('mk-card-tetap-pct')) document.getElementById('mk-card-tetap-pct').textContent = `${pctTetap}%`;
+      if (document.getElementById('mk-card-pkwt-pct')) document.getElementById('mk-card-pkwt-pct').textContent = `${pctPKWT}%`;
+
+      // Render Donut Chart SVG
+      const donutContainer = document.getElementById('mk-donut-chart-container');
+      if (donutContainer) {
+        const circumference = 94.25;
+        const tetapDash = ((pctTetap / 100) * circumference).toFixed(1);
+        donutContainer.innerHTML = `
+          <svg class="w-12 h-12 transform -rotate-90" viewBox="0 0 40 40">
+            <circle cx="20" cy="20" r="15" stroke="#e2e8f0" stroke-width="4.5" fill="none" />
+            <circle cx="20" cy="20" r="15" stroke="#6366f1" stroke-width="4.5" stroke-dasharray="${tetapDash} ${circumference}" stroke-dashoffset="0" stroke-linecap="round" fill="none" />
+          </svg>
+        `;
+      }
+
+      // 7. Jabatan Terbanyak (Top 4)
+      const top4Jobs = sortedAllJobs.slice(0, 4);
+      const top1Count = top4Jobs[0] ? top4Jobs[0][1] : 1;
+      const rankColors = [
+        { badge: 'bg-rose-500', bar: 'bg-rose-500' },
+        { badge: 'bg-blue-500', bar: 'bg-blue-500' },
+        { badge: 'bg-amber-500', bar: 'bg-amber-400' },
+        { badge: 'bg-indigo-500', bar: 'bg-indigo-500' }
+      ];
+
+      const top4Container = document.getElementById('mk-top4-jobs-container');
+      if (top4Container) {
+        if (!top4Jobs.length) {
+          top4Container.innerHTML = `<div class="text-slate-400 text-xs text-center py-4">Belum ada data jabatan</div>`;
+        } else {
+          top4Container.innerHTML = top4Jobs.map(([jt, count], idx) => {
+            const color = rankColors[idx] || rankColors[0];
+            const pct = totalEmployees ? Math.round((count / totalEmployees) * 100) : 0;
+            const barWidth = Math.min(100, Math.round((count / top1Count) * 100));
+            return `
+              <div onclick="filterBySpecificJob('${jt.replace(/'/g, "\\'")}')" class="flex items-center justify-between gap-3 text-xs p-1 rounded-xl hover:bg-slate-50 transition cursor-pointer">
+                <div class="flex items-center gap-2 min-w-0 flex-1">
+                  <span class="w-5 h-5 rounded-full ${color.badge} text-white font-bold text-[10px] flex items-center justify-center flex-shrink-0">${idx + 1}</span>
+                  <span class="font-semibold text-slate-700 truncate" title="${jt}">${jt}</span>
                 </div>
-
-                <!-- Bottom: Angka & Satuan -->
-                <div class="flex items-baseline gap-0.5 sm:gap-1 text-left">
-                  <span class="text-xs sm:text-sm lg:text-base font-black text-slate-900 leading-none">${count}</span>
-                  <span class="text-[8px] sm:text-[10px] font-medium text-slate-400">Org</span>
+                <div class="flex items-center gap-2.5 flex-shrink-0">
+                  <div class="text-right">
+                    <span class="font-bold text-slate-800 text-xs">${count} Org</span>
+                    <span class="text-slate-400 text-[11px]">(${pct}%)</span>
+                  </div>
+                  <div class="w-20 sm:w-24 h-1.5 bg-slate-100 rounded-full overflow-hidden flex-shrink-0">
+                    <div class="${color.bar} h-full rounded-full transition-all duration-300" style="width: ${barWidth}%;"></div>
+                  </div>
                 </div>
               </div>
             `;
@@ -254,15 +599,11 @@
         }
       }
 
-      // Backwards compatibility for old element IDs
-      const countTetap = contractGroupMap['Tetap / Permanent'] || 0;
-      const countPKWT = contractGroupMap['Kontrak / PKWT'] || 0;
-      const pctTetap = Math.round((countTetap / totalContract) * 100);
-      const pctPKWT = Math.round((countPKWT / totalContract) * 100);
-      if (document.getElementById('mk-card-tetap')) document.getElementById('mk-card-tetap').textContent = countTetap;
-      if (document.getElementById('mk-card-pkwt')) document.getElementById('mk-card-pkwt').textContent = countPKWT;
-      if (document.getElementById('mk-card-tetap-pct')) document.getElementById('mk-card-tetap-pct').textContent = `${pctTetap}%`;
-      if (document.getElementById('mk-card-pkwt-pct')) document.getElementById('mk-card-pkwt-pct').textContent = `${pctPKWT}%`;
+      // 8. Datalist Opsi Pencarian Cepat Jabatan
+      const datalistEl = document.getElementById('mk-job-suggestions');
+      if (datalistEl) {
+        datalistEl.innerHTML = sortedAllJobs.map(([jt]) => `<option value="${jt}"></option>`).join('');
+      }
 
       populateContractDropdown();
       filterMasterKaryawanTable();
@@ -271,9 +612,10 @@
     // Ekstraksi opsi filter Kontrak / Status Kepegawaian dinamis dari data tabel (bersih tanpa duplikasi)
     function populateContractDropdown() {
       const select = document.getElementById('mk-filter-kontrak');
-      if (!select) return;
+      const selectExtra = document.getElementById('mk-filter-kontrak-extra');
+      if (!select && !selectExtra) return;
       const rawRows = currentDashboardPayload?.rawTables?.Master_Karyawan || [];
-      const currentVal = select.value || 'ALL';
+      const currentVal = select?.value || selectExtra?.value || 'ALL';
 
       let options = `<option value="ALL">Semua Kontrak</option>`;
       STANDARD_CONTRACT_CATEGORIES.forEach(cat => {
@@ -295,15 +637,17 @@
         options += `<option value="${v}">${v}</option>`;
       });
 
-      select.innerHTML = options;
-      const optionsArray = Array.from(select.options).map(o => o.value);
-      if (optionsArray.includes(currentVal)) {
-        select.value = currentVal;
-      } else {
-        select.value = 'ALL';
+      if (select) {
+        select.innerHTML = options;
+        const optionsArray = Array.from(select.options || []).map(o => o.value);
+        select.value = optionsArray.includes(currentVal) ? currentVal : 'ALL';
+      }
+      if (selectExtra) {
+        selectExtra.innerHTML = options;
+        const optionsArray = Array.from(selectExtra.options || []).map(o => o.value);
+        selectExtra.value = optionsArray.includes(currentVal) ? currentVal : 'ALL';
       }
     }
-
 
     function filterMasterKaryawanTable() {
       if (!currentDashboardPayload) return;
@@ -336,7 +680,21 @@
         list = list.filter(e => matchBranch(e, targetBranch));
       }
 
-      // 3. Filter pencarian teks bebas (mencakup semua nilai kolom database)
+      // 3. Filter Pilar Utama (Sales / Service / Admin) jika aktif
+      if (activePilarFilter) {
+        list = list.filter(e => classifyEmployeePilar(e) === activePilarFilter);
+      }
+
+      // 4. Pencarian Cepat Jabatan jika diisi
+      if (quickJobSearchQuery) {
+        const qj = quickJobSearchQuery.toLowerCase();
+        list = list.filter(e => {
+          const jt = String(getRowCellValue(e, 'Job Title', SCHEMAS.Master_Karyawan) || e.jabatan || '').toLowerCase();
+          return jt.includes(qj);
+        });
+      }
+
+      // 5. Filter pencarian teks bebas (NPK, nama, cabang, dsb.)
       if (q) {
         list = list.filter((e, rowIdx) => {
           const targetIdx = rawRows.indexOf(e) !== -1 ? rawRows.indexOf(e) : rowIdx;
@@ -353,7 +711,7 @@
         });
       }
 
-      // 4. Filter status kepegawaian / kontrak
+      // 6. Filter status kepegawaian / kontrak
       if (contractFilter !== 'ALL') {
         const targetNorm = normalizeContractCategory(contractFilter).toLowerCase();
         list = list.filter(e => {
@@ -363,61 +721,229 @@
         });
       }
 
-      const isFull = columnViewMode.mk === 'FULL';
-      let rawCols = isFull 
-        ? SCHEMAS.Master_Karyawan.columns.slice() 
-        : ["Personnel no.", "Last name", "P.subarea", "Wilayah", "Contract", "Job Title", "Name of organizational unit", "Business area", "Status_Karyawan"];
-
-      // Jika role User (Kacab), sembunyikan kolom Tanggal_Resign & Alasan_Resign
-      if (!isAdmin) {
-        rawCols = rawCols.filter(c => c !== 'Tanggal_Resign' && c !== 'Alasan_Resign');
+      // Update counters
+      if (document.getElementById('mk-badge-total-karyawan')) {
+        document.getElementById('mk-badge-total-karyawan').textContent = `Total: ${list.length} Karyawan`;
       }
-
-      // Kolom 'No' selalu urut di paling depan antarmuka
-      let cols = ["No", ...rawCols.filter(c => c !== 'No')];
-
-      // Render Header
-      renderTableHeader('mk-table-header', cols, true);
-
-      const tbody = document.getElementById('mk-table-body');
       if (document.getElementById('mk-row-count')) {
-        document.getElementById('mk-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} karyawan (${cols.length} kolom)`;
+        document.getElementById('mk-row-count').textContent = `Menampilkan ${list.length} dari ${rawRows.length} karyawan`;
       }
 
-      if (!list.length) {
-        tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center py-8 text-slate-400">Tidak ada data master karyawan yang sesuai filter.</td></tr>`;
+      // Handle Card View Mode
+      if (currentMKViewMode === 'card') {
+        renderMasterKaryawanCards(list, rawRows);
         return;
       }
 
-      tbody.innerHTML = list.map((row, rowIdx) => {
-        const realIdx = rawRows.indexOf(row);
-        const targetIdx = realIdx !== -1 ? realIdx : rowIdx;
+      // TABLE VIEW MODE:
+      const isFull = columnViewMode.mk === 'FULL';
+      if (isFull) {
+        // Mode Kolom Penuh SAP (20 Kolom)
+        let rawCols = SCHEMAS.Master_Karyawan.columns.slice();
+        if (!isAdmin) {
+          rawCols = rawCols.filter(c => c !== 'Tanggal_Resign' && c !== 'Alasan_Resign');
+        }
+        let cols = ["No", ...rawCols.filter(c => c !== 'No')];
+        renderTableHeader('mk-table-header', cols, true);
 
-        const cells = cols.map((col, idx) => {
-          const isFirst = idx === 0;
-          const stickyClass = isFirst 
-            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
-            : 'text-slate-600';
+        const tbody = document.getElementById('mk-table-body');
+        if (!list.length) {
+          tbody.innerHTML = `<tr><td colspan="${cols.length + 1}" class="text-center py-8 text-slate-400">Tidak ada data master karyawan yang sesuai filter.</td></tr>`;
+          return;
+        }
 
-          if (col === 'No' || normalizeHeaderName(col) === 'no') {
-            return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
-          }
+        tbody.innerHTML = list.map((row, rowIdx) => {
+          const realIdx = rawRows.indexOf(row);
+          const targetIdx = realIdx !== -1 ? realIdx : rowIdx;
 
-          let cellRaw = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') 
-            ? row[col] 
-            : getRowCellValue(row, col, SCHEMAS.Master_Karyawan);
+          const cells = cols.map((col, idx) => {
+            const isFirst = idx === 0;
+            const stickyClass = isFirst 
+              ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
+              : 'text-slate-600';
 
-          if ((cellRaw === undefined || cellRaw === null || cellRaw === '' || cellRaw === '-') && (col === 'Status_Karyawan' || col === 'Status Karyawan' || normalizeHeaderName(col) === 'status_karyawan' || normalizeHeaderName(col) === 'status karyawan')) {
-            cellRaw = row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif';
-            row['Status_Karyawan'] = cellRaw;
-          }
+            if (col === 'No' || normalizeHeaderName(col) === 'no') {
+              return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
+            }
 
-          const val = formatColumnCell(col, cellRaw, 'Master_Karyawan');
-          return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
+            let cellRaw = (row[col] !== undefined && row[col] !== null && String(row[col]).trim() !== '') 
+              ? row[col] 
+              : getRowCellValue(row, col, SCHEMAS.Master_Karyawan);
+
+            if ((cellRaw === undefined || cellRaw === null || cellRaw === '' || cellRaw === '-') && (col === 'Status_Karyawan' || col === 'Status Karyawan' || normalizeHeaderName(col) === 'status_karyawan' || normalizeHeaderName(col) === 'status karyawan')) {
+              cellRaw = row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif';
+              row['Status_Karyawan'] = cellRaw;
+            }
+
+            const val = formatColumnCell(col, cellRaw, 'Master_Karyawan');
+            return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
+          }).join('');
+
+          const actionCell = renderRowActionCell('Master_Karyawan', realIdx !== -1 ? realIdx : 0, row);
+          return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
         }).join('');
+      } else {
+        // Mode Bersih Modern (100% Identik Screenshot)
+        // Kolom: [Checkbox], No., Nama Karyawan, Jabatan, Fungsi, Status, Cabang, Tanggal Bergabung, Aksi
+        const thead = document.getElementById('mk-table-header');
+        if (thead) {
+          thead.innerHTML = `
+            <th class="py-3 px-3 text-center w-10">
+              <input type="checkbox" id="mk-check-all" onchange="toggleSelectAllMK(this)" class="rounded text-rose-600 focus:ring-rose-500 border-slate-300 cursor-pointer">
+            </th>
+            <th class="py-3 px-3 text-center w-12">No.</th>
+            <th class="py-3 px-4">Nama Karyawan</th>
+            <th class="py-3 px-4">Jabatan</th>
+            <th class="py-3 px-3 text-center">Fungsi</th>
+            <th class="py-3 px-3 text-center">Status</th>
+            <th class="py-3 px-4">Cabang</th>
+            <th class="py-3 px-4">Tanggal Bergabung</th>
+            <th class="py-3 px-4 text-center">Aksi</th>
+          `;
+        }
 
-        const actionCell = renderRowActionCell('Master_Karyawan', realIdx !== -1 ? realIdx : 0, row);
-        return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
+        const tbody = document.getElementById('mk-table-body');
+        if (!list.length) {
+          tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">Tidak ada data master karyawan yang sesuai filter.</td></tr>`;
+          return;
+        }
+
+        tbody.innerHTML = list.map((row, rowIdx) => {
+          const realIdx = rawRows.indexOf(row);
+          const npk = safeString(row['Personnel no.'] || row['NPK'] || row.npk || '-');
+          const nama = row['Last name'] || row['Nama'] || row['Nama Lengkap'] || row.nama || '-';
+          const initials = nama.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() || 'K';
+          const jabatan = (getRowCellValue(row, 'Job Title', SCHEMAS.Master_Karyawan) || row.jabatan || '-').trim();
+          const pilar = classifyEmployeePilar(row);
+          const cabang = row['P.subarea'] || row['Cabang'] || row.cabang || '-';
+          
+          const rawContract = String(getRowCellValue(row, 'Contract', SCHEMAS.Master_Karyawan) || row['Contract'] || 'Tetap').trim();
+          const rawStatusKaryawan = String(row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif').trim();
+          
+          const dateVal = row['Date'] || row['Tanggal'] || row.joinDate || '';
+          const formattedDate = dateVal ? formatDatabaseDate(dateVal) : '-';
+
+          // Badge Pilar Fungsi
+          let pilarBadge = '';
+          if (pilar === 'Sales') {
+            pilarBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">Sales</span>`;
+          } else if (pilar === 'Service') {
+            pilarBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-200">Service</span>`;
+          } else {
+            pilarBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Admin</span>`;
+          }
+
+          // Badge Status Kepegawaian
+          let statusBadge = '';
+          if (rawStatusKaryawan.toLowerCase() === 'resign') {
+            statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-600 border border-rose-200">Resign</span>`;
+          } else if (rawContract.toLowerCase().includes('tetap') || rawContract.toLowerCase().includes('permanent')) {
+            statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Tetap</span>`;
+          } else if (rawContract.toLowerCase().includes('pkwt') || rawContract.toLowerCase().includes('kontrak')) {
+            statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">PKWT</span>`;
+          } else {
+            statusBadge = `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200">${rawContract}</span>`;
+          }
+
+          const actionCell = renderRowActionCell('Master_Karyawan', realIdx !== -1 ? realIdx : 0, row);
+
+          return `
+            <tr class="hover:bg-slate-50 transition-colors group">
+              <td class="py-2.5 px-3 text-center">
+                <input type="checkbox" class="mk-row-checkbox rounded text-rose-600 focus:ring-rose-500 border-slate-300 cursor-pointer" value="${npk}">
+              </td>
+              <td class="py-2.5 px-3 text-center font-bold text-slate-500">${rowIdx + 1}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap">
+                <div class="flex items-center gap-2.5">
+                  <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center border border-slate-200 flex-shrink-0">
+                    ${initials}
+                  </div>
+                  <div>
+                    <div class="font-bold text-slate-800 text-xs">${nama}</div>
+                    <div class="text-[10px] text-slate-400 font-mono">NPK: ${npk}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="py-2.5 px-4 whitespace-nowrap font-medium text-slate-700">${jabatan}</td>
+              <td class="py-2.5 px-3 text-center whitespace-nowrap">${pilarBadge}</td>
+              <td class="py-2.5 px-3 text-center whitespace-nowrap">${statusBadge}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap text-slate-600">${cabang}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap text-slate-600 font-mono text-[11px]">${formattedDate}</td>
+              ${actionCell}
+            </tr>
+          `;
+        }).join('');
+      }
+    }
+
+    function renderMasterKaryawanCards(list, rawRows) {
+      const container = document.getElementById('mk-card-view-wrapper');
+      if (!container) return;
+      if (!list.length) {
+        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-xs">Tidak ada data karyawan yang sesuai filter.</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map((row, rowIdx) => {
+        const realIdx = rawRows.indexOf(row);
+        const npk = safeString(row['Personnel no.'] || row['NPK'] || row.npk || '-');
+        const nama = row['Last name'] || row['Nama'] || row['Nama Lengkap'] || row.nama || '-';
+        const initials = nama.split(' ').map(w => w[0]).filter(Boolean).slice(0, 2).join('').toUpperCase() || 'K';
+        const jabatan = (getRowCellValue(row, 'Job Title', SCHEMAS.Master_Karyawan) || row.jabatan || '-').trim();
+        const pilar = classifyEmployeePilar(row);
+        const cabang = row['P.subarea'] || row['Cabang'] || row.cabang || '-';
+        const rawContract = String(getRowCellValue(row, 'Contract', SCHEMAS.Master_Karyawan) || row['Contract'] || 'Tetap').trim();
+        const dateVal = row['Date'] || row['Tanggal'] || row.joinDate || '';
+        const formattedDate = dateVal ? formatDatabaseDate(dateVal) : '-';
+
+        let pilarColor = pilar === 'Sales' ? 'bg-rose-50 text-rose-600 border-rose-200' : (pilar === 'Service' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-amber-50 text-amber-700 border-amber-200');
+
+        return `
+          <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
+            <div>
+              <div class="flex items-start justify-between gap-2 mb-2">
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center border border-slate-200 flex-shrink-0">
+                    ${initials}
+                  </div>
+                  <div class="min-w-0">
+                    <h5 class="text-xs font-bold text-slate-800 truncate" title="${nama}">${nama}</h5>
+                    <span class="text-[10px] font-mono text-slate-400">NPK: ${npk}</span>
+                  </div>
+                </div>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${pilarColor} border flex-shrink-0">${pilar}</span>
+              </div>
+              <div class="mt-2.5 pt-2 border-t border-slate-100 space-y-1 text-xs text-slate-600">
+                <div class="flex justify-between">
+                  <span class="text-slate-400 text-[11px]">Jabatan:</span>
+                  <span class="font-semibold text-slate-700 truncate max-w-[140px]" title="${jabatan}">${jabatan}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400 text-[11px]">Cabang:</span>
+                  <span class="font-medium text-slate-700">${cabang}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400 text-[11px]">Status:</span>
+                  <span class="font-medium text-slate-700">${rawContract}</span>
+                </div>
+                <div class="flex justify-between">
+                  <span class="text-slate-400 text-[11px]">Masuk:</span>
+                  <span class="font-mono text-slate-700 text-[11px]">${formattedDate}</span>
+                </div>
+              </div>
+            </div>
+            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-end gap-1.5">
+              <button type="button" onclick="openPBKModal('${npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
+                Detail
+              </button>
+              ${isUserAdmin(loggedInUser) ? `
+                <button type="button" onclick="openEditRowModal('Master_Karyawan', ${realIdx !== -1 ? realIdx : 0})" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-lg text-[11px] border border-amber-200 transition">
+                  <i class="fa-solid fa-pen-to-square"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+        `;
       }).join('');
     }
 

@@ -956,120 +956,301 @@
             </div>
           </div>
 
-          <!-- Cards Summary Master Karyawan -->
-          <!-- Summary Header Master Karyawan: Total & Verifikasi -->
-          <div class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
-            <div class="flex items-center gap-3">
-              <span class="w-9 h-9 rounded-xl bg-slate-900 text-white flex items-center justify-center text-sm shadow-sm flex-shrink-0">
+          <!-- ======================================================== -->
+          <!-- STRUKTUR HIRARKI 3 PILAR DSO & INSIGHT MASTER KARYAWAN -->
+          <!-- ======================================================== -->
+          
+          <!-- Section Header: Struktur Hirarki 3 Pilar DSO -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+            <div class="flex items-center gap-3.5">
+              <div class="w-11 h-11 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 text-lg flex-shrink-0">
                 <i class="fa-solid fa-users"></i>
-              </span>
+              </div>
               <div>
-                <div class="flex items-baseline gap-2">
-                  <span class="text-xl sm:text-2xl font-black text-slate-900 leading-none" id="mk-card-total">0</span>
-                  <span class="text-xs font-bold text-slate-600">Total Karyawan Terdaftar</span>
-                </div>
-                <p class="text-[11px] text-slate-400 font-medium mt-0.5" id="mk-card-branch-desc">Semua cabang terdaftar</p>
+                <h3 class="text-base sm:text-lg font-extrabold text-slate-800 leading-tight">Struktur Hirarki 3 Pilar DSO</h3>
+                <p class="text-xs text-slate-400 font-medium mt-0.5">Operasional Astra Daihatsu DSO terbagi dalam 3 fungsi utama: Sales (VSO), Service/Workshop, dan Admin/Support.</p>
               </div>
             </div>
             <div class="flex items-center gap-2 self-start sm:self-auto">
-              <span class="text-emerald-700 font-bold bg-emerald-50 border border-emerald-100 px-2.5 py-1 rounded-full flex items-center gap-1.5 text-[10px]">
-                <i class="fa-solid fa-circle-check text-[9px]"></i> Data Terverifikasi DSO Lampung
-              </span>
+              <button type="button" onclick="resetMasterKaryawanFilters()" class="px-3.5 py-1.5 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition cursor-pointer">
+                <i class="fa-solid fa-arrows-rotate text-slate-400"></i>
+                <span>Reset Filter</span>
+              </button>
             </div>
           </div>
 
-          <!-- KPI Insight Tabs / Filter -->
-          <div class="flex flex-wrap items-center gap-1.5 mb-3">
-            <button type="button" onclick="switchMkKpiView('all')" id="mk-kpi-tab-all" class="mk-kpi-tab px-2.5 py-1 rounded-lg text-[11px] font-bold bg-slate-900 text-white transition flex items-center gap-1.5 cursor-pointer shadow-xs">
-              <i class="fa-solid fa-layer-group text-[10px]"></i> Semua Insight
-            </button>
-            <button type="button" onclick="switchMkKpiView('contract')" id="mk-kpi-tab-contract" class="mk-kpi-tab px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer shadow-xs">
-              <i class="fa-solid fa-file-contract text-amber-500 text-[10px]"></i> Status Kepegawaian (Contract)
-            </button>
-            <button type="button" onclick="switchMkKpiView('job')" id="mk-kpi-tab-job" class="mk-kpi-tab px-2.5 py-1 rounded-lg text-[11px] font-bold bg-white text-slate-600 hover:bg-slate-100 border border-slate-200 transition flex items-center gap-1.5 cursor-pointer shadow-xs">
-              <i class="fa-solid fa-id-badge text-indigo-500 text-[10px]"></i> Jabatan (Job Title)
-            </button>
-          </div>
-
-          <!-- 2 KPI INSIGHT CARDS -->
-          <div class="space-y-3 mb-4">
-            <!-- CARD 1: STATUS KEPEGAWAIAN (CONTRACT) -->
-            <div id="mk-kpi-card-contract" class="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 lg:p-3.5 border border-slate-200/80 shadow-card">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2 pb-1.5 border-b border-slate-100">
-                <div class="flex items-center gap-2">
-                  <span class="w-6 h-6 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center text-[11px] border border-amber-200/60 shadow-2xs">
-                    <i class="fa-solid fa-file-contract"></i>
-                  </span>
-                  <div>
-                    <h4 class="text-xs font-bold text-slate-800">Status Kepegawaian (Contract)</h4>
-                    <p class="text-[9px] sm:text-[10px] text-slate-400 font-medium">Berdasarkan Kolom Contract</p>
-                  </div>
-                </div>
-                <div class="flex items-center gap-2 self-start sm:self-auto">
-                  <span class="text-[9px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full flex items-center gap-1" id="mk-contract-badge-count">
-                    <i class="fa-solid fa-shield-halved text-[8px]"></i> 4 Kategori Baku
-                  </span>
-                </div>
-              </div>
-
-              <!-- Kelompok Status Kepegawaian Items: 1 Baris Ke Samping (Mobile & Desktop) -->
+          <!-- Top 3 Pilar Cards (Grid 3 Cols) -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-3.5 sm:gap-4 mb-4">
+            <!-- 1. Sales Team Card -->
+            <div id="mk-pilar-card-sales" onclick="filterByPilar('Sales')" class="mk-pilar-card bg-white rounded-2xl p-4 border border-rose-100/90 shadow-card hover:shadow-md hover:border-rose-300 transition-all cursor-pointer relative group flex flex-col justify-between">
               <div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 lg:gap-2.5" id="mk-contract-group-list">
-                  <!-- Dynamically populated from database/filter -->
+                <div class="flex items-center justify-between gap-2 mb-3">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-sm border border-rose-100 flex-shrink-0">
+                      <i class="fa-solid fa-user"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800">Sales Team</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span id="mk-sales-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100 flex-shrink-0">0 Org (0%)</span>
+                    <i class="fa-solid fa-chevron-right text-rose-300 text-xs group-hover:translate-x-0.5 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-2">
+                  <i class="fa-solid fa-users text-rose-500 text-xs"></i>
+                  <span>Jabatan Kunci</span>
+                </div>
+                <div id="mk-sales-key-jobs" class="space-y-1.5 divide-y divide-slate-50 text-xs">
+                  <!-- Dynamically rendered -->
                 </div>
               </div>
             </div>
 
-            <!-- CARD 2: DISTRIBUSI JABATAN (KOLOM JOB TITLE) -->
-            <div id="mk-kpi-card-job" class="bg-white rounded-xl sm:rounded-2xl p-2.5 sm:p-3 lg:p-3.5 border border-slate-200/80 shadow-card">
-              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 mb-2 pb-1.5 border-b border-slate-100">
-                <div class="flex items-center gap-2">
-                  <span class="w-6 h-6 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center text-[11px] border border-indigo-200/60 shadow-2xs">
-                    <i class="fa-solid fa-id-badge"></i>
-                  </span>
-                  <div>
-                    <h4 class="text-xs font-bold text-slate-800">Distribusi Jabatan (Job Title)</h4>
-                    <p class="text-[9px] sm:text-[10px] text-slate-400 font-medium">Berdasarkan Kolom Job Title</p>
+            <!-- 2. Service & Bengkel Card -->
+            <div id="mk-pilar-card-service" onclick="filterByPilar('Service')" class="mk-pilar-card bg-white rounded-2xl p-4 border border-blue-100/90 shadow-card hover:shadow-md hover:border-blue-300 transition-all cursor-pointer relative group flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-sm border border-blue-100 flex-shrink-0">
+                      <i class="fa-solid fa-wrench"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800">Service & Bengkel</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span id="mk-service-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-600 border border-blue-100 flex-shrink-0">0 Org (0%)</span>
+                    <i class="fa-solid fa-chevron-right text-blue-300 text-xs group-hover:translate-x-0.5 transition-transform"></i>
                   </div>
                 </div>
-                <div class="flex items-center gap-2 self-start sm:self-auto">
-                  <span class="text-[9px] font-bold text-indigo-800 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full flex items-center gap-1" id="mk-jobtitle-badge-count">
-                    <i class="fa-solid fa-id-card text-[8px]"></i> Kelompok Jabatan
-                  </span>
+                <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-2">
+                  <i class="fa-solid fa-users text-blue-500 text-xs"></i>
+                  <span>Jabatan Kunci</span>
+                </div>
+                <div id="mk-service-key-jobs" class="space-y-1.5 divide-y divide-slate-50 text-xs">
+                  <!-- Dynamically rendered -->
                 </div>
               </div>
+            </div>
 
-              <!-- Kelompok Job Title Items: Per Baris Ke Samping 5 Card -->
-              <div class="overflow-x-auto pb-1 sm:pb-0 scrollbar-thin">
-                <div class="grid grid-cols-5 gap-1.5 sm:gap-2 lg:gap-2.5 min-w-[340px] sm:min-w-0" id="mk-jobtitle-group-list">
-                  <!-- Dynamically populated from database/filter -->
+            <!-- 3. Admin & Support Card -->
+            <div id="mk-pilar-card-admin" onclick="filterByPilar('Admin')" class="mk-pilar-card bg-white rounded-2xl p-4 border border-amber-100/90 shadow-card hover:shadow-md hover:border-amber-300 transition-all cursor-pointer relative group flex flex-col justify-between">
+              <div>
+                <div class="flex items-center justify-between gap-2 mb-3">
+                  <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm border border-amber-100 flex-shrink-0">
+                      <i class="fa-solid fa-user-tie"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800">Admin & Support</span>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <span id="mk-admin-badge" class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-100 flex-shrink-0">0 Org (0%)</span>
+                    <i class="fa-solid fa-chevron-right text-amber-300 text-xs group-hover:translate-x-0.5 transition-transform"></i>
+                  </div>
+                </div>
+                <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700 mb-2">
+                  <i class="fa-solid fa-users text-amber-500 text-xs"></i>
+                  <span>Jabatan Kunci</span>
+                </div>
+                <div id="mk-admin-key-jobs" class="space-y-1.5 divide-y divide-slate-50 text-xs">
+                  <!-- Dynamically rendered -->
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- Table Container -->
-          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
-            <div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 mb-4">
-              <div class="flex flex-wrap items-center gap-2 w-full lg:w-auto">
+          <!-- Middle Section: 2 Columns (Left 7 / Right 5) -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 mb-4">
+            <!-- LEFT COLUMN (7 Cols) -->
+            <div class="lg:col-span-7 flex flex-col gap-3.5">
+              <!-- Komposisi Fungsi Kerja Card -->
+              <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col justify-between">
+                <div>
+                  <h4 class="text-sm sm:text-base font-bold text-slate-800">Komposisi Fungsi Kerja</h4>
+                  <p class="text-xs text-slate-400 font-medium mb-3">Persentase total karyawan berdasarkan fungsi utama</p>
+                  
+                  <!-- Segmented Continuous Horizontal Bar -->
+                  <div class="h-14 rounded-2xl flex overflow-hidden w-full shadow-inner bg-slate-100 select-none">
+                    <!-- Sales Segment -->
+                    <div id="mk-bar-sales" class="bg-gradient-to-r from-rose-500 to-rose-600 flex items-center px-3.5 text-white transition-all duration-300 min-w-[70px]" style="width: 48%;">
+                      <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white text-xs flex-shrink-0 mr-2.5">
+                        <i class="fa-solid fa-user"></i>
+                      </div>
+                      <div class="min-w-0 truncate">
+                        <div class="font-bold text-xs leading-tight">Sales</div>
+                        <div id="mk-bar-sales-text" class="text-[11px] text-white/90 font-medium leading-tight truncate">48% (67 Org)</div>
+                      </div>
+                    </div>
+                    <!-- Service Segment -->
+                    <div id="mk-bar-service" class="bg-blue-500 flex items-center px-3.5 text-white transition-all duration-300 min-w-[70px]" style="width: 32%;">
+                      <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white text-xs flex-shrink-0 mr-2.5">
+                        <i class="fa-solid fa-wrench"></i>
+                      </div>
+                      <div class="min-w-0 truncate">
+                        <div class="font-bold text-xs leading-tight">Service</div>
+                        <div id="mk-bar-service-text" class="text-[11px] text-white/90 font-medium leading-tight truncate">32% (41 Org)</div>
+                      </div>
+                    </div>
+                    <!-- Admin Segment -->
+                    <div id="mk-bar-admin" class="bg-amber-400 flex items-center px-3.5 text-white transition-all duration-300 min-w-[70px]" style="width: 27%;">
+                      <div class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white text-xs flex-shrink-0 mr-2.5">
+                        <i class="fa-solid fa-user-tie"></i>
+                      </div>
+                      <div class="min-w-0 truncate">
+                        <div class="font-bold text-xs leading-tight">Admin</div>
+                        <div id="mk-bar-admin-text" class="text-[11px] text-white/90 font-medium leading-tight truncate">27% (26 Org)</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Collapsible Toggle Link -->
+                  <div class="mt-3">
+                    <button type="button" onclick="toggleOtherJobsList()" id="mk-btn-other-jobs" class="text-blue-600 hover:text-blue-700 text-xs font-bold flex items-center gap-1.5 transition cursor-pointer">
+                      <span id="mk-text-other-jobs">Tampilkan 15 Jabatan Lainnya</span>
+                      <i id="mk-icon-other-jobs" class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </button>
+                    
+                    <!-- Collapsible Dropdown / Grid of Other Jobs -->
+                    <div id="mk-other-jobs-container" class="hidden mt-3 pt-3 border-t border-slate-100 max-h-60 overflow-y-auto scrollbar-thin">
+                      <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="mk-other-jobs-grid">
+                        <!-- Dynamically populated -->
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 2 Subcards Side-by-Side (Rasio Penjual vs Support & Status Kepegawaian) -->
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <!-- Subcard 1: Rasio Tenaga Penjual vs Support -->
+                <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex items-center gap-3">
+                  <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-500 flex items-center justify-center text-sm border border-blue-100/60 flex-shrink-0">
+                    <i class="fa-solid fa-users"></i>
+                  </div>
+                  <div>
+                    <div class="text-[11px] font-semibold text-slate-600">Rasio Tenaga Penjual vs Support</div>
+                    <div id="mk-sales-ratio-text" class="text-lg font-black text-slate-800 leading-tight mt-0.5">45% : 55%</div>
+                    <div id="mk-sales-ratio-detail" class="text-[11px] text-slate-400 font-medium mt-0.5">(67 Sales : 81 Support)</div>
+                  </div>
+                </div>
+
+                <!-- Subcard 2: Status Kepegawaian -->
+                <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex items-center justify-between gap-3">
+                  <div class="min-w-0">
+                    <div class="flex items-center gap-1.5 text-xs font-bold text-slate-700">
+                      <div class="w-6 h-6 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center text-[10px] border border-blue-100/60">
+                        <i class="fa-solid fa-file-lines"></i>
+                      </div>
+                      <span>Status Kepegawaian</span>
+                    </div>
+                    <div class="mt-2 space-y-1">
+                      <div class="flex items-center gap-2 text-xs">
+                        <span class="text-slate-500 font-medium w-11">Tetap</span>
+                        <span id="mk-stat-tetap-pct" class="font-bold text-slate-800">85%</span>
+                        <span id="mk-stat-tetap-cnt" class="text-[10px] text-slate-400">(125 Org)</span>
+                      </div>
+                      <div class="flex items-center gap-2 text-xs">
+                        <span class="text-slate-500 font-medium w-11">PKWT</span>
+                        <span id="mk-stat-pkwt-pct" class="font-bold text-slate-800">15%</span>
+                        <span id="mk-stat-pkwt-cnt" class="text-[10px] text-slate-400">(22 Org)</span>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Donut Chart SVG -->
+                  <div class="w-12 h-12 relative flex-shrink-0 flex items-center justify-center" id="mk-donut-chart-container">
+                    <!-- Rendered dynamically -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- RIGHT COLUMN (5 Cols) -->
+            <div class="lg:col-span-5 flex flex-col gap-3.5">
+              <!-- Jabatan Terbanyak (Top 4) Card -->
+              <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex-1 flex flex-col justify-between">
+                <div>
+                  <h4 class="text-sm sm:text-base font-bold text-slate-800">Jabatan Terbanyak (Top 4)</h4>
+                  <p class="text-xs text-slate-400 font-medium mb-3">Berdasarkan jumlah karyawan</p>
+
+                  <!-- Top 4 Items Container -->
+                  <div id="mk-top4-jobs-container" class="space-y-3">
+                    <!-- Dynamically populated -->
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pencarian Cepat Jabatan + Filter Tambahan -->
+              <div class="bg-white rounded-2xl p-3 border border-slate-200/80 shadow-card flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-sm border border-blue-100/60 flex-shrink-0">
+                  <i class="fa-solid fa-magnifying-glass"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <span class="text-[10px] font-bold text-slate-700 block mb-0.5">Pencarian Cepat Jabatan</span>
+                  <div class="relative">
+                    <input type="text" id="mk-quick-job-input" oninput="onQuickJobSearchInput(this.value)" list="mk-job-suggestions" placeholder="Cari jabatan... (contoh: Mechanic, Salesman)" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-7 py-1.5 focus:outline-none focus:border-blue-500 text-slate-800 placeholder:text-slate-400 font-medium">
+                    <i class="fa-solid fa-chevron-down absolute right-2.5 top-2.5 text-slate-400 text-[10px] pointer-events-none"></i>
+                    <datalist id="mk-job-suggestions"></datalist>
+                  </div>
+                </div>
+                <button type="button" onclick="toggleExtraFilters()" id="btn-toggle-extra-filters" class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-2xs whitespace-nowrap transition cursor-pointer">
+                  <i class="fa-solid fa-sliders text-slate-400 text-xs"></i>
+                  <span>Filter Tambahan</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hidden Extra Filters Panel (Toggled by "Filter Tambahan") -->
+          <div id="mk-extra-filters-panel" class="hidden bg-slate-50 rounded-2xl p-3.5 border border-slate-200/90 mb-4 transition-all">
+            <div class="flex flex-wrap items-center justify-between gap-2.5">
+              <div class="flex flex-wrap items-center gap-2 flex-1">
                 <div class="relative w-full sm:w-64">
                   <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="mk-search-input" onkeyup="filterMasterKaryawanTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+                  <input type="text" id="mk-search-input-extra" onkeyup="syncSearchInputs(this.value)" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
                 </div>
-                <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                <select id="mk-filter-kontrak-extra" onchange="syncContractFilters(this.value)" class="px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
                   <option value="ALL">Semua Kontrak</option>
                   <option value="Tetap / Permanent">Tetap / Permanent</option>
                   <option value="Kontrak / PKWT">Kontrak / PKWT</option>
                   <option value="On probation">On probation</option>
                   <option value="Magang/Intern">Magang/Intern</option>
                 </select>
-                <button type="button" onclick="toggleColumnMode('mk')" id="btn-col-toggle-mk" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200">
-                  <i class="fa-solid fa-table-columns"></i>
-                  <span id="btn-col-text-mk">Kolom Lengkap (20)</span>
-                </button>
               </div>
-              <div class="flex items-center gap-2.5 self-end lg:self-auto flex-wrap">
-                <span class="text-[11px] text-slate-400 font-medium" id="mk-row-count">Menampilkan 0 karyawan</span>
+              <button type="button" onclick="resetMasterKaryawanFilters()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
+                <i class="fa-solid fa-xmark"></i>
+                <span>Reset Filter</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- ======================================================== -->
+          <!-- DATA KARYAWAN TABLE SECTION -->
+          <!-- ======================================================== -->
+          <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
+            <!-- Header Bar Data Karyawan -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm border border-rose-100/60 flex-shrink-0">
+                  <i class="fa-solid fa-users"></i>
+                </div>
+                <div>
+                  <h4 class="text-sm sm:text-base font-bold text-slate-800">Data Karyawan</h4>
+                  <p class="text-xs text-slate-400 font-medium">Menampilkan data sesuai filter yang dipilih</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-2.5 self-end sm:self-auto flex-wrap">
+                <!-- Toggle Table / Card -->
+                <div class="flex items-center p-1 bg-slate-100 rounded-xl border border-slate-200/60">
+                  <button type="button" id="mk-view-btn-table" onclick="setMKViewMode('table')" class="px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 bg-[#7f1d1d] text-white shadow-2xs cursor-pointer">
+                    <i class="fa-solid fa-table"></i>
+                    <span>Tabel</span>
+                  </button>
+                  <button type="button" id="mk-view-btn-card" onclick="setMKViewMode('card')" class="px-3 py-1 rounded-lg text-xs font-bold transition flex items-center gap-1.5 text-slate-600 hover:text-slate-900 cursor-pointer">
+                    <i class="fa-solid fa-address-card"></i>
+                    <span>Card</span>
+                  </button>
+                </div>
+                <!-- Total Counter Badge -->
+                <span id="mk-badge-total-karyawan" class="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs border border-slate-200/80">Total: 0 Karyawan</span>
+                <!-- Ekspor Excel Button -->
                 <button type="button" onclick="exportModuleTableToExcel('Master_Karyawan')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-2xs transition flex items-center gap-1.5 cursor-pointer" title="Ekspor Data Master Karyawan ke Excel (.xlsx)">
                   <i class="fa-solid fa-file-excel"></i>
                   <span>Ekspor Excel</span>
@@ -1077,18 +1258,44 @@
               </div>
             </div>
 
+            <!-- Search, filter and column switch bar above table -->
+            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 mb-3.5">
+              <div class="relative w-full sm:w-72">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                <input type="text" id="mk-search-input" onkeyup="filterMasterKaryawanTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
+              </div>
+              <div class="flex items-center gap-2 self-end sm:self-auto flex-wrap">
+                <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
+                  <option value="ALL">Semua Kontrak</option>
+                  <option value="Tetap / Permanent">Tetap / Permanent</option>
+                  <option value="Kontrak / PKWT">Kontrak / PKWT</option>
+                  <option value="On probation">On probation</option>
+                  <option value="Magang/Intern">Magang/Intern</option>
+                </select>
+                <button type="button" onclick="toggleColumnMode('mk')" id="btn-col-toggle-mk" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 cursor-pointer">
+                  <i class="fa-solid fa-table-columns"></i>
+                  <span id="btn-col-text-mk">Kolom Lengkap (20)</span>
+                </button>
+              </div>
+            </div>
+
             <!-- Sticky Horizontal Table Container -->
-            <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
+            <div id="mk-table-wrapper" class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
               <table class="w-full text-left text-xs border-collapse" id="table-master-karyawan-content">
                 <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
                   <tr id="mk-table-header">
-                    <!-- Standard 16 Columns Rendered Dynamically -->
+                    <!-- Rendered Dynamically -->
                   </tr>
                 </thead>
                 <tbody id="mk-table-body" class="divide-y divide-slate-100 font-medium">
-                  <tr><td colspan="17" class="text-center py-8 text-slate-400">Memuat data master karyawan...</td></tr>
+                  <tr><td colspan="10" class="text-center py-8 text-slate-400">Memuat data master karyawan...</td></tr>
                 </tbody>
               </table>
+            </div>
+
+            <!-- Card View Container (Visible when Card mode active) -->
+            <div id="mk-card-view-wrapper" class="hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-3">
+              <!-- Dynamically populated -->
             </div>
           </div>
         </div>
