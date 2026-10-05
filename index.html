@@ -1931,46 +1931,46 @@
   </div>
 
   <!-- MODAL: UPLOAD EXCEL / CSV -->
-  <div id="modal-upload" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-lg w-full p-6 relative max-h-[90vh] overflow-y-auto">
-      <button onclick="closeModal('modal-upload')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 p-2">
+  <div id="modal-upload" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-upload')">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-lg sm:max-w-xl w-full p-4 sm:p-6 relative my-auto max-h-[92vh] sm:max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+      <button onclick="closeModal('modal-upload')" class="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-slate-100 cursor-pointer z-10" title="Tutup Modal">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <div class="flex items-center gap-3 mb-4">
-        <div class="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold">
-          <i class="fa-solid fa-cloud-arrow-up text-lg"></i>
+      <div class="flex items-center gap-3 mb-3.5 sm:mb-4 pb-3 border-b border-slate-100 flex-shrink-0 pr-10 sm:pr-12">
+        <div class="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold flex-shrink-0 border border-red-100 shadow-2xs" id="upload-modal-icon-wrapper">
+          <i class="fa-solid fa-cloud-arrow-up text-lg" id="upload-modal-icon"></i>
         </div>
-        <div>
-          <h3 class="text-sm font-extrabold text-slate-900" id="upload-modal-title">Upload & Impor Data HR (.xlsx / .csv)</h3>
-          <p class="text-[11px] text-slate-500" id="upload-modal-subtitle">Normalisasi otomatis header & validasi tipe data presisi</p>
+        <div class="min-w-0 flex-1">
+          <h3 class="text-sm sm:text-base font-extrabold text-slate-900 leading-snug break-words" id="upload-modal-title">Upload & Impor Data HR (.xlsx / .csv)</h3>
+          <p class="text-[11px] text-slate-500 font-medium leading-tight truncate mt-0.5" id="upload-modal-subtitle">Normalisasi otomatis header & validasi tipe data presisi</p>
         </div>
       </div>
 
-      <div class="space-y-3.5 text-xs mb-5">
+      <div class="overflow-y-auto flex-1 min-h-0 pr-1 space-y-3.5 text-xs mb-3.5 sm:mb-4 scrollbar-thin">
         <div>
           <label class="block font-bold text-slate-700 mb-1">Pilih Tabel Database Tujuan:</label>
-          <select id="upload-target-sheet" onchange="renderUploadSchemaGuide()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-bold">
+          <select id="upload-target-sheet" onchange="renderUploadSchemaGuide()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-bold truncate">
             <option value="Master_Karyawan">1. Master_Karyawan (16 Kolom Standard)</option>
             <option value="Data_Kehadiran">2. Data_Kehadiran (19 Kolom Standard)</option>
             <option value="Data_SS">3. Data_SS (21 Kolom Standard)</option>
             <option value="Data_QCC">4. Data_QCC (29 Kolom Standard)</option>
             <option value="Data_SP">5. Data_SP (5 Kolom Standard)</option>
-            <option value="Knowledge_management">6. Knowledge_management (5 Kolom Standard: NPK, NAMA, JUDUL, TANGGAL, TIME)</option>
+            <option value="Knowledge_management">6. Knowledge_management (5 Kolom: NPK, NAMA, JUDUL, TANGGAL, TIME)</option>
           </select>
         </div>
 
         <!-- Box Khusus Alur Otomatisasi KM (Otomatis tampil saat target = Knowledge_management) -->
         <div id="km-modal-automation-box" class="hidden space-y-2.5">
-          <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-950 rounded-2xl p-4 text-white shadow-sm border border-slate-700">
+          <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-950 rounded-2xl p-3.5 sm:p-4 text-white shadow-sm border border-slate-700/80">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
-              <div class="flex items-center gap-2.5">
+              <div class="flex items-center gap-2.5 min-w-0 flex-1">
                 <div class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center justify-center text-sm flex-shrink-0">
                   <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
                 </div>
-                <div>
-                  <h4 class="text-xs font-bold text-white">Alur Otomatisasi Rekap Berkas KM (PDF / PPT)</h4>
-                  <p class="text-[11px] text-slate-300">Rekap puluhan hingga ratusan berkas sharing session tanpa ketik manual.</p>
+                <div class="min-w-0">
+                  <h4 class="text-xs font-bold text-white leading-tight">Alur Otomatisasi Rekap Berkas KM</h4>
+                  <p class="text-[11px] text-slate-300 leading-snug mt-0.5">Rekap puluhan hingga ratusan berkas sharing PDF/PPT otomatis.</p>
                 </div>
               </div>
               <button type="button" onclick="downloadKMScript()" class="w-full sm:w-auto px-3.5 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer flex-shrink-0">
@@ -1980,24 +1980,27 @@
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2.5 border-t border-slate-700/60 text-[10px]">
-              <div class="bg-white/5 p-2 rounded-xl border border-white/10">
-                <span class="text-cyan-400 font-bold block mb-0.5"><i class="fa-solid fa-folder-arrow-down mr-1"></i>1. Taruh Skrip</span>
-                <span class="text-slate-300">Pindahkan file <code class="text-cyan-300 font-mono">.bat</code> ke folder berkas PDF/PPT Anda.</span>
+              <div class="bg-white/5 p-2 rounded-xl border border-white/10 min-w-0 overflow-hidden">
+                <span class="text-cyan-400 font-bold block mb-0.5 truncate"><i class="fa-solid fa-folder-arrow-down mr-1"></i>1. Taruh Skrip</span>
+                <span class="text-slate-300 block break-words leading-relaxed">Pindahkan file <code class="text-cyan-300 font-mono bg-white/10 px-1 py-0.5 rounded break-all">.bat</code> ke folder berkas PDF/PPT Anda.</span>
               </div>
-              <div class="bg-white/5 p-2 rounded-xl border border-white/10">
-                <span class="text-amber-400 font-bold block mb-0.5"><i class="fa-solid fa-play mr-1"></i>2. Jalankan Skrip</span>
-                <span class="text-slate-300">Klik 2x file .bat. Slide 1 & file dipindai otomatis jadi CSV.</span>
+              <div class="bg-white/5 p-2 rounded-xl border border-white/10 min-w-0 overflow-hidden">
+                <span class="text-amber-400 font-bold block mb-0.5 truncate"><i class="fa-solid fa-play mr-1"></i>2. Jalankan Skrip</span>
+                <span class="text-slate-300 block break-words leading-relaxed">Klik 2x file .bat. Slide & berkas dipindai otomatis jadi CSV.</span>
               </div>
-              <div class="bg-white/5 p-2 rounded-xl border border-white/10">
-                <span class="text-emerald-400 font-bold block mb-0.5"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>3. Upload File</span>
-                <span class="text-slate-300">Pilih file <code class="text-emerald-300 font-mono">Rekap_KM_Siap_Upload.csv</code> di bawah.</span>
+              <div class="bg-white/5 p-2 rounded-xl border border-white/10 min-w-0 overflow-hidden">
+                <span class="text-emerald-400 font-bold block mb-0.5 truncate"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>3. Upload File</span>
+                <span class="text-slate-300 block break-words leading-relaxed">Pilih berkas <code class="text-emerald-300 font-mono bg-white/10 px-1 py-0.5 rounded break-all text-[9.5px] inline-block max-w-full truncate" title="Rekap_KM_Siap_Upload.csv">Rekap_KM.csv</code> di bawah.</span>
               </div>
             </div>
           </div>
 
-          <div class="flex items-center justify-between p-2.5 bg-cyan-50/70 rounded-xl border border-cyan-100 text-[11px]">
-            <span class="text-slate-600 font-medium">Hanya ingin input 1 data saja tanpa upload berkas?</span>
-            <button type="button" onclick="closeModal('modal-upload'); openAddKMModal();" class="text-[#E60012] hover:text-[#99000B] font-bold text-xs flex items-center gap-1 cursor-pointer">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 sm:p-3 bg-cyan-50/80 rounded-xl border border-cyan-200/80 text-[11px]">
+            <span class="text-slate-700 font-medium flex items-center gap-1.5 min-w-0">
+              <i class="fa-solid fa-circle-question text-cyan-600 flex-shrink-0"></i>
+              <span class="leading-tight">Hanya ingin input 1 data saja tanpa upload berkas?</span>
+            </span>
+            <button type="button" onclick="closeModal('modal-upload'); openAddKMModal();" class="text-[#E60012] hover:text-[#99000B] font-bold text-xs flex items-center justify-center sm:justify-start gap-1 cursor-pointer bg-white sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-lg sm:rounded-none border sm:border-0 border-red-200 shadow-2xs sm:shadow-none flex-shrink-0 self-end sm:self-auto">
               <i class="fa-solid fa-circle-plus"></i>
               <span>+ Input Manual KM</span>
             </button>
@@ -2012,23 +2015,25 @@
               <i class="fa-solid fa-file-arrow-down"></i> Unduh Format Kosong
             </button>
           </div>
-          <p class="text-[10px] text-slate-500 leading-relaxed" id="upload-guide-cols">
+          <p class="text-[10px] text-slate-500 leading-relaxed break-words" id="upload-guide-cols">
             16 Kolom: Personnel no., P.subarea, Wilayah, Contract, Name, Name of organizational unit, Job Title, Last name, D.o.birth, Gender text, Religious denomination, PS group, Lvl, Date, P0001-STEXT, Business area
           </p>
         </div>
 
-        <div>
-          <label class="block font-bold text-slate-700 mb-1" id="upload-file-label">Pilih Berkas Excel atau CSV:</label>
-          <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="w-full text-xs text-slate-500 file:mr-3 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50">
-          <span class="text-[10px] text-slate-400 mt-1 block" id="upload-file-hint">Mendukung format .xlsx, .xls, dan .csv dengan header di baris pertama.</span>
+        <div class="min-w-0">
+          <label class="block font-bold text-slate-700 mb-1 truncate" id="upload-file-label">Pilih Berkas Excel atau CSV:</label>
+          <div class="relative min-w-0">
+            <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="w-full max-w-full text-xs text-slate-500 file:mr-2.5 sm:file:mr-3 file:py-2 file:px-3 sm:file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50 truncate overflow-hidden">
+          </div>
+          <span class="text-[10px] text-slate-400 mt-1 block break-words" id="upload-file-hint">Mendukung format .xlsx, .xls, dan .csv dengan header di baris pertama.</span>
         </div>
 
-        <div id="upload-status-box" class="hidden text-[11px] p-2.5 rounded-xl"></div>
+        <div id="upload-status-box" class="hidden text-[11px] p-2.5 rounded-xl break-words"></div>
       </div>
 
-      <div class="flex gap-2">
-        <button onclick="closeModal('modal-upload')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Batal</button>
-        <button onclick="prosesUploadExcelFrontend()" id="btn-submit-upload" class="flex-1 py-2.5 bg-[#E60012] hover:bg-[#99000B] text-white font-bold rounded-xl text-xs shadow flex items-center justify-center gap-1.5">
+      <div class="flex gap-2.5 pt-3 border-t border-slate-100 flex-shrink-0 mt-auto">
+        <button onclick="closeModal('modal-upload')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">Batal</button>
+        <button onclick="prosesUploadExcelFrontend()" id="btn-submit-upload" class="flex-1 py-2.5 bg-[#E60012] hover:bg-[#99000B] text-white font-bold rounded-xl text-xs shadow flex items-center justify-center gap-1.5 transition cursor-pointer">
           <i class="fa-solid fa-cloud-arrow-up"></i>
           <span>Proses & Simpan</span>
         </button>
@@ -2288,13 +2293,13 @@
 
   <!-- MODAL: DETAIL RISALAH QCC (8 LANGKAH PDCA & KELENGKAPAN DOKUMEN) -->
   <div id="modal-qcc-risalah" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-qcc-risalah')">
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-3xl w-full p-5 sm:p-6 relative my-auto max-h-[92vh] flex flex-col animate-fade-in">
-      <button onclick="closeModal('modal-qcc-risalah')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-3xl w-full p-4 sm:p-6 relative my-auto max-h-[92vh] flex flex-col animate-fade-in">
+      <button onclick="closeModal('modal-qcc-risalah')" class="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-slate-100 cursor-pointer z-10" title="Tutup Modal">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
       <!-- 1. Header: Identitas Circle & Registrasi -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3.5 border-b border-slate-100 flex-shrink-0">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3.5 pb-3 border-b border-slate-100 flex-shrink-0 pr-10 sm:pr-0">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-2xl bg-purple-100 text-purple-700 flex items-center justify-center font-black text-xl border border-purple-200 shadow-2xs flex-shrink-0" id="qcc-modal-avatar">
             <i class="fa-solid fa-users-gear"></i>
@@ -2320,7 +2325,7 @@
       </div>
 
       <!-- Scrollable Content Body -->
-      <div class="overflow-y-auto space-y-4 pr-1 text-xs">
+      <div class="overflow-y-auto space-y-3.5 sm:space-y-4 pr-1 text-xs min-h-0 flex-1 scrollbar-thin">
         
         <!-- 2. Tema Kaizen Proyek Inovasi -->
         <div class="bg-gradient-to-r from-purple-50/70 via-indigo-50/30 to-purple-50/50 p-3.5 rounded-2xl border border-purple-200/80 shadow-2xs">
@@ -2508,13 +2513,13 @@
 
   <!-- MODAL: DETAIL SUGGESTION SYSTEM (SS / KAIZEN) -->
   <div id="modal-ss-detail" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-ss-detail')">
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full p-5 sm:p-6 relative my-auto max-h-[92vh] flex flex-col animate-fade-in">
-      <button onclick="closeModal('modal-ss-detail')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full p-4 sm:p-6 relative my-auto max-h-[92vh] flex flex-col animate-fade-in">
+      <button onclick="closeModal('modal-ss-detail')" class="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-slate-100 cursor-pointer z-10" title="Tutup Modal">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
       <!-- 1. Header: Identitas Pengusul & Registrasi Ide -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3.5 border-b border-slate-100 flex-shrink-0">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3.5 pb-3 border-b border-slate-100 flex-shrink-0 pr-10 sm:pr-0">
         <div class="flex items-center gap-3">
           <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center font-black text-xl border border-amber-200 shadow-2xs flex-shrink-0" id="ss-modal-avatar">
             <i class="fa-solid fa-lightbulb"></i>
@@ -2540,7 +2545,7 @@
       </div>
 
       <!-- Scrollable Content Body -->
-      <div class="overflow-y-auto space-y-4 pr-1 text-xs">
+      <div class="overflow-y-auto space-y-3.5 sm:space-y-4 pr-1 text-xs min-h-0 flex-1 scrollbar-thin">
         
         <!-- 2. Tema & Judul Ide Kaizen -->
         <div class="bg-gradient-to-r from-amber-50/80 via-orange-50/40 to-amber-50/60 p-3.5 rounded-2xl border border-amber-200/90 shadow-2xs">
@@ -2818,12 +2823,12 @@
   </div>
   <!-- MODAL: EDIT ROW DATA (KHUSUS ADMIN) -->
   <div id="modal-edit-row" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
-    <div class="bg-white rounded-3xl p-5 sm:p-7 w-full max-w-4xl lg:max-w-5xl shadow-2xl border border-slate-100 relative my-auto max-h-[92vh] flex flex-col">
-      <button onclick="closeModal('modal-edit-row')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition">
+    <div class="bg-white rounded-3xl p-4 sm:p-6 lg:p-7 w-full max-w-4xl lg:max-w-5xl shadow-2xl border border-slate-100 relative my-auto max-h-[92vh] flex flex-col">
+      <button onclick="closeModal('modal-edit-row')" class="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-slate-100 cursor-pointer z-10" title="Tutup Modal">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <div class="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100 flex-shrink-0">
+      <div class="flex items-center gap-3 mb-3.5 sm:mb-4 pb-3 border-b border-slate-100 flex-shrink-0 pr-10 sm:pr-0">
         <div class="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg border border-amber-200 flex-shrink-0 shadow-2xs">
           <i class="fa-solid fa-pen-to-square"></i>
         </div>
@@ -2843,11 +2848,11 @@
       </form>
 
       <!-- Action Buttons -->
-      <div class="flex items-center justify-end gap-2.5 pt-4 mt-4 border-t border-slate-100 flex-shrink-0">
-        <button type="button" onclick="closeModal('modal-edit-row')" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition">
+      <div class="flex items-center justify-end gap-2.5 pt-3.5 sm:pt-4 mt-3 sm:mt-4 border-t border-slate-100 flex-shrink-0">
+        <button type="button" onclick="closeModal('modal-edit-row')" class="w-1/2 sm:w-auto px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer text-center">
           Batal
         </button>
-        <button type="button" onclick="submitEditRowForm()" id="btn-save-edit-row" class="px-5 py-2.5 bg-[#E60012] hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center gap-2">
+        <button type="button" onclick="submitEditRowForm()" id="btn-save-edit-row" class="w-1/2 sm:w-auto px-5 py-2.5 bg-[#E60012] hover:bg-red-700 text-white font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
           <i class="fa-solid fa-floppy-disk"></i>
           <span>Simpan Perubahan</span>
         </button>
@@ -2881,17 +2886,17 @@
 
   <!-- MODAL: PENGINGAT & TINJAUAN STATUS RESIGN KARYAWAN (KHUSUS ADMIN) -->
   <div id="modal-resign-review" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-resign-review')">
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl sm:max-w-3xl w-full p-5 sm:p-6 relative my-auto max-h-[92vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
-      <button onclick="closeModal('modal-resign-review')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-slate-100 cursor-pointer">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl sm:max-w-3xl w-full p-4 sm:p-6 relative my-auto max-h-[92vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+      <button onclick="closeModal('modal-resign-review')" class="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-slate-100 cursor-pointer z-10" title="Tutup Modal">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
       <!-- Header -->
-      <div class="flex items-center gap-3.5 mb-4 pb-3.5 border-b border-slate-100 flex-shrink-0">
+      <div class="flex items-center gap-3.5 mb-3.5 sm:mb-4 pb-3.5 border-b border-slate-100 flex-shrink-0 pr-10 sm:pr-0">
         <div class="w-11 h-11 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center text-xl border border-amber-200 shadow-2xs flex-shrink-0">
           <i class="fa-solid fa-user-clock"></i>
         </div>
-        <div class="min-w-0 flex-1 pr-6">
+        <div class="min-w-0 flex-1">
           <div class="flex items-center gap-2 flex-wrap">
             <h3 class="text-base sm:text-lg font-black text-slate-900 leading-tight">Pengingat Tinjauan Status Karyawan</h3>
             <span id="resign-review-modal-badge" class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-900 border border-amber-300">0 Karyawan</span>
@@ -2903,20 +2908,20 @@
       </div>
 
       <!-- Action Banner Info -->
-      <div class="mb-3 p-3 bg-amber-50/80 rounded-2xl border border-amber-200 text-xs text-amber-900 flex items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
+      <div class="mb-3 p-3 bg-amber-50/80 rounded-2xl border border-amber-200 text-xs text-amber-900 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+        <div class="flex items-center gap-2 min-w-0">
           <i class="fa-solid fa-circle-info text-amber-600 text-sm flex-shrink-0"></i>
           <span class="text-[11px] leading-tight">
             Jika karyawan ditandai <strong>Resign</strong>, pilih alasan resmi dan sistem akan menyematkan <strong>Lampiran Dokumen PPHK</strong> yang disyaratkan.
           </span>
         </div>
-        <button type="button" onclick="bulkConfirmKeepAllActive()" class="px-3 py-1 bg-white hover:bg-slate-50 text-slate-700 font-bold border border-slate-200 rounded-xl text-[11px] whitespace-nowrap shadow-2xs transition">
+        <button type="button" onclick="bulkConfirmKeepAllActive()" class="w-full sm:w-auto px-3 py-1.5 bg-white hover:bg-slate-50 text-slate-700 font-bold border border-slate-200 rounded-xl text-[11px] whitespace-nowrap shadow-2xs transition text-center cursor-pointer flex-shrink-0">
           Konfirmasi Semua Tetap Aktif
         </button>
       </div>
 
       <!-- Content List (Scrollable) -->
-      <div id="resign-review-items-container" class="overflow-y-auto max-h-[50vh] pr-1 space-y-3 flex-1 scrollbar-thin text-xs">
+      <div id="resign-review-items-container" class="overflow-y-auto pr-1 space-y-3 flex-1 min-h-0 scrollbar-thin text-xs">
         <!-- Rendered dynamically by JavaScript -->
       </div>
 
@@ -2924,7 +2929,7 @@
       <div class="flex flex-col sm:flex-row items-center justify-between gap-2.5 pt-3.5 mt-3 border-t border-slate-100 flex-shrink-0">
         <span class="text-[10px] text-slate-400 font-medium">Perubahan langsung tersimpan ke Master Karyawan dan terintegrasi ke laporan PBK.</span>
         <div class="flex items-center gap-2 w-full sm:w-auto">
-          <button type="button" onclick="closeModal('modal-resign-review')" class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-sm">
+          <button type="button" onclick="closeModal('modal-resign-review')" class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs transition shadow-sm cursor-pointer">
             Tutup
           </button>
         </div>
@@ -3001,7 +3006,7 @@
         <!-- Tabel Riwayat Presensi Harian -->
         <div class="border border-slate-200/90 rounded-2xl bg-white shadow-2xs overflow-hidden">
           <div class="overflow-x-auto scrollbar-thin">
-            <table class="w-full text-left text-xs border-collapse">
+            <table class="w-full text-left text-xs border-collapse min-w-[640px]">
               <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-10 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
                 <tr>
                   <th class="py-2.5 px-2.5 sm:px-3 text-center w-10">No</th>

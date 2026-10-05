@@ -15,6 +15,8 @@
       const fileHint = document.getElementById('upload-file-hint');
       const modalTitle = document.getElementById('upload-modal-title');
       const modalSubtitle = document.getElementById('upload-modal-subtitle');
+      const modalIconWrapper = document.getElementById('upload-modal-icon-wrapper');
+      const modalIcon = document.getElementById('upload-modal-icon');
 
       const isKM = (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM');
 
@@ -35,6 +37,16 @@
         }
       }
 
+      if (modalIconWrapper && modalIcon) {
+        if (isKM) {
+          modalIconWrapper.className = "w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold flex-shrink-0 border border-cyan-200 shadow-2xs";
+          modalIcon.className = "fa-solid fa-book-bookmark text-lg";
+        } else {
+          modalIconWrapper.className = "w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold flex-shrink-0 border border-red-100 shadow-2xs";
+          modalIcon.className = "fa-solid fa-cloud-arrow-up text-lg";
+        }
+      }
+
       if (modalTitle) {
         modalTitle.textContent = isKM 
           ? "Import & Rekap Berkas KM (.xlsx / .csv)" 
@@ -46,20 +58,20 @@
           : "Normalisasi otomatis header & validasi tipe data presisi";
       }
       if (fileLabel) {
-        fileLabel.textContent = isKM
-          ? "Pilih Berkas Rekap KM (Rekap_KM_Siap_Upload.csv atau .xlsx):"
+        fileLabel.innerHTML = isKM
+          ? `Pilih Berkas Rekap KM <span class="text-slate-400 font-normal font-mono text-[11px]">(Rekap_KM.csv / .xlsx)</span>:`
           : "Pilih Berkas Excel atau CSV:";
       }
       if (fileHint) {
         fileHint.innerHTML = isKM
-          ? `Kolom di file: <b class="text-slate-700">NPK, NAMA, JUDUL, TANGGAL</b> (TIME & Nama Karyawan otomatis disinkronkan).`
+          ? `Kolom wajib: <b class="text-slate-700 font-mono">NPK, NAMA, JUDUL, TANGGAL</b> <span class="text-slate-500 block sm:inline mt-0.5 sm:mt-0">(Kolom TIME otomatis disinkronkan saat upload).</span>`
           : `Mendukung format .xlsx, .xls, dan .csv dengan header di baris pertama.`;
       }
 
       if (titleEl) titleEl.textContent = `Skema Wajib: ${schema.sheetName}`;
       if (colsEl) {
         if (isKM) {
-          colsEl.innerHTML = `4 Kolom Wajib Berkas: <b class="text-slate-800">NPK, NAMA, JUDUL, TANGGAL</b><span class="text-emerald-600 block text-[11px] font-semibold mt-1"><i class="fa-solid fa-clock mr-1"></i>Kolom <b>TIME</b> otomatis diisi waktu saat berkas diunggah, NAMA otomatis sinkron dari Master Karyawan.</span>`;
+          colsEl.innerHTML = `4 Kolom Wajib Berkas: <b class="text-slate-800 font-mono">NPK, NAMA, JUDUL, TANGGAL</b><span class="text-emerald-600 block text-[11px] font-semibold mt-1"><i class="fa-solid fa-clock mr-1"></i>Kolom <b>TIME</b> otomatis diisi waktu saat berkas diunggah, NAMA otomatis sinkron dari Master Karyawan.</span>`;
         } else {
           colsEl.textContent = `${schema.columns.length} Kolom Baku (Sesuai Urutan): ${schema.columns.join(', ')}`;
         }
