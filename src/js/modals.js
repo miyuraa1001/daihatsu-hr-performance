@@ -2518,28 +2518,32 @@
 
           return `
             <tr class="hover:bg-slate-50 transition-colors">
-              <td class="py-2.5 px-3 font-semibold text-slate-800 whitespace-nowrap">${tgl}</td>
-              <td class="py-2.5 px-3 font-mono font-bold text-slate-700 whitespace-nowrap">${clockIn}</td>
-              <td class="py-2.5 px-3 font-mono text-slate-600 whitespace-nowrap">${clockOut}</td>
-              <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${durasi}</td>
-              <td class="py-2.5 px-3 whitespace-nowrap">${statusBadge}</td>
-              <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${lokasi}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-semibold text-slate-800 whitespace-nowrap">${tgl}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-mono font-bold text-slate-700 whitespace-nowrap">${clockIn}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-mono text-slate-600 whitespace-nowrap">${clockOut}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 text-slate-600 whitespace-nowrap">${durasi}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 whitespace-nowrap">${statusBadge}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 text-slate-500 whitespace-nowrap">${lokasi}</td>
             </tr>
           `;
         }).join('');
 
         contentEl.innerHTML = `
           ${statBanner}
-          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
-            <table class="w-full text-left border-collapse text-xs">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 font-medium shadow-2xs mb-2 sm:hidden">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrows-left-right text-emerald-600 text-xs"></i> Geser tabel ke samping</span>
+            <span class="text-[10px] text-slate-400 font-semibold">${absRows.length} Hari</span>
+          </div>
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white scrollbar-thin">
+            <table class="w-full text-left border-collapse text-xs min-w-[520px]">
               <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
                 <tr>
-                  <th class="py-2.5 px-3">Tanggal</th>
-                  <th class="py-2.5 px-3">Clock In</th>
-                  <th class="py-2.5 px-3">Clock Out</th>
-                  <th class="py-2.5 px-3">Durasi</th>
-                  <th class="py-2.5 px-3">Status Hadir</th>
-                  <th class="py-2.5 px-3">Lokasi Penugasan</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Tanggal</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Clock In</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Clock Out</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Durasi</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Status Hadir</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Lokasi Penugasan</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
@@ -2572,11 +2576,11 @@
 
           return `
             <tr class="hover:bg-slate-50 transition-colors">
-              <td class="py-2.5 px-3 font-mono font-bold text-slate-700 whitespace-nowrap">${noReg}</td>
-              <td class="py-2.5 px-3 font-semibold text-slate-900">${tema}</td>
-              <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${fasilitator}</td>
-              <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${bulan}</td>
-              <td class="py-2.5 px-3 whitespace-nowrap">
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-mono font-bold text-slate-700 whitespace-nowrap">${noReg}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-semibold text-slate-900">${tema}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 text-slate-600 whitespace-nowrap">${fasilitator}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 text-slate-600 whitespace-nowrap">${bulan}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 whitespace-nowrap">
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-800 border border-amber-200">${reward}</span>
               </td>
             </tr>
@@ -2584,15 +2588,19 @@
         }).join('');
 
         contentEl.innerHTML = `
-          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
-            <table class="w-full text-left border-collapse text-xs">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 font-medium shadow-2xs mb-2 sm:hidden">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrows-left-right text-amber-600 text-xs"></i> Geser tabel ke samping</span>
+            <span class="text-[10px] text-slate-400 font-semibold">${ssRows.length} Usulan</span>
+          </div>
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white scrollbar-thin">
+            <table class="w-full text-left border-collapse text-xs min-w-[540px]">
               <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
                 <tr>
-                  <th class="py-2.5 px-3">No. Registrasi</th>
-                  <th class="py-2.5 px-3">Tema Ide Kaizen</th>
-                  <th class="py-2.5 px-3">Fasilitator</th>
-                  <th class="py-2.5 px-3">Bulan</th>
-                  <th class="py-2.5 px-3">Reward / Status</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">No. Registrasi</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Tema Ide Kaizen</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Fasilitator</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Bulan</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Reward / Status</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
@@ -2638,11 +2646,11 @@
 
           return `
             <tr class="hover:bg-slate-50 transition-colors">
-              <td class="py-2.5 px-3 font-mono font-bold text-slate-700 whitespace-nowrap">${noReg}</td>
-              <td class="py-2.5 px-3 font-bold text-slate-900 whitespace-nowrap">${namaTim}</td>
-              <td class="py-2.5 px-3 text-slate-700">${tema}</td>
-              <td class="py-2.5 px-3 whitespace-nowrap">${peran}</td>
-              <td class="py-2.5 px-3 whitespace-nowrap">
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-mono font-bold text-slate-700 whitespace-nowrap">${noReg}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-bold text-slate-900 whitespace-nowrap">${namaTim}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 text-slate-700">${tema}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 whitespace-nowrap">${peran}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 whitespace-nowrap">
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">${status}</span>
               </td>
             </tr>
@@ -2650,15 +2658,19 @@
         }).join('');
 
         contentEl.innerHTML = `
-          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
-            <table class="w-full text-left border-collapse text-xs">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 font-medium shadow-2xs mb-2 sm:hidden">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrows-left-right text-purple-600 text-xs"></i> Geser tabel ke samping</span>
+            <span class="text-[10px] text-slate-400 font-semibold">${qccRows.length} Tim</span>
+          </div>
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white scrollbar-thin">
+            <table class="w-full text-left border-collapse text-xs min-w-[540px]">
               <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
                 <tr>
-                  <th class="py-2.5 px-3">No. Reg</th>
-                  <th class="py-2.5 px-3">Nama Tim</th>
-                  <th class="py-2.5 px-3">Tema Perbaikan</th>
-                  <th class="py-2.5 px-3">Peran</th>
-                  <th class="py-2.5 px-3">Status PDCA</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">No. Reg</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Nama Tim</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Tema Perbaikan</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Peran</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Status PDCA</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
@@ -2692,11 +2704,11 @@
         const lampiranPPHK = (typeof getPPHKAttachment === 'function') ? getPPHKAttachment(alasanResign) : '-';
 
         contentEl.innerHTML = `
-          <div class="bg-slate-50/80 p-4 rounded-2xl border border-slate-200 text-xs space-y-3">
+          <div class="bg-slate-50/80 p-3 sm:p-4 rounded-2xl border border-slate-200 text-xs space-y-2.5 sm:space-y-3">
             <!-- Status Kepegawaian & Resign Insight -->
             ${isResign ? `
-              <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3.5 shadow-2xs">
-                <div class="flex items-center justify-between mb-2.5 pb-2 border-b border-rose-200/80 flex-wrap gap-2">
+              <div class="bg-rose-50 border border-rose-200 rounded-2xl p-3 sm:p-3.5 shadow-2xs">
+                <div class="flex items-center justify-between mb-2 pb-2 border-b border-rose-200/80 flex-wrap gap-2">
                   <div class="flex items-center gap-2">
                     <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-rose-200 text-rose-900 border border-rose-300 uppercase flex items-center gap-1.5">
                       <i class="fa-solid fa-user-xmark"></i>
@@ -2708,89 +2720,89 @@
                     <i class="fa-solid fa-shield-halved mr-1"></i>SOP PPHK PT Astra Daihatsu Motor
                   </span>
                 </div>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1.5">
-                  <div class="bg-white p-3 rounded-xl border border-rose-200">
-                    <span class="text-[10px] font-bold text-rose-600 block uppercase flex items-center gap-1">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3 mt-1.5">
+                  <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-rose-200 min-w-0 overflow-hidden">
+                    <span class="text-[10px] font-bold text-rose-600 block uppercase flex items-center gap-1 truncate">
                       <i class="fa-solid fa-tag"></i> Alasan PHK / Resign (Kolom 1 PPHK)
                     </span>
-                    <span class="text-xs font-black text-slate-900 mt-1 block">${alasanResign}</span>
+                    <span class="text-xs font-black text-slate-900 mt-1 block truncate" title="${alasanResign}">${alasanResign}</span>
                   </div>
-                  <div class="bg-white p-3 rounded-xl border border-rose-200">
-                    <span class="text-[10px] font-bold text-amber-700 block uppercase flex items-center gap-1">
+                  <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-rose-200 min-w-0 overflow-hidden">
+                    <span class="text-[10px] font-bold text-amber-700 block uppercase flex items-center gap-1 truncate">
                       <i class="fa-solid fa-file-circle-check text-amber-600"></i> Lampiran Dokumen Wajib (Kolom 2 PPHK)
                     </span>
-                    <span class="text-xs font-bold text-slate-800 mt-1 block leading-relaxed">${lampiranPPHK}</span>
+                    <span class="text-xs font-bold text-slate-800 mt-1 block leading-relaxed line-clamp-2" title="${lampiranPPHK}">${lampiranPPHK}</span>
                   </div>
                 </div>
               </div>
             ` : `
-              <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 flex items-center justify-between shadow-2xs">
-                <div class="flex items-center gap-2.5">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+              <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-2.5 sm:p-3 flex items-center justify-between shadow-2xs">
+                <div class="flex items-center gap-2">
+                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse flex-shrink-0"></span>
                   <span class="text-xs font-extrabold text-emerald-950">Status Kepegawaian: Aktif</span>
                   <span class="text-[11px] text-emerald-700 font-medium hidden sm:inline">• Karyawan aktif bertugas di unit kerja terkait</span>
                 </div>
-                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 flex-shrink-0">
                   <i class="fa-solid fa-user-check mr-1"></i>Aktif Bekerja
                 </span>
               </div>
             `}
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 sm:gap-3">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">NPK / Personnel No.</span>
                 <span class="text-sm font-black text-slate-900 font-mono mt-0.5 block truncate" title="${empNpk}">${empNpk}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Nama Lengkap</span>
                 <span class="text-sm font-black text-slate-900 mt-0.5 block truncate" title="${empNama}">${empNama}</span>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Status Kontrak & Kepegawaian</span>
                 <span class="text-xs font-black ${isResign ? 'text-rose-700' : 'text-blue-700'} mt-0.5 block truncate" title="${contract} ${isResign ? '(Resign)' : ''}">${contract} ${isResign ? '(Resign)' : ''}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Jabatan / Job Title</span>
                 <span class="text-xs font-extrabold text-slate-800 mt-0.5 block truncate" title="${jabatan}">${jabatan}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Unit Organisasi</span>
                 <span class="text-xs font-extrabold text-slate-800 mt-0.5 block truncate" title="${unitOrg}">${unitOrg}</span>
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Cabang / Subarea</span>
                 <span class="text-xs font-bold text-slate-800 mt-0.5 block truncate" title="${cabang}">${cabang}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Kode Business Area</span>
                 <span class="text-xs font-bold text-slate-800 font-mono mt-0.5 block truncate" title="${baCode}">${baCode}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Tanggal Masuk (Join)</span>
                 <span class="text-xs font-bold text-slate-800 mt-0.5 block truncate" title="${joinDate}">${joinDate}</span>
               </div>
             </div>
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Tgl Lahir (D.o.b)</span>
                 <span class="text-xs font-semibold text-slate-800 mt-0.5 block truncate" title="${dob}">${dob}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Gender</span>
                 <span class="text-xs font-semibold text-slate-800 mt-0.5 block truncate" title="${gender}">${gender}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Agama</span>
                 <span class="text-xs font-semibold text-slate-800 mt-0.5 block truncate" title="${agama}">${agama}</span>
               </div>
-              <div class="bg-white p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
+              <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Gol / Level</span>
                 <span class="text-xs font-semibold text-slate-800 mt-0.5 block truncate" title="${psGroup} / ${lvl}">${psGroup} / ${lvl}</span>
               </div>
@@ -2811,8 +2823,8 @@
 
         if (!hasActiveSP) {
           contentEl.innerHTML = `
-            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center">
-              <div class="w-12 h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-xl mx-auto mb-3">
+            <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5 sm:p-6 text-center">
+              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-lg sm:text-xl mx-auto mb-3">
                 <i class="fa-solid fa-circle-check"></i>
               </div>
               <h5 class="text-sm font-extrabold text-emerald-900">CLEAR - Bebas Sanksi Disiplin</h5>
@@ -2826,26 +2838,30 @@
 
         const tableRows = spRows.map((r, i) => `
           <tr class="hover:bg-slate-50 transition-colors">
-            <td class="py-2.5 px-3 font-bold text-red-600 whitespace-nowrap">
+            <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-bold text-red-600 whitespace-nowrap">
               <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-red-100 text-red-800 border border-red-200">${r['Tingkat SP']}</span>
             </td>
-            <td class="py-2.5 px-3 text-slate-800">${r['Alasan'] || 'Pelanggaran tata tertib kerja'}</td>
-            <td class="py-2.5 px-3 text-slate-600 whitespace-nowrap">${r['Kode BA'] || '-'}</td>
-            <td class="py-2.5 px-3 whitespace-nowrap">
+            <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 text-slate-800">${r['Alasan'] || 'Pelanggaran tata tertib kerja'}</td>
+            <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 text-slate-600 whitespace-nowrap">${r['Kode BA'] || '-'}</td>
+            <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 whitespace-nowrap">
               <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-200">Sedang Berjalan</span>
             </td>
           </tr>
         `).join('');
 
         contentEl.innerHTML = `
-          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
-            <table class="w-full text-left border-collapse text-xs">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 font-medium shadow-2xs mb-2 sm:hidden">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrows-left-right text-rose-600 text-xs"></i> Geser tabel ke samping</span>
+            <span class="text-[10px] text-slate-400 font-semibold">${spRows.length} Sanksi</span>
+          </div>
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white scrollbar-thin">
+            <table class="w-full text-left border-collapse text-xs min-w-[500px]">
               <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
                 <tr>
-                  <th class="py-2.5 px-3">Tingkat Sanksi</th>
-                  <th class="py-2.5 px-3">Alasan / Pelanggaran</th>
-                  <th class="py-2.5 px-3">Cabang</th>
-                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Tingkat Sanksi</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Alasan / Pelanggaran</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Cabang</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Status</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
@@ -2865,7 +2881,7 @@
         );
 
         if (!kmRows.length) {
-          contentEl.innerHTML = `<div class="p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-200">Karyawan ini belum menerbitkan artikel atau panduan di sheet Knowledge_management.</div>`;
+          contentEl.innerHTML = `<div class="p-6 sm:p-8 text-center text-slate-400 bg-slate-50 rounded-2xl border border-slate-200 text-xs">Karyawan ini belum menerbitkan artikel atau panduan di sheet Knowledge_management.</div>`;
           return;
         }
 
@@ -2876,10 +2892,10 @@
 
           return `
             <tr class="hover:bg-slate-50 transition-colors">
-              <td class="py-2.5 px-3 font-semibold text-slate-900">${judul}</td>
-              <td class="py-2.5 px-3 font-mono text-slate-700 whitespace-nowrap">${tgl}</td>
-              <td class="py-2.5 px-3 font-mono text-slate-600 whitespace-nowrap">${time}</td>
-              <td class="py-2.5 px-3 whitespace-nowrap">
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-semibold text-slate-900">${judul}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-mono text-slate-700 whitespace-nowrap">${tgl}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 font-mono text-slate-600 whitespace-nowrap">${time}</td>
+              <td class="py-2 sm:py-2.5 px-2.5 sm:px-3 whitespace-nowrap">
                 <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-50 text-cyan-800 border border-cyan-200 inline-flex items-center gap-1">
                   <i class="fa-solid fa-circle-check text-[9px]"></i> Terverifikasi
                 </span>
@@ -2889,14 +2905,18 @@
         }).join('');
 
         contentEl.innerHTML = `
-          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white">
-            <table class="w-full text-left border-collapse text-xs">
+          <div class="flex items-center justify-between text-[11px] text-slate-500 bg-slate-50 border border-slate-200/80 rounded-xl px-2.5 py-1.5 font-medium shadow-2xs mb-2 sm:hidden">
+            <span class="flex items-center gap-1.5"><i class="fa-solid fa-arrows-left-right text-cyan-600 text-xs"></i> Geser tabel ke samping</span>
+            <span class="text-[10px] text-slate-400 font-semibold">${kmRows.length} Materi</span>
+          </div>
+          <div class="overflow-x-auto border border-slate-200 rounded-2xl shadow-2xs bg-white scrollbar-thin">
+            <table class="w-full text-left border-collapse text-xs min-w-[500px]">
               <thead class="bg-slate-100 text-[10px] font-bold text-slate-600 uppercase border-b border-slate-200">
                 <tr>
-                  <th class="py-2.5 px-3">Judul Pengetahuan / Materi</th>
-                  <th class="py-2.5 px-3">Tanggal Terbit</th>
-                  <th class="py-2.5 px-3">Waktu (Time)</th>
-                  <th class="py-2.5 px-3">Status</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Judul Pengetahuan / Materi</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Tanggal Terbit</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Waktu (Time)</th>
+                  <th class="py-2 sm:py-2.5 px-2.5 sm:px-3">Status</th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
