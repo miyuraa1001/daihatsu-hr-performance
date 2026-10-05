@@ -297,21 +297,104 @@ Pengguna dapat memilih dua mode tampilan:
 - **Penyimpanan Primer:** Google Sheets Database (Worksheet terpisah untuk tiap tabel skema).
 - **Penyimpanan Lokal Sementara:** `localStorage` browser untuk menyimpan mutasi baris lokal (*optimistic UI updates*) agar tidak hilang saat refresh halaman (F5).
 
-### 7.2 Struktur Berkas Proyek
+### 7.2 Struktur Berkas Proyek & Komponen Arsitektur
+
+Platform D-PERFORM mengadopsi arsitektur modular terpisah (*clean separation of concerns*) antara presentasi tampilan (HTML/CSS), konfigurasi API & skema, autentikasi sesi, navigasi dasbor, pemrosesan analitik kinerja, manajemen interaksi modal, dan gerbang proksi serverless.
+
+#### 7.2.1 Pohon Direktori Lengkap (Project File Tree)
 ```
 daihatsu-hr-performance/
-├── api/
-│   └── proxy.js                # Serverless API proxy ke Apps Script
+│
+├── index.html                  # Container SPA utama (~3.300 baris); seluruh markup tampilan modul & modal
+├── vercel.json                 # Konfigurasi routing rewrite endpoint Vercel ke Serverless Function
+├── PRD.md                      # Dokumen Kebutuhan Produk & Spesifikasi Teknis Lengkap
+│
+├── api/                        # Serverless API Proxy Layer (Node.js Environment)
+│   └── proxy.js                # Handler POST Vercel Serverless Function; meneruskan payload ke Google Apps Script
+│
 ├── src/
-│   └── js/
-│       ├── api.js              # SCHEMAS, alias mapping, konstanta cabang, date/time formatters
-│       ├── dashboard.js        # Kalkulasi metrik agregat, KPI cards, SVG charts, data store
-│       ├── employee.js         # Rendering tabel & kartu modul (MK, Absensi, SS, QCC, SP, KM, PBK)
-│       ├── modals.js           # Kontrol modal (detail, edit, tambah, konfirmasi resign, import)
-│       └── navigation.js       # Pengendali view switcher, filter cabang/periode, sidebar readiness
-├── index.html                  # Single-Page Application (SPA) container
-└── PRD.md                      # Dokumen Kebutuhan Produk (Dokumen ini)
+│   ├── css/
+│   │   └── style.css           # Kustomisasi UI: thin scrollbar, status tab aktif, backdrop blur, reset select
+│   │
+│   └── js/                     # Modul JavaScript Berbasis Vanilla ES6+ (Separated Modules)
+│       ├── api.js              # State global, SCHEMAS baku (6 modul), alias header, daftar cabang resmi,
+│       │                       # standar SOP PPHK ADM, dan fungsi parsing/formatting (tanggal/waktu/umur)
+│       ├── auth.js             # Autentikasi sesi: Login, Logout, toggle password, persistensi 'Ingat Saya'
+│       ├── navigation.js       # Pengendali navigasi tampilan SPA (switchView), filter cabang & periode,
+│       │                       # widget indikator kesiapan PBK 12 bulan di sidebar, dan helper sticky header
+│       ├── dashboard.js        # Kalkulasi agregasi ringkasan cabang (computeBranchSummary), render 6 kartu KPI,
+│       │                       # visualisasi Donut Chart SVG 3-Pilar DSO, sinkronisasi master store
+│       ├── employee.js         # Logika 3-Pilar DSO (Sales/Service/Admin), rendering tabel & kartu Master Karyawan,
+│       │                       # tabel Presensi (Rekap & Log), SS, QCC, SP, KM, PBK, dan workflow Resign Review
+│       ├── modals.js           # Manajemen modal interaktif: Tambah/Edit baris, Detail log presensi per staf,
+│       │                       # Impor file Excel/CSV berbasis SheetJS, konfirmasi Resign, dan aksi baris tabel
+│       └── main.js             # Entry point bootstrap aplikasi: auto-login check pada DOMContentLoaded
+│                               # dan event listener resize layar responsif
+│
+└── scratch/                    # Berkas Utilitas Pengujian & Skrip Otomasi Pengembang (Internal Tooling)
+    ├── apply_km_full_fix.js    # Skrip sinkronisasi & perbaikan modul Knowledge Management
+    ├── apply_modals_fix.js     # Validasi konsistensi struktur DOM modal dialog
+    ├── test_absensi_summary.js # Pengujian unit logika agregasi presensi & keterlambatan
+    ├── test_api_integration.js # Simulasi pengujian konektivitas endpoint proxy backend
+    ├── test_branch_matching.js # Pengujian unit algoritma pencocokan 5 cabang resmi Lampung
+    ├── test_epoch_time.js      # Pengujian unit penanganan tanggal epoch Excel (1899-12-30) & konversi WIB
+    ├── test_multi_sheet_export.js # Verifikasi ekspor spreadsheet multi-worksheet
+    └── validate_syntax.js      # Validator sintaksis JavaScript otomatis
 ```
+
+#### 7.2.2 Rincian Peran & Tanggung Jawab Berkas (File Responsibility)
+
+| Berkas | Ukuran / Baris | Peran Utama & Komponen Kunci |
+|---|---|---|
+| `index.html` | ~3.300 baris | Memuat seluruh struktur semantik Single-Page Application (SPA), elemen Sidebar responsif, Top Navbar dengan filter cabang & periode, 6 wadah tampilan modul utama (`#view-dashboard`, `#view-master-karyawan`, `#view-absensi`, `#view-ss`, `#view-qcc`, `#view-sp`, `#view-km`, `#view-pbk`), kontainer modal popup, serta elemen feedback toast. |
+| `src/css/style.css` | ~83 baris | Mengatur tipografi kustom font Inter, scrollbar minimalis (`.scrollbar-thin`), state aktif item navigasi (`.nav-item-active` dengan border merah khas Daihatsu `#E60012`), efek blur pada latar modal (`.modal-backdrop`), serta efek elevasi bayangan modern (`.shadow-clean`). |
+| `src/js/api.js` | ~1.960 baris | **Pusat Konfigurasi & Fondasi Sistem**: <br>• Konfigurasi `BACKEND_PROXY_URL = "/api/proxy"`<br>• Objek skema database baku `SCHEMAS` (Master Karyawan, Presensi, SS, QCC, SP, KM) beserta kamus alias normalisasi header<br>• Daftar 5 cabang resmi DSO Lampung (`KNOWN_BRANCHES` & `ALLOWED_BRANCH_CODES`)<br>• 10 Alasan baku PPHK dan lampiran wajib SOP PT Astra Daihatsu Motor (`STANDARD_PPHK_REASONS`)<br>• Utilitas parsing tanggal & waktu: `parseExcelDate()`, `parseExcelTime()`, `formatDatabaseDate()`, `calculateAgeAndService()`, dan formula keterlambatan `calculateLatenessInfo()`. |
+| `src/js/auth.js` | ~170 baris | **Manajemen Keamanan & Sesi**: <br>• Penanganan submit form masuk (`handleLoginSubmit`)<br>• Fitur *Ingat Saya (Remember Me)* dengan enkripsi lokal pada `localStorage` (kunci `dperform_auth_session`)<br>• Fungsi `checkAutoLogin()` untuk memulihkan sesi saat pengguna membuka atau me-reload halaman<br>• Fungsi `logoutUser()` untuk menghapus sesi dan mengembalikan tampilan ke layar masuk (Login Overlay). |
+| `src/js/navigation.js` | ~660 baris | **Navigasi & Kontrol Dasbor Global**: <br>• Fungsi `switchView(viewId)` untuk berpindah modul tanpa me-reload peramban<br>• Sinkronisasi dua arah filter cabang dan periode kalender (Bulan & Tahun)<br>• Widget Skor Kesiapan PBK Kumulatif 12 Bulan (`updateSidebarReadiness`)<br>• Fungsi generalisasi pembuatan header tabel dengan fitur pembekuan kolom otomatis (`renderTableHeader`). |
+| `src/js/dashboard.js` | ~1.280 baris | **Mesin Agregasi Analitik & KPI**: <br>• Fungsi `computeBranchSummary()` untuk menghitung metrik kuantitatif cabang secara seketika<br>• Render 6 kartu ringkasan KPI (Master Karyawan, Presensi, SS, QCC, SP, KM)<br>• Visualisasi Donut Chart SVG 3-Pilar DSO (Sales, Service, Admin)<br>• Fungsi sinkronisasi Master Store (`ensureMasterStore`, `loadBackendDashboardData`) dengan proteksi sanitasi payload cabang Lampung. |
+| `src/js/employee.js` | ~3.080 baris | **Penyajian Data Karyawan & Tabel Modul**: <br>• Algoritma pengelompokan 3-Pilar DSO (`classifyEmployeePilar`) dan resolusi divisi (`resolveEmployeeDivision`)<br>• Rendering tabel Master Karyawan dalam dua mode (Ringkas 8 kolom vs Penuh 19 kolom) dan mode Kartu Interaktif 3D<br>• Rendering tabel Presensi (Mode Rekap Agregat & Mode Log Mentah 19 Kolom)<br>• Rendering tabel modul SS, QCC, SP, KM, dan Rekap Kinerja PBK<br>• Logika filter chip pilar, pencarian instan, dan banner deteksi Resign Review. |
+| `src/js/modals.js` | ~3.760 baris | **Interaksi Pengguna & Manipulasi Berkas**: <br>• Handler buka/tutup seluruh modal dialog dengan penutupan otomatis via tombol Escape<br>• Render form dinamis untuk Tambah dan Edit baris data per modul<br>• Modal detail log presensi individual harian per NPK karyawan<br>• Integrasi SheetJS (`handleFileImport`) untuk validasi dan impor berkas Excel/CSV ke database<br>• Helper sel aksi tabel (`renderRowActionCell`) dengan kontrol otorisasi Admin vs Kacab<br>• Modal penetapan status Resign karyawan berbasis standar formulir PPHK. |
+| `src/js/main.js` | ~18 baris | **Titik Masuk (Bootstrap Entry Point)**: <br>• Memicu `checkAutoLogin()` saat peramban selesai memuat event `DOMContentLoaded`<br>• Listener resize peramban untuk merapikan sidebar pada perangkat mobile saat orientasi berubah. |
+| `api/proxy.js` | ~60 baris | **Reverse Proxy Serverless (Vercel)**: <br>• Mengamankan pemanggilan backend ke Google Apps Script tanpa mengekspos token rahasia ke klien<br>• Menangani respon redirect HTTP 302 dari server Google secara transparan (`redirect: 'follow'`)<br>• Menerapkan header proteksi cache (`Cache-Control: no-store, no-cache`). |
+| `vercel.json` | ~9 baris | **Aturan Konfigurasi Hosting**: <br>• Mendefinisikan aturan *rewrite* URL agar permintaan klien ke endpoint `/api/proxy` diarahkan secara tepat ke serverless function `api/proxy.js`. |
+
+#### 7.2.3 Urutan Pemuatan Modul Skrip (Script Loading Order & Hierarchy)
+Karena sistem dibangun menggunakan Vanilla JavaScript modular berkinerja tinggi, seluruh berkas skrip dimuat pada bagian akhir tag `<body>` di `index.html` dengan urutan dependensi yang ketat:
+
+```html
+<!-- 1. Fondasi State, Skema Kolom, Konstanta Cabang, dan Formatting Utils -->
+<script src="src/js/api.js"></script>
+
+<!-- 2. Manajemen Autentikasi Sesi (Membutuhkan fungsi callBackendAPI dari api.js) -->
+<script src="src/js/auth.js"></script>
+
+<!-- 3. Navigasi & Kontrol Layout (Membutuhkan loggedInUser dan KNOWN_BRANCHES) -->
+<script src="src/js/navigation.js"></script>
+
+<!-- 4. Agregasi Metrik & KPI Cards (Membutuhkan filter cabang dan formula api.js) -->
+<script src="src/js/dashboard.js"></script>
+
+<!-- 5. Rendering Tampilan Modul (Membutuhkan state dashboard dan renderTableHeader) -->
+<script src="src/js/employee.js"></script>
+
+<!-- 6. Interaksi Dialog & Import/Export (Membutuhkan fungsi render dari employee.js) -->
+<script src="src/js/modals.js"></script>
+
+<!-- 7. Bootstrap Aplikasi (Memicu inisialisasi awal setelah seluruh modul terdaftar) -->
+<script src="src/js/main.js"></script>
+```
+
+#### 7.2.4 Pustaka Eksternal & Dependensi CDN (Third-Party Libraries)
+Aplikasi meminimalkan dependensi eksternal pihak ketiga demi menjaga waktu muat (*lightweight footprint*):
+1. **Tailwind CSS v3 (CDN):** Framework utility-first untuk desain responsif modern, dikustomisasi dengan palet warna resmi Daihatsu (`#E60012`).
+2. **Font Awesome Icons v6.4.0 (CDN):** Ikonografi vektor untuk indikator status, tombol aksi, dan navigasi modul.
+3. **Google Fonts Inter:** Tipografi korporat modern dengan tingkat keterbacaan tinggi pada tampilan tabel data padat.
+4. **SheetJS / xlsx v0.18.5 (CDN):** Pustaka JavaScript murni untuk membaca (*parsing*), memvalidasi skema sel, dan mengekspor (*generating*) berkas lembar kerja Microsoft Excel (`.xlsx`) langsung di memori peramban klien tanpa beban server.
+
+#### 7.2.5 Konfigurasi Lingkungan Serverless (Environment Variables)
+Pada platform deployment Vercel, serverless function `api/proxy.js` memanfaatkan environment variables terenkripsi:
+- `API_URL` / `NEXT_PUBLIC_APPS_SCRIPT_URL`: URL endpoint publik deployment Google Apps Script Web App.
+- `SECRET_TOKEN` / `NEXT_PUBLIC_SECRET_TOKEN`: Token rahasia otentikasi server-to-server untuk mencegah penyalahgunaan API di luar domain resmi.
 
 ---
 
