@@ -218,6 +218,8 @@
     let activePilarFilter = null; // 'Sales', 'Service', 'Admin', or null
     let quickJobSearchQuery = '';
     let currentMKViewMode = 'table'; // 'table' or 'card'
+    let activeKontrakFilter = 'ALL';
+    let activeStatusKaryawanFilter = 'ALL';
 
     function filterByPilar(pilar) {
       if (activePilarFilter === pilar) {
@@ -226,6 +228,7 @@
         activePilarFilter = pilar;
       }
       updatePilarCardStyles();
+      updateFilterTambahanBadge();
       filterMasterKaryawanTable();
     }
     if (typeof window !== 'undefined') window.filterByPilar = filterByPilar;
@@ -250,19 +253,139 @@
     }
     if (typeof window !== 'undefined') window.updatePilarCardStyles = updatePilarCardStyles;
 
+    function updateFilterTambahanBadge() {
+      const badge = document.getElementById('badge-extra-filter-count');
+      const btn = document.getElementById('btn-toggle-extra-filters');
+      let count = 0;
+      if (activeKontrakFilter && activeKontrakFilter !== 'ALL') count++;
+      if (activePilarFilter && activePilarFilter !== 'ALL') count++;
+      if (activeStatusKaryawanFilter && activeStatusKaryawanFilter !== 'ALL') count++;
+      if (typeof columnViewMode !== 'undefined' && columnViewMode.mk === 'FULL') count++;
+
+      if (badge) {
+        if (count > 0) {
+          badge.textContent = count;
+          badge.classList.remove('hidden');
+        } else {
+          badge.classList.add('hidden');
+        }
+      }
+      if (btn) {
+        if (count > 0) {
+          btn.classList.add('border-blue-300', 'bg-blue-50/60', 'text-blue-700');
+          btn.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+        } else {
+          btn.classList.remove('border-blue-300', 'bg-blue-50/60', 'text-blue-700');
+          btn.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+        }
+      }
+    }
+    if (typeof window !== 'undefined') window.updateFilterTambahanBadge = updateFilterTambahanBadge;
+
+    function openMasterKaryawanFilterModal() {
+      const selectKontrak = document.getElementById('mk-modal-filter-kontrak');
+      if (selectKontrak) selectKontrak.value = activeKontrakFilter || 'ALL';
+
+      const selectPilar = document.getElementById('mk-modal-filter-pilar');
+      if (selectPilar) selectPilar.value = activePilarFilter || 'ALL';
+
+      const selectStatus = document.getElementById('mk-modal-filter-status');
+      if (selectStatus) selectStatus.value = activeStatusKaryawanFilter || 'ALL';
+
+      const mode = (typeof columnViewMode !== 'undefined' && columnViewMode.mk === 'FULL') ? 'FULL' : 'COMPACT';
+      setColumnViewModeChoice(mode, false);
+
+      if (typeof openModal === 'function') {
+        openModal('modal-filter-master-karyawan');
+      }
+    }
+    if (typeof window !== 'undefined') window.openMasterKaryawanFilterModal = openMasterKaryawanFilterModal;
+
+    function setColumnViewModeChoice(mode, applyImmediately = false) {
+      const btnCompact = document.getElementById('btn-choice-col-compact');
+      const btnFull = document.getElementById('btn-choice-col-full');
+      if (btnCompact && btnFull) {
+        if (mode === 'FULL') {
+          btnFull.className = "p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer bg-slate-900 text-white border-slate-900 shadow-2xs";
+          btnCompact.className = "p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50";
+        } else {
+          btnCompact.className = "p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer bg-slate-900 text-white border-slate-900 shadow-2xs";
+          btnFull.className = "p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50";
+        }
+      }
+      if (applyImmediately && typeof columnViewMode !== 'undefined') {
+        columnViewMode.mk = mode;
+        updateFilterTambahanBadge();
+        filterMasterKaryawanTable();
+      }
+    }
+    if (typeof window !== 'undefined') window.setColumnViewModeChoice = setColumnViewModeChoice;
+
+    function applyMasterKaryawanModalFilters() {
+      const selectKontrak = document.getElementById('mk-modal-filter-kontrak');
+      activeKontrakFilter = selectKontrak ? selectKontrak.value : 'ALL';
+
+      const selectPilar = document.getElementById('mk-modal-filter-pilar');
+      const pVal = selectPilar ? selectPilar.value : 'ALL';
+      activePilarFilter = (!pVal || pVal === 'ALL') ? null : pVal;
+
+      const selectStatus = document.getElementById('mk-modal-filter-status');
+      activeStatusKaryawanFilter = selectStatus ? selectStatus.value : 'ALL';
+
+      const btnFull = document.getElementById('btn-choice-col-full');
+      if (btnFull && typeof columnViewMode !== 'undefined') {
+        const isFull = btnFull.classList.contains('bg-slate-900');
+        columnViewMode.mk = isFull ? 'FULL' : 'COMPACT';
+      }
+
+      updatePilarCardStyles();
+      updateFilterTambahanBadge();
+
+      if (typeof closeModal === 'function') {
+        closeModal('modal-filter-master-karyawan');
+      }
+
+      filterMasterKaryawanTable();
+      if (typeof showToast === 'function') {
+        showToast('Filter karyawan berhasil diterapkan', 'success');
+      }
+    }
+    if (typeof window !== 'undefined') window.applyMasterKaryawanModalFilters = applyMasterKaryawanModalFilters;
+
+    function resetMasterKaryawanModalFilters() {
+      const selectKontrak = document.getElementById('mk-modal-filter-kontrak');
+      if (selectKontrak) selectKontrak.value = 'ALL';
+      const selectPilar = document.getElementById('mk-modal-filter-pilar');
+      if (selectPilar) selectPilar.value = 'ALL';
+      const selectStatus = document.getElementById('mk-modal-filter-status');
+      if (selectStatus) selectStatus.value = 'ALL';
+      setColumnViewModeChoice('COMPACT', false);
+      applyMasterKaryawanModalFilters();
+    }
+    if (typeof window !== 'undefined') window.resetMasterKaryawanModalFilters = resetMasterKaryawanModalFilters;
+
     function resetMasterKaryawanFilters() {
       activePilarFilter = null;
+      activeKontrakFilter = 'ALL';
+      activeStatusKaryawanFilter = 'ALL';
       quickJobSearchQuery = '';
+      if (typeof columnViewMode !== 'undefined') {
+        columnViewMode.mk = 'COMPACT';
+      }
       const quickInput = document.getElementById('mk-quick-job-input');
       if (quickInput) quickInput.value = '';
       const searchInput = document.getElementById('mk-search-input');
       if (searchInput) searchInput.value = '';
-      const searchInputExtra = document.getElementById('mk-search-input-extra');
-      if (searchInputExtra) searchInputExtra.value = '';
       const contractSelect = document.getElementById('mk-filter-kontrak');
       if (contractSelect) contractSelect.value = 'ALL';
-      const contractSelectExtra = document.getElementById('mk-filter-kontrak-extra');
-      if (contractSelectExtra) contractSelectExtra.value = 'ALL';
+      const modalKontrak = document.getElementById('mk-modal-filter-kontrak');
+      if (modalKontrak) modalKontrak.value = 'ALL';
+      const modalPilar = document.getElementById('mk-modal-filter-pilar');
+      if (modalPilar) modalPilar.value = 'ALL';
+      const modalStatus = document.getElementById('mk-modal-filter-status');
+      if (modalStatus) modalStatus.value = 'ALL';
+      setColumnViewModeChoice('COMPACT', false);
+      updateFilterTambahanBadge();
       updatePilarCardStyles();
       filterMasterKaryawanTable();
     }
@@ -298,10 +421,7 @@
     if (typeof window !== 'undefined') window.toggleOtherJobsList = toggleOtherJobsList;
 
     function toggleExtraFilters() {
-      const panel = document.getElementById('mk-extra-filters-panel');
-      if (panel) {
-        panel.classList.toggle('hidden');
-      }
+      openMasterKaryawanFilterModal();
     }
     if (typeof window !== 'undefined') window.toggleExtraFilters = toggleExtraFilters;
 
@@ -313,8 +433,12 @@
     if (typeof window !== 'undefined') window.syncSearchInputs = syncSearchInputs;
 
     function syncContractFilters(val) {
+      activeKontrakFilter = val || 'ALL';
       const mainContract = document.getElementById('mk-filter-kontrak');
       if (mainContract) mainContract.value = val;
+      const modalContract = document.getElementById('mk-modal-filter-kontrak');
+      if (modalContract) modalContract.value = val;
+      updateFilterTambahanBadge();
       filterMasterKaryawanTable();
     }
     if (typeof window !== 'undefined') window.syncContractFilters = syncContractFilters;
@@ -612,12 +736,12 @@
     // Ekstraksi opsi filter Kontrak / Status Kepegawaian dinamis dari data tabel (bersih tanpa duplikasi)
     function populateContractDropdown() {
       const select = document.getElementById('mk-filter-kontrak');
-      const selectExtra = document.getElementById('mk-filter-kontrak-extra');
-      if (!select && !selectExtra) return;
+      const selectModal = document.getElementById('mk-modal-filter-kontrak');
+      if (!select && !selectModal) return;
       const rawRows = currentDashboardPayload?.rawTables?.Master_Karyawan || [];
-      const currentVal = select?.value || selectExtra?.value || 'ALL';
+      const currentVal = (activeKontrakFilter && activeKontrakFilter !== 'ALL') ? activeKontrakFilter : (select?.value || selectModal?.value || 'ALL');
 
-      let options = `<option value="ALL">Semua Kontrak</option>`;
+      let options = `<option value="ALL">Semua Kontrak (Tetap, PKWT, dsb.)</option>`;
       STANDARD_CONTRACT_CATEGORIES.forEach(cat => {
         options += `<option value="${cat}">${cat}</option>`;
       });
@@ -642,10 +766,10 @@
         const optionsArray = Array.from(select.options || []).map(o => o.value);
         select.value = optionsArray.includes(currentVal) ? currentVal : 'ALL';
       }
-      if (selectExtra) {
-        selectExtra.innerHTML = options;
-        const optionsArray = Array.from(selectExtra.options || []).map(o => o.value);
-        selectExtra.value = optionsArray.includes(currentVal) ? currentVal : 'ALL';
+      if (selectModal) {
+        selectModal.innerHTML = options;
+        const optionsArray = Array.from(selectModal.options || []).map(o => o.value);
+        selectModal.value = optionsArray.includes(currentVal) ? currentVal : 'ALL';
       }
     }
 
@@ -663,15 +787,23 @@
       }
 
       const q = (document.getElementById('mk-search-input')?.value || '').toLowerCase().trim();
-      const contractFilter = document.getElementById('mk-filter-kontrak')?.value || 'ALL';
+      const contractFilter = (activeKontrakFilter && activeKontrakFilter !== 'ALL')
+        ? activeKontrakFilter
+        : (document.getElementById('mk-filter-kontrak')?.value || 'ALL');
 
       let list = rawRows;
 
-      // 1. Role-based: Kepala Cabang (User) HANYA melihat karyawan Aktif
+      // 1. Role-based: Kepala Cabang (User) HANYA melihat karyawan Aktif. Admin dapat filter Aktif / Resign via Filter Tambahan
       if (!isAdmin) {
         list = list.filter(e => {
           const st = String(e['Status_Karyawan'] || e.statusKaryawan || 'Aktif').trim().toLowerCase();
           return st !== 'resign';
+        });
+      } else if (activeStatusKaryawanFilter && activeStatusKaryawanFilter !== 'ALL') {
+        const targetStatus = activeStatusKaryawanFilter.toLowerCase();
+        list = list.filter(e => {
+          const st = String(e['Status_Karyawan'] || e.statusKaryawan || 'Aktif').trim().toLowerCase();
+          return st === targetStatus;
         });
       }
 

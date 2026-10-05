@@ -1185,39 +1185,17 @@
                 <div class="flex-1 min-w-0">
                   <span class="text-[10px] font-bold text-slate-700 block mb-0.5">Pencarian Cepat Jabatan</span>
                   <div class="relative">
-                    <input type="text" id="mk-quick-job-input" oninput="onQuickJobSearchInput(this.value)" list="mk-job-suggestions" placeholder="Cari jabatan... (contoh: Mechanic, Salesman)" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-7 py-1.5 focus:outline-none focus:border-blue-500 text-slate-800 placeholder:text-slate-400 font-medium">
+                    <input type="text" id="mk-search-input" oninput="filterMasterKaryawanTable()" list="mk-job-suggestions" placeholder="Cari jabatan... (contoh: Mechanic, Salesman)" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl pl-3 pr-7 py-1.5 focus:outline-none focus:border-blue-500 text-slate-800 placeholder:text-slate-400 font-medium">
                     <i class="fa-solid fa-chevron-down absolute right-2.5 top-2.5 text-slate-400 text-[10px] pointer-events-none"></i>
                     <datalist id="mk-job-suggestions"></datalist>
                   </div>
                 </div>
-                <button type="button" onclick="toggleExtraFilters()" id="btn-toggle-extra-filters" class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-2xs whitespace-nowrap transition cursor-pointer">
+                <button type="button" onclick="openMasterKaryawanFilterModal()" id="btn-toggle-extra-filters" class="px-3 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-2xs whitespace-nowrap transition cursor-pointer">
                   <i class="fa-solid fa-sliders text-slate-400 text-xs"></i>
-                  <span>Filter Tambahan</span>
+                  <span id="btn-extra-filter-label">Filter Tambahan</span>
+                  <span id="badge-extra-filter-count" class="hidden px-1.5 py-0.2 rounded-full text-[9px] font-black bg-blue-100 text-blue-700 border border-blue-200">0</span>
                 </button>
               </div>
-            </div>
-          </div>
-
-          <!-- Hidden Extra Filters Panel (Toggled by "Filter Tambahan") -->
-          <div id="mk-extra-filters-panel" class="hidden bg-slate-50 rounded-2xl p-3.5 border border-slate-200/90 mb-4 transition-all">
-            <div class="flex flex-wrap items-center justify-between gap-2.5">
-              <div class="flex flex-wrap items-center gap-2 flex-1">
-                <div class="relative w-full sm:w-64">
-                  <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                  <input type="text" id="mk-search-input-extra" onkeyup="syncSearchInputs(this.value)" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-white border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
-                </div>
-                <select id="mk-filter-kontrak-extra" onchange="syncContractFilters(this.value)" class="px-3 py-2 text-xs bg-white border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Kontrak</option>
-                  <option value="Tetap / Permanent">Tetap / Permanent</option>
-                  <option value="Kontrak / PKWT">Kontrak / PKWT</option>
-                  <option value="On probation">On probation</option>
-                  <option value="Magang/Intern">Magang/Intern</option>
-                </select>
-              </div>
-              <button type="button" onclick="resetMasterKaryawanFilters()" class="px-3.5 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5">
-                <i class="fa-solid fa-xmark"></i>
-                <span>Reset Filter</span>
-              </button>
             </div>
           </div>
 
@@ -1254,27 +1232,6 @@
                 <button type="button" onclick="exportModuleTableToExcel('Master_Karyawan')" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-2xs transition flex items-center gap-1.5 cursor-pointer" title="Ekspor Data Master Karyawan ke Excel (.xlsx)">
                   <i class="fa-solid fa-file-excel"></i>
                   <span>Ekspor Excel</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Search, filter and column switch bar above table -->
-            <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 mb-3.5">
-              <div class="relative w-full sm:w-72">
-                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-                <input type="text" id="mk-search-input" onkeyup="filterMasterKaryawanTable()" placeholder="Cari NPK atau nama karyawan..." class="w-full pl-8 pr-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition">
-              </div>
-              <div class="flex items-center gap-2 self-end sm:self-auto flex-wrap">
-                <select id="mk-filter-kontrak" onchange="filterMasterKaryawanTable()" class="px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none cursor-pointer">
-                  <option value="ALL">Semua Kontrak</option>
-                  <option value="Tetap / Permanent">Tetap / Permanent</option>
-                  <option value="Kontrak / PKWT">Kontrak / PKWT</option>
-                  <option value="On probation">On probation</option>
-                  <option value="Magang/Intern">Magang/Intern</option>
-                </select>
-                <button type="button" onclick="toggleColumnMode('mk')" id="btn-col-toggle-mk" class="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition flex items-center gap-1.5 border border-slate-200 cursor-pointer">
-                  <i class="fa-solid fa-table-columns"></i>
-                  <span id="btn-col-text-mk">Kolom Lengkap (20)</span>
                 </button>
               </div>
             </div>
@@ -3292,6 +3249,107 @@
         </div>
       </div>
 
+    </div>
+  </div>
+
+  <!-- MODAL: FILTER TAMBAHAN MASTER KARYAWAN -->
+  <div id="modal-filter-master-karyawan" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-filter-master-karyawan')">
+    <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/90 shadow-2xl max-w-md w-full overflow-hidden flex flex-col max-h-[90vh]">
+      <!-- Header -->
+      <div class="p-4 sm:p-5 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-base border border-blue-100 flex-shrink-0">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+          <div>
+            <h3 class="text-sm sm:text-base font-extrabold text-slate-800">Filter Tambahan Master Karyawan</h3>
+            <p class="text-[11px] text-slate-400 font-medium">Saring data karyawan dengan kombinasi kriteria khusus</p>
+          </div>
+        </div>
+        <button type="button" onclick="closeModal('modal-filter-master-karyawan')" class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-800 flex items-center justify-center text-xs transition cursor-pointer">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Body / Filter Options -->
+      <div class="p-4 sm:p-5 overflow-y-auto space-y-4 scrollbar-thin">
+        <!-- 1. Status Kontrak Kerja -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-file-contract text-amber-500 text-[11px]"></i>
+            <span>Status Kepegawaian (Tipe Kontrak)</span>
+          </label>
+          <select id="mk-modal-filter-kontrak" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-medium focus:outline-none focus:border-blue-500 transition cursor-pointer">
+            <option value="ALL">Semua Kontrak (Tetap, PKWT, dsb.)</option>
+            <option value="Tetap / Permanent">Tetap / Permanent</option>
+            <option value="Kontrak / PKWT">Kontrak / PKWT</option>
+            <option value="On probation">On probation</option>
+            <option value="Magang/Intern">Magang/Intern</option>
+          </select>
+        </div>
+
+        <!-- 2. Pilar Fungsi Kerja -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-sitemap text-rose-500 text-[11px]"></i>
+            <span>Fungsi Organisasi (3 Pilar)</span>
+          </label>
+          <select id="mk-modal-filter-pilar" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-medium focus:outline-none focus:border-blue-500 transition cursor-pointer">
+            <option value="ALL">Semua Fungsi (Sales, Service, Admin)</option>
+            <option value="Sales">Sales Team</option>
+            <option value="Service">Service & Bengkel</option>
+            <option value="Admin">Admin & Support</option>
+          </select>
+        </div>
+
+        <!-- 3. Status Keaktifan (Aktif vs Resign) -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-user-check text-emerald-500 text-[11px]"></i>
+            <span>Status Keaktifan Pegawai</span>
+          </label>
+          <select id="mk-modal-filter-status" class="w-full text-xs bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 font-medium focus:outline-none focus:border-blue-500 transition cursor-pointer">
+            <option value="ALL">Semua Status</option>
+            <option value="Aktif">Hanya Karyawan Aktif</option>
+            <option value="Resign">Hanya Karyawan Resign</option>
+          </select>
+        </div>
+
+        <!-- 4. Mode Tampilan Kolom -->
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-table-columns text-indigo-500 text-[11px]"></i>
+            <span>Pilihan Kolom Tabel</span>
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" onclick="setColumnViewModeChoice('COMPACT')" id="btn-choice-col-compact" class="p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer bg-slate-900 text-white border-slate-900 shadow-2xs">
+              <i class="fa-solid fa-table-cells"></i>
+              <span>Ringkas (9 Kolom)</span>
+            </button>
+            <button type="button" onclick="setColumnViewModeChoice('FULL')" id="btn-choice-col-full" class="p-2.5 rounded-xl border text-xs font-bold transition flex items-center justify-center gap-2 cursor-pointer bg-white text-slate-700 border-slate-200 hover:bg-slate-50">
+              <i class="fa-solid fa-table-columns"></i>
+              <span>Lengkap (20 Kolom)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Actions -->
+      <div class="p-4 sm:p-5 border-t border-slate-100 bg-slate-50/60 flex items-center justify-between gap-3">
+        <button type="button" onclick="resetMasterKaryawanModalFilters()" class="px-3.5 py-2 rounded-xl border border-slate-200 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold transition flex items-center gap-1.5 cursor-pointer">
+          <i class="fa-solid fa-arrows-rotate text-slate-400"></i>
+          <span>Reset</span>
+        </button>
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="closeModal('modal-filter-master-karyawan')" class="px-4 py-2 rounded-xl bg-slate-200 hover:bg-slate-300 text-slate-700 text-xs font-bold transition cursor-pointer">
+            Batal
+          </button>
+          <button type="button" onclick="applyMasterKaryawanModalFilters()" class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+            <i class="fa-solid fa-check"></i>
+            <span>Terapkan Filter</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
