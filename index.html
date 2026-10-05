@@ -881,22 +881,22 @@
                 <i class="fa-solid fa-file-excel text-emerald-400"></i> Ekspor Data Kinerja Cabang
               </button>
             </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs" id="pbk-export-table">
-                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+            <div class="overflow-x-auto border border-slate-200/90 rounded-2xl bg-white scrollbar-thin">
+              <table class="w-full text-left text-xs border-separate border-spacing-0" id="pbk-export-table">
+                <thead class="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider sticky top-0 z-20">
                   <tr>
-                    <th class="py-3 px-3 text-center rounded-l-xl w-12 min-w-[48px]">No</th>
-                    <th class="py-3 px-4">Karyawan</th>
-                    <th class="py-3 px-4">Cabang</th>
-                    <th class="py-3 px-4 text-center">Umur</th>
-                    <th class="py-3 px-4 text-center">Masa Kerja</th>
-                    <th class="py-3 px-4 text-center">Status</th>
-                    <th id="th-pbk-resign" class="py-3 px-4 text-left hidden">Info Resign</th>
-                    <th class="py-3 px-4 text-center">Kehadiran</th>
-                    <th class="py-3 px-4 text-center">Total Ide SS</th>
-                    <th class="py-3 px-4 text-center">Catatan SP</th>
-                    <th class="py-3 px-4 text-center">Kesiapan Data</th>
-                    <th class="py-3 px-4 text-center">Aksi</th>
+                    <th class="py-3 px-3 text-center rounded-tl-xl w-12 min-w-[48px] max-w-[48px] sticky left-0 bg-slate-50 z-30 border-b border-r border-slate-200/80">No</th>
+                    <th class="py-3 px-4 sticky left-12 bg-slate-50 z-30 min-w-[190px] sm:min-w-[220px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]">Karyawan</th>
+                    <th class="py-3 px-4 min-w-[120px] border-b border-slate-200">Cabang</th>
+                    <th class="py-3 px-4 text-center min-w-[80px] border-b border-slate-200">Umur</th>
+                    <th class="py-3 px-4 text-center min-w-[90px] border-b border-slate-200">Masa Kerja</th>
+                    <th class="py-3 px-4 text-center min-w-[90px] border-b border-slate-200">Status</th>
+                    <th id="th-pbk-resign" class="py-3 px-4 text-left hidden border-b border-slate-200">Info Resign</th>
+                    <th class="py-3 px-4 text-center min-w-[90px] border-b border-slate-200">Kehadiran</th>
+                    <th class="py-3 px-4 text-center min-w-[90px] border-b border-slate-200">Total Ide SS</th>
+                    <th class="py-3 px-4 text-center min-w-[90px] border-b border-slate-200">Catatan SP</th>
+                    <th class="py-3 px-4 text-center min-w-[100px] border-b border-slate-200">Kesiapan Data</th>
+                    <th class="py-3 px-4 text-center rounded-tr-xl border-b border-slate-200 min-w-[80px]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="pbk-table-tbody" class="divide-y divide-slate-100">
@@ -1234,8 +1234,8 @@
 
             <!-- Sticky Horizontal Table Container -->
             <div id="mk-table-wrapper" class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
-              <table class="w-full text-left text-xs border-collapse" id="table-master-karyawan-content">
-                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+              <table class="w-full text-left text-xs border-separate border-spacing-0" id="table-master-karyawan-content">
+                <thead class="sticky top-0 bg-slate-100 z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
                   <tr id="mk-table-header">
                     <!-- Rendered Dynamically -->
                   </tr>

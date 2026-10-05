@@ -252,11 +252,11 @@
       }
 
       if (!isAdmin) {
-        return `<td class="py-2.5 px-4 text-center whitespace-nowrap">${detailBtn}</td>`;
+        return `<td class="py-2.5 px-4 text-center whitespace-nowrap border-b border-slate-100">${detailBtn}</td>`;
       }
 
       return `
-        <td class="py-2.5 px-4 text-center whitespace-nowrap">
+        <td class="py-2.5 px-4 text-center whitespace-nowrap border-b border-slate-100">
           <div class="inline-flex items-center gap-1.5 justify-center">
             ${detailBtn}
             <button type="button" onclick="openEditRowModal('${sheetName}', ${rowIndex})" title="Edit Baris (Admin)" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-lg text-[11px] border border-amber-200 transition inline-flex items-center gap-1 shadow-xs">

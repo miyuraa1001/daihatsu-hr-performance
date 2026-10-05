@@ -866,9 +866,13 @@
 
           const cells = cols.map((col, idx) => {
             const isFirst = idx === 0;
-            const stickyClass = isFirst 
-              ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
-              : 'text-slate-600';
+            const isSecond = idx === 1;
+            let stickyClass = 'text-slate-600 border-b border-slate-100';
+            if (isFirst) {
+              stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
+            } else if (isSecond) {
+              stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-800 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[120px] whitespace-nowrap transition-colors';
+            }
 
             if (col === 'No' || normalizeHeaderName(col) === 'no') {
               return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
@@ -888,7 +892,7 @@
           }).join('');
 
           const actionCell = renderRowActionCell('Master_Karyawan', realIdx !== -1 ? realIdx : 0, row);
-          return `<tr class="hover:bg-slate-50 transition-colors group">${cells}${actionCell}</tr>`;
+          return `<tr class="hover:bg-slate-50/80 transition-colors group">${cells}${actionCell}</tr>`;
         }).join('');
       } else {
         // Mode Bersih Modern (100% Identik Screenshot)
@@ -896,14 +900,14 @@
         const thead = document.getElementById('mk-table-header');
         if (thead) {
           thead.innerHTML = `
-            <th class="py-3 px-3 text-center w-12">No.</th>
-            <th class="py-3 px-4">Nama Karyawan</th>
-            <th class="py-3 px-4">Jabatan</th>
-            <th class="py-3 px-3 text-center">Fungsi</th>
-            <th class="py-3 px-3 text-center">Status</th>
-            <th class="py-3 px-4">Cabang</th>
-            <th class="py-3 px-4">Tanggal Bergabung</th>
-            <th class="py-3 px-4 text-center">Aksi</th>
+            <th class="py-3 px-3 text-center w-12 min-w-[48px] max-w-[48px] sticky left-0 bg-slate-100 z-30 border-b border-r border-slate-200/80">No.</th>
+            <th class="py-3 px-3 sm:px-4 text-left sticky left-12 bg-slate-100 z-30 min-w-[190px] sm:min-w-[220px] max-w-[260px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]">Nama Karyawan</th>
+            <th class="py-3 px-4 min-w-[140px] border-b border-slate-200">Jabatan</th>
+            <th class="py-3 px-3 text-center min-w-[90px] border-b border-slate-200">Fungsi</th>
+            <th class="py-3 px-3 text-center min-w-[90px] border-b border-slate-200">Status</th>
+            <th class="py-3 px-4 min-w-[130px] border-b border-slate-200">Cabang</th>
+            <th class="py-3 px-4 min-w-[130px] border-b border-slate-200">Tanggal Bergabung</th>
+            <th class="py-3 px-4 text-center min-w-[90px] border-b border-slate-200">Aksi</th>
           `;
         }
 
@@ -953,24 +957,24 @@
           const actionCell = renderRowActionCell('Master_Karyawan', realIdx !== -1 ? realIdx : 0, row);
 
           return `
-            <tr class="hover:bg-slate-50 transition-colors group">
-              <td class="py-2.5 px-3 text-center font-bold text-slate-500">${rowIdx + 1}</td>
-              <td class="py-2.5 px-4 whitespace-nowrap">
+            <tr class="hover:bg-slate-50/80 transition-colors group">
+              <td class="py-2.5 px-3 text-center font-bold text-slate-500 sticky left-0 bg-white group-hover:bg-slate-50 z-10 w-12 min-w-[48px] max-w-[48px] border-b border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap sticky left-12 bg-white group-hover:bg-slate-50 z-10 min-w-[190px] sm:min-w-[220px] max-w-[260px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors">
                 <div class="flex items-center gap-2.5">
                   <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center border border-slate-200 flex-shrink-0">
                     ${initials}
                   </div>
-                  <div>
-                    <div class="font-bold text-slate-800 text-xs">${nama}</div>
+                  <div class="min-w-0">
+                    <div class="font-bold text-slate-800 text-xs truncate max-w-[130px] sm:max-w-[170px]" title="${nama}">${nama}</div>
                     <div class="text-[10px] text-slate-400 font-mono">NPK: ${npk}</div>
                   </div>
                 </div>
               </td>
-              <td class="py-2.5 px-4 whitespace-nowrap font-medium text-slate-700">${jabatan}</td>
-              <td class="py-2.5 px-3 text-center whitespace-nowrap">${pilarBadge}</td>
-              <td class="py-2.5 px-3 text-center whitespace-nowrap">${statusBadge}</td>
-              <td class="py-2.5 px-4 whitespace-nowrap text-slate-600">${cabang}</td>
-              <td class="py-2.5 px-4 whitespace-nowrap text-slate-600 font-mono text-[11px]">${formattedDate}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap font-medium text-slate-700 border-b border-slate-100">${jabatan}</td>
+              <td class="py-2.5 px-3 text-center whitespace-nowrap border-b border-slate-100">${pilarBadge}</td>
+              <td class="py-2.5 px-3 text-center whitespace-nowrap border-b border-slate-100">${statusBadge}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap text-slate-600 border-b border-slate-100">${cabang}</td>
+              <td class="py-2.5 px-4 whitespace-nowrap text-slate-600 font-mono text-[11px] border-b border-slate-100">${formattedDate}</td>
               ${actionCell}
             </tr>
           `;
@@ -2995,19 +2999,21 @@
           : (isAdmin ? `<span class="text-slate-300 text-xs">-</span>` : '');
 
         return `
-          <tr class="hover:bg-slate-50">
-            <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-400">${rowIdx + 1}</td>
-            <td class="py-3.5 px-4 font-semibold text-slate-900">${emp.nama} <span class="font-mono text-slate-400 text-[10px] block">${emp.npk}</span></td>
-            <td class="py-3.5 px-4 text-slate-600">${emp.cabang}</td>
-            <td class="py-3.5 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${umur}</td>
-            <td class="py-3.5 px-4 text-center font-medium text-slate-600 whitespace-nowrap">${masaKerja}</td>
-            <td class="py-3.5 px-4 text-center">${statusBadge}</td>
-            ${isAdmin ? `<td class="py-3.5 px-4 text-left">${resignInfo}</td>` : ''}
-            <td class="py-3.5 px-4 text-center font-bold ${(emp.kehadiranPct !== undefined ? emp.kehadiranPct : 100) < 95 ? 'text-amber-600' : 'text-emerald-600'}">${emp.kehadiranPct !== undefined ? emp.kehadiranPct : 100}%</td>
-            <td class="py-3.5 px-4 text-center font-bold text-amber-500">${emp.totalSS || 0} Ide</td>
-            <td class="py-3.5 px-4 text-center font-bold ${emp.spAktif ? 'text-red-600' : 'text-slate-400'}">${emp.spAktif || '-'}</td>
-            <td class="py-3.5 px-4 text-center"><span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-circle-check mr-1"></i>Siap Acuan</span></td>
-            <td class="py-3.5 px-4 text-center">
+          <tr class="hover:bg-slate-50/80 transition-colors group">
+            <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-400 sticky left-0 bg-white group-hover:bg-slate-50 z-10 w-12 min-w-[48px] max-w-[48px] border-b border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-900 sticky left-12 bg-white group-hover:bg-slate-50 z-10 min-w-[190px] sm:min-w-[220px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors whitespace-nowrap">
+              ${emp.nama} <span class="font-mono text-slate-400 text-[10px] block">NPK: ${emp.npk}</span>
+            </td>
+            <td class="py-3.5 px-4 text-slate-600 border-b border-slate-100 whitespace-nowrap">${emp.cabang}</td>
+            <td class="py-3.5 px-4 text-center font-medium text-slate-600 whitespace-nowrap border-b border-slate-100">${umur}</td>
+            <td class="py-3.5 px-4 text-center font-medium text-slate-600 whitespace-nowrap border-b border-slate-100">${masaKerja}</td>
+            <td class="py-3.5 px-4 text-center border-b border-slate-100 whitespace-nowrap">${statusBadge}</td>
+            ${isAdmin ? `<td class="py-3.5 px-4 text-left border-b border-slate-100 whitespace-nowrap">${resignInfo}</td>` : ''}
+            <td class="py-3.5 px-4 text-center font-bold ${(emp.kehadiranPct !== undefined ? emp.kehadiranPct : 100) < 95 ? 'text-amber-600' : 'text-emerald-600'} border-b border-slate-100 whitespace-nowrap">${emp.kehadiranPct !== undefined ? emp.kehadiranPct : 100}%</td>
+            <td class="py-3.5 px-4 text-center font-bold text-amber-500 border-b border-slate-100 whitespace-nowrap">${emp.totalSS || 0} Ide</td>
+            <td class="py-3.5 px-4 text-center font-bold ${emp.spAktif ? 'text-red-600' : 'text-slate-400'} border-b border-slate-100 whitespace-nowrap">${emp.spAktif || '-'}</td>
+            <td class="py-3.5 px-4 text-center border-b border-slate-100 whitespace-nowrap"><span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-circle-check mr-1"></i>Siap Acuan</span></td>
+            <td class="py-3.5 px-4 text-center border-b border-slate-100 whitespace-nowrap">
               <button onclick="openPBKModal('${emp.npk}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-lg text-[11px] transition">Detail</button>
             </td>
           </tr>

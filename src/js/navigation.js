@@ -301,8 +301,16 @@
       if (!tr) return;
       tr.innerHTML = columns.map((col, idx) => {
         const isFirst = stickyFirst && idx === 0;
+        const isSecond = stickyFirst && idx === 1;
         const isNo = col === 'No' || col === 'no' || (typeof normalizeHeaderName === 'function' && normalizeHeaderName(col) === 'no');
-        const stickyClass = isFirst ? 'sticky left-0 bg-slate-100 z-20 border-r border-slate-200 shadow-sm' : '';
+        
+        let stickyClass = '';
+        if (isFirst) {
+          stickyClass = 'sticky left-0 bg-slate-100 z-30 border-r border-slate-200/80';
+        } else if (isSecond && headerRowId === 'mk-table-header') {
+          stickyClass = 'sticky left-12 bg-slate-100 z-30 border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]';
+        }
+        
         const normCol = typeof normalizeHeaderName === 'function' ? normalizeHeaderName(col) : String(col).toLowerCase().trim();
         const isCentered = isNo || normCol.includes('total') || normCol.includes('masuk') || 
                            normCol.includes('tepat') || normCol.includes('telat') || 
@@ -310,9 +318,9 @@
                            normCol.includes('durasi') || normCol.includes('work hours') || 
                            normCol.includes('jam kerja') || normCol === 'status_karyawan' ||
                            normCol === 'status kehadiran';
-        const alignClass = isNo ? 'text-center w-12 min-w-[48px] px-2 sm:px-3' : (isCentered ? 'text-center px-3 sm:px-4' : 'text-left px-3 sm:px-4');
-        return `<th class="py-2.5 whitespace-nowrap ${stickyClass} ${alignClass}">${col}</th>`;
-      }).join('') + `<th class="py-2.5 px-4 text-center whitespace-nowrap">${actionLabel}</th>`;
+        const alignClass = isNo ? 'text-center w-12 min-w-[48px] max-w-[48px] px-2 sm:px-3' : (isCentered ? 'text-center px-3 sm:px-4' : 'text-left px-3 sm:px-4');
+        return `<th class="py-2.5 whitespace-nowrap border-b border-slate-200 ${stickyClass} ${alignClass}">${col}</th>`;
+      }).join('') + `<th class="py-2.5 px-4 text-center whitespace-nowrap border-b border-slate-200">${actionLabel}</th>`;
     }
 
 
