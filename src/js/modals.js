@@ -17,6 +17,7 @@
       const modalSubtitle = document.getElementById('upload-modal-subtitle');
       const modalIconWrapper = document.getElementById('upload-modal-icon-wrapper');
       const modalIcon = document.getElementById('upload-modal-icon');
+      const dropzoneIcon = document.getElementById('upload-dropzone-icon');
 
       const isKM = (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM');
 
@@ -39,11 +40,18 @@
 
       if (modalIconWrapper && modalIcon) {
         if (isKM) {
-          modalIconWrapper.className = "w-10 h-10 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold flex-shrink-0 border border-cyan-200 shadow-2xs";
+          modalIconWrapper.className = "w-11 h-11 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold flex-shrink-0 border border-cyan-200 shadow-2xs";
           modalIcon.className = "fa-solid fa-book-bookmark text-lg";
         } else {
-          modalIconWrapper.className = "w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold flex-shrink-0 border border-red-100 shadow-2xs";
+          modalIconWrapper.className = "w-11 h-11 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold flex-shrink-0 border border-red-100 shadow-2xs";
           modalIcon.className = "fa-solid fa-cloud-arrow-up text-lg";
+        }
+      }
+
+      if (dropzoneIcon) {
+        const fileInput = document.getElementById('excel-file-input');
+        if (!fileInput || !fileInput.files || !fileInput.files.length) {
+          dropzoneIcon.className = `w-10 h-10 rounded-2xl ${isKM ? 'bg-cyan-50 border-cyan-200 text-cyan-600' : 'bg-red-50 border-red-200 text-red-600'} border flex items-center justify-center text-lg shadow-2xs group-hover:scale-105 transition-transform`;
         }
       }
 
@@ -59,13 +67,16 @@
       }
       if (fileLabel) {
         fileLabel.innerHTML = isKM
-          ? `Pilih Berkas Rekap KM <span class="text-slate-400 font-normal font-mono text-[11px]">(Rekap_KM.csv / .xlsx)</span>:`
+          ? `Pilih Berkas Rekap KM <span class="text-slate-400 font-normal font-mono text-[11px]">(Rekap_KM_Siap_Upload.csv / .xlsx)</span>:`
           : "Pilih Berkas Excel atau CSV:";
       }
       if (fileHint) {
-        fileHint.innerHTML = isKM
-          ? `Kolom wajib: <b class="text-slate-700 font-mono">NPK, NAMA, JUDUL, TANGGAL</b> <span class="text-slate-500 block sm:inline mt-0.5 sm:mt-0">(Kolom TIME otomatis disinkronkan saat upload).</span>`
-          : `Mendukung format .xlsx, .xls, dan .csv dengan header di baris pertama.`;
+        const fileInput = document.getElementById('excel-file-input');
+        if (!fileInput || !fileInput.files || !fileInput.files.length) {
+          fileHint.textContent = isKM
+            ? "Mendukung Rekap_KM_Siap_Upload.csv, .xlsx, atau .csv (Maks. 25MB)"
+            : "Mendukung format .xlsx, .xls, dan .csv dengan header di baris pertama.";
+        }
       }
 
       if (titleEl) titleEl.textContent = `Skema Wajib: ${schema.sheetName}`;
@@ -75,6 +86,45 @@
         } else {
           colsEl.textContent = `${schema.columns.length} Kolom Baku (Sesuai Urutan): ${schema.columns.join(', ')}`;
         }
+      }
+    }
+
+    function handleUploadFileInputChange(input) {
+      const displayBox = document.getElementById('upload-file-display-name');
+      const dropzoneIcon = document.getElementById('upload-dropzone-icon');
+      const fileHint = document.getElementById('upload-file-hint');
+      const targetSheet = document.getElementById('upload-target-sheet')?.value || '';
+      const isKM = (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM');
+
+      if (!input || !input.files || !input.files.length) {
+        if (displayBox) {
+          displayBox.textContent = "Klik untuk memilih berkas atau seret berkas ke sini";
+        }
+        if (fileHint) {
+          fileHint.textContent = isKM
+            ? "Mendukung Rekap_KM_Siap_Upload.csv, .xlsx, atau .csv (Maks. 25MB)"
+            : "Mendukung format .xlsx, .xls, dan .csv dengan header di baris pertama.";
+        }
+        if (dropzoneIcon) {
+          dropzoneIcon.className = `w-10 h-10 rounded-2xl ${isKM ? 'bg-cyan-50 border-cyan-200 text-cyan-600' : 'bg-red-50 border-red-200 text-red-600'} border flex items-center justify-center text-lg shadow-2xs group-hover:scale-105 transition-transform`;
+          dropzoneIcon.innerHTML = `<i class="fa-solid fa-cloud-arrow-up"></i>`;
+        }
+        return;
+      }
+
+      const file = input.files[0];
+      const sizeKb = (file.size / 1024).toFixed(1);
+      const sizeStr = file.size > 1048576 ? `${(file.size / 1048576).toFixed(2)} MB` : `${sizeKb} KB`;
+
+      if (displayBox) {
+        displayBox.innerHTML = `<span class="text-emerald-700 font-extrabold flex items-center justify-center gap-1.5"><i class="fa-solid fa-circle-check text-emerald-600"></i> ${file.name}</span>`;
+      }
+      if (fileHint) {
+        fileHint.innerHTML = `<span class="text-slate-600 font-medium">Ukuran berkas: <b>${sizeStr}</b> • Berkas siap diproses</span>`;
+      }
+      if (dropzoneIcon) {
+        dropzoneIcon.className = "w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-lg shadow-2xs group-hover:scale-105 transition-transform";
+        dropzoneIcon.innerHTML = `<i class="fa-solid fa-file-excel"></i>`;
       }
     }
 
@@ -3125,17 +3175,18 @@
       
       const fileInput = document.getElementById('excel-file-input');
       if (fileInput) fileInput.value = '';
+      if (typeof handleUploadFileInputChange === 'function') handleUploadFileInputChange(null);
       
       const statusBox = document.getElementById('upload-status-box');
       if (statusBox) {
-        statusBox.className = "hidden text-[11px] p-2.5 rounded-xl";
+        statusBox.className = "hidden text-xs p-3 rounded-xl";
         statusBox.textContent = '';
       }
 
       const btn = document.getElementById('btn-submit-upload');
       if (btn) {
         btn.disabled = false;
-        btn.textContent = "Proses & Simpan";
+        btn.innerHTML = '<i class="fa-solid fa-cloud-arrow-up text-xs"></i> <span>Proses & Simpan Data</span>';
       }
 
       renderUploadSchemaGuide();
@@ -3361,6 +3412,7 @@ pause
     window.openAddKMModal = openAddKMModal;
     window.handleKMNPKLookup = handleKMNPKLookup;
     window.submitAddKMForm = submitAddKMForm;
+    window.handleUploadFileInputChange = handleUploadFileInputChange;
 
     // ========================================================
     // MODUL TINJAUAN & PENGINGAT STATUS RESIGN KARYAWAN (ADMIN)

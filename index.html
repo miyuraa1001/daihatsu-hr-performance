@@ -1932,25 +1932,27 @@
 
   <!-- MODAL: UPLOAD EXCEL / CSV -->
   <div id="modal-upload" class="fixed inset-0 z-50 modal-backdrop hidden flex items-center justify-center p-3 sm:p-4 overflow-y-auto" onclick="if(event.target === this) closeModal('modal-upload')">
-    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-lg sm:max-w-xl w-full p-4 sm:p-6 relative my-auto max-h-[92vh] sm:max-h-[90vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
-      <button onclick="closeModal('modal-upload')" class="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-slate-100 cursor-pointer z-10" title="Tutup Modal">
+    <div class="bg-white rounded-3xl shadow-2xl border border-slate-200 max-w-2xl w-full p-5 sm:p-6 relative my-auto max-h-[94vh] flex flex-col animate-in fade-in zoom-in-95 duration-200">
+      <button onclick="closeModal('modal-upload')" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 w-8 h-8 rounded-full flex items-center justify-center transition hover:bg-slate-100 cursor-pointer z-10" title="Tutup Modal">
         <i class="fa-solid fa-xmark text-lg"></i>
       </button>
 
-      <div class="flex items-center gap-3 mb-3.5 sm:mb-4 pb-3 border-b border-slate-100 flex-shrink-0 pr-10 sm:pr-12">
-        <div class="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center font-bold flex-shrink-0 border border-red-100 shadow-2xs" id="upload-modal-icon-wrapper">
+      <!-- Modal Header -->
+      <div class="flex items-center gap-3.5 mb-4 pb-3.5 border-b border-slate-100 flex-shrink-0 pr-10 sm:pr-12">
+        <div class="w-11 h-11 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center font-bold flex-shrink-0 border border-cyan-200 shadow-2xs" id="upload-modal-icon-wrapper">
           <i class="fa-solid fa-cloud-arrow-up text-lg" id="upload-modal-icon"></i>
         </div>
         <div class="min-w-0 flex-1">
-          <h3 class="text-sm sm:text-base font-extrabold text-slate-900 leading-snug break-words" id="upload-modal-title">Upload & Impor Data HR (.xlsx / .csv)</h3>
-          <p class="text-[11px] text-slate-500 font-medium leading-tight truncate mt-0.5" id="upload-modal-subtitle">Normalisasi otomatis header & validasi tipe data presisi</p>
+          <h3 class="text-base sm:text-lg font-black text-slate-900 leading-tight truncate" id="upload-modal-title">Upload & Impor Data HR (.xlsx / .csv)</h3>
+          <p class="text-xs text-slate-500 font-medium leading-tight truncate mt-0.5" id="upload-modal-subtitle">Normalisasi otomatis header & validasi tipe data presisi</p>
         </div>
       </div>
 
+      <!-- Modal Body -->
       <div class="overflow-y-auto flex-1 min-h-0 pr-1 space-y-3.5 text-xs mb-3.5 sm:mb-4 scrollbar-thin">
         <div>
-          <label class="block font-bold text-slate-700 mb-1">Pilih Tabel Database Tujuan:</label>
-          <select id="upload-target-sheet" onchange="renderUploadSchemaGuide()" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-bold truncate">
+          <label class="block font-bold text-slate-700 mb-1.5">Pilih Tabel Database Tujuan:</label>
+          <select id="upload-target-sheet" onchange="renderUploadSchemaGuide()" class="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:border-red-500 font-bold text-xs truncate cursor-pointer transition">
             <option value="Master_Karyawan">1. Master_Karyawan (16 Kolom Standard)</option>
             <option value="Data_Kehadiran">2. Data_Kehadiran (19 Kolom Standard)</option>
             <option value="Data_SS">3. Data_SS (21 Kolom Standard)</option>
@@ -1962,80 +1964,120 @@
 
         <!-- Box Khusus Alur Otomatisasi KM (Otomatis tampil saat target = Knowledge_management) -->
         <div id="km-modal-automation-box" class="hidden space-y-2.5">
-          <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-950 rounded-2xl p-3.5 sm:p-4 text-white shadow-sm border border-slate-700/80">
+          <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-4 text-white shadow-sm border border-slate-700/80">
             <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-3">
               <div class="flex items-center gap-2.5 min-w-0 flex-1">
-                <div class="w-8 h-8 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center justify-center text-sm flex-shrink-0">
+                <div class="w-9 h-9 rounded-xl bg-cyan-500/20 text-cyan-300 border border-cyan-400/30 flex items-center justify-center text-sm flex-shrink-0">
                   <i class="fa-solid fa-wand-magic-sparkles text-amber-400"></i>
                 </div>
                 <div class="min-w-0">
                   <h4 class="text-xs font-bold text-white leading-tight">Alur Otomatisasi Rekap Berkas KM</h4>
-                  <p class="text-[11px] text-slate-300 leading-snug mt-0.5">Rekap puluhan hingga ratusan berkas sharing PDF/PPT otomatis.</p>
+                  <p class="text-[11px] text-slate-300 leading-snug mt-0.5">Rekap puluhan hingga ratusan berkas sharing PDF/PPT tanpa ketik manual.</p>
                 </div>
               </div>
-              <button type="button" onclick="downloadKMScript()" class="w-full sm:w-auto px-3.5 py-2 bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-black rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer flex-shrink-0">
+              <button type="button" onclick="downloadKMScript()" class="w-full sm:w-auto px-4 py-2 bg-gradient-to-r from-cyan-400 to-cyan-500 hover:from-cyan-300 hover:to-cyan-400 text-slate-950 font-black rounded-xl text-xs transition flex items-center justify-center gap-1.5 shadow-sm cursor-pointer flex-shrink-0">
                 <i class="fa-solid fa-download text-xs"></i>
                 <span>Unduh Skrip (.bat)</span>
               </button>
             </div>
             
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 pt-2.5 border-t border-slate-700/60 text-[10px]">
-              <div class="bg-white/5 p-2 rounded-xl border border-white/10 min-w-0 overflow-hidden">
-                <span class="text-cyan-400 font-bold block mb-0.5 truncate"><i class="fa-solid fa-folder-arrow-down mr-1"></i>1. Taruh Skrip</span>
-                <span class="text-slate-300 block break-words leading-relaxed">Pindahkan file <code class="text-cyan-300 font-mono bg-white/10 px-1 py-0.5 rounded break-all">.bat</code> ke folder berkas PDF/PPT Anda.</span>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-2.5 border-t border-slate-700/60 text-xs">
+              <div class="bg-white/5 hover:bg-white/[0.08] transition p-2.5 sm:p-3 rounded-xl border border-white/10 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="w-5 h-5 rounded-full bg-cyan-400/20 text-cyan-300 font-black text-[10px] flex items-center justify-center border border-cyan-400/30 flex-shrink-0">1</span>
+                    <span class="text-white font-bold text-[11px] truncate">Taruh Skrip</span>
+                  </div>
+                  <p class="text-slate-300 text-[10.5px] leading-relaxed">
+                    Pindahkan file <code class="text-cyan-300 font-mono font-semibold">.bat</code> ke folder materi presentasi.
+                  </p>
+                </div>
               </div>
-              <div class="bg-white/5 p-2 rounded-xl border border-white/10 min-w-0 overflow-hidden">
-                <span class="text-amber-400 font-bold block mb-0.5 truncate"><i class="fa-solid fa-play mr-1"></i>2. Jalankan Skrip</span>
-                <span class="text-slate-300 block break-words leading-relaxed">Klik 2x file .bat. Slide & berkas dipindai otomatis jadi CSV.</span>
+              <div class="bg-white/5 hover:bg-white/[0.08] transition p-2.5 sm:p-3 rounded-xl border border-white/10 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="w-5 h-5 rounded-full bg-amber-400/20 text-amber-300 font-black text-[10px] flex items-center justify-center border border-amber-400/30 flex-shrink-0">2</span>
+                    <span class="text-white font-bold text-[11px] truncate">Jalankan Skrip</span>
+                  </div>
+                  <p class="text-slate-300 text-[10.5px] leading-relaxed">
+                    Klik 2x file .bat. Berkas dipindai otomatis menjadi CSV.
+                  </p>
+                </div>
               </div>
-              <div class="bg-white/5 p-2 rounded-xl border border-white/10 min-w-0 overflow-hidden">
-                <span class="text-emerald-400 font-bold block mb-0.5 truncate"><i class="fa-solid fa-cloud-arrow-up mr-1"></i>3. Upload File</span>
-                <span class="text-slate-300 block break-words leading-relaxed">Pilih berkas <code class="text-emerald-300 font-mono bg-white/10 px-1 py-0.5 rounded break-all text-[9.5px] inline-block max-w-full truncate" title="Rekap_KM_Siap_Upload.csv">Rekap_KM.csv</code> di bawah.</span>
+              <div class="bg-white/5 hover:bg-white/[0.08] transition p-2.5 sm:p-3 rounded-xl border border-white/10 flex flex-col justify-between">
+                <div>
+                  <div class="flex items-center gap-2 mb-1">
+                    <span class="w-5 h-5 rounded-full bg-emerald-400/20 text-emerald-300 font-black text-[10px] flex items-center justify-center border border-emerald-400/30 flex-shrink-0">3</span>
+                    <span class="text-white font-bold text-[11px] truncate">Upload File</span>
+                  </div>
+                  <p class="text-slate-300 text-[10.5px] leading-relaxed">
+                    Pilih file <code class="text-emerald-300 font-mono font-semibold">Rekap_KM.csv</code> pada form di bawah.
+                  </p>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-2.5 sm:p-3 bg-cyan-50/80 rounded-xl border border-cyan-200/80 text-[11px]">
-            <span class="text-slate-700 font-medium flex items-center gap-1.5 min-w-0">
-              <i class="fa-solid fa-circle-question text-cyan-600 flex-shrink-0"></i>
-              <span class="leading-tight">Hanya ingin input 1 data saja tanpa upload berkas?</span>
-            </span>
-            <button type="button" onclick="closeModal('modal-upload'); openAddKMModal();" class="text-[#E60012] hover:text-[#99000B] font-bold text-xs flex items-center justify-center sm:justify-start gap-1 cursor-pointer bg-white sm:bg-transparent px-3 py-1.5 sm:p-0 rounded-lg sm:rounded-none border sm:border-0 border-red-200 shadow-2xs sm:shadow-none flex-shrink-0 self-end sm:self-auto">
-              <i class="fa-solid fa-circle-plus"></i>
-              <span>+ Input Manual KM</span>
-            </button>
+            <!-- Link Input Manual (Menyatu rapi di dalam card) -->
+            <div class="mt-2.5 pt-2 border-t border-slate-700/50 flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-[11px] text-slate-400">
+              <span>Hanya ingin input 1 materi pengetahuan saja tanpa upload berkas?</span>
+              <button type="button" onclick="closeModal('modal-upload'); openAddKMModal();" class="text-cyan-300 hover:text-cyan-200 font-bold flex items-center gap-1 cursor-pointer transition self-end sm:self-auto">
+                <i class="fa-solid fa-pen-to-square text-[10px]"></i>
+                <span>Input Manual KM &rarr;</span>
+              </button>
+            </div>
           </div>
         </div>
 
-        <!-- Panduan & Skema Kolom Berkas -->
-        <div id="upload-schema-preview" class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] space-y-1.5">
+        <!-- Panduan & Skema Kolom Berkas (Untuk sheet selain KM) -->
+        <div id="upload-schema-preview" class="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1.5">
           <div class="flex items-center justify-between font-bold text-slate-800">
-            <span id="upload-guide-title">Skema Wajib: Master_Karyawan</span>
-            <button type="button" onclick="downloadSelectedTemplate()" class="text-red-600 hover:text-red-700 text-[10px] underline flex items-center gap-1 font-bold">
+            <span id="upload-guide-title" class="flex items-center gap-1.5">
+              <i class="fa-solid fa-table-list text-red-600"></i>
+              <span>Skema Wajib: Master_Karyawan</span>
+            </span>
+            <button type="button" onclick="downloadSelectedTemplate()" class="text-red-600 hover:text-red-700 text-xs font-bold flex items-center gap-1 hover:underline cursor-pointer">
               <i class="fa-solid fa-file-arrow-down"></i> Unduh Format Kosong
             </button>
           </div>
-          <p class="text-[10px] text-slate-500 leading-relaxed break-words" id="upload-guide-cols">
+          <p class="text-[11px] text-slate-500 leading-relaxed break-words" id="upload-guide-cols">
             16 Kolom: Personnel no., P.subarea, Wilayah, Contract, Name, Name of organizational unit, Job Title, Last name, D.o.birth, Gender text, Religious denomination, PS group, Lvl, Date, P0001-STEXT, Business area
           </p>
         </div>
 
-        <div class="min-w-0">
-          <label class="block font-bold text-slate-700 mb-1 truncate" id="upload-file-label">Pilih Berkas Excel atau CSV:</label>
-          <div class="relative min-w-0">
-            <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="w-full max-w-full text-xs text-slate-500 file:mr-2.5 sm:file:mr-3 file:py-2 file:px-3 sm:file:px-4 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-red-50 file:text-red-700 hover:file:bg-red-100 cursor-pointer border border-slate-200 rounded-xl p-1 bg-slate-50 truncate overflow-hidden">
+        <!-- Dropzone / Modern File Picker -->
+        <div>
+          <label class="block font-bold text-slate-700 mb-1.5" id="upload-file-label">
+            Pilih Berkas Rekap KM (.xlsx / .csv):
+          </label>
+          <div class="relative border-2 border-dashed border-slate-200 hover:border-cyan-400 bg-slate-50/80 hover:bg-cyan-50/20 rounded-2xl p-4 text-center transition group cursor-pointer" onclick="document.getElementById('excel-file-input').click()" ondragover="event.preventDefault(); this.classList.add('border-cyan-500', 'bg-cyan-50/40');" ondragleave="this.classList.remove('border-cyan-500', 'bg-cyan-50/40');" ondrop="event.preventDefault(); this.classList.remove('border-cyan-500', 'bg-cyan-50/40'); if(event.dataTransfer.files.length){ const fi = document.getElementById('excel-file-input'); fi.files = event.dataTransfer.files; handleUploadFileInputChange(fi); }">
+            <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" onchange="handleUploadFileInputChange(this)" class="hidden">
+            <div class="flex flex-col items-center justify-center gap-1.5" id="upload-file-display-box">
+              <div class="w-10 h-10 rounded-2xl bg-white border border-slate-200 text-cyan-600 flex items-center justify-center text-lg shadow-2xs group-hover:scale-105 transition-transform" id="upload-dropzone-icon">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+              </div>
+              <div class="min-w-0">
+                <span class="text-xs font-bold text-slate-800 group-hover:text-cyan-700 transition block truncate" id="upload-file-display-name">
+                  Klik untuk memilih berkas atau seret berkas ke sini
+                </span>
+                <p class="text-[11px] text-slate-400 mt-0.5 truncate" id="upload-file-hint">
+                  Mendukung Rekap_KM_Siap_Upload.csv, .xlsx, atau .csv (Maks. 25MB)
+                </p>
+              </div>
+            </div>
           </div>
-          <span class="text-[10px] text-slate-400 mt-1 block break-words" id="upload-file-hint">Mendukung format .xlsx, .xls, dan .csv dengan header di baris pertama.</span>
         </div>
 
-        <div id="upload-status-box" class="hidden text-[11px] p-2.5 rounded-xl break-words"></div>
+        <div id="upload-status-box" class="hidden text-xs p-3 rounded-xl break-words"></div>
       </div>
 
-      <div class="flex gap-2.5 pt-3 border-t border-slate-100 flex-shrink-0 mt-auto">
-        <button onclick="closeModal('modal-upload')" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">Batal</button>
-        <button onclick="prosesUploadExcelFrontend()" id="btn-submit-upload" class="flex-1 py-2.5 bg-[#E60012] hover:bg-[#99000B] text-white font-bold rounded-xl text-xs shadow flex items-center justify-center gap-1.5 transition cursor-pointer">
-          <i class="fa-solid fa-cloud-arrow-up"></i>
-          <span>Proses & Simpan</span>
+      <!-- Action Buttons Footer -->
+      <div class="flex items-center justify-end gap-3 pt-3.5 border-t border-slate-100 flex-shrink-0 mt-auto">
+        <button type="button" onclick="closeModal('modal-upload')" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs transition cursor-pointer">
+          Batal
+        </button>
+        <button type="button" onclick="prosesUploadExcelFrontend()" id="btn-submit-upload" class="px-6 py-2.5 bg-[#E60012] hover:bg-[#c5000f] text-white font-bold rounded-xl text-xs shadow-md transition flex items-center justify-center gap-2 cursor-pointer">
+          <i class="fa-solid fa-cloud-arrow-up text-xs"></i>
+          <span>Proses & Simpan Data</span>
         </button>
       </div>
     </div>
