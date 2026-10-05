@@ -892,13 +892,10 @@
         }).join('');
       } else {
         // Mode Bersih Modern (100% Identik Screenshot)
-        // Kolom: [Checkbox], No., Nama Karyawan, Jabatan, Fungsi, Status, Cabang, Tanggal Bergabung, Aksi
+        // Kolom: No., Nama Karyawan, Jabatan, Fungsi, Status, Cabang, Tanggal Bergabung, Aksi
         const thead = document.getElementById('mk-table-header');
         if (thead) {
           thead.innerHTML = `
-            <th class="py-3 px-3 text-center w-10">
-              <input type="checkbox" id="mk-check-all" onchange="toggleSelectAllMK(this)" class="rounded text-rose-600 focus:ring-rose-500 border-slate-300 cursor-pointer">
-            </th>
             <th class="py-3 px-3 text-center w-12">No.</th>
             <th class="py-3 px-4">Nama Karyawan</th>
             <th class="py-3 px-4">Jabatan</th>
@@ -912,7 +909,7 @@
 
         const tbody = document.getElementById('mk-table-body');
         if (!list.length) {
-          tbody.innerHTML = `<tr><td colspan="9" class="text-center py-8 text-slate-400">Tidak ada data master karyawan yang sesuai filter.</td></tr>`;
+          tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">Tidak ada data master karyawan yang sesuai filter.</td></tr>`;
           return;
         }
 
@@ -957,9 +954,6 @@
 
           return `
             <tr class="hover:bg-slate-50 transition-colors group">
-              <td class="py-2.5 px-3 text-center">
-                <input type="checkbox" class="mk-row-checkbox rounded text-rose-600 focus:ring-rose-500 border-slate-300 cursor-pointer" value="${npk}">
-              </td>
               <td class="py-2.5 px-3 text-center font-bold text-slate-500">${rowIdx + 1}</td>
               <td class="py-2.5 px-4 whitespace-nowrap">
                 <div class="flex items-center gap-2.5">
@@ -988,11 +982,21 @@
       const container = document.getElementById('mk-card-view-wrapper');
       if (!container) return;
       if (!list.length) {
-        container.innerHTML = `<div class="col-span-full text-center py-10 text-slate-400 text-xs">Tidak ada data karyawan yang sesuai filter.</div>`;
+        container.innerHTML = `
+          <div class="col-span-full bg-white rounded-3xl p-12 text-center border border-slate-200/80 shadow-card">
+            <div class="w-14 h-14 mx-auto rounded-2xl bg-slate-100 text-slate-400 flex items-center justify-center text-xl mb-3">
+              <i class="fa-solid fa-users-slash"></i>
+            </div>
+            <h5 class="text-sm font-bold text-slate-700">Tidak ada data karyawan</h5>
+            <p class="text-xs text-slate-400 mt-1">Data tidak ditemukan sesuai kata kunci atau filter yang dipilih.</p>
+          </div>
+        `;
         return;
       }
 
-      container.innerHTML = list.map((row, rowIdx) => {
+      const isAdmin = isUserAdmin(loggedInUser);
+
+      container.innerHTML = list.map((row) => {
         const realIdx = rawRows.indexOf(row);
         const npk = safeString(row['Personnel no.'] || row['NPK'] || row.npk || '-');
         const nama = row['Last name'] || row['Nama'] || row['Nama Lengkap'] || row.nama || '-';
@@ -1001,52 +1005,139 @@
         const pilar = classifyEmployeePilar(row);
         const cabang = row['P.subarea'] || row['Cabang'] || row.cabang || '-';
         const rawContract = String(getRowCellValue(row, 'Contract', SCHEMAS.Master_Karyawan) || row['Contract'] || 'Tetap').trim();
+        const rawStatus = String(row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif').trim();
+        const isResign = rawStatus.toLowerCase() === 'resign';
+        
         const dateVal = row['Date'] || row['Tanggal'] || row.joinDate || '';
         const formattedDate = dateVal ? formatDatabaseDate(dateVal) : '-';
 
-        let pilarColor = pilar === 'Sales' ? 'bg-rose-50 text-rose-600 border-rose-200' : (pilar === 'Service' ? 'bg-blue-50 text-blue-600 border-blue-200' : 'bg-amber-50 text-amber-700 border-amber-200');
+        // Styling visual warna sesuai 3 Pilar DSO
+        let pilarStyle = {
+          badge: 'bg-rose-50 text-rose-700 border-rose-200',
+          avatarBg: 'bg-gradient-to-br from-rose-500 to-rose-600 text-white shadow-rose-200',
+          borderHover: 'hover:border-rose-300 hover:shadow-rose-100/60',
+          bgTop: 'from-rose-50/50 via-white to-white',
+          icon: 'fa-solid fa-bullhorn text-rose-500',
+          iconBg: 'bg-rose-50 border-rose-100/60'
+        };
+
+        if (pilar === 'Service') {
+          pilarStyle = {
+            badge: 'bg-blue-50 text-blue-700 border-blue-200',
+            avatarBg: 'bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-blue-200',
+            borderHover: 'hover:border-blue-300 hover:shadow-blue-100/60',
+            bgTop: 'from-blue-50/50 via-white to-white',
+            icon: 'fa-solid fa-wrench text-blue-500',
+            iconBg: 'bg-blue-50 border-blue-100/60'
+          };
+        } else if (pilar === 'Admin') {
+          pilarStyle = {
+            badge: 'bg-amber-50 text-amber-800 border-amber-200',
+            avatarBg: 'bg-gradient-to-br from-amber-500 to-amber-600 text-white shadow-amber-200',
+            borderHover: 'hover:border-amber-300 hover:shadow-amber-100/60',
+            bgTop: 'from-amber-50/50 via-white to-white',
+            icon: 'fa-solid fa-briefcase text-amber-600',
+            iconBg: 'bg-amber-50 border-amber-100/60'
+          };
+        }
+
+        // Status badge styling
+        let contractBadge = 'bg-slate-100 text-slate-700 border-slate-200';
+        const normC = normalizeContractCategory(rawContract).toLowerCase();
+        if (isResign) {
+          contractBadge = 'bg-rose-100 text-rose-800 border-rose-200';
+        } else if (normC.includes('tetap') || normC.includes('permanent')) {
+          contractBadge = 'bg-blue-50 text-blue-700 border-blue-200';
+        } else if (normC.includes('pkwt') || normC.includes('kontrak')) {
+          contractBadge = 'bg-amber-50 text-amber-700 border-amber-200';
+        } else if (normC.includes('probation')) {
+          contractBadge = 'bg-orange-50 text-orange-700 border-orange-200';
+        } else if (normC.includes('magang') || normC.includes('intern')) {
+          contractBadge = 'bg-emerald-50 text-emerald-700 border-emerald-200';
+        }
 
         return `
-          <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-2xs hover:shadow-md transition flex flex-col justify-between">
+          <div class="bg-gradient-to-b ${pilarStyle.bgTop} rounded-2xl p-4 sm:p-4.5 border border-slate-200/90 shadow-2xs hover:shadow-lg hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group relative overflow-hidden cursor-pointer" onclick="openPBKModal('${npk}')">
+            <!-- Decorative corner accent -->
+            <div class="absolute top-0 right-0 w-16 h-16 bg-gradient-to-bl from-slate-200/20 to-transparent rounded-bl-3xl pointer-events-none"></div>
+
             <div>
-              <div class="flex items-start justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2.5 min-w-0">
-                  <div class="w-10 h-10 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm flex items-center justify-center border border-slate-200 flex-shrink-0">
+              <!-- Top Row: Avatar + Name + Badges -->
+              <div class="flex items-start justify-between gap-2.5 mb-3">
+                <div class="flex items-center gap-3 min-w-0">
+                  <div class="w-11 h-11 rounded-2xl ${pilarStyle.avatarBg} font-black text-sm flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-105 transition-transform">
                     ${initials}
                   </div>
                   <div class="min-w-0">
-                    <h5 class="text-xs font-bold text-slate-800 truncate" title="${nama}">${nama}</h5>
-                    <span class="text-[10px] font-mono text-slate-400">NPK: ${npk}</span>
+                    <h5 class="text-xs sm:text-sm font-extrabold text-slate-800 truncate leading-snug group-hover:text-blue-600 transition-colors" title="${nama}">
+                      ${nama}
+                    </h5>
+                    <div class="flex items-center gap-1.5 mt-0.5">
+                      <span class="text-[10px] font-mono text-slate-400 font-bold">NPK ${npk}</span>
+                      ${isResign ? '<span class="px-1.5 py-0.2 rounded text-[9px] font-black bg-rose-100 text-rose-700">Resign</span>' : ''}
+                    </div>
                   </div>
                 </div>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${pilarColor} border flex-shrink-0">${pilar}</span>
+                <div class="flex flex-col items-end gap-1 flex-shrink-0">
+                  <span class="px-2 py-0.5 rounded-full text-[9.5px] font-bold ${pilarStyle.badge} border shadow-2xs">
+                    ${pilar}
+                  </span>
+                </div>
               </div>
-              <div class="mt-2.5 pt-2 border-t border-slate-100 space-y-1 text-xs text-slate-600">
-                <div class="flex justify-between">
-                  <span class="text-slate-400 text-[11px]">Jabatan:</span>
-                  <span class="font-semibold text-slate-700 truncate max-w-[140px]" title="${jabatan}">${jabatan}</span>
+
+              <!-- Job Title Banner Card -->
+              <div class="p-2.5 rounded-xl bg-white/90 border border-slate-200/70 shadow-2xs mb-3 flex items-center gap-2.5">
+                <div class="w-7 h-7 rounded-lg ${pilarStyle.iconBg} border flex items-center justify-center text-xs flex-shrink-0">
+                  <i class="${pilarStyle.icon}"></i>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-400 text-[11px]">Cabang:</span>
-                  <span class="font-medium text-slate-700">${cabang}</span>
+                <div class="min-w-0 flex-1">
+                  <span class="text-[9px] font-bold text-slate-400 uppercase tracking-wider block leading-none">Jabatan</span>
+                  <span class="text-xs font-bold text-slate-800 truncate block mt-0.5" title="${jabatan}">${jabatan}</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-400 text-[11px]">Status:</span>
-                  <span class="font-medium text-slate-700">${rawContract}</span>
+              </div>
+
+              <!-- Meta Data Grid -->
+              <div class="space-y-1.5 text-xs">
+                <div class="flex items-center justify-between text-[11px] py-0.5 border-b border-slate-100/80">
+                  <span class="text-slate-400 font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-location-dot text-slate-400 text-[10px] w-3"></i>
+                    <span>Cabang</span>
+                  </span>
+                  <span class="font-bold text-slate-700 truncate max-w-[130px]">${cabang}</span>
                 </div>
-                <div class="flex justify-between">
-                  <span class="text-slate-400 text-[11px]">Masuk:</span>
-                  <span class="font-mono text-slate-700 text-[11px]">${formattedDate}</span>
+
+                <div class="flex items-center justify-between text-[11px] py-0.5 border-b border-slate-100/80">
+                  <span class="text-slate-400 font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-contract text-slate-400 text-[10px] w-3"></i>
+                    <span>Kontrak</span>
+                  </span>
+                  <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${contractBadge} border">
+                    ${isResign ? 'Resign' : rawContract}
+                  </span>
+                </div>
+
+                <div class="flex items-center justify-between text-[11px] py-0.5">
+                  <span class="text-slate-400 font-medium flex items-center gap-1.5">
+                    <i class="fa-solid fa-calendar-day text-slate-400 text-[10px] w-3"></i>
+                    <span>Bergabung</span>
+                  </span>
+                  <span class="font-mono font-semibold text-slate-600 text-[11px]">${formattedDate}</span>
                 </div>
               </div>
             </div>
-            <div class="mt-3 pt-2.5 border-t border-slate-100 flex items-center justify-end gap-1.5">
-              <button type="button" onclick="openPBKModal('${npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-blue-50 hover:text-blue-700 text-slate-700 font-bold rounded-lg text-[11px] transition">
-                Detail
+
+            <!-- Card Bottom Action Bar -->
+            <div class="mt-3.5 pt-3 border-t border-slate-100 flex items-center gap-1.5" onclick="event.stopPropagation()">
+              <button type="button" onclick="openPBKModal('${npk}')" class="flex-1 py-1.5 px-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-2xs active:scale-95 cursor-pointer">
+                <i class="fa-solid fa-address-card text-[11px]"></i>
+                <span>Profil Karyawan</span>
               </button>
-              ${isUserAdmin(loggedInUser) ? `
-                <button type="button" onclick="openEditRowModal('Master_Karyawan', ${realIdx !== -1 ? realIdx : 0})" class="px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 font-bold rounded-lg text-[11px] border border-amber-200 transition">
-                  <i class="fa-solid fa-pen-to-square"></i>
+              ${isAdmin ? `
+                <button type="button" onclick="openEditRowModal('Master_Karyawan', ${realIdx !== -1 ? realIdx : 0})" class="w-8 h-8 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 flex items-center justify-center transition active:scale-95 cursor-pointer flex-shrink-0" title="Edit Data Karyawan">
+                  <i class="fa-solid fa-pen-to-square text-xs"></i>
+                </button>
+                <button type="button" onclick="openDeleteRowModal('Master_Karyawan', ${realIdx !== -1 ? realIdx : 0})" class="w-8 h-8 rounded-xl bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 flex items-center justify-center transition active:scale-95 cursor-pointer flex-shrink-0" title="Hapus Data Karyawan">
+                  <i class="fa-solid fa-trash text-xs"></i>
                 </button>
               ` : ''}
             </div>
