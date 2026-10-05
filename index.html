@@ -841,23 +841,23 @@
                 </div>
               </div>
             </div>
-            <div class="overflow-x-auto">
-              <table class="w-full text-left text-xs">
-                <thead class="bg-slate-50 text-[10px] font-bold text-slate-400 uppercase tracking-wider rounded-xl">
+            <div class="overflow-x-auto border border-slate-200/90 rounded-2xl bg-white scrollbar-thin">
+              <table class="w-full text-left text-xs border-separate border-spacing-0">
+                <thead class="bg-slate-50 text-[10px] font-bold text-slate-500 uppercase tracking-wider sticky top-0 z-20">
                   <tr>
-                    <th class="py-2.5 px-3 text-center rounded-l-xl w-12 min-w-[48px]">No</th>
-                    <th class="py-2.5 px-4">NPK</th>
-                    <th class="py-2.5 px-4">Nama Karyawan</th>
-                    <th class="py-2.5 px-4">Cabang (BA)</th>
-                    <th class="py-2.5 px-4">Divisi & Posisi</th>
-                    <th class="py-2.5 px-4 text-center">Umur</th>
-                    <th class="py-2.5 px-4 text-center">Masa Kerja</th>
-                    <th class="py-2.5 px-4 text-center">Status</th>
-                    <th id="th-admin-resign" class="py-2.5 px-4 text-left hidden">Info Resign</th>
-                    <th class="py-2.5 px-4 text-center">Kehadiran</th>
-                    <th class="py-2.5 px-4 text-center">SS Masuk</th>
-                    <th class="py-2.5 px-4 text-center">Status Disiplin</th>
-                    <th class="py-2.5 px-4 text-center rounded-r-xl">Aksi</th>
+                    <th class="py-2.5 px-3 text-center rounded-tl-xl w-12 min-w-[48px] max-w-[48px] sticky left-0 bg-slate-50 z-30 border-b border-r border-slate-200/80">No</th>
+                    <th class="py-2.5 px-3 w-20 min-w-[80px] max-w-[80px] sticky left-12 bg-slate-50 z-30 border-b border-r border-slate-200/80 font-mono">NPK</th>
+                    <th class="py-2.5 px-4 min-w-[170px] sm:min-w-[200px] sticky left-[128px] bg-slate-50 z-30 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]">Nama Karyawan</th>
+                    <th class="py-2.5 px-4 min-w-[120px] border-b border-slate-200">Cabang (BA)</th>
+                    <th class="py-2.5 px-4 min-w-[140px] border-b border-slate-200">Divisi & Posisi</th>
+                    <th class="py-2.5 px-4 text-center min-w-[70px] border-b border-slate-200">Umur</th>
+                    <th class="py-2.5 px-4 text-center min-w-[85px] border-b border-slate-200">Masa Kerja</th>
+                    <th class="py-2.5 px-4 text-center min-w-[80px] border-b border-slate-200">Status</th>
+                    <th id="th-admin-resign" class="py-2.5 px-4 text-left hidden border-b border-slate-200 min-w-[120px]">Info Resign</th>
+                    <th class="py-2.5 px-4 text-center min-w-[80px] border-b border-slate-200">Kehadiran</th>
+                    <th class="py-2.5 px-4 text-center min-w-[80px] border-b border-slate-200">SS Masuk</th>
+                    <th class="py-2.5 px-4 text-center min-w-[95px] border-b border-slate-200">Status Disiplin</th>
+                    <th class="py-2.5 px-4 text-center rounded-tr-xl border-b border-slate-200 min-w-[85px]">Aksi</th>
                   </tr>
                 </thead>
                 <tbody id="employee-table-body" class="divide-y divide-slate-100 font-medium">
@@ -1442,8 +1442,8 @@
 
             <!-- Sticky Horizontal Table Container -->
             <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
-              <table class="w-full text-left text-xs border-collapse" id="table-absensi-content">
-                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+              <table class="w-full text-left text-xs border-separate border-spacing-0" id="table-absensi-content">
+                <thead class="sticky top-0 bg-slate-100 z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
                   <tr id="abs-table-header">
                     <!-- Standard 19 Columns Rendered Dynamically -->
                   </tr>
@@ -1807,8 +1807,8 @@
 
             <!-- Sticky Horizontal Table Container -->
             <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
-              <table class="w-full text-left text-xs border-collapse" id="table-sp-content">
-                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+              <table class="w-full text-left text-xs border-separate border-spacing-0" id="table-sp-content">
+                <thead class="sticky top-0 bg-slate-100 z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
                   <tr id="sp-table-header">
                     <!-- Standard 5 Columns Rendered Dynamically -->
                   </tr>
@@ -1919,8 +1919,8 @@
 
             <!-- Sticky Horizontal Table Container -->
             <div class="overflow-x-auto max-h-[600px] border border-slate-200/90 rounded-2xl shadow-sm bg-white relative scrollbar-thin">
-              <table class="w-full text-left text-xs border-collapse" id="table-km-content">
-                <thead class="sticky top-0 bg-slate-100/95 backdrop-blur-sm z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
+              <table class="w-full text-left text-xs border-separate border-spacing-0" id="table-km-content">
+                <thead class="sticky top-0 bg-slate-100 z-20 text-[10px] font-bold text-slate-600 uppercase tracking-wider border-b border-slate-200">
                   <tr id="km-table-header">
                     <!-- Standard Columns: NPK, Nama, Judul, Tanggal, Detail -->
                   </tr>

@@ -299,26 +299,42 @@
     function renderTableHeader(headerRowId, columns, stickyFirst = true, actionLabel = 'Aksi') {
       const tr = document.getElementById(headerRowId);
       if (!tr) return;
+
+      const col1Norm = columns[1] ? (typeof normalizeHeaderName === 'function' ? normalizeHeaderName(columns[1]) : String(columns[1]).toLowerCase().trim()) : '';
+      const col2Norm = columns[2] ? (typeof normalizeHeaderName === 'function' ? normalizeHeaderName(columns[2]) : String(columns[2]).toLowerCase().trim()) : '';
+
+      const isCol1Npk = col1Norm === 'npk' || col1Norm === 'personnel no.' || col1Norm === 'personnel no';
+      const isCol2Name = col2Norm.includes('nama') || col2Norm.includes('name') || col2Norm.includes('karyawan');
+      const hasStickyNpkAndName = isCol1Npk && isCol2Name;
+      const isCol1NameOnly = col1Norm.includes('nama') || col1Norm.includes('name') || col1Norm.includes('karyawan');
+
       tr.innerHTML = columns.map((col, idx) => {
-        const isFirst = stickyFirst && idx === 0;
-        const isSecond = stickyFirst && idx === 1;
-        const isNo = col === 'No' || col === 'no' || (typeof normalizeHeaderName === 'function' && normalizeHeaderName(col) === 'no');
+        const isNo = idx === 0 || col === 'No' || col === 'no' || (typeof normalizeHeaderName === 'function' && normalizeHeaderName(col) === 'no');
+        const normCol = typeof normalizeHeaderName === 'function' ? normalizeHeaderName(col) : String(col).toLowerCase().trim();
         
         let stickyClass = '';
-        if (isFirst) {
+        let widthClass = '';
+        if (stickyFirst && isNo) {
           stickyClass = 'sticky left-0 bg-slate-100 z-30 border-r border-slate-200/80';
-        } else if (isSecond && headerRowId === 'mk-table-header') {
+          widthClass = 'w-12 min-w-[48px] max-w-[48px] text-center px-2 sm:px-3';
+        } else if (stickyFirst && hasStickyNpkAndName && idx === 1) {
+          stickyClass = 'sticky left-12 bg-slate-100 z-30 border-r border-slate-200/80 font-mono';
+          widthClass = 'w-20 min-w-[80px] max-w-[80px] text-left px-3';
+        } else if (stickyFirst && hasStickyNpkAndName && idx === 2) {
+          stickyClass = 'sticky left-[128px] bg-slate-100 z-30 border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]';
+          widthClass = 'min-w-[170px] sm:min-w-[200px] text-left px-3 sm:px-4';
+        } else if (stickyFirst && (isCol1NameOnly || (isCol1Npk && !hasStickyNpkAndName)) && idx === 1) {
           stickyClass = 'sticky left-12 bg-slate-100 z-30 border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]';
+          widthClass = isCol1NameOnly ? 'min-w-[180px] sm:min-w-[220px] text-left px-3 sm:px-4' : 'w-24 min-w-[96px] text-left px-3';
         }
         
-        const normCol = typeof normalizeHeaderName === 'function' ? normalizeHeaderName(col) : String(col).toLowerCase().trim();
         const isCentered = isNo || normCol.includes('total') || normCol.includes('masuk') || 
                            normCol.includes('tepat') || normCol.includes('telat') || 
                            normCol.includes('tanpa keterangan') || normCol.includes('%') || 
                            normCol.includes('durasi') || normCol.includes('work hours') || 
                            normCol.includes('jam kerja') || normCol === 'status_karyawan' ||
                            normCol === 'status kehadiran';
-        const alignClass = isNo ? 'text-center w-12 min-w-[48px] max-w-[48px] px-2 sm:px-3' : (isCentered ? 'text-center px-3 sm:px-4' : 'text-left px-3 sm:px-4');
+        const alignClass = widthClass || (isCentered ? 'text-center px-3 sm:px-4' : 'text-left px-3 sm:px-4');
         return `<th class="py-2.5 whitespace-nowrap border-b border-slate-200 ${stickyClass} ${alignClass}">${col}</th>`;
       }).join('') + `<th class="py-2.5 px-4 text-center whitespace-nowrap border-b border-slate-200">${actionLabel}</th>`;
     }
