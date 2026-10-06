@@ -627,14 +627,14 @@
             ${isCustom ? `<option value="${val}" selected>${val}</option>` : ''}
           </select>
         `;
-      } else if (norm.includes('date') || norm === 'd.o.birth' || norm.includes('tgl') || norm.includes('tanggal')) {
+      } else if (norm.includes('date') || norm === 'd.o.birth' || norm.includes('tgl') || norm.includes('tanggal') || norm === 'entry' || norm === 'entry date' || norm.includes('gabung') || norm.includes('masuk') || norm.includes('join') || norm.includes('lahir')) {
         let dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(val) : val;
         // Jika belum valid YYYY-MM-DD, lakukan fallback cerdas melalui findDOBirth / findDate
         if (!dateVal || !/^\d{4}-\d{2}-\d{2}$/.test(dateVal)) {
-          if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob') {
+          if (norm === 'd.o.birth' || norm.includes('lahir') || norm === 'dob' || norm === 'date of birth') {
             const fbDob = typeof findDOBirth === 'function' ? findDOBirth(row) : '';
             if (fbDob) dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(fbDob) : fbDob;
-          } else if (norm === 'date' || norm === 'tanggal' || norm === 'join date' || norm === 'tgl masuk') {
+          } else if (norm === 'date' || norm === 'entry' || norm === 'entry date' || norm.includes('gabung') || norm.includes('masuk') || norm.includes('join')) {
             const fbDate = typeof findDate === 'function' ? findDate(row) : '';
             if (fbDate) dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(fbDate) : fbDate;
           }
@@ -701,11 +701,11 @@
       if (sheetName === 'Master_Karyawan') {
         // Sinkronkan atribut tanggal dan penempatan kerja agar tidak kosong saat form dibuka
         if (!row['D.o.birth'] || row['D.o.birth'] === '-' || row['D.o.birth'] === '0' || row['D.o.birth'] === '1899-12-30') {
-          const dob = typeof findDOBirth === 'function' ? findDOBirth(row) : '';
+          const dob = (typeof findDOBirth === 'function' ? findDOBirth(row) : '') || (typeof getRowCellValue === 'function' ? getRowCellValue(row, 'D.o.birth', SCHEMAS.Master_Karyawan) : '');
           if (dob) row['D.o.birth'] = dob;
         }
         if (!row['Date'] || row['Date'] === '-' || row['Date'] === '0' || row['Date'] === '1899-12-30') {
-          const jDate = typeof findDate === 'function' ? findDate(row) : '';
+          const jDate = (typeof findDate === 'function' ? findDate(row) : '') || (typeof getRowCellValue === 'function' ? getRowCellValue(row, 'Date', SCHEMAS.Master_Karyawan) : '');
           if (jDate) row['Date'] = jDate;
         }
         if (!row['P.subarea'] || row['P.subarea'] === '-' || row['P.subarea'] === '0') {
@@ -941,8 +941,8 @@
               emp['Contract'] = targetRow['Contract'];
               emp.joinDate = targetRow['Date'] || emp.joinDate;
               emp.tglLahir = targetRow['D.o.birth'] || emp.tglLahir;
-              emp.umurText = calculateAgeAndService(emp.tglLahir);
-              emp.masaKerjaText = calculateAgeAndService(emp.joinDate);
+              emp.umurText = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(emp.tglLahir) : calculateAgeAndService(emp.tglLahir, 'age');
+              emp.masaKerjaText = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(emp.joinDate) : calculateAgeAndService(emp.joinDate, 'service');
               emp.gender = targetRow['Gender text'] || emp.gender;
               emp.agama = targetRow['Religious denomination'] || emp.agama;
               emp.psGroup = targetRow['PS group'] || emp.psGroup;
@@ -1517,8 +1517,8 @@
             ? row['Date']
             : (row.joinDate || (typeof findDate === 'function' ? findDate(row) : ''));
 
-          const umurVal = row.umurText || calculateAgeAndService(dob);
-          const masaKerjaVal = row.masaKerjaText || calculateAgeAndService(joinDate);
+          const umurVal = (row.umurText && row.umurText !== '-') ? row.umurText : (typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age'));
+          const masaKerjaVal = (row.masaKerjaText && row.masaKerjaText !== '-') ? row.masaKerjaText : (typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(joinDate) : calculateAgeAndService(joinDate, 'service'));
           const alasanResignVal = row['Alasan_Resign'] || row.alasanResign || '';
 
           const obj = {};
@@ -1826,8 +1826,8 @@
               ? row['Date']
               : findDate(row);
 
-            const umurVal = calculateAgeAndService(dob);
-            const masaKerjaVal = calculateAgeAndService(joinDate);
+            const umurVal = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age');
+            const masaKerjaVal = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(joinDate) : calculateAgeAndService(joinDate, 'service');
 
             const obj = {};
             exportColumns.forEach(col => {
@@ -2141,8 +2141,8 @@
                 isPendingResignReview: isPending,
                 tanggalResign: obj['Tanggal_Resign'] || existing.tanggalResign || '',
                 alasanResign: obj['Alasan_Resign'] || existing.alasanResign || '',
-                umurText: calculateAgeAndService(dob),
-                masaKerjaText: calculateAgeAndService(jDate),
+                umurText: typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age'),
+                masaKerjaText: typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(jDate) : calculateAgeAndService(jDate, 'service'),
                 joinDate: jDate,
                 tglLahir: dob,
                 gender: obj['Gender text'] || existing.gender || '',
@@ -2236,8 +2236,8 @@
       const exportRows = list.map((e, idx) => {
         const dob = e.tglLahir || e['D.o.birth'] || findDOBirth(e, idx);
         const joinDate = e.joinDate || e['Date'] || findDate(e, idx);
-        const umur = e.umurText || calculateAgeAndService(dob);
-        const masaKerja = e.masaKerjaText || calculateAgeAndService(joinDate);
+        const umur = (e.umurText && e.umurText !== '-') ? e.umurText : (typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age'));
+        const masaKerja = (e.masaKerjaText && e.masaKerjaText !== '-') ? e.masaKerjaText : (typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(joinDate) : calculateAgeAndService(joinDate, 'service'));
         const status = (e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim();
 
         const row = {
@@ -2851,9 +2851,10 @@
         const jabatan = getRowCellValue(emp, 'Job Title', SCHEMAS.Master_Karyawan) || emp.jabatan || '-';
         const cabang = getRowCellValue(emp, 'P.subarea', SCHEMAS.Master_Karyawan) || emp.cabang || '-';
         const baCode = getRowCellValue(emp, 'Business area', SCHEMAS.Master_Karyawan) || emp.kodeBA || '-';
-        const contract = getRowCellValue(emp, 'Contract', SCHEMAS.Master_Karyawan) || emp.tipeKontrak || 'Tetap';
-        const joinDate = formatDatabaseDate(getRowCellValue(emp, 'Date', SCHEMAS.Master_Karyawan)) || emp.joinDate || '-';
-        const dob = formatDatabaseDate(getRowCellValue(emp, 'D.o.birth', SCHEMAS.Master_Karyawan)) || emp.dob || '-';
+        const joinDate = formatDatabaseDate(getRowCellValue(emp, 'Date', SCHEMAS.Master_Karyawan)) || (emp.joinDate ? formatDatabaseDate(emp.joinDate) : '') || (typeof findDate === 'function' ? formatDatabaseDate(findDate(emp)) : '') || '-';
+        const dob = formatDatabaseDate(getRowCellValue(emp, 'D.o.birth', SCHEMAS.Master_Karyawan)) || (emp.tglLahir ? formatDatabaseDate(emp.tglLahir) : '') || (typeof findDOBirth === 'function' ? formatDatabaseDate(findDOBirth(emp)) : '') || '-';
+        const empAge = (emp.umurText && emp.umurText !== '-') ? emp.umurText : (typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob !== '-' ? dob : (emp.tglLahir || emp['D.o.birth'])) : calculateAgeAndService(dob, 'age'));
+        const empTenure = (emp.masaKerjaText && emp.masaKerjaText !== '-') ? emp.masaKerjaText : (typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(joinDate !== '-' ? joinDate : (emp.joinDate || emp['Date'])) : calculateAgeAndService(joinDate, 'service'));
         const gender = getRowCellValue(emp, 'Gender text', SCHEMAS.Master_Karyawan) || emp.gender || '-';
         const agama = getRowCellValue(emp, 'Religious denomination', SCHEMAS.Master_Karyawan) || emp.agama || '-';
         const psGroup = getRowCellValue(emp, 'PS group', SCHEMAS.Master_Karyawan) || emp.psGroup || '-';
@@ -2948,6 +2949,7 @@
               <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Tanggal Masuk (Join)</span>
                 <span class="text-xs font-bold text-slate-800 mt-0.5 block truncate" title="${joinDate}">${joinDate}</span>
+                ${empTenure && empTenure !== '-' ? `<span class="text-[10px] font-bold text-blue-600 block mt-0.5 truncate"><i class="fa-solid fa-briefcase text-[9px] mr-1"></i>${empTenure}</span>` : ''}
               </div>
             </div>
 
@@ -2955,6 +2957,7 @@
               <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Tgl Lahir (D.o.b)</span>
                 <span class="text-xs font-semibold text-slate-800 mt-0.5 block truncate" title="${dob}">${dob}</span>
+                ${empAge && empAge !== '-' ? `<span class="text-[10px] font-bold text-slate-500 block mt-0.5 truncate"><i class="fa-solid fa-cake-candles text-[9px] mr-1"></i>${empAge}</span>` : ''}
               </div>
               <div class="bg-white p-2.5 sm:p-3 rounded-xl border border-slate-200 min-w-0 overflow-hidden">
                 <span class="text-[10px] font-bold text-slate-400 block uppercase truncate">Gender</span>

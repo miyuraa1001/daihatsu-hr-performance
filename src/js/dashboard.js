@@ -137,12 +137,14 @@
       if (!Array.isArray(payload.employeeList) || payload.employeeList.length === 0) {
         if (Array.isArray(payload.rawTables.Master_Karyawan) && payload.rawTables.Master_Karyawan.length > 0) {
           payload.employeeList = payload.rawTables.Master_Karyawan.map(row => {
-            const dob = row['D.o.birth'] || row['Date of Birth'] || row['Tgl Lahir'] || '';
-            const jDate = row['Date'] || row['Tgl Masuk'] || row['Join Date'] || '';
+            const dob = (typeof findDOBirth === 'function' ? findDOBirth(row) : '') || row['D.o.birth'] || row['Date of Birth'] || row['Tgl Lahir'] || '';
+            const jDate = (typeof findDate === 'function' ? findDate(row) : '') || row['Date'] || row['Entry'] || row['Tgl Masuk'] || row['Join Date'] || '';
             const contractVal = row['Contract'] || 'Tetap';
             const statusVal = row['Status_Karyawan'] || 'Aktif';
             const baVal = safeString(row['Business area'] || row['Business Area'] || row['Kode BA'] || row.kodeBA || '');
             const cabangVal = row['P.subarea'] || row['Cabang'] || row.cabang || '';
+            const ageCalc = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age');
+            const tenureCalc = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(jDate) : calculateAgeAndService(jDate, 'service');
             return {
               npk: safeString(row['Personnel no.'] || row['NPK'] || row.npk),
               nama: row['Last name'] || row['Nama'] || row['Nama Lengkap'] || row.nama || '',
@@ -157,15 +159,15 @@
               Status_Karyawan: statusVal,
               tanggalResign: row['Tanggal_Resign'] || '',
               alasanResign: row['Alasan_Resign'] || '',
-              umurText: calculateAgeAndService(dob),
-              masaKerjaText: calculateAgeAndService(jDate),
+              umurText: ageCalc,
+              masaKerjaText: tenureCalc,
               joinDate: jDate,
               tglLahir: dob,
               gender: row['Gender text'] || '',
               agama: row['Religious denomination'] || '',
-              psGroup: row['PS group'] || '',
-              lvl: row['Lvl'] || '',
-              stext: row['P0001-STEXT'] || '',
+              psGroup: row['PS group'] || (typeof findPSGroup === 'function' ? findPSGroup(row) : ''),
+              lvl: row['Lvl'] || (typeof findLvl === 'function' ? findLvl(row) : ''),
+              stext: row['P0001-STEXT'] || (typeof findP0001STEXT === 'function' ? findP0001STEXT(row) : ''),
               raw: row
             };
           });
@@ -186,6 +188,12 @@
           e.tipeKontrak = contractVal;
           e['Status_Karyawan'] = statusVal;
           e.statusKaryawan = statusVal;
+          const dob = e['D.o.birth'] || e.tglLahir || (typeof findDOBirth === 'function' ? findDOBirth(e) : '');
+          const jDate = e['Date'] || e.joinDate || (typeof findDate === 'function' ? findDate(e) : '');
+          e.tglLahir = dob;
+          e.joinDate = jDate;
+          e.umurText = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age');
+          e.masaKerjaText = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(jDate) : calculateAgeAndService(jDate, 'service');
           return {
             "Personnel no.": safeString(e['Personnel no.'] || e.npk),
             "P.subarea": e['P.subarea'] || e.cabang || 'Lampung A Yani',
@@ -195,31 +203,78 @@
             "Name of organizational unit": e['Name of organizational unit'] || (e.divisi ? `${e.divisi} DSO` : 'Departemen DSO'),
             "Job Title": e['Job Title'] || e.jabatan || 'Staff',
             "Last name": e['Last name'] || e.nama || '',
-            "D.o.birth": findDOBirth(e),
+            "D.o.birth": dob,
             "Gender text": e['Gender text'] || e.gender || 'Male',
             "Religious denomination": e['Religious denomination'] || e.agama || 'Islam',
-            "PS group": findPSGroup(e),
-            "Lvl": findLvl(e),
-            "Date": findDate(e),
-            "P0001-STEXT": findP0001STEXT(e),
+            "PS group": (typeof findPSGroup === 'function' ? findPSGroup(e) : (e['PS group'] || '')),
+            "Lvl": (typeof findLvl === 'function' ? findLvl(e) : (e['Lvl'] || '')),
+            "Date": jDate,
+            "P0001-STEXT": (typeof findP0001STEXT === 'function' ? findP0001STEXT(e) : (e['P0001-STEXT'] || '')),
             "Business area": safeString(e['Business area'] || e.kodeBA || 'D660'),
             "Status_Karyawan": statusVal
           };
         });
       } else {
         payload.rawTables.Master_Karyawan.forEach((row, idx) => {
-          const npk = safeString(row['Personnel no.']);
+          const npk = safeString(row['Personnel no.'] || row['NPK'] || row.npk);
           const emp = employees.find(e => safeString(e.npk || e['Personnel no.']) === npk) || employees[idx];
           const statusVal = row['Status_Karyawan'] || row['Status Karyawan'] || (emp ? (emp['Status_Karyawan'] || emp.statusKaryawan) : '') || 'Aktif';
           row['Status_Karyawan'] = statusVal;
+
+          const dob = (typeof findDOBirth === 'function' ? findDOBirth(row) : '') || row['D.o.birth'] || (emp ? (emp.tglLahir || emp['D.o.birth']) : '');
+          const jDate = (typeof findDate === 'function' ? findDate(row) : '') || row['Date'] || (emp ? (emp.joinDate || emp['Date']) : '');
+          if (dob) row['D.o.birth'] = dob;
+          if (jDate) row['Date'] = jDate;
+
           if (emp) {
             emp['Contract'] = row['Contract'] || emp['Contract'] || 'Tetap';
             emp.tipeKontrak = row['Contract'] || emp.tipeKontrak || 'Tetap';
             emp['Status_Karyawan'] = statusVal;
             emp.statusKaryawan = statusVal;
+            if (dob) {
+              emp.tglLahir = dob;
+              emp['D.o.birth'] = dob;
+            }
+            if (jDate) {
+              emp.joinDate = jDate;
+              emp['Date'] = jDate;
+            }
+            emp.umurText = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(emp.tglLahir || dob) : calculateAgeAndService(emp.tglLahir || dob, 'age');
+            emp.masaKerjaText = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(emp.joinDate || jDate) : calculateAgeAndService(emp.joinDate || jDate, 'service');
+            if (!emp.gender) emp.gender = row['Gender text'] || '';
+            if (!emp.agama) emp.agama = row['Religious denomination'] || '';
+            if (!emp.psGroup) emp.psGroup = row['PS group'] || (typeof findPSGroup === 'function' ? findPSGroup(row) : '');
+            if (!emp.lvl) emp.lvl = row['Lvl'] || (typeof findLvl === 'function' ? findLvl(row) : '');
+            if (!emp.stext) emp.stext = row['P0001-STEXT'] || (typeof findP0001STEXT === 'function' ? findP0001STEXT(row) : '');
+            if (!emp.tanggalResign) emp.tanggalResign = row['Tanggal_Resign'] || '';
+            if (!emp.alasanResign) emp.alasanResign = row['Alasan_Resign'] || '';
           }
         });
       }
+
+      // Pastikan SEMUA karyawan di employeeList memiliki umurText dan masaKerjaText yang valid
+      employees.forEach(emp => {
+        if (!emp.tglLahir) {
+          const dob = typeof findDOBirth === 'function' ? findDOBirth(emp) : (emp['D.o.birth'] || '');
+          if (dob) {
+            emp.tglLahir = dob;
+            emp['D.o.birth'] = dob;
+          }
+        }
+        if (!emp.joinDate) {
+          const jDate = typeof findDate === 'function' ? findDate(emp) : (emp['Date'] || '');
+          if (jDate) {
+            emp.joinDate = jDate;
+            emp['Date'] = jDate;
+          }
+        }
+        if (!emp.umurText || emp.umurText === '-') {
+          emp.umurText = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(emp.tglLahir) : calculateAgeAndService(emp.tglLahir, 'age');
+        }
+        if (!emp.masaKerjaText || emp.masaKerjaText === '-') {
+          emp.masaKerjaText = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(emp.joinDate) : calculateAgeAndService(emp.joinDate, 'service');
+        }
+      });
 
       // 2. Data_Kehadiran (19-20 Kolom - 100% Menggunakan Data Riil Database Tanpa Data Palsu)
       if (!payload.rawTables.Data_Kehadiran) {
@@ -251,6 +306,7 @@
         payload.rawTables.Data_KM = payload.rawTables.Knowledge_management;
       }
     }
+    window.initializeStandardTables = initializeStandardTables;
 
     /**
      * Ekstraksi daftar cabang unik dari respon database (Eksklusif 5 Cabang Resmi DSO Lampung)

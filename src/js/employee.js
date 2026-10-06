@@ -12,22 +12,24 @@
       if (e) {
         const candidates = [
           'D.o.birth', 'd.o.birth', 'DOB', 'dob', 'D.O.Birth',
+          'Tanggal Lahir', 'tanggal lahir', 'Tanggal lahir', 'Tgl Lahir', 'tgl lahir', 'Tgl lahir',
           'tglLahir', 'tgl_lahir', 'tanggalLahir', 'tanggal_lahir',
-          'birthDate', 'birth_date', 'dateOfBirth', 'date_of_birth'
+          'birthDate', 'birth_date', 'dateOfBirth', 'date_of_birth',
+          'Date of Birth', 'Date of birth', 'Birth Date', 'Birth date', 'Tgl. Lahir', 'tgl. lahir'
         ];
         for (const k of candidates) {
           if (e[k] !== undefined && e[k] !== null) {
             const val = String(e[k]).trim();
-            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') {
               return formatDatabaseDate(e[k]);
             }
           }
         }
         for (const k of Object.keys(e)) {
-          const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
+          const norm = k.toLowerCase().replace(/[\s\-_.]+/g, '');
           if (norm === 'dobirth' || norm === 'dob' || norm === 'tgllahir' || norm === 'tanggallahir' || norm === 'birthdate' || norm === 'dateofbirth') {
             const val = String(e[k] || '').trim();
-            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') {
               return formatDatabaseDate(e[k]);
             }
           }
@@ -36,7 +38,16 @@
           for (const k of candidates) {
             if (e.raw[k] !== undefined && e.raw[k] !== null) {
               const val = String(e.raw[k]).trim();
-              if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+              if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') {
+                return formatDatabaseDate(e.raw[k]);
+              }
+            }
+          }
+          for (const k of Object.keys(e.raw)) {
+            const norm = k.toLowerCase().replace(/[\s\-_.]+/g, '');
+            if (norm === 'dobirth' || norm === 'dob' || norm === 'tgllahir' || norm === 'tanggallahir' || norm === 'birthdate' || norm === 'dateofbirth') {
+              const val = String(e.raw[k] || '').trim();
+              if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') {
                 return formatDatabaseDate(e.raw[k]);
               }
             }
@@ -64,7 +75,7 @@
               for (const k of candidates) {
                 if (match[k] !== undefined && match[k] !== null) {
                   const val = String(match[k]).trim();
-                  if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                  if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') {
                     return formatDatabaseDate(match[k]);
                   }
                 }
@@ -73,7 +84,7 @@
                 for (const k of candidates) {
                   if (match.raw[k] !== undefined && match.raw[k] !== null) {
                     const val = String(match.raw[k]).trim();
-                    if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                    if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') {
                       return formatDatabaseDate(match.raw[k]);
                     }
                   }
@@ -128,27 +139,42 @@
 
     function findDate(e) {
       if (e) {
-        const candidates = ['Date', 'date', 'Tanggal', 'tanggal', 'joinDate', 'join_date', 'tglMasuk', 'tgl_masuk', 'effectiveDate', 'effective_date', 'tgl'];
+        const candidates = [
+          'Date', 'date', 'Tanggal', 'tanggal',
+          'Entry', 'entry', 'Entry Date', 'entry date', 'Entry date', 'entry_date', 'entryDate',
+          'Tanggal Masuk', 'tanggal masuk', 'Tanggal masuk', 'Tgl Masuk', 'tgl masuk', 'Tgl masuk', 'tglMasuk', 'tgl_masuk',
+          'Tanggal Gabung', 'tanggal gabung', 'Tanggal gabung', 'Tgl Gabung', 'tgl gabung', 'Tgl gabung', 'tglGabung', 'tgl_gabung',
+          'Join Date', 'join date', 'Join date', 'joinDate', 'join_date',
+          'Mulai Kerja', 'mulai kerja', 'Tgl Mulai Kerja', 'tgl mulai kerja', 'tglMulaiKerja', 'mulaiKerja',
+          'effectiveDate', 'effective_date', 'Effective Date', 'tgl'
+        ];
         for (const k of candidates) {
           if (e[k] !== undefined && e[k] !== null) {
             const val = String(e[k]).trim();
-            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') return formatDatabaseDate(e[k]);
+            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') return formatDatabaseDate(e[k]);
           }
         }
         for (const k of Object.keys(e)) {
-          const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
-          if (norm === 'date' || norm === 'joindate' || norm === 'tglmasuk' || norm === 'tanggal') {
+          const norm = k.toLowerCase().replace(/[\s\-_.]+/g, '');
+          if (norm === 'date' || norm === 'joindate' || norm === 'tglmasuk' || norm === 'tanggal' || norm === 'entry' || norm === 'entrydate' || norm === 'tglgabung' || norm === 'tanggalgabung' || norm === 'mulaikerja' || norm === 'tglmulaikerja') {
             const val = String(e[k] || '').trim();
-            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') return formatDatabaseDate(e[k]);
+            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') return formatDatabaseDate(e[k]);
           }
         }
         if (e.raw && typeof e.raw === 'object') {
           for (const k of candidates) {
             if (e.raw[k] !== undefined && e.raw[k] !== null) {
               const val = String(e.raw[k]).trim();
-              if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+              if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') {
                 return formatDatabaseDate(e.raw[k]);
               }
+            }
+          }
+          for (const k of Object.keys(e.raw)) {
+            const norm = k.toLowerCase().replace(/[\s\-_.]+/g, '');
+            if (norm === 'date' || norm === 'joindate' || norm === 'tglmasuk' || norm === 'tanggal' || norm === 'entry' || norm === 'entrydate' || norm === 'tglgabung' || norm === 'tanggalgabung' || norm === 'mulaikerja' || norm === 'tglmulaikerja') {
+              const val = String(e.raw[k] || '').trim();
+              if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') return formatDatabaseDate(e.raw[k]);
             }
           }
         }
@@ -174,7 +200,7 @@
               for (const k of candidates) {
                 if (match[k] !== undefined && match[k] !== null) {
                   const val = String(match[k]).trim();
-                  if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                  if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') {
                     return formatDatabaseDate(match[k]);
                   }
                 }
@@ -183,7 +209,7 @@
                 for (const k of candidates) {
                   if (match.raw[k] !== undefined && match.raw[k] !== null) {
                     const val = String(match.raw[k]).trim();
-                    if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                    if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30' && val !== 'null' && val !== 'undefined') {
                       return formatDatabaseDate(match.raw[k]);
                     }
                   }
@@ -1029,7 +1055,7 @@
           const rawContract = String(getRowCellValue(row, 'Contract', SCHEMAS.Master_Karyawan) || row['Contract'] || 'Tetap').trim();
           const rawStatusKaryawan = String(row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif').trim();
           
-          const dateVal = row['Date'] || row['Tanggal'] || row.joinDate || '';
+          const dateVal = (typeof getRowCellValue === 'function' ? getRowCellValue(row, 'Date', SCHEMAS.Master_Karyawan) : '') || row['Date'] || row['Tanggal'] || row.joinDate || (typeof findDate === 'function' ? findDate(row) : '');
           const formattedDate = dateVal ? formatDatabaseDate(dateVal) : '-';
 
           // Badge Pilar Fungsi
@@ -1112,7 +1138,7 @@
         const rawStatus = String(row['Status_Karyawan'] || row['Status Karyawan'] || row.statusKaryawan || 'Aktif').trim();
         const isResign = rawStatus.toLowerCase() === 'resign';
         
-        const dateVal = row['Date'] || row['Tanggal'] || row.joinDate || '';
+        const dateVal = (typeof getRowCellValue === 'function' ? getRowCellValue(row, 'Date', SCHEMAS.Master_Karyawan) : '') || row['Date'] || row['Tanggal'] || row.joinDate || (typeof findDate === 'function' ? findDate(row) : '');
         const formattedDate = dateVal ? formatDatabaseDate(dateVal) : '-';
 
         // Styling visual warna sesuai 3 Pilar DSO
@@ -3041,9 +3067,8 @@
         const cabang = e.cabang || e['P.subarea'] || e['Cabang'] || '-';
         const kodeBA = e.kodeBA || e['Business area'] || e['Kode BA'] || '-';
         const divisi = e.divisi || e['Name'] || (typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(e).divisionName : '-');
-        const jabatan = e.jabatan || e['Job Title'] || '-';
-        const umur = e.umurText || calculateAgeAndService(e.tglLahir || e['D.o.birth']);
-        const masaKerja = e.masaKerjaText || calculateAgeAndService(e.joinDate || e['Date']);
+        const umur = (e.umurText && e.umurText !== '-') ? e.umurText : (typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(e.tglLahir || e['D.o.birth'] || findDOBirth(e)) : calculateAgeAndService(e.tglLahir || e['D.o.birth'] || findDOBirth(e), 'age'));
+        const masaKerja = (e.masaKerjaText && e.masaKerjaText !== '-') ? e.masaKerjaText : (typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(e.joinDate || e['Date'] || findDate(e)) : calculateAgeAndService(e.joinDate || e['Date'] || findDate(e), 'service'));
         const status = String(e.statusKaryawan || e.Status_Karyawan || e['Status_Karyawan'] || 'Aktif').trim();
         const isResign = status.toLowerCase() === 'resign';
         const statusBadge = isResign
@@ -3111,8 +3136,8 @@
       }
 
       tbody.innerHTML = displayList.map((emp, rowIdx) => {
-        const umur = emp.umurText || calculateAgeAndService(emp.tglLahir || emp['D.o.birth']);
-        const masaKerja = emp.masaKerjaText || calculateAgeAndService(emp.joinDate || emp['Date']);
+        const umur = (emp.umurText && emp.umurText !== '-') ? emp.umurText : (typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(emp.tglLahir || emp['D.o.birth'] || findDOBirth(emp)) : calculateAgeAndService(emp.tglLahir || emp['D.o.birth'] || findDOBirth(emp), 'age'));
+        const masaKerja = (emp.masaKerjaText && emp.masaKerjaText !== '-') ? emp.masaKerjaText : (typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(emp.joinDate || emp['Date'] || findDate(emp)) : calculateAgeAndService(emp.joinDate || emp['Date'] || findDate(emp), 'service'));
         const status = (emp.statusKaryawan || emp.Status_Karyawan || 'Aktif').trim();
         const isResign = status.toLowerCase() === 'resign';
         const statusBadge = isResign

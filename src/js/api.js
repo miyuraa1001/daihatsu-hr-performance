@@ -47,12 +47,19 @@
           "name of organizational unit": ["name of organizational unit", "organizational unit", "organisasi", "departemen", "dept"],
           "job title": ["job title", "jabatan", "posisi", "title"],
           "last name": ["last name", "nama", "nama lengkap", "nama karyawan", "employee name"],
-          "d.o.birth": ["d.o.birth", "date of birth", "tgl lahir", "tanggal lahir", "dob"],
+          "d.o.birth": [
+            "d.o.birth", "date of birth", "tgl lahir", "tanggal lahir", "dob",
+            "birth date", "birthdate", "tgl_lahir", "tanggal_lahir", "tgl. lahir", "birth_date"
+          ],
           "gender text": ["gender text", "gender", "jenis kelamin", "jk"],
           "religious denomination": ["religious denomination", "religion", "agama"],
           "ps group": ["ps group", "golongan", "pangkat", "group"],
           "lvl": ["lvl", "level"],
-          "date": ["date", "tanggal masuk", "tgl masuk", "effective date", "tanggal"],
+          "date": [
+            "date", "entry", "entry date", "tanggal masuk", "tgl masuk", "tanggal gabung",
+            "tgl gabung", "join date", "joindate", "effective date", "tanggal", "tgl",
+            "mulai kerja", "tgl mulai kerja", "hire date"
+          ],
           "p0001-stext": ["p0001-stext", "stext", "deskripsi jabatan", "struktur"],
           "business area": ["business area", "kode ba", "ba", "kode cabang", "ba code"],
           "status_karyawan": ["status_karyawan", "status karyawan", "status kerja", "status aktif", "status keaktifan", "status_keaktifan", "status", "status pegawai", "keterangan status"],
@@ -477,24 +484,43 @@
       }
       if (val instanceof Date) {
         if (isNaN(val.getTime()) || val.getFullYear() <= 1899) return "";
-        const y = val.getFullYear();
-        const m = String(val.getMonth() + 1).padStart(2, '0');
-        const d = String(val.getDate()).padStart(2, '0');
-        return `${y}-${m}-${d}`;
+        try {
+          return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' }).format(val);
+        } catch (e) {
+          const y = val.getFullYear();
+          const m = String(val.getMonth() + 1).padStart(2, '0');
+          const d = String(val.getDate()).padStart(2, '0');
+          return `${y}-${m}-${d}`;
+        }
       }
       // Numeric serial (number OR numeric string, e.g. 34567 or "34567")
       const numVal = (typeof val === 'number') ? val : (/^\d{4,5}(\.\d+)?$/.test(s) ? Number(s) : NaN);
       if (!isNaN(numVal) && numVal > 10000 && numVal < 80000) {
         const d = new Date(Math.round((numVal - 25569) * 86400 * 1000));
-        if (!isNaN(d.getTime()) && d.getFullYear() > 1899) {
+        if (!isNaN(d.getTime()) && d.getUTCFullYear() > 1899) {
           const y = d.getUTCFullYear();
           const m = String(d.getUTCMonth() + 1).padStart(2, '0');
           const dt = String(d.getUTCDate()).padStart(2, '0');
           return `${y}-${m}-${dt}`;
         }
       }
-      // ISO date string starting with YYYY-MM-DD (including timestamps like 1995-05-15T00:00:00.000Z)
-      const isoMatch = s.match(/^(\d{4})[-\/\.](\d{1,2})[-\/\.](\d{1,2})/);
+      // ISO date string with T or Z (e.g. 1995-05-14T17:00:00.000Z from Google Sheets/Apps Script UTC serialization)
+      // Disinkronkan dengan zona waktu operasional Indonesia Barat (WIB, UTC+7)
+      if (s.includes('T') || s.endsWith('Z')) {
+        const d = new Date(s);
+        if (!isNaN(d.getTime())) {
+          try {
+            return new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jakarta', year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+          } catch (e) {
+            const y = d.getFullYear();
+            const m = String(d.getMonth() + 1).padStart(2, '0');
+            const dt = String(d.getDate()).padStart(2, '0');
+            return `${y}-${m}-${dt}`;
+          }
+        }
+      }
+      // Plain ISO date string starting with YYYY-MM-DD
+      const isoMatch = s.match(/^(\d{4})[-\/\.](\d{1,2})[-\/\.](\d{1,2})$/);
       if (isoMatch) {
         const y = parseInt(isoMatch[1], 10);
         if (y <= 1899) return "";
@@ -561,39 +587,21 @@
     }
     window.parseExcelDate = parseExcelDate;
 
-    // Perhitungan Dinamis Umur & Masa Kerja (Per Hari Ini)
-    function calculateAgeAndService(dateVal) {
+    // Perhitungan Dinamis Umur Karyawan (Tahun)
+    function calculateEmployeeAge(dateVal) {
       if (!dateVal && dateVal !== 0) return "-";
-      let str = String(dateVal).trim();
-      if (!str || str === "-" || str === "null" || str === "undefined") return "-";
-      if (str === '1899-12-30' || str.startsWith('1899-12-30') || str === '30.12.1899' || str.startsWith('30.12.1899') || str === '0') return "-";
-
-      let d = null;
-      if (dateVal instanceof Date && !isNaN(dateVal.getTime())) {
-        d = dateVal;
-      } else if (typeof dateVal === 'number' || (/^\d{4,5}$/.test(str) && Number(str) > 20000 && Number(str) < 70000)) {
-        d = new Date(Math.round((Number(str) - 25569) * 86400 * 1000));
-      } else {
-        const isoMatch = str.match(/^(\d{4})[-\/.](\d{1,2})[-\/.](\d{1,2})/);
-        if (isoMatch) {
-          d = new Date(parseInt(isoMatch[1], 10), parseInt(isoMatch[2], 10) - 1, parseInt(isoMatch[3], 10));
-        } else {
-          const dmyMatch = str.match(/^(\d{1,2})[-\/.](\d{1,2})[-\/.](\d{4})/);
-          if (dmyMatch) {
-            d = new Date(parseInt(dmyMatch[3], 10), parseInt(dmyMatch[2], 10) - 1, parseInt(dmyMatch[1], 10));
-          } else {
-            const parsed = new Date(str);
-            if (!isNaN(parsed.getTime())) d = parsed;
-          }
-        }
-      }
-
-      if (!d || isNaN(d.getTime()) || d.getFullYear() <= 1899) return "-";
+      const isoStr = parseExcelDate(dateVal);
+      if (!isoStr || !/^\d{4}-\d{2}-\d{2}$/.test(isoStr)) return "-";
+      const parts = isoStr.split('-');
+      const y = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10);
+      const d = parseInt(parts[2], 10);
+      if (y <= 1899) return "-";
 
       const today = new Date();
-      let years = today.getFullYear() - d.getFullYear();
-      let months = today.getMonth() - d.getMonth();
-      if (today.getDate() < d.getDate()) {
+      let years = today.getFullYear() - y;
+      let months = (today.getMonth() + 1) - m;
+      if (today.getDate() < d) {
         months--;
       }
       if (months < 0) {
@@ -601,8 +609,46 @@
         months += 12;
       }
       if (years < 0) return "-";
+      if (years === 0) return `${months} Bulan`;
+      return `${years} Tahun`;
+    }
+
+    // Perhitungan Dinamis Masa Kerja Karyawan (Tahun & Bulan)
+    function calculateEmployeeTenure(dateVal) {
+      if (!dateVal && dateVal !== 0) return "-";
+      const isoStr = parseExcelDate(dateVal);
+      if (!isoStr || !/^\d{4}-\d{2}-\d{2}$/.test(isoStr)) return "-";
+      const parts = isoStr.split('-');
+      const y = parseInt(parts[0], 10);
+      const m = parseInt(parts[1], 10);
+      const d = parseInt(parts[2], 10);
+      if (y <= 1899) return "-";
+
+      const today = new Date();
+      let years = today.getFullYear() - y;
+      let months = (today.getMonth() + 1) - m;
+      if (today.getDate() < d) {
+        months--;
+      }
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+      if (years < 0) return "-";
+      if (years === 0 && months === 0) return "Baru Bergabung";
+      if (years === 0) return `${months} Bulan`;
+      if (months === 0) return `${years} Tahun`;
       return `${years} Tahun ${months} Bulan`;
     }
+
+    // Perhitungan Dinamis Umur & Masa Kerja (Backward-Compatible Wrapper)
+    function calculateAgeAndService(dateVal, type = 'service') {
+      if (type === 'age') return calculateEmployeeAge(dateVal);
+      return calculateEmployeeTenure(dateVal);
+    }
+    window.calculateEmployeeAge = calculateEmployeeAge;
+    window.calculateEmployeeTenure = calculateEmployeeTenure;
+    window.calculateAgeAndService = calculateAgeAndService;
 
     function parseExcelTime(val) {
       if (val === null || val === undefined || val === '' || val === '-' || val === 'null' || val === 'undefined') return "";
@@ -721,12 +767,12 @@
         'name': ['divisi', 'name', 'unit', 'divisiName', 'namaDivisi', 'nama_divisi'],
         'name of organizational unit': ['dept', 'departemen', 'orgUnit', 'organizationalUnit', 'namaDepartemen', 'nama_departemen'],
         'job title': ['jabatan', 'jobTitle', 'job_title', 'posisi', 'role'],
-        'd.o.birth': ['tglLahir', 'tgl_lahir', 'dob', 'birthDate', 'dateOfBirth', 'tanggalLahir', 'tanggal_lahir'],
+        'd.o.birth': ['tglLahir', 'tgl_lahir', 'dob', 'birthDate', 'birth_date', 'dateOfBirth', 'date_of_birth', 'tanggalLahir', 'tanggal_lahir', 'tgl. lahir'],
         'gender text': ['gender', 'jenisKelamin', 'jenis_kelamin', 'jk', 'sex'],
         'religious denomination': ['agama', 'religion', 'religiousDenomination'],
         'ps group': ['psGroup', 'ps_group', 'golongan', 'pangkat'],
         'lvl': ['lvl', 'level'],
-        'date': ['date', 'joinDate', 'join_date', 'tglMasuk', 'tgl_masuk', 'effectiveDate', 'tanggal'],
+        'date': ['date', 'entry', 'entryDate', 'entry_date', 'joinDate', 'join_date', 'tglMasuk', 'tgl_masuk', 'tanggalMasuk', 'tanggal_masuk', 'tglGabung', 'tgl_gabung', 'tanggalGabung', 'tanggal_gabung', 'effectiveDate', 'tanggal', 'mulaiKerja', 'tglMulaiKerja'],
         'p0001-stext': ['p0001-stext', 'stext', 'p0001Stext', 'p0001_stext', 'deskripsiJabatan', 'struktur'],
         'business area': ['kodeBA', 'kode_ba', 'ba', 'businessArea', 'business_area', 'kodeCabang', 'kode_cabang'],
         'status_karyawan': ['statusKaryawan', 'status_karyawan', 'status', 'statusKeaktifan', 'status_keaktifan']
@@ -753,11 +799,11 @@
         const pg = findPSGroup(row);
         if (pg) return pg;
       }
-      if (normTarget === 'date') {
+      if (normTarget === 'date' || normTarget === 'entry' || normTarget === 'entry date' || normTarget === 'tanggal masuk' || normTarget === 'tgl masuk' || normTarget === 'tanggal gabung' || normTarget === 'tgl gabung' || normTarget === 'join date') {
         const dt = findDate(row);
         if (dt) return dt;
       }
-      if (normTarget === 'd.o.birth' || normTarget === 'tgl lahir' || normTarget === 'tanggal lahir' || normTarget === 'dob') {
+      if (normTarget === 'd.o.birth' || normTarget === 'tgl lahir' || normTarget === 'tanggal lahir' || normTarget === 'dob' || normTarget === 'date of birth') {
         const dob = findDOBirth(row);
         if (dob) return dob;
       }
@@ -813,50 +859,15 @@
         return "";
       }
 
-      if (val instanceof Date && !isNaN(val)) {
-        const y = val.getFullYear();
-        if (y <= 1899 || (y === 1900 && val.getMonth() === 0 && val.getDate() === 0)) return "";
-        const d = String(val.getDate()).padStart(2, '0');
-        const m = String(val.getMonth() + 1).padStart(2, '0');
-        return `${d}.${m}.${y}`;
-      }
-
-      // Format 6 digit DDMMYY (misal password login / format tglLahir sistem HR Astra)
-      if (/^\d{6}$/.test(s)) {
-        const d = s.slice(0, 2);
-        const m = s.slice(2, 4);
-        const yy = parseInt(s.slice(4, 6), 10);
-        const y = yy > 50 ? (1900 + yy) : (2000 + yy);
-        return `${d}.${m}.${y}`;
-      }
-      // Format 8 digit DDMMYYYY (misal 15051995)
-      if (/^\d{8}$/.test(s)) {
-        const d = s.slice(0, 2);
-        const m = s.slice(2, 4);
-        const y = s.slice(4, 8);
-        return `${d}.${m}.${y}`;
-      }
-      if (/^\d{2}[\.\/\-]\d{2}[\.\/\-]\d{4}$/.test(s)) {
-        return s.replace(/[\/\-]/g, '.');
-      }
-      if (/^\d{4}-\d{2}-\d{2}/.test(s)) {
-        const parts = s.slice(0, 10).split('-');
+      const iso = parseExcelDate(val);
+      if (iso && /^\d{4}-\d{2}-\d{2}$/.test(iso)) {
+        const parts = iso.split('-');
         if (parseInt(parts[0], 10) <= 1899) return "";
         return `${parts[2]}.${parts[1]}.${parts[0]}`;
       }
-      if (typeof val === 'number') {
-        if (val === 0 || val < 1) return "";
-        const date = new Date(Math.round((val - 25569) * 86400 * 1000));
-        if (!isNaN(date.getTime())) {
-          if (date.getFullYear() <= 1899) return "";
-          const d = String(date.getDate()).padStart(2, '0');
-          const m = String(date.getMonth() + 1).padStart(2, '0');
-          const y = date.getFullYear();
-          return `${d}.${m}.${y}`;
-        }
-      }
-      return s;
+      return "";
     }
+    window.formatDatabaseDate = formatDatabaseDate;
 
     // Helper Perhitungan Estimasi Keterlambatan Absensi (Asumsi Jam Masuk 08.00 WIB)
     function calculateLatenessInfo(timeVal, targetHour = 8, targetMinute = 0) {
@@ -1641,25 +1652,26 @@
       if (norm.includes('durasi kerja') || norm.includes('work hours')) {
         return `<span class="font-bold text-slate-900">${val} Jam</span>`;
       }
-      if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob') {
+      if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob' || norm === 'date of birth') {
         const dateStr = formatDatabaseDate(val);
         if (!dateStr || dateStr === '-') {
           return '<span class="text-slate-300">-</span>';
         }
-        const ageStr = calculateAgeAndService(val);
+        const ageStr = calculateEmployeeAge(val);
         if (ageStr !== '-') {
           return `<div><span class="font-medium text-slate-800">${dateStr}</span><span class="text-[10px] text-slate-400 block">${ageStr}</span></div>`;
         }
         return dateStr;
       }
-      if (norm === 'date' || norm === 'tanggal' || norm === 'tgl' || norm.includes('date clock')) {
+      if (norm === 'date' || norm === 'entry' || norm === 'entry date' || norm === 'tanggal masuk' || norm === 'tgl masuk' || norm === 'tanggal gabung' || norm === 'tgl gabung' || norm === 'join date' || norm === 'tanggal' || norm === 'tgl' || norm.includes('date clock')) {
         const dateStr = formatDatabaseDate(val);
         if (!dateStr || dateStr === '-') {
           return '<span class="text-slate-300">-</span>';
         }
         // Kalkulasi masa kerja HANYA untuk tanggal masuk (join date) di Master Karyawan, TIDAK untuk data absensi/kehadiran
-        if (norm === 'date' && context === 'Master_Karyawan') {
-          const serviceStr = calculateAgeAndService(val);
+        const isJoinDateCol = norm === 'date' || norm === 'entry' || norm === 'entry date' || norm === 'tanggal masuk' || norm === 'tgl masuk' || norm === 'tanggal gabung' || norm === 'tgl gabung' || norm === 'join date';
+        if (isJoinDateCol && context === 'Master_Karyawan') {
+          const serviceStr = calculateEmployeeTenure(val);
           if (serviceStr !== '-') {
             return `<div><span class="font-medium text-slate-800">${dateStr}</span><span class="text-[10px] text-slate-400 block">${serviceStr}</span></div>`;
           }
