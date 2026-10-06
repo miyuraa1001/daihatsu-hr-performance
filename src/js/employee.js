@@ -18,7 +18,7 @@
         for (const k of candidates) {
           if (e[k] !== undefined && e[k] !== null) {
             const val = String(e[k]).trim();
-            if (val !== '') {
+            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
               return formatDatabaseDate(e[k]);
             }
           }
@@ -27,8 +27,58 @@
           const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
           if (norm === 'dobirth' || norm === 'dob' || norm === 'tgllahir' || norm === 'tanggallahir' || norm === 'birthdate' || norm === 'dateofbirth') {
             const val = String(e[k] || '').trim();
-            if (val !== '') {
+            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
               return formatDatabaseDate(e[k]);
+            }
+          }
+        }
+        if (e.raw && typeof e.raw === 'object') {
+          for (const k of candidates) {
+            if (e.raw[k] !== undefined && e.raw[k] !== null) {
+              const val = String(e.raw[k]).trim();
+              if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                return formatDatabaseDate(e.raw[k]);
+              }
+            }
+          }
+        }
+        // Cross-reference by NPK across employeeList and master stores
+        const npk = safeString(e['Personnel no.'] || e.npk || e['NPK']).trim();
+        if (npk) {
+          const cleanNpk = npk.replace(/^0+/, '');
+          const sources = [
+            window.masterFullPayload?.employeeList,
+            currentDashboardPayload?.employeeList,
+            window.fullUnscopedPayload?.employeeList,
+            window.masterFullPayload?.rawTables?.Master_Karyawan,
+            currentDashboardPayload?.rawTables?.Master_Karyawan
+          ];
+          for (const src of sources) {
+            if (!Array.isArray(src)) continue;
+            const match = src.find(item => {
+              if (!item || item === e) return false;
+              const itemNpk = safeString(item['Personnel no.'] || item.npk || item['NPK']).trim();
+              return itemNpk === npk || (cleanNpk && itemNpk.replace(/^0+/, '') === cleanNpk);
+            });
+            if (match) {
+              for (const k of candidates) {
+                if (match[k] !== undefined && match[k] !== null) {
+                  const val = String(match[k]).trim();
+                  if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                    return formatDatabaseDate(match[k]);
+                  }
+                }
+              }
+              if (match.raw && typeof match.raw === 'object') {
+                for (const k of candidates) {
+                  if (match.raw[k] !== undefined && match.raw[k] !== null) {
+                    const val = String(match.raw[k]).trim();
+                    if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                      return formatDatabaseDate(match.raw[k]);
+                    }
+                  }
+                }
+              }
             }
           }
         }
@@ -82,14 +132,64 @@
         for (const k of candidates) {
           if (e[k] !== undefined && e[k] !== null) {
             const val = String(e[k]).trim();
-            if (val !== '') return formatDatabaseDate(e[k]);
+            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') return formatDatabaseDate(e[k]);
           }
         }
         for (const k of Object.keys(e)) {
           const norm = k.toLowerCase().replace(/[\s\-_]+/g, '');
           if (norm === 'date' || norm === 'joindate' || norm === 'tglmasuk' || norm === 'tanggal') {
             const val = String(e[k] || '').trim();
-            if (val !== '') return formatDatabaseDate(e[k]);
+            if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') return formatDatabaseDate(e[k]);
+          }
+        }
+        if (e.raw && typeof e.raw === 'object') {
+          for (const k of candidates) {
+            if (e.raw[k] !== undefined && e.raw[k] !== null) {
+              const val = String(e.raw[k]).trim();
+              if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                return formatDatabaseDate(e.raw[k]);
+              }
+            }
+          }
+        }
+        // Cross-reference by NPK across employeeList and master stores
+        const npk = safeString(e['Personnel no.'] || e.npk || e['NPK']).trim();
+        if (npk) {
+          const cleanNpk = npk.replace(/^0+/, '');
+          const sources = [
+            window.masterFullPayload?.employeeList,
+            currentDashboardPayload?.employeeList,
+            window.fullUnscopedPayload?.employeeList,
+            window.masterFullPayload?.rawTables?.Master_Karyawan,
+            currentDashboardPayload?.rawTables?.Master_Karyawan
+          ];
+          for (const src of sources) {
+            if (!Array.isArray(src)) continue;
+            const match = src.find(item => {
+              if (!item || item === e) return false;
+              const itemNpk = safeString(item['Personnel no.'] || item.npk || item['NPK']).trim();
+              return itemNpk === npk || (cleanNpk && itemNpk.replace(/^0+/, '') === cleanNpk);
+            });
+            if (match) {
+              for (const k of candidates) {
+                if (match[k] !== undefined && match[k] !== null) {
+                  const val = String(match[k]).trim();
+                  if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                    return formatDatabaseDate(match[k]);
+                  }
+                }
+              }
+              if (match.raw && typeof match.raw === 'object') {
+                for (const k of candidates) {
+                  if (match.raw[k] !== undefined && match.raw[k] !== null) {
+                    const val = String(match.raw[k]).trim();
+                    if (val !== '' && val !== '-' && val !== '0' && val !== '1899-12-30') {
+                      return formatDatabaseDate(match.raw[k]);
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }

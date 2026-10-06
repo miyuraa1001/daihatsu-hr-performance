@@ -592,9 +592,54 @@
             <option value="Action" ${val.toLowerCase() === 'action' ? 'selected' : ''}>Action</option>
           </select>
         `;
+      } else if (norm === 'p.subarea' || norm === 'subarea' || (sheetName === 'Master_Karyawan' && norm === 'cabang')) {
+        const knownBranches = (typeof KNOWN_BRANCHES !== 'undefined' && Array.isArray(KNOWN_BRANCHES)) ? KNOWN_BRANCHES : [
+          { code: 'D660', name: 'Lampung A Yani' },
+          { code: 'D661', name: 'Lampung S Hatta' },
+          { code: 'D662', name: 'Bandarjaya' },
+          { code: 'D663', name: 'Lampung Utara' },
+          { code: 'D664', name: 'Lampung Timur' }
+        ];
+        const currentNorm = typeof resolveBranchInfo === 'function' ? resolveBranchInfo(val) : null;
+        const currentBranchName = currentNorm ? currentNorm.name : val;
+        const isCustom = val && !knownBranches.some(b => b.name.toLowerCase() === val.toLowerCase() || b.code.toLowerCase() === val.toLowerCase());
+        inputHtml = `
+          <select name="${col}" id="edit-subarea-select" onchange="syncEditBranchSubarea(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">
+            <option value="">-- Pilih Cabang DSO --</option>
+            ${knownBranches.map(b => `<option value="${b.name}" data-ba="${b.code}" ${currentBranchName && (currentBranchName.toLowerCase() === b.name.toLowerCase() || currentBranchName.toUpperCase() === b.code) ? 'selected' : ''}>${b.name} (${b.code})</option>`).join('')}
+            ${isCustom ? `<option value="${val}" selected>${val}</option>` : ''}
+          </select>
+        `;
+      } else if (norm === 'business area' || norm === 'kode ba') {
+        const knownBranches = (typeof KNOWN_BRANCHES !== 'undefined' && Array.isArray(KNOWN_BRANCHES)) ? KNOWN_BRANCHES : [
+          { code: 'D660', name: 'Lampung A Yani' },
+          { code: 'D661', name: 'Lampung S Hatta' },
+          { code: 'D662', name: 'Bandarjaya' },
+          { code: 'D663', name: 'Lampung Utara' },
+          { code: 'D664', name: 'Lampung Timur' }
+        ];
+        const currentNormCode = typeof resolveBACode === 'function' ? resolveBACode(val) : val;
+        const isCustom = val && !knownBranches.some(b => b.code.toUpperCase() === String(val).toUpperCase());
+        inputHtml = `
+          <select name="${col}" id="edit-business-area-select" onchange="syncEditBranchBACode(this.value)" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">
+            <option value="">-- Pilih Kode BA --</option>
+            ${knownBranches.map(b => `<option value="${b.code}" data-subarea="${b.name}" ${currentNormCode && currentNormCode.toUpperCase() === b.code ? 'selected' : ''}>${b.code} - ${b.name}</option>`).join('')}
+            ${isCustom ? `<option value="${val}" selected>${val}</option>` : ''}
+          </select>
+        `;
       } else if (norm.includes('date') || norm === 'd.o.birth' || norm.includes('tgl') || norm.includes('tanggal')) {
-        const dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(val) : val;
-        inputHtml = `<input type="date" name="${col}" value="${dateVal}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
+        let dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(val) : val;
+        // Jika belum valid YYYY-MM-DD, lakukan fallback cerdas melalui findDOBirth / findDate
+        if (!dateVal || !/^\d{4}-\d{2}-\d{2}$/.test(dateVal)) {
+          if (norm === 'd.o.birth' || norm === 'tanggal lahir' || norm === 'tgl lahir' || norm === 'dob') {
+            const fbDob = typeof findDOBirth === 'function' ? findDOBirth(row) : '';
+            if (fbDob) dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(fbDob) : fbDob;
+          } else if (norm === 'date' || norm === 'tanggal' || norm === 'join date' || norm === 'tgl masuk') {
+            const fbDate = typeof findDate === 'function' ? findDate(row) : '';
+            if (fbDate) dateVal = typeof parseExcelDate === 'function' ? parseExcelDate(fbDate) : fbDate;
+          }
+        }
+        inputHtml = `<input type="date" name="${col}" value="${dateVal || ''}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-red-500 bg-white cursor-pointer">`;
       } else if (norm.includes('time') || norm.includes('jam')) {
         inputHtml = `<input type="time" name="${col}" value="${val}" class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-red-500 bg-white">`;
       } else if (norm.includes('durasi kerja') || norm.includes('work hours')) {
@@ -618,6 +663,31 @@
       `;
     }
 
+    // Helper sinkronisasi dua arah Cabang & Kode BA pada form edit
+    function syncEditBranchSubarea(branchName) {
+      if (!branchName) return;
+      const baSelect = document.getElementById('edit-business-area-select');
+      if (baSelect) {
+        const info = typeof resolveBranchInfo === 'function' ? resolveBranchInfo(branchName) : null;
+        if (info && info.code) {
+          baSelect.value = info.code;
+        }
+      }
+    }
+    window.syncEditBranchSubarea = syncEditBranchSubarea;
+
+    function syncEditBranchBACode(baCode) {
+      if (!baCode) return;
+      const subareaSelect = document.getElementById('edit-subarea-select');
+      if (subareaSelect) {
+        const info = typeof resolveBranchInfo === 'function' ? resolveBranchInfo(baCode) : null;
+        if (info && info.name) {
+          subareaSelect.value = info.name;
+        }
+      }
+    }
+    window.syncEditBranchBACode = syncEditBranchBACode;
+
     function openEditRowModal(sheetName, rowIndex) {
       if (!isUserAdmin(loggedInUser)) {
         showToast("Akses ditolak: Hanya Admin yang memiliki wewenang mengedit data.");
@@ -627,6 +697,26 @@
       if (!schema || !currentDashboardPayload?.rawTables?.[sheetName]) return;
       const row = currentDashboardPayload.rawTables[sheetName][rowIndex];
       if (!row) return;
+
+      if (sheetName === 'Master_Karyawan') {
+        // Sinkronkan atribut tanggal dan penempatan kerja agar tidak kosong saat form dibuka
+        if (!row['D.o.birth'] || row['D.o.birth'] === '-' || row['D.o.birth'] === '0' || row['D.o.birth'] === '1899-12-30') {
+          const dob = typeof findDOBirth === 'function' ? findDOBirth(row) : '';
+          if (dob) row['D.o.birth'] = dob;
+        }
+        if (!row['Date'] || row['Date'] === '-' || row['Date'] === '0' || row['Date'] === '1899-12-30') {
+          const jDate = typeof findDate === 'function' ? findDate(row) : '';
+          if (jDate) row['Date'] = jDate;
+        }
+        if (!row['P.subarea'] || row['P.subarea'] === '-' || row['P.subarea'] === '0') {
+          const br = row.cabang || row['Cabang'] || (typeof resolveBranchInfo === 'function' ? resolveBranchInfo(row['Business area'] || row.kodeBA)?.name : '');
+          if (br) row['P.subarea'] = br;
+        }
+        if (!row['Business area'] || row['Business area'] === '-' || row['Business area'] === '0') {
+          const ba = row.kodeBA || row['Kode BA'] || (typeof resolveBACode === 'function' ? resolveBACode(row['P.subarea'] || row.cabang) : '');
+          if (ba) row['Business area'] = ba;
+        }
+      }
 
       document.getElementById('edit-row-sheet').value = sheetName;
       document.getElementById('edit-row-index').value = rowIndex;
@@ -785,7 +875,15 @@
 
       schema.columns.forEach(col => {
         const val = formData.get(col);
+        const norm = normalizeHeaderName(col);
         if (val !== null && val !== undefined) {
+          // Jangan timpa tanggal valid yang sudah ada jika input form kosong
+          if ((norm.includes('date') || norm === 'd.o.birth' || norm.includes('tgl') || norm.includes('tanggal')) && String(val).trim() === '') {
+            const existingVal = targetRow[col];
+            if (existingVal && existingVal !== '-' && existingVal !== '0' && existingVal !== '1899-12-30') {
+              return;
+            }
+          }
           targetRow[col] = castSchemaValue(col, val, rowIndex + 1);
         }
       });
@@ -843,6 +941,8 @@
               emp['Contract'] = targetRow['Contract'];
               emp.joinDate = targetRow['Date'] || emp.joinDate;
               emp.tglLahir = targetRow['D.o.birth'] || emp.tglLahir;
+              emp.umurText = calculateAgeAndService(emp.tglLahir);
+              emp.masaKerjaText = calculateAgeAndService(emp.joinDate);
               emp.gender = targetRow['Gender text'] || emp.gender;
               emp.agama = targetRow['Religious denomination'] || emp.agama;
               emp.psGroup = targetRow['PS group'] || emp.psGroup;

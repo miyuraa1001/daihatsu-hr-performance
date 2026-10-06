@@ -476,30 +476,88 @@
         return "";
       }
       if (val instanceof Date) {
-        if (val.getFullYear() <= 1899) return "";
-        return val.toISOString().slice(0, 10);
+        if (isNaN(val.getTime()) || val.getFullYear() <= 1899) return "";
+        const y = val.getFullYear();
+        const m = String(val.getMonth() + 1).padStart(2, '0');
+        const d = String(val.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}`;
       }
-      if (typeof val === 'number') {
-        if (val <= 0 || val < 1) return "";
-        const date = new Date(Math.round((val - 25569) * 86400 * 1000));
-        if (date.getFullYear() <= 1899) return "";
-        return date.toISOString().slice(0, 10);
-      }
-      if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
-        if (parseInt(s.slice(0, 4), 10) <= 1899) return "";
-        return s;
-      }
-      const parts = s.split(/[\/\-\.]/);
-      if (parts.length === 3) {
-        if (parts[0].length === 4) {
-          if (parseInt(parts[0], 10) <= 1899) return "";
-          return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-        } else if (parts[2].length === 4) {
-          if (parseInt(parts[2], 10) <= 1899) return "";
-          return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+      // Numeric serial (number OR numeric string, e.g. 34567 or "34567")
+      const numVal = (typeof val === 'number') ? val : (/^\d{4,5}(\.\d+)?$/.test(s) ? Number(s) : NaN);
+      if (!isNaN(numVal) && numVal > 10000 && numVal < 80000) {
+        const d = new Date(Math.round((numVal - 25569) * 86400 * 1000));
+        if (!isNaN(d.getTime()) && d.getFullYear() > 1899) {
+          const y = d.getUTCFullYear();
+          const m = String(d.getUTCMonth() + 1).padStart(2, '0');
+          const dt = String(d.getUTCDate()).padStart(2, '0');
+          return `${y}-${m}-${dt}`;
         }
       }
-      return s;
+      // ISO date string starting with YYYY-MM-DD (including timestamps like 1995-05-15T00:00:00.000Z)
+      const isoMatch = s.match(/^(\d{4})[-\/\.](\d{1,2})[-\/\.](\d{1,2})/);
+      if (isoMatch) {
+        const y = parseInt(isoMatch[1], 10);
+        if (y <= 1899) return "";
+        const m = String(parseInt(isoMatch[2], 10)).padStart(2, '0');
+        const d = String(parseInt(isoMatch[3], 10)).padStart(2, '0');
+        return `${y}-${m}-${d}`;
+      }
+      // DD.MM.YYYY, DD/MM/YYYY, DD-MM-YYYY (or with 2-digit year)
+      const dmyMatch = s.match(/^(\d{1,2})[\/\-\.](\d{1,2})[\/\-\.](\d{2,4})/);
+      if (dmyMatch) {
+        const d = String(parseInt(dmyMatch[1], 10)).padStart(2, '0');
+        const m = String(parseInt(dmyMatch[2], 10)).padStart(2, '0');
+        let y = parseInt(dmyMatch[3], 10);
+        if (dmyMatch[3].length === 2) {
+          y = y > 50 ? (1900 + y) : (2000 + y);
+        }
+        if (y <= 1899) return "";
+        return `${y}-${m}-${d}`;
+      }
+      // 8-digit numeric string (DDMMYYYY or YYYYMMDD)
+      if (/^\d{8}$/.test(s)) {
+        if (s.startsWith('19') || s.startsWith('20')) {
+          return `${s.slice(0, 4)}-${s.slice(4, 6)}-${s.slice(6, 8)}`;
+        } else {
+          return `${s.slice(4, 8)}-${s.slice(2, 4)}-${s.slice(0, 2)}`;
+        }
+      }
+      // 6-digit numeric string (DDMMYY)
+      if (/^\d{6}$/.test(s)) {
+        const d = s.slice(0, 2);
+        const m = s.slice(2, 4);
+        const yy = parseInt(s.slice(4, 6), 10);
+        const y = yy > 50 ? (1900 + yy) : (2000 + yy);
+        return `${y}-${m}-${d}`;
+      }
+      // Date with text month (e.g. 15 Mei 1995, 15 May 1995, 15-Mei-1995)
+      const textMonthMatch = s.match(/^(\d{1,2})[\s\-\/\.]([a-zA-Z]+)[\s\-\/\.](\d{2,4})/);
+      if (textMonthMatch) {
+        const d = String(parseInt(textMonthMatch[1], 10)).padStart(2, '0');
+        const mName = textMonthMatch[2].toLowerCase();
+        const m = {
+          'januari': '01', 'jan': '01', 'january': '01',
+          'februari': '02', 'feb': '02', 'february': '02',
+          'maret': '03', 'mar': '03', 'march': '03',
+          'april': '04', 'apr': '04',
+          'mei': '05', 'may': '05',
+          'juni': '06', 'jun': '06', 'june': '06',
+          'juli': '07', 'jul': '07', 'july': '07',
+          'agustus': '08', 'agu': '08', 'agt': '08', 'aug': '08', 'august': '08',
+          'september': '09', 'sep': '09',
+          'oktober': '10', 'okt': '10', 'oct': '10', 'october': '10',
+          'november': '11', 'nov': '11',
+          'desember': '12', 'des': '12', 'dec': '12', 'december': '12'
+        }[mName];
+        if (m) {
+          let y = parseInt(textMonthMatch[3], 10);
+          if (textMonthMatch[3].length === 2) {
+            y = y > 50 ? (1900 + y) : (2000 + y);
+          }
+          if (y > 1899) return `${y}-${m}-${d}`;
+        }
+      }
+      return "";
     }
     window.parseExcelDate = parseExcelDate;
 
