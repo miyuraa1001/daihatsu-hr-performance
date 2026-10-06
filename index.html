@@ -919,12 +919,15 @@
                 <p class="text-xs text-slate-500">Basis data profil kepegawaian, penempatan cabang, divisi, dan status kontrak kerja.</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
               <button onclick="openUploadModal('Master_Karyawan')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-blue-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload Master (.xlsx)
               </button>
               <button type="button" onclick="exportModuleTableToExcel('Master_Karyawan')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 text-emerald-800 rounded-xl text-xs font-bold shadow-2xs transition flex items-center justify-center gap-1.5 cursor-pointer" title="Ekspor Data Master Karyawan ke Excel (.xlsx)">
                 <i class="fa-solid fa-file-excel text-emerald-600"></i> Ekspor Excel
+              </button>
+              <button type="button" onclick="toggleModuleInsight('mk')" id="btn-toggle-insight-mk" class="flex-1 sm:flex-initial px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs" title="Sembunyikan/Tampilkan Bagian Insight">
+                <i class="fa-solid fa-eye-slash text-slate-500"></i> <span>Sembunyikan Insight</span>
               </button>
             </div>
           </div>
@@ -956,7 +959,7 @@
           <!-- ======================================================== -->
           <!-- STRUKTUR HIRARKI 3 PILAR DSO & INSIGHT MASTER KARYAWAN -->
           <!-- ======================================================== -->
-          
+          <div id="mk-insight-container">
           <!-- Section Header: Struktur Hirarki 3 Pilar DSO -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
             <div class="flex items-center gap-3.5">
@@ -1175,6 +1178,7 @@
               </div>
             </div>
           </div>
+          </div> <!-- End mk-insight-container -->
 
           <!-- ======================================================== -->
           <!-- DATA KARYAWAN TABLE SECTION -->
@@ -1265,17 +1269,21 @@
                 <p class="text-xs text-slate-500">Monitoring kehadiran, kepatuhan jam kerja, dan tracking ketidakhadiran karyawan.</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
               <button onclick="openUploadModal('Data_Kehadiran')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-emerald-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload Kehadiran (.xlsx)
               </button>
               <button onclick="exportModuleTableToExcel('Data_Kehadiran')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
               </button>
+              <button type="button" onclick="toggleModuleInsight('abs')" id="btn-toggle-insight-abs" class="flex-1 sm:flex-initial px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs" title="Sembunyikan/Tampilkan Bagian Insight">
+                <i class="fa-solid fa-eye-slash text-slate-500"></i> <span>Sembunyikan Insight</span>
+              </button>
             </div>
           </div>
 
           <!-- Cards Summary Absensi (4 Kategori Monitoring HO & HRD) -->
+          <div id="abs-insight-container">
           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
             <!-- 1. Total Presensi & Log -->
             <div id="abs-kpi-card-all" onclick="quickFilterAbsensi('ALL')" title="Klik untuk tampilkan semua log presensi" class="bg-white rounded-2xl p-3 sm:p-3.5 border border-slate-200/80 shadow-card hover:border-blue-300 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between">
@@ -1371,6 +1379,7 @@
             <span id="abs-card-telat" class="hidden"></span>
             <span id="abs-card-status-badge" class="hidden"></span>
           </div>
+          </div> <!-- End abs-insight-container -->
 
           <!-- Table Container Absensi -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
@@ -1468,16 +1477,21 @@
                 <p class="text-xs text-slate-500">Inisiatif perbaikan berkelanjutan, efisiensi kerja, dan keterlibatan staf per cabang.</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
               <button onclick="openUploadModal('Data_SS')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-amber-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload SS (.xlsx)
               </button>
               <button onclick="exportModuleTableToExcel('Data_SS')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
               </button>
+              <button type="button" onclick="toggleModuleInsight('ss')" id="btn-toggle-insight-ss" class="flex-1 sm:flex-initial px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs" title="Sembunyikan/Tampilkan Bagian Insight">
+                <i class="fa-solid fa-eye-slash text-slate-500"></i> <span>Sembunyikan Insight</span>
+              </button>
             </div>
           </div>
 
+          <!-- Cards Summary SS -->
+          <div id="ss-insight-container" class="space-y-4">
           <!-- Cards Summary SS (Row 1: 2 Executive Performance Cards) -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <!-- 1. Total Usulan Ide SS -->
@@ -1549,6 +1563,7 @@
               <!-- 6 Kartu Status Reward Sesuai Database & SOP ADM (Di-render Dinamis oleh JS) -->
             </div>
           </div>
+          </div> <!-- End ss-insight-container -->
 
           <!-- Table Container SS -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
@@ -1606,17 +1621,21 @@
                 <p class="text-xs text-slate-500">Aktivitas gugus kerja dalam inovasi dan problem solving mutu kerja berbasis status progres proyek (Progress & Finish).</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
               <button onclick="openUploadModal('Data_QCC')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-purple-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload QCC (.xlsx)
               </button>
               <button onclick="exportModuleTableToExcel('Data_QCC')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
               </button>
+              <button type="button" onclick="toggleModuleInsight('qcc')" id="btn-toggle-insight-qcc" class="flex-1 sm:flex-initial px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs" title="Sembunyikan/Tampilkan Bagian Insight">
+                <i class="fa-solid fa-eye-slash text-slate-500"></i> <span>Sembunyikan Insight</span>
+              </button>
             </div>
           </div>
 
           <!-- Cards Summary QCC -->
+          <div id="qcc-insight-container">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Circle QCC Terdaftar</span>
@@ -1666,6 +1685,7 @@
               </div>
             </div>
           </div>
+          </div> <!-- End qcc-insight-container -->
 
           <!-- Table Container QCC -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
@@ -1717,17 +1737,21 @@
                 <p class="text-xs text-slate-500">Pencatatan sanksi disiplin kerja, pembinaan tata tertib, dan rekam jejak kepatuhan staf.</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
               <button onclick="openUploadModal('Data_SP')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-red-50 hover:bg-red-100 text-red-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-red-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i> Upload Data SP (.xlsx)
               </button>
               <button onclick="exportModuleTableToExcel('Data_SP')" class="flex-1 sm:flex-initial px-3.5 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold shadow-sm transition flex items-center justify-center gap-1.5">
                 <i class="fa-solid fa-download text-slate-500"></i> Ekspor Excel
               </button>
+              <button type="button" onclick="toggleModuleInsight('sp')" id="btn-toggle-insight-sp" class="flex-1 sm:flex-initial px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs" title="Sembunyikan/Tampilkan Bagian Insight">
+                <i class="fa-solid fa-eye-slash text-slate-500"></i> <span>Sembunyikan Insight</span>
+              </button>
             </div>
           </div>
 
           <!-- Cards Summary SP -->
+          <div id="sp-insight-container">
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-3.5">
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card">
               <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider block mb-1">Total Sanksi Aktif</span>
@@ -1775,6 +1799,7 @@
               </div>
             </div>
           </div>
+          </div> <!-- End sp-insight-container -->
 
           <!-- Table Container SP -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">
@@ -1833,7 +1858,7 @@
                 <p class="text-xs text-slate-500 font-medium">Bank Pengetahuan, Repositori Berbagi Praktik Terbaik & Inovasi Kerja</p>
               </div>
             </div>
-            <div class="flex items-center gap-2 w-full sm:w-auto">
+            <div class="flex items-center gap-2 w-full sm:w-auto flex-wrap">
               <button onclick="openUploadModal('Knowledge_management')" class="admin-only-action flex-1 sm:flex-initial px-3.5 py-2 bg-cyan-50 hover:bg-cyan-100 text-cyan-700 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 border border-cyan-200">
                 <i class="fa-solid fa-cloud-arrow-up"></i>
                 <span>Import KM (.xlsx / .csv)</span>
@@ -1842,10 +1867,14 @@
                 <i class="fa-solid fa-file-excel text-emerald-600"></i>
                 <span>Ekspor Excel</span>
               </button>
+              <button type="button" onclick="toggleModuleInsight('km')" id="btn-toggle-insight-km" class="flex-1 sm:flex-initial px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs" title="Sembunyikan/Tampilkan Bagian Insight">
+                <i class="fa-solid fa-eye-slash text-slate-500"></i> <span>Sembunyikan Insight</span>
+              </button>
             </div>
           </div>
 
           <!-- KPI Summary Cards KM -->
+          <div id="km-insight-container">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             <div class="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-card flex items-center justify-between">
               <div>
@@ -1891,6 +1920,7 @@
               </div>
             </div>
           </div>
+          </div> <!-- End km-insight-container -->
 
           <!-- Table Container KM -->
           <div class="bg-white rounded-2xl p-4 sm:p-5 border border-slate-200/80 shadow-card">

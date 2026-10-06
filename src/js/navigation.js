@@ -631,6 +631,19 @@
       if (typeof initAllColumnToggleButtons === 'function') {
         initAllColumnToggleButtons();
       }
+      // Pastikan tampilan insight modul sesuai preferensi tersimpan
+      const viewToKey = {
+        'master-karyawan': 'mk',
+        'absensi': 'abs',
+        'ss': 'ss',
+        'qcc': 'qcc',
+        'sp': 'sp',
+        'km': 'km'
+      };
+      if (viewToKey[viewId]) {
+        updateModuleInsightUI(viewToKey[viewId]);
+      }
+
       if (currentDashboardPayload) {
         if (viewId === 'master-karyawan') filterMasterKaryawanTable();
         else if (viewId === 'absensi') filterAbsensiTable();
@@ -658,4 +671,87 @@
         document.getElementById('sidebar').classList.add('-translate-x-full');
         document.getElementById('mobile-sidebar-overlay').classList.add('hidden');
       }
+    }
+
+    // ========================================================
+    // MODUL INSIGHT TOGGLE SYSTEM (SEMBUNYIKAN / TAMPILKAN INSIGHT)
+    // ========================================================
+
+    window.moduleInsightState = {
+      mk: true,
+      abs: true,
+      ss: true,
+      qcc: true,
+      sp: true,
+      km: true
+    };
+
+    function initModuleInsights() {
+      try {
+        const saved = localStorage.getItem('dperform_module_insights');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          Object.keys(window.moduleInsightState).forEach(k => {
+            if (typeof parsed[k] === 'boolean') {
+              window.moduleInsightState[k] = parsed[k];
+            }
+          });
+        }
+      } catch (e) {
+        console.error('Error loading insight prefs:', e);
+      }
+      Object.keys(window.moduleInsightState).forEach(k => {
+        updateModuleInsightUI(k);
+      });
+    }
+
+    function toggleModuleInsight(key) {
+      if (window.moduleInsightState[key] === undefined) {
+        window.moduleInsightState[key] = true;
+      }
+      window.moduleInsightState[key] = !window.moduleInsightState[key];
+      try {
+        localStorage.setItem('dperform_module_insights', JSON.stringify(window.moduleInsightState));
+      } catch (e) {
+        console.error('Error saving insight prefs:', e);
+      }
+      updateModuleInsightUI(key);
+    }
+
+    function updateModuleInsightUI(key) {
+      const container = document.getElementById(`${key}-insight-container`);
+      const btn = document.getElementById(`btn-toggle-insight-${key}`);
+      const isVisible = window.moduleInsightState[key] !== false; // default true
+
+      if (container) {
+        if (isVisible) {
+          container.classList.remove('hidden');
+        } else {
+          container.classList.add('hidden');
+        }
+      }
+
+      if (btn) {
+        if (isVisible) {
+          btn.innerHTML = `<i class="fa-solid fa-eye-slash text-slate-500"></i> <span>Sembunyikan Insight</span>`;
+          btn.className = "flex-1 sm:flex-initial px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs";
+          btn.title = "Sembunyikan bagian insight & analitik";
+        } else {
+          btn.innerHTML = `<i class="fa-solid fa-eye text-indigo-600"></i> <span>Tampilkan Insight</span>`;
+          btn.className = "flex-1 sm:flex-initial px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs";
+          btn.title = "Tampilkan bagian insight & analitik";
+        }
+      }
+    }
+
+    window.toggleModuleInsight = toggleModuleInsight;
+    window.updateModuleInsightUI = updateModuleInsightUI;
+    window.initModuleInsights = initModuleInsights;
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => {
+        initModuleInsights();
+      });
+    } else {
+      initModuleInsights();
     }
