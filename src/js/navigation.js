@@ -733,13 +733,23 @@
 
       if (btn) {
         if (isVisible) {
-          btn.innerHTML = `<i class="fa-solid fa-eye-slash text-slate-500"></i> <span>Sembunyikan Insight</span>`;
-          btn.className = "flex-1 sm:flex-initial px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs";
-          btn.title = "Sembunyikan bagian insight & analitik";
+          btn.innerHTML = `
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 group-hover:scale-125 transition-transform"></span>
+            <i class="fa-solid fa-eye-slash text-slate-400 group-hover:text-slate-600 text-xs transition-colors"></i>
+            <span>Sembunyikan Insight</span>
+            <i class="fa-solid fa-chevron-up text-[9px] text-slate-400 group-hover:text-slate-600 transition-transform"></i>
+          `;
+          btn.className = "group flex-1 sm:flex-initial px-3.5 py-2 bg-white hover:bg-slate-50 active:bg-slate-100 text-slate-700 hover:text-slate-900 border border-slate-200/90 rounded-xl text-xs font-bold transition-all shadow-2xs hover:shadow-xs flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap";
+          btn.title = "Sembunyikan bagian insight analitik";
         } else {
-          btn.innerHTML = `<i class="fa-solid fa-eye text-indigo-600"></i> <span>Tampilkan Insight</span>`;
-          btn.className = "flex-1 sm:flex-initial px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs";
-          btn.title = "Tampilkan bagian insight & analitik";
+          btn.innerHTML = `
+            <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+            <i class="fa-solid fa-eye text-indigo-600 text-xs"></i>
+            <span>Tampilkan Insight</span>
+            <i class="fa-solid fa-chevron-down text-[9px] text-indigo-500 transition-transform"></i>
+          `;
+          btn.className = "group flex-1 sm:flex-initial px-3.5 py-2 bg-indigo-50/90 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition-all shadow-2xs hover:shadow-xs flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap";
+          btn.title = "Tampilkan kembali bagian insight analitik";
         }
       }
     }
