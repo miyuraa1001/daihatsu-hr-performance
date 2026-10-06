@@ -316,7 +316,7 @@ daihatsu-hr-performance/
 │   ├── css/
 │   │   └── style.css           # Kustomisasi UI: thin scrollbar, status tab aktif, backdrop blur, reset select
 │   │
-│   └── js/                     # Modul JavaScript Berbasis Vanilla ES6+ (Separated Modules)
+│   └── js/                     # Modul JavaScript Berbasis Vanilla ES6+ (Separated Modules) 
 │       ├── api.js              # State global, SCHEMAS baku (6 modul), alias header, daftar cabang resmi,
 │       │                       # standar SOP PPHK ADM, dan fungsi parsing/formatting (tanggal/waktu/umur)
 │       ├── auth.js             # Autentikasi sesi: Login, Logout, toggle password, persistensi 'Ingat Saya'
