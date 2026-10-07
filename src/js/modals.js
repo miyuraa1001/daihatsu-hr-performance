@@ -1420,17 +1420,19 @@
         showToast(`Skema untuk '${targetSheet}' tidak ditemukan!`);
         return;
       }
-      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) {
+      const fullMaster = window.masterFullPayload || window.fullUnscopedPayload || currentDashboardPayload;
+      if (!fullMaster || !fullMaster.rawTables) {
         showToast("Data tabel belum siap diekspor.");
         return;
       }
 
-      const isAdmin = isUserAdmin(loggedInUser);
-      const userBranchCode = getUserBranchCode(loggedInUser);
+      const currentUser = (typeof loggedInUser !== 'undefined' && loggedInUser) ? loggedInUser : (typeof window !== 'undefined' ? window.loggedInUser : null);
+      const isAdmin = isUserAdmin(currentUser);
+      const userBranchCode = getUserBranchCode(currentUser);
 
-      let rawRows = currentDashboardPayload.rawTables[targetSheet] || [];
-      if (!rawRows.length && targetSheet === 'Master_Karyawan' && currentDashboardPayload.employeeList) {
-        rawRows = currentDashboardPayload.employeeList;
+      let rawRows = fullMaster.rawTables[targetSheet] || (targetSheet === 'Knowledge_management' ? fullMaster.rawTables.Data_KM : []) || [];
+      if (!rawRows.length && targetSheet === 'Master_Karyawan' && fullMaster.employeeList) {
+        rawRows = fullMaster.employeeList;
       }
 
       if (!rawRows.length) {
@@ -1736,6 +1738,315 @@
           const fileName = `Data_Kehadiran_${selectedMonth}_${targetYear || '2026'}_${new Date().toISOString().slice(0, 10)}.xlsx`;
           XLSX.writeFile(wb, fileName);
           showToast(`Berkas ${fileName} berhasil diunduh (Sheet Rekap Karyawan & Sheet Log Harian ${selectedMonth})!`);
+          return;
+        }
+      } else if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
+        const fullMaster = window.masterFullPayload || window.fullUnscopedPayload || currentDashboardPayload;
+        let kmRows = (fullMaster.rawTables?.Knowledge_management || fullMaster.rawTables?.Data_KM || currentDashboardPayload.rawTables?.Knowledge_management || rawRows || []);
+
+        const kmBranchVal = document.getElementById('km-filter-cabang')?.value || document.getElementById('branch-select')?.value || 'ALL';
+        const targetBranch = isAdmin ? kmBranchVal : userBranchCode;
+        const selectedMonth = document.getElementById('month-select')?.value || 'ALL';
+        const selectedYear = document.getElementById('year-select')?.value || 'ALL';
+
+        // 1. Filter raw KM records by branch
+        if (targetBranch !== 'ALL') {
+          kmRows = kmRows.filter(e => matchBranch(e, targetBranch));
+        } else {
+          kmRows = kmRows.filter(e => isLampungBranch(e));
+        }
+
+        // 2. Tentukan targetYear (Tahun target)
+        let targetYear = null;
+        if (selectedYear !== 'ALL') {
+          targetYear = parseInt(selectedYear, 10);
+        } else {
+          const yearCounts = {};
+          kmRows.forEach(r => {
+            const parsed = extractRowMonthYear(r);
+            if (parsed && parsed.year) {
+              yearCounts[parsed.year] = (yearCounts[parsed.year] || 0) + 1;
+            }
+          });
+          const years = Object.keys(yearCounts).map(Number).sort((a, b) => b - a);
+          targetYear = years.length > 0 ? years[0] : new Date().getFullYear();
+        }
+
+        // Filter KM rows yang masuk dalam targetYear
+        const yearKmRows = kmRows.filter(r => {
+          const parsed = extractRowMonthYear(r);
+          return !parsed || parsed.year === targetYear;
+        });
+
+        // 3. Ambil daftar seluruh Master Karyawan untuk rekap
+        let masterEmps = (fullMaster.rawTables?.Master_Karyawan && fullMaster.rawTables.Master_Karyawan.length > 0)
+          ? fullMaster.rawTables.Master_Karyawan
+          : (fullMaster.employeeList || []);
+
+        // Filter masterEmps sesuai cabang target
+        if (targetBranch !== 'ALL') {
+          masterEmps = masterEmps.filter(e => matchBranch(e, targetBranch));
+        } else {
+          masterEmps = masterEmps.filter(e => isLampungBranch(e));
+        }
+
+        // Pastikan tidak ada kontributor KM yang tertinggal jika NPK mereka belum ada di Master_Karyawan
+        const knownNpks = new Set(masterEmps.map(e => safeString(e.npk || e['Personnel no.'] || e['NPK']).replace(/^0+/, '')));
+        yearKmRows.forEach(r => {
+          const rNpk = safeString(r['NPK'] || r['Personnel no.'] || r.npk).replace(/^0+/, '');
+          if (rNpk && !knownNpks.has(rNpk)) {
+            if (!targetBranch || targetBranch === 'ALL' || matchBranch(r, targetBranch)) {
+              knownNpks.add(rNpk);
+              masterEmps.push({
+                'Personnel no.': r['NPK'] || rNpk,
+                'Last name': r['NAMA'] || r['Nama'] || 'Karyawan KM',
+                'P.subarea': r['Cabang'] || 'DSO Lampung',
+                'Business area': r['Kode BA'] || 'D660'
+              });
+            }
+          }
+        });
+
+        // Helper untuk ekstrak info lengkap KM row
+        function extractKMItem(row) {
+          const npk = safeString(row['NPK'] || row['Personnel no.'] || row['Personnel No.'] || row.npk || '').trim();
+          let nama = row['NAMA'] || row['Nama'] || row['Nama Karyawan'] || row['Last name'] || row.nama || '';
+          const judul = row['JUDUL'] || row['Judul'] || row['Judul KM'] || row['Tema'] || row['Title'] || row.judul || '-';
+          const tgl = row['TANGGAL'] || row['Tanggal'] || row['Date'] || row['Tgl'] || row.tanggal || '';
+          const jam = row['TIME'] || row['Time'] || row['Waktu'] || row['Jam'] || row.time || '';
+          
+          let cabang = row['Cabang'] || row['P.subarea'] || row.cabang || '';
+          if (npk) {
+            const cleanNpk = npk.replace(/^0+/, '');
+            const emp = masterEmps.find(e => {
+              const eNpk = safeString(e.npk || e['Personnel no.'] || e['NPK']).trim();
+              return eNpk === npk || (cleanNpk && eNpk.replace(/^0+/, '') === cleanNpk);
+            });
+            if (emp) {
+              if (!nama) nama = emp['Last name'] || emp['Nama'] || emp.nama || '';
+              if (!cabang) {
+                const bInfo = resolveBranchInfo(emp['Business area'] || emp.kodeBA || emp['P.subarea'] || emp.cabang);
+                cabang = bInfo ? bInfo.name : (emp['P.subarea'] || emp.cabang || '');
+              }
+            }
+          }
+          if (!cabang) {
+            const bInfo = resolveBranchInfo(row['Business area'] || row.kodeBA || row['Cabang']);
+            cabang = bInfo ? bInfo.name : 'Lampung A Yani';
+          }
+          return {
+            npk,
+            nama: nama || 'Karyawan',
+            judul,
+            tanggal: (typeof formatDatabaseDate === 'function') ? (formatDatabaseDate(tgl) || tgl) : tgl,
+            jam: (typeof formatDatabaseTime === 'function') ? (formatDatabaseTime(jam) || jam) : jam,
+            cabang
+          };
+        }
+
+        // Helper daftar nama 12 bulan baku
+        const monthNames = [
+          "Januari", "Februari", "Maret", "April", "Mei", "Juni",
+          "Juli", "Agustus", "September", "Oktober", "November", "Desember"
+        ];
+
+        // 4. Bangun Sheet 1: Rekap per Karyawan Dikelompokkan per Cabang
+        const branchPriority = { 'D660': 1, 'D661': 2, 'D662': 3, 'D663': 4, 'D664': 5 };
+
+        const empRekapList = masterEmps.map(emp => {
+          const npk = safeString(emp['Personnel no.'] || emp.npk || emp['NPK']).trim();
+          const cleanNpk = npk.replace(/^0+/, '');
+          const nama = emp['Last name'] || emp['Nama'] || emp.nama || '';
+          const bInfo = resolveBranchInfo(emp['Business area'] || emp.kodeBA || emp['P.subarea'] || emp.cabang);
+          const cabangName = bInfo ? bInfo.name : (emp['P.subarea'] || emp.cabang || 'Lampung A Yani');
+          const branchCode = bInfo ? bInfo.code : 'D660';
+          const priority = branchPriority[branchCode] || 99;
+
+          // Hitung KM bulanan untuk karyawan ini pada targetYear
+          const monthlyCounts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
+          const myKms = yearKmRows.filter(km => {
+            const kNpk = safeString(km['NPK'] || km['Personnel no.'] || km.npk).trim().replace(/^0+/, '');
+            return kNpk && (kNpk === cleanNpk || kNpk === npk);
+          });
+
+          myKms.forEach(km => {
+            const p = extractRowMonthYear(km);
+            if (p && p.month >= 1 && p.month <= 12) {
+              monthlyCounts[p.month]++;
+            }
+          });
+
+          const totalTahun = Object.values(monthlyCounts).reduce((a, b) => a + b, 0);
+
+          return {
+            npk,
+            nama,
+            cabang: cabangName,
+            branchCode,
+            priority,
+            totalTahun,
+            monthlyCounts
+          };
+        });
+
+        // Urutkan: Dikelompokkan per Cabang (priority cabang), lalu Nama (A-Z)
+        empRekapList.sort((a, b) => {
+          if (a.priority !== b.priority) return a.priority - b.priority;
+          if (a.cabang !== b.cabang) return a.cabang.localeCompare(b.cabang);
+          return a.nama.localeCompare(b.nama);
+        });
+
+        // Kolom Rekap Sheet
+        const rekapCols = [
+          "No",
+          "Cabang",
+          "Nama",
+          "NPK",
+          "Jumlah KM Per Tahun",
+          "Januari",
+          "Februari",
+          "Maret",
+          "April",
+          "Mei",
+          "Juni",
+          "Juli",
+          "Agustus",
+          "September",
+          "Oktober",
+          "November",
+          "Desember"
+        ];
+
+        let grandTotalTahun = 0;
+        const grandMonthly = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0 };
+
+        const rekapRows = empRekapList.map((item, idx) => {
+          grandTotalTahun += item.totalTahun;
+          for (let m = 1; m <= 12; m++) {
+            grandMonthly[m] += item.monthlyCounts[m];
+          }
+          return {
+            "No": idx + 1,
+            "Cabang": item.cabang,
+            "Nama": item.nama,
+            "NPK": item.npk,
+            "Jumlah KM Per Tahun": item.totalTahun,
+            "Januari": item.monthlyCounts[1],
+            "Februari": item.monthlyCounts[2],
+            "Maret": item.monthlyCounts[3],
+            "April": item.monthlyCounts[4],
+            "Mei": item.monthlyCounts[5],
+            "Juni": item.monthlyCounts[6],
+            "Juli": item.monthlyCounts[7],
+            "Agustus": item.monthlyCounts[8],
+            "September": item.monthlyCounts[9],
+            "Oktober": item.monthlyCounts[10],
+            "November": item.monthlyCounts[11],
+            "Desember": item.monthlyCounts[12]
+          };
+        });
+
+        // Tambahkan baris TOTAL KESELURUHAN di bawah tabel rekap
+        if (rekapRows.length > 0) {
+          rekapRows.push({
+            "No": "",
+            "Cabang": "TOTAL KESELURUHAN",
+            "Nama": `Total ${empRekapList.length} Karyawan`,
+            "NPK": "",
+            "Jumlah KM Per Tahun": grandTotalTahun,
+            "Januari": grandMonthly[1],
+            "Februari": grandMonthly[2],
+            "Maret": grandMonthly[3],
+            "April": grandMonthly[4],
+            "Mei": grandMonthly[5],
+            "Juni": grandMonthly[6],
+            "Juli": grandMonthly[7],
+            "Agustus": grandMonthly[8],
+            "September": grandMonthly[9],
+            "Oktober": grandMonthly[10],
+            "November": grandMonthly[11],
+            "Desember": grandMonthly[12]
+          });
+        }
+
+        const wb = XLSX.utils.book_new();
+
+        // 1. Masukkan Sheet 1: Rekap_KM
+        const wsRekap = XLSX.utils.json_to_sheet(rekapRows.length ? rekapRows : [{}], { header: rekapCols });
+        XLSX.utils.book_append_sheet(wb, wsRekap, "Rekap_KM");
+
+        // 2. Masukkan Sheet-sheet Lainnya Per Bulan (Januari s/d Desember)
+        const detailCols = ["No", "Nama", "NPK", "Cabang", "Judul", "Tanggal", "Jam"];
+
+        if (selectedMonth === 'ALL') {
+          // Buat 12 sheet bulanan dari Januari sampai Desember
+          monthNames.forEach((mName, mIdx) => {
+            const mNum = mIdx + 1;
+            const mRows = yearKmRows.filter(r => {
+              const p = extractRowMonthYear(r);
+              return p && p.month === mNum;
+            });
+
+            // Urutkan data bulanan per cabang dan tanggal
+            const exportDetail = mRows.map((r, i) => {
+              const item = extractKMItem(r);
+              return {
+                "No": i + 1,
+                "Nama": item.nama,
+                "NPK": item.npk,
+                "Cabang": item.cabang,
+                "Judul": item.judul,
+                "Tanggal": item.tanggal,
+                "Jam": item.jam
+              };
+            });
+
+            const wsMonth = exportDetail.length 
+              ? XLSX.utils.json_to_sheet(exportDetail, { header: detailCols })
+              : XLSX.utils.json_to_sheet([], { header: detailCols });
+
+            XLSX.utils.book_append_sheet(wb, wsMonth, mName);
+          });
+
+          const branchLabel = (targetBranch === 'ALL') ? 'Semua_Cabang' : targetBranch;
+          const fileName = `Rekap_KM_${branchLabel}_${targetYear || '2026'}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+          XLSX.writeFile(wb, fileName);
+          showToast(`Berkas ${fileName} berhasil diunduh: 1 Sheet Rekap (dikelompokkan per cabang) + 12 Sheet Bulanan (Januari s/d Desember)!`);
+          return;
+        } else {
+          // Jika pengguna memilih filter bulan tertentu (misal: "Maret")
+          const monthMap = { 'januari': 1, 'februari': 2, 'maret': 3, 'april': 4, 'mei': 5, 'juni': 6, 'juli': 7, 'agustus': 8, 'september': 9, 'oktober': 10, 'november': 11, 'desember': 12 };
+          const targetMonthNum = monthMap[selectedMonth.toLowerCase()] || 1;
+          const targetMonthName = monthNames[targetMonthNum - 1] || selectedMonth;
+
+          const mRows = yearKmRows.filter(r => {
+            const p = extractRowMonthYear(r);
+            return p && p.month === targetMonthNum;
+          });
+
+          const exportDetail = mRows.map((r, i) => {
+            const item = extractKMItem(r);
+            return {
+              "No": i + 1,
+              "Nama": item.nama,
+              "NPK": item.npk,
+              "Cabang": item.cabang,
+              "Judul": item.judul,
+              "Tanggal": item.tanggal,
+              "Jam": item.jam
+            };
+          });
+
+          const wsMonth = exportDetail.length 
+            ? XLSX.utils.json_to_sheet(exportDetail, { header: detailCols })
+            : XLSX.utils.json_to_sheet([], { header: detailCols });
+
+          XLSX.utils.book_append_sheet(wb, wsMonth, targetMonthName);
+
+          const branchLabel = (targetBranch === 'ALL') ? 'Semua_Cabang' : targetBranch;
+          const fileName = `Rekap_KM_${branchLabel}_${targetMonthName}_${targetYear || '2026'}_${new Date().toISOString().slice(0, 10)}.xlsx`;
+          XLSX.writeFile(wb, fileName);
+          showToast(`Berkas ${fileName} berhasil diunduh: Sheet Rekap_KM + Sheet ${targetMonthName}!`);
           return;
         }
       } else {

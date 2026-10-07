@@ -1650,8 +1650,8 @@
       if (!row) return null;
       if (typeof row !== 'object') return parseSingleDateMonthYear(row);
       const d1 = (typeof getRowCellValue === 'function' && typeof SCHEMAS !== 'undefined' && SCHEMAS.Data_Kehadiran)
-        ? (getRowCellValue(row, 'Date', SCHEMAS.Data_Kehadiran) || row['Date'] || row['Tanggal'])
-        : (row['Date'] || row['Tanggal']);
+        ? (getRowCellValue(row, 'Date', SCHEMAS.Data_Kehadiran) || row['Date'] || row['Tanggal'] || row['TANGGAL'] || row['tgl'] || row['Tgl'])
+        : (row['Date'] || row['Tanggal'] || row['TANGGAL'] || row['tgl'] || row['Tgl']);
       const res1 = parseSingleDateMonthYear(d1);
       if (res1) return res1;
 
