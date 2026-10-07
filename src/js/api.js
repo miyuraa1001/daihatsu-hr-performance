@@ -1313,7 +1313,7 @@
      * Memeriksa apakah sebuah record / item berasal dari salah satu 5 Cabang Resmi DSO Lampung:
      * D660, D661, D662, D663, D664
      */
-    function isLampungBranch(item, fallbackMasterList = null) {
+    function isLampungBranch(item, fallbackMasterList = null, lampungNpkSet = null) {
       if (!item) return false;
 
       // Khusus tabel Knowledge_management (hanya ada NPK, NAMA, JUDUL, TANGGAL, TIME):
@@ -1342,64 +1342,95 @@
         if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
       }
 
-      // 3. Cek Wilayah (jika menyebut Lampung atau DSO)
+      // Jika kode BA atau Cabang secara eksplisit terisi namun bukan cabang Lampung, tolak segera (jangan loloskan via wilayah/relasi)
+      const hasExplicitNonLampungBranch = (rawCode && rawCode !== '-' && rawCode !== '0' && !resolveBACode(rawCode)) ||
+                                          (rawCabang && rawCabang !== '-' && rawCabang !== '0' && !resolveBACode(rawCabang));
+      if (hasExplicitNonLampungBranch) {
+        return false;
+      }
+
+      // 3. Cek Wilayah (hanya jika eksplisit menyebut Lampung)
       const rawWilayah = item.wilayah || item['Wilayah'] || item['wilayah'] || (typeof getRowCellValue === 'function' ? getRowCellValue(item, 'Wilayah') : '') || '';
-      if (rawWilayah && (String(rawWilayah).toLowerCase().includes('lampung') || String(rawWilayah).toLowerCase().includes('dso'))) {
+      if (rawWilayah && String(rawWilayah).toLowerCase().includes('lampung')) {
         return true;
       }
 
       // 4. Relasi NPK ke Master Karyawan
       const npk = safeString(item['NPK'] || item['Personnel no.'] || item['Personnel No.'] || item.npk);
-      const masterList = (fallbackMasterList && fallbackMasterList.length > 0) ? fallbackMasterList :
-                         ((window.masterFullPayload && window.masterFullPayload.employeeList) || 
-                          (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList) || 
-                          (window.masterFullPayload && window.masterFullPayload.rawTables && window.masterFullPayload.rawTables.Master_Karyawan) || 
-                          (currentDashboardPayload && currentDashboardPayload.employeeList) || []);
-      if (npk && masterList.length > 0) {
+      if (npk) {
         const cleanNpk = npk.replace(/^0+/, '');
-        const emp = masterList.find(e => {
-          const eNpk = safeString(e.npk || e['Personnel no.'] || e['Personnel No.']);
-          return eNpk === npk || eNpk.replace(/^0+/, '') === cleanNpk;
-        });
-        if (emp) {
-          const empCode = emp.kodeBA || emp['Business area'] || emp['Business Area'] || emp['Kode BA'] || '';
-          if (empCode && ALLOWED_BRANCH_CODES.includes(resolveBACode(empCode))) return true;
-          const empCabang = emp.cabang || emp['P.subarea'] || emp['Cabang'] || '';
-          if (empCabang && ALLOWED_BRANCH_CODES.includes(resolveBACode(empCabang))) return true;
-          const empWil = emp.wilayah || emp['Wilayah'] || '';
-          if (empWil && (String(empWil).toLowerCase().includes('lampung') || String(empWil).toLowerCase().includes('dso'))) return true;
+        if (lampungNpkSet && (lampungNpkSet.has(npk) || lampungNpkSet.has(cleanNpk))) {
+          return true;
         }
-      }
 
-      // 5. Data resmi database: jika record memiliki NPK valid dan identitas karyawan, loloskan ke DSO Lampung
-      if (npk && (item['Last name'] || item['Nama'] || item.nama || item['Job Title'] || item.jabatan)) {
-        return true;
+        const masterList = (fallbackMasterList && fallbackMasterList.length > 0) ? fallbackMasterList :
+                           ((window.masterFullPayload && window.masterFullPayload.employeeList) || 
+                            (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList) || 
+                            (window.masterFullPayload && window.masterFullPayload.rawTables && window.masterFullPayload.rawTables.Master_Karyawan) || 
+                            (currentDashboardPayload && currentDashboardPayload.employeeList) || []);
+        if (masterList.length > 0) {
+          const emp = masterList.find(e => {
+            if (e === item) return false;
+            const eNpk = safeString(e.npk || e['Personnel no.'] || e['Personnel No.']);
+            return eNpk === npk || eNpk.replace(/^0+/, '') === cleanNpk;
+          });
+          if (emp) {
+            const empCode = emp.kodeBA || emp['Business area'] || emp['Business Area'] || emp['Kode BA'] || '';
+            if (empCode && ALLOWED_BRANCH_CODES.includes(resolveBACode(empCode))) return true;
+            const empCabang = emp.cabang || emp['P.subarea'] || emp['Cabang'] || '';
+            if (empCabang && ALLOWED_BRANCH_CODES.includes(resolveBACode(empCabang))) return true;
+            const empWil = emp.wilayah || emp['Wilayah'] || '';
+            if (empWil && String(empWil).toLowerCase().includes('lampung')) return true;
+          }
+        }
       }
 
       return false;
     }
 
     /**
-     * Menyaring payload agar eksklusif memuat data 5 Cabang DSO Lampung dengan proteksi anti-pruning
+     * Menyaring payload agar eksklusif hanya memuat data 5 Cabang DSO Lampung
      */
     function sanitizeLampungPayload(payload) {
       if (!payload) return payload;
-      const empList = payload.employeeList || (payload.rawTables && payload.rawTables.Master_Karyawan) || [];
+
+      // 1. Dapatkan daftar master karyawan Lampung yang valid
+      const rawMaster = (payload.rawTables && Array.isArray(payload.rawTables.Master_Karyawan) && payload.rawTables.Master_Karyawan.length > 0)
+        ? payload.rawTables.Master_Karyawan
+        : (Array.isArray(payload.employeeList) ? payload.employeeList : []);
+
+      const validLampungEmps = rawMaster.filter(e => isLampungBranch(e, []));
+
+      // Buat Set NPK karyawan Lampung untuk pencocokan cepat tabel transaksi
+      const lampungNpkSet = new Set();
+      validLampungEmps.forEach(e => {
+        const npk = safeString(e['Personnel no.'] || e['NPK'] || e.npk);
+        if (npk) {
+          lampungNpkSet.add(npk);
+          lampungNpkSet.add(npk.replace(/^0+/, ''));
+        }
+      });
+
+      // 2. Filter employeeList secara ketat (hanya 5 cabang DSO Lampung)
       if (Array.isArray(payload.employeeList)) {
-        const filteredEmp = payload.employeeList.filter(e => isLampungBranch(e, empList));
-        payload.employeeList = (filteredEmp.length > 0 || payload.employeeList.length === 0) ? filteredEmp : payload.employeeList;
+        payload.employeeList = payload.employeeList.filter(e => isLampungBranch(e, validLampungEmps, lampungNpkSet));
       }
+
+      // 3. Filter qccList secara ketat
       if (Array.isArray(payload.qccList)) {
-        const filteredQCC = payload.qccList.filter(q => isLampungBranch(q, empList));
-        payload.qccList = (filteredQCC.length > 0 || payload.qccList.length === 0) ? filteredQCC : payload.qccList;
+        payload.qccList = payload.qccList.filter(q => isLampungBranch(q, validLampungEmps, lampungNpkSet));
       }
+
+      // 4. Filter rawTables secara ketat
       if (payload.rawTables) {
-        const sheets = ['Master_Karyawan', 'Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP'];
+        if (Array.isArray(payload.rawTables.Master_Karyawan)) {
+          payload.rawTables.Master_Karyawan = payload.rawTables.Master_Karyawan.filter(r => isLampungBranch(r, validLampungEmps, lampungNpkSet));
+        }
+
+        const sheets = ['Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP'];
         sheets.forEach(sh => {
           if (Array.isArray(payload.rawTables[sh])) {
-            const filteredRows = payload.rawTables[sh].filter(r => isLampungBranch(r, empList));
-            // Perlindungan data database: jangan hapus seluruh tabel jika sheet sebenarnya berisi data
-            payload.rawTables[sh] = (filteredRows.length > 0 || payload.rawTables[sh].length === 0) ? filteredRows : payload.rawTables[sh];
+            payload.rawTables[sh] = payload.rawTables[sh].filter(r => isLampungBranch(r, validLampungEmps, lampungNpkSet));
           }
         });
 
@@ -1408,6 +1439,7 @@
         payload.rawTables.Knowledge_management = kmRows;
         payload.rawTables.Data_KM = kmRows;
       }
+
       return payload;
     }
 

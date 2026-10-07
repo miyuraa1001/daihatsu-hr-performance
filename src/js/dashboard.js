@@ -141,15 +141,19 @@
             const jDate = (typeof findDate === 'function' ? findDate(row) : '') || row['Date'] || row['Entry'] || row['Tgl Masuk'] || row['Join Date'] || '';
             const contractVal = row['Contract'] || 'Tetap';
             const statusVal = row['Status_Karyawan'] || 'Aktif';
-            const baVal = safeString(row['Business area'] || row['Business Area'] || row['Kode BA'] || row.kodeBA || 'D660');
-            const cabangVal = row['P.subarea'] || row['Cabang'] || row.cabang || 'Lampung A Yani';
+            const rawBA = row['Business area'] || row['Business Area'] || row['Kode BA'] || row.kodeBA || '';
+            const rawCab = row['P.subarea'] || row['Cabang'] || row.cabang || '';
+            const bInfo = (typeof resolveBranchInfo === 'function') ? (resolveBranchInfo(rawBA) || resolveBranchInfo(rawCab)) : null;
+            const baVal = bInfo ? bInfo.code : safeString(rawBA);
+            const cabangVal = bInfo ? bInfo.name : (rawCab || '');
+            const wilVal = row['Wilayah'] || row.wilayah || (bInfo ? 'DSO Lampung' : '');
             const ageCalc = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age');
             const tenureCalc = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(jDate) : calculateAgeAndService(jDate, 'service');
             return {
               npk: safeString(row['Personnel no.'] || row['NPK'] || row.npk),
               nama: row['Last name'] || row['Nama'] || row['Nama Lengkap'] || row.nama || '',
               cabang: cabangVal,
-              wilayah: row['Wilayah'] || row.wilayah || 'DSO Lampung',
+              wilayah: wilVal,
               kodeBA: baVal,
               divisi: row['Name'] || row['Divisi'] || row.divisi || '',
               jabatan: row['Job Title'] || row['Jabatan'] || row.jabatan || '',
@@ -198,13 +202,17 @@
           e.joinDate = jDate;
           e.umurText = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age');
           e.masaKerjaText = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(jDate) : calculateAgeAndService(jDate, 'service');
-          const baVal = safeString(e['Business area'] || e.kodeBA || 'D660');
-          const cabangVal = e['P.subarea'] || e.cabang || 'Lampung A Yani';
+          const rawBA = e['Business area'] || e.kodeBA || '';
+          const rawCab = e['P.subarea'] || e.cabang || '';
+          const bInfo = (typeof resolveBranchInfo === 'function') ? (resolveBranchInfo(rawBA) || resolveBranchInfo(rawCab)) : null;
+          const baVal = bInfo ? bInfo.code : safeString(rawBA);
+          const cabangVal = bInfo ? bInfo.name : (rawCab || '');
+          const wilVal = e['Wilayah'] || e.wilayah || (bInfo ? 'DSO Lampung' : '');
           const divVal = e['Name'] || e.divisi || 'Operational';
           return {
             "Personnel no.": safeString(e['Personnel no.'] || e.npk),
             "P.subarea": cabangVal,
-            "Wilayah": e['Wilayah'] || e.wilayah || 'DSO Lampung',
+            "Wilayah": wilVal,
             "Contract": contractVal,
             "Name": divVal,
             "Name of organizational unit": e['Name of organizational unit'] || e.organisasi || (divVal ? `${divVal} DSO` : 'Departemen DSO'),
@@ -236,11 +244,15 @@
           if (jDate) row['Date'] = jDate;
 
           if (emp) {
+            const empBA = safeString(emp['Business area'] || emp.kodeBA || '');
+            const empCab = emp['P.subarea'] || emp.cabang || '';
+            const empBInfo = (typeof resolveBranchInfo === 'function') ? (resolveBranchInfo(empBA) || resolveBranchInfo(empCab)) : null;
+
             if (!row['Personnel no.']) row['Personnel no.'] = safeString(emp['Personnel no.'] || emp.npk);
             if (!row['Last name']) row['Last name'] = emp['Last name'] || emp.nama || '';
-            if (!row['P.subarea']) row['P.subarea'] = emp['P.subarea'] || emp.cabang || 'Lampung A Yani';
-            if (!row['Business area']) row['Business area'] = safeString(emp['Business area'] || emp.kodeBA || 'D660');
-            if (!row['Wilayah']) row['Wilayah'] = emp['Wilayah'] || emp.wilayah || 'DSO Lampung';
+            if (!row['P.subarea']) row['P.subarea'] = empCab || (empBInfo ? empBInfo.name : '');
+            if (!row['Business area']) row['Business area'] = empBA || (empBInfo ? empBInfo.code : '');
+            if (!row['Wilayah']) row['Wilayah'] = emp['Wilayah'] || emp.wilayah || (empBInfo ? 'DSO Lampung' : '');
             if (!row['Contract']) row['Contract'] = emp['Contract'] || emp.tipeKontrak || emp.kontrak || 'Tetap';
             if (!row['Name']) row['Name'] = emp['Name'] || emp.divisi || '';
             if (!row['Name of organizational unit']) row['Name of organizational unit'] = emp['Name of organizational unit'] || emp.organisasi || (emp.divisi ? `${emp.divisi} DSO` : 'Departemen DSO');
@@ -255,9 +267,14 @@
             emp.tipeKontrak = row['Contract'] || emp.tipeKontrak || 'Tetap';
             emp['Status_Karyawan'] = statusVal;
             emp.statusKaryawan = statusVal;
-            if (!emp.cabang) emp.cabang = row['P.subarea'] || row['Cabang'] || '';
-            if (!emp.kodeBA) emp.kodeBA = row['Business area'] || row['Kode BA'] || '';
-            if (!emp.wilayah) emp.wilayah = row['Wilayah'] || 'DSO Lampung';
+            
+            const rBA = row['Business area'] || row['Kode BA'] || '';
+            const rCab = row['P.subarea'] || row['Cabang'] || '';
+            const rBInfo = (typeof resolveBranchInfo === 'function') ? (resolveBranchInfo(rBA) || resolveBranchInfo(rCab)) : null;
+
+            if (!emp.cabang) emp.cabang = rCab || (rBInfo ? rBInfo.name : '');
+            if (!emp.kodeBA) emp.kodeBA = rBA || (rBInfo ? rBInfo.code : '');
+            if (!emp.wilayah) emp.wilayah = row['Wilayah'] || (rBInfo ? 'DSO Lampung' : '');
             if (!emp.divisi) emp.divisi = row['Name'] || row['Divisi'] || '';
             if (!emp.jabatan) emp.jabatan = row['Job Title'] || row['Jabatan'] || '';
             if (dob) {
@@ -633,6 +650,7 @@
       // Selalu perbarui master store dengan salinan payload terbaru yang telah disanitasi
       const fullCopy = sanitizeLampungPayload(JSON.parse(JSON.stringify(data)));
       initializeStandardTables(fullCopy);
+      sanitizeLampungPayload(fullCopy);
 
       // KM 100% sinkron langsung dari database (Google Sheets) aktual
       const incomingKM = (fullCopy.rawTables?.Knowledge_management || fullCopy.rawTables?.Data_KM || []);

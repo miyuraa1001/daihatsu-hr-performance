@@ -512,6 +512,8 @@
       let sourceList = rawRows.length > 0 ? rawRows : list;
       if (targetBranch !== 'ALL') {
         sourceList = sourceList.filter(r => matchBranch(r, targetBranch));
+      } else {
+        sourceList = sourceList.filter(r => isLampungBranch(r));
       }
 
       // Role Kacab hanya melihat karyawan aktif
@@ -912,6 +914,8 @@
       // 2. Filter cabang sesuai hak akses user atau pilihan dropdown cabang admin
       if (targetBranch !== 'ALL') {
         list = list.filter(e => matchBranch(e, targetBranch));
+      } else {
+        list = list.filter(e => isLampungBranch(e));
       }
 
       // 3. Filter Pilar Utama (Sales / Service / Admin) jika aktif
@@ -1531,6 +1535,8 @@
       // 0. Filter cabang aktif
       if (targetBranch !== 'ALL') {
         branchRows = branchRows.filter(e => matchBranch(e, targetBranch));
+      } else {
+        branchRows = branchRows.filter(e => isLampungBranch(e));
       }
 
       // Update 5 KPI Cards secara sinkron dengan cabang & periode aktif
@@ -2369,6 +2375,8 @@
       // Filter per cabang aktif
       if (targetBranch !== 'ALL') {
         list = list.filter(e => matchBranch(e, targetBranch));
+      } else {
+        list = list.filter(e => isLampungBranch(e));
       }
 
       // Hitung dan update status KPI sesuai cabang yang sedang disaring
@@ -2693,6 +2701,8 @@
       // Filter per cabang aktif
       if (targetBranch !== 'ALL') {
         list = list.filter(e => matchBranch(e, targetBranch));
+      } else {
+        list = list.filter(e => isLampungBranch(e));
       }
 
       // Hitung dan update status KPI sesuai cabang yang sedang disaring
@@ -2821,6 +2831,8 @@
 
       if (targetBranch !== 'ALL') {
         list = list.filter(e => matchBranch(e, targetBranch));
+      } else {
+        list = list.filter(e => isLampungBranch(e));
       }
 
       if (q) {
