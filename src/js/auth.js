@@ -164,8 +164,34 @@
       if (typeof populateMonthAndYearDropdowns === "function") {
         populateMonthAndYearDropdowns();
       }
+
+      // Render instan dari cache lokal jika ada, sebelum network fetch selesai
+      try {
+        const rawCache = localStorage.getItem('dperform_cached_master_payload');
+        if (rawCache) {
+          const cached = JSON.parse(rawCache);
+          if (cached && ((cached.employeeList && cached.employeeList.length) || (cached.rawTables?.Master_Karyawan && cached.rawTables.Master_Karyawan.length))) {
+            if (typeof ensureMasterStore === 'function') ensureMasterStore(cached);
+            if (typeof renderAllDashboardData === 'function') {
+              const activeBranchVal = isAdmin ? (document.getElementById('branch-select')?.value || 'ALL') : getUserBranchCode(loggedInUser);
+              renderAllDashboardData(cached, activeBranchVal, 'ALL', 'ALL');
+            }
+          }
+        }
+      } catch (cacheErr) {
+        console.warn("Gagal merender cache awal:", cacheErr);
+      }
+
       if (typeof loadBackendDashboardData === "function") {
         loadBackendDashboardData();
       }
     }
+
+    // Expose Global Auth Functions
+    window.checkAutoLogin = checkAutoLogin;
+    window.initAuthenticatedApp = initAuthenticatedApp;
+    window.handleLoginSubmit = handleLoginSubmit;
+    window.handleLogout = handleLogout;
+    window.executeLogout = executeLogout;
+    window.togglePasswordVisibility = togglePasswordVisibility;
 

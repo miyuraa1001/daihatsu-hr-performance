@@ -1135,6 +1135,14 @@
           cache: "no-store",
           body: JSON.stringify(bodyData)
         });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          let errJson = null;
+          try { errJson = JSON.parse(errText); } catch(e) {}
+          const msg = errJson?.message || `HTTP ${response.status} (${response.statusText || 'Error server'})`;
+          return { success: false, message: msg };
+        }
     
         const result = await response.json();
         return result;
@@ -1249,7 +1257,7 @@
       if (clean.includes('bandarjaya') || clean.includes('lamteng') || clean.includes('lampungtengah')) {
         return KNOWN_BRANCHES.find(b => b.code === 'D662');
       }
-      if (clean.includes('ayani') || clean.includes('ahmadyani') || clean.includes('tanjungkarang') || clean === 'lampung') {
+      if (clean.includes('ayani') || clean.includes('ahmadyani') || clean.includes('tanjungkarang') || clean.includes('lampung')) {
         return KNOWN_BRANCHES.find(b => b.code === 'D660');
       }
 
@@ -1334,9 +1342,9 @@
         if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
       }
 
-      // 3. Cek Wilayah (jika menyebut Lampung)
+      // 3. Cek Wilayah (jika menyebut Lampung atau DSO)
       const rawWilayah = item.wilayah || item['Wilayah'] || item['wilayah'] || (typeof getRowCellValue === 'function' ? getRowCellValue(item, 'Wilayah') : '') || '';
-      if (rawWilayah && String(rawWilayah).toLowerCase().includes('lampung')) {
+      if (rawWilayah && (String(rawWilayah).toLowerCase().includes('lampung') || String(rawWilayah).toLowerCase().includes('dso'))) {
         return true;
       }
 
@@ -1353,36 +1361,45 @@
           const eNpk = safeString(e.npk || e['Personnel no.'] || e['Personnel No.']);
           return eNpk === npk || eNpk.replace(/^0+/, '') === cleanNpk;
         });
-        if (emp && emp !== item) {
+        if (emp) {
           const empCode = emp.kodeBA || emp['Business area'] || emp['Business Area'] || emp['Kode BA'] || '';
           if (empCode && ALLOWED_BRANCH_CODES.includes(resolveBACode(empCode))) return true;
           const empCabang = emp.cabang || emp['P.subarea'] || emp['Cabang'] || '';
           if (empCabang && ALLOWED_BRANCH_CODES.includes(resolveBACode(empCabang))) return true;
           const empWil = emp.wilayah || emp['Wilayah'] || '';
-          if (empWil && String(empWil).toLowerCase().includes('lampung')) return true;
+          if (empWil && (String(empWil).toLowerCase().includes('lampung') || String(empWil).toLowerCase().includes('dso'))) return true;
         }
+      }
+
+      // 5. Data resmi database: jika record memiliki NPK valid dan identitas karyawan, loloskan ke DSO Lampung
+      if (npk && (item['Last name'] || item['Nama'] || item.nama || item['Job Title'] || item.jabatan)) {
+        return true;
       }
 
       return false;
     }
 
     /**
-     * Menyaring payload agar eksklusif hanya memuat data 5 Cabang DSO Lampung
+     * Menyaring payload agar eksklusif memuat data 5 Cabang DSO Lampung dengan proteksi anti-pruning
      */
     function sanitizeLampungPayload(payload) {
       if (!payload) return payload;
       const empList = payload.employeeList || (payload.rawTables && payload.rawTables.Master_Karyawan) || [];
       if (Array.isArray(payload.employeeList)) {
-        payload.employeeList = payload.employeeList.filter(e => isLampungBranch(e, empList));
+        const filteredEmp = payload.employeeList.filter(e => isLampungBranch(e, empList));
+        payload.employeeList = (filteredEmp.length > 0 || payload.employeeList.length === 0) ? filteredEmp : payload.employeeList;
       }
       if (Array.isArray(payload.qccList)) {
-        payload.qccList = payload.qccList.filter(q => isLampungBranch(q, empList));
+        const filteredQCC = payload.qccList.filter(q => isLampungBranch(q, empList));
+        payload.qccList = (filteredQCC.length > 0 || payload.qccList.length === 0) ? filteredQCC : payload.qccList;
       }
       if (payload.rawTables) {
         const sheets = ['Master_Karyawan', 'Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP'];
         sheets.forEach(sh => {
           if (Array.isArray(payload.rawTables[sh])) {
-            payload.rawTables[sh] = payload.rawTables[sh].filter(r => isLampungBranch(r, empList));
+            const filteredRows = payload.rawTables[sh].filter(r => isLampungBranch(r, empList));
+            // Perlindungan data database: jangan hapus seluruh tabel jika sheet sebenarnya berisi data
+            payload.rawTables[sh] = (filteredRows.length > 0 || payload.rawTables[sh].length === 0) ? filteredRows : payload.rawTables[sh];
           }
         });
 

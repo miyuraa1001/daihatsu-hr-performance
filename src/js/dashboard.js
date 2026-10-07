@@ -141,8 +141,8 @@
             const jDate = (typeof findDate === 'function' ? findDate(row) : '') || row['Date'] || row['Entry'] || row['Tgl Masuk'] || row['Join Date'] || '';
             const contractVal = row['Contract'] || 'Tetap';
             const statusVal = row['Status_Karyawan'] || 'Aktif';
-            const baVal = safeString(row['Business area'] || row['Business Area'] || row['Kode BA'] || row.kodeBA || '');
-            const cabangVal = row['P.subarea'] || row['Cabang'] || row.cabang || '';
+            const baVal = safeString(row['Business area'] || row['Business Area'] || row['Kode BA'] || row.kodeBA || 'D660');
+            const cabangVal = row['P.subarea'] || row['Cabang'] || row.cabang || 'Lampung A Yani';
             const ageCalc = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age');
             const tenureCalc = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(jDate) : calculateAgeAndService(jDate, 'service');
             return {
@@ -179,39 +179,48 @@
       const employees = payload.employeeList || [];
       const qccs = payload.qccList || [];
 
-      // 2. Master_Karyawan (16 Columns - 100% Identik Database)
-      if (!payload.rawTables.Master_Karyawan || !payload.rawTables.Master_Karyawan.length) {
+      // 2. Master_Karyawan (16-19 Columns - 100% Identik Database Baku)
+      const isRawMasterEmpty = !payload.rawTables.Master_Karyawan || 
+                               !payload.rawTables.Master_Karyawan.length || 
+                               !payload.rawTables.Master_Karyawan.some(r => r && (r['Personnel no.'] || r['Last name'] || r['NPK'] || r.npk));
+
+      if (isRawMasterEmpty) {
         payload.rawTables.Master_Karyawan = employees.map((e, idx) => {
-          const contractVal = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.statusKepegawaian || 'Tetap';
+          const contractVal = e['Contract'] || e.Contract || e.contract || e.tipeKontrak || e.statusKontrak || e.kontrak || 'Tetap';
           const statusVal = e['Status_Karyawan'] || e['Status Karyawan'] || e.statusKaryawan || 'Aktif';
           e['Contract'] = contractVal;
           e.tipeKontrak = contractVal;
           e['Status_Karyawan'] = statusVal;
           e.statusKaryawan = statusVal;
-          const dob = e['D.o.birth'] || e.tglLahir || (typeof findDOBirth === 'function' ? findDOBirth(e) : '');
-          const jDate = e['Date'] || e.joinDate || (typeof findDate === 'function' ? findDate(e) : '');
+          const dob = e['D.o.birth'] || e.tglLahir || e.dob || (typeof findDOBirth === 'function' ? findDOBirth(e) : '');
+          const jDate = e['Date'] || e.joinDate || e.date || (typeof findDate === 'function' ? findDate(e) : '');
           e.tglLahir = dob;
           e.joinDate = jDate;
           e.umurText = typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(dob) : calculateAgeAndService(dob, 'age');
           e.masaKerjaText = typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(jDate) : calculateAgeAndService(jDate, 'service');
+          const baVal = safeString(e['Business area'] || e.kodeBA || 'D660');
+          const cabangVal = e['P.subarea'] || e.cabang || 'Lampung A Yani';
+          const divVal = e['Name'] || e.divisi || 'Operational';
           return {
             "Personnel no.": safeString(e['Personnel no.'] || e.npk),
-            "P.subarea": e['P.subarea'] || e.cabang || 'Lampung A Yani',
+            "P.subarea": cabangVal,
             "Wilayah": e['Wilayah'] || e.wilayah || 'DSO Lampung',
             "Contract": contractVal,
-            "Name": e['Name'] || e.divisi || 'Operational',
-            "Name of organizational unit": e['Name of organizational unit'] || (e.divisi ? `${e.divisi} DSO` : 'Departemen DSO'),
+            "Name": divVal,
+            "Name of organizational unit": e['Name of organizational unit'] || e.organisasi || (divVal ? `${divVal} DSO` : 'Departemen DSO'),
             "Job Title": e['Job Title'] || e.jabatan || 'Staff',
             "Last name": e['Last name'] || e.nama || '',
             "D.o.birth": dob,
             "Gender text": e['Gender text'] || e.gender || 'Male',
             "Religious denomination": e['Religious denomination'] || e.agama || 'Islam',
-            "PS group": (typeof findPSGroup === 'function' ? findPSGroup(e) : (e['PS group'] || '')),
-            "Lvl": (typeof findLvl === 'function' ? findLvl(e) : (e['Lvl'] || '')),
+            "PS group": (typeof findPSGroup === 'function' ? findPSGroup(e) : (e['PS group'] || e.psGroup || '')),
+            "Lvl": (typeof findLvl === 'function' ? findLvl(e) : (e['Lvl'] || e.lvl || '')),
             "Date": jDate,
-            "P0001-STEXT": (typeof findP0001STEXT === 'function' ? findP0001STEXT(e) : (e['P0001-STEXT'] || '')),
-            "Business area": safeString(e['Business area'] || e.kodeBA || 'D660'),
-            "Status_Karyawan": statusVal
+            "P0001-STEXT": (typeof findP0001STEXT === 'function' ? findP0001STEXT(e) : (e['P0001-STEXT'] || e.stext || '')),
+            "Business area": baVal,
+            "Status_Karyawan": statusVal,
+            "Tanggal_Resign": e['Tanggal_Resign'] || e.tanggalResign || '',
+            "Alasan_Resign": e['Alasan_Resign'] || e.alasanResign || ''
           };
         });
       } else {
@@ -221,12 +230,27 @@
           const statusVal = row['Status_Karyawan'] || row['Status Karyawan'] || (emp ? (emp['Status_Karyawan'] || emp.statusKaryawan) : '') || 'Aktif';
           row['Status_Karyawan'] = statusVal;
 
-          const dob = (typeof findDOBirth === 'function' ? findDOBirth(row) : '') || row['D.o.birth'] || (emp ? (emp.tglLahir || emp['D.o.birth']) : '');
-          const jDate = (typeof findDate === 'function' ? findDate(row) : '') || row['Date'] || (emp ? (emp.joinDate || emp['Date']) : '');
+          const dob = (typeof findDOBirth === 'function' ? findDOBirth(row) : '') || row['D.o.birth'] || (emp ? (emp.tglLahir || emp['D.o.birth'] || emp.dob) : '');
+          const jDate = (typeof findDate === 'function' ? findDate(row) : '') || row['Date'] || (emp ? (emp.joinDate || emp['Date'] || emp.date) : '');
           if (dob) row['D.o.birth'] = dob;
           if (jDate) row['Date'] = jDate;
 
           if (emp) {
+            if (!row['Personnel no.']) row['Personnel no.'] = safeString(emp['Personnel no.'] || emp.npk);
+            if (!row['Last name']) row['Last name'] = emp['Last name'] || emp.nama || '';
+            if (!row['P.subarea']) row['P.subarea'] = emp['P.subarea'] || emp.cabang || 'Lampung A Yani';
+            if (!row['Business area']) row['Business area'] = safeString(emp['Business area'] || emp.kodeBA || 'D660');
+            if (!row['Wilayah']) row['Wilayah'] = emp['Wilayah'] || emp.wilayah || 'DSO Lampung';
+            if (!row['Contract']) row['Contract'] = emp['Contract'] || emp.tipeKontrak || emp.kontrak || 'Tetap';
+            if (!row['Name']) row['Name'] = emp['Name'] || emp.divisi || '';
+            if (!row['Name of organizational unit']) row['Name of organizational unit'] = emp['Name of organizational unit'] || emp.organisasi || (emp.divisi ? `${emp.divisi} DSO` : 'Departemen DSO');
+            if (!row['Job Title']) row['Job Title'] = emp['Job Title'] || emp.jabatan || '';
+            if (!row['Gender text']) row['Gender text'] = emp['Gender text'] || emp.gender || '';
+            if (!row['Religious denomination']) row['Religious denomination'] = emp['Religious denomination'] || emp.agama || '';
+            if (!row['PS group']) row['PS group'] = emp['PS group'] || emp.psGroup || '';
+            if (!row['Lvl']) row['Lvl'] = emp['Lvl'] || emp.lvl || '';
+            if (!row['P0001-STEXT']) row['P0001-STEXT'] = emp['P0001-STEXT'] || emp.stext || '';
+
             emp['Contract'] = row['Contract'] || emp['Contract'] || 'Tetap';
             emp.tipeKontrak = row['Contract'] || emp.tipeKontrak || 'Tetap';
             emp['Status_Karyawan'] = statusVal;
@@ -642,6 +666,41 @@
 
       window.masterFullPayload = fullCopy;
       window.fullUnscopedPayload = fullCopy;
+
+      // Simpan ke cache browser agar halaman dapat dirender instan saat reload / dibuka kembali
+      try {
+        if ((fullCopy.employeeList && fullCopy.employeeList.length > 0) || 
+            (fullCopy.rawTables?.Master_Karyawan && fullCopy.rawTables.Master_Karyawan.length > 0)) {
+          localStorage.setItem('dperform_cached_master_payload', JSON.stringify(fullCopy));
+        }
+      } catch (cacheErr) {
+        console.warn("Gagal menyimpan payload ke cache lokal:", cacheErr);
+      }
+    }
+
+    function showDatabaseLoadError(errorMsg) {
+      let banner = document.getElementById('db-connection-error-banner');
+      if (!banner) {
+        banner = document.createElement('div');
+        banner.id = 'db-connection-error-banner';
+        banner.className = 'mb-6 p-4 bg-amber-50 border border-amber-200 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs';
+        const targetView = document.getElementById('dashboard-view') || document.querySelector('main');
+        if (targetView) targetView.insertBefore(banner, targetView.firstChild);
+      }
+      banner.innerHTML = `
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center text-lg flex-shrink-0">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-amber-900">Sinkronisasi Database Google Sheets Belum Terhubung</h4>
+            <p class="text-[11px] text-amber-700 mt-0.5">${errorMsg || 'Gagal memuat data dari database server.'}</p>
+          </div>
+        </div>
+        <button onclick="loadBackendDashboardData(true)" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-xs cursor-pointer flex-shrink-0 active:scale-95">
+          <i class="fa-solid fa-rotate-right"></i> Coba Muat Ulang
+        </button>
+      `;
     }
 
     async function loadBackendDashboardData(shouldShowLoader = true) {
@@ -659,13 +718,6 @@
       if (shouldShowLoader && loader) loader.classList.remove('hidden');
 
       try {
-        // Query user universal untuk backend Google Apps Script:
-        // Google Apps Script menyaring baris karyawan dengan kodeBA === item['Business area'].
-        // Jika di sheet tertulis "660" (angka atau teks), sedangkan assignedBACodes user hanya ["D660"],
-        // maka backend Apps Script akan mengeliminasi seluruh karyawan sebelum dikirim ke frontend!
-        // Karena itu kita kirim queryUser dengan assignedBACodes lengkap (D660-D664 & 660-664),
-        // agar backend Apps Script mengirimkan seluruh master data secara utuh tanpa terpangkas,
-        // kemudian RBAC frontend mengisolasi ketat sesuai cabang wewenang Kacab.
         const backendQueryUser = {
           ...loggedInUser,
           role: 'Admin',
@@ -690,6 +742,9 @@
         if (res && res.success && res.data) {
           ensureMasterStore(res.data);
 
+          const errBanner = document.getElementById('db-connection-error-banner');
+          if (errBanner) errBanner.remove();
+
           if (isAdmin) {
             const dynamicBranches = extractBranchesFromData(res.data);
             populateBranchDropdown(dynamicBranches);
@@ -698,15 +753,54 @@
 
           renderAllDashboardData(window.masterFullPayload || res.data, activeBranchVal, monthVal, yearVal);
         } else {
+          const errMsg = res?.message || 'Server backend tidak mengembalikan data yang valid.';
+          console.warn("loadBackendDashboardData: backend call tidak berhasil:", errMsg);
+
+          // Coba pulihkan dari cache lokal browser jika ada
+          if (!window.masterFullPayload) {
+            try {
+              const rawCache = localStorage.getItem('dperform_cached_master_payload');
+              if (rawCache) {
+                const cached = JSON.parse(rawCache);
+                if (cached && ((cached.employeeList && cached.employeeList.length) || (cached.rawTables?.Master_Karyawan && cached.rawTables.Master_Karyawan.length))) {
+                  ensureMasterStore(cached);
+                }
+              }
+            } catch (cErr) {}
+          }
+
           if (window.masterFullPayload) {
             renderAllDashboardData(window.masterFullPayload, activeBranchVal, monthVal, yearVal);
+            if (typeof showToast === 'function') {
+              showToast("Memuat data cache lokal (" + errMsg + ")", "warning");
+            }
+          } else {
+            showDatabaseLoadError(errMsg);
           }
         }
       } catch (err) {
         if (loader) loader.classList.add('hidden');
         console.error("Error loading backend dashboard data:", err);
+
+        if (!window.masterFullPayload) {
+          try {
+            const rawCache = localStorage.getItem('dperform_cached_master_payload');
+            if (rawCache) {
+              const cached = JSON.parse(rawCache);
+              if (cached && ((cached.employeeList && cached.employeeList.length) || (cached.rawTables?.Master_Karyawan && cached.rawTables.Master_Karyawan.length))) {
+                ensureMasterStore(cached);
+              }
+            }
+          } catch (cErr) {}
+        }
+
         if (window.masterFullPayload) {
           renderAllDashboardData(window.masterFullPayload, activeBranchVal, monthVal, yearVal);
+          if (typeof showToast === 'function') {
+            showToast("Memuat data cache lokal (" + err.message + ")", "warning");
+          }
+        } else {
+          showDatabaseLoadError(err.message);
         }
       }
     }
@@ -726,8 +820,8 @@
       // Selalu gunakan masterFullPayload sebagai sumber data baku tanpa terdistorsi
       const master = window.masterFullPayload || window.fullUnscopedPayload || data;
 
-      // Pastikan master memiliki employeeList yang sinkron dengan rawTables.Master_Karyawan
-      if ((!master.employeeList || master.employeeList.length === 0) && master.rawTables?.Master_Karyawan?.length > 0) {
+      // Pastikan master memiliki employeeList dan rawTables.Master_Karyawan yang saling tersinkronisasi
+      if (!master.employeeList || master.employeeList.length === 0 || !master.rawTables?.Master_Karyawan || master.rawTables.Master_Karyawan.length === 0) {
         initializeStandardTables(master);
       }
       const allMasterEmps = (master.employeeList && master.employeeList.length > 0)
@@ -1355,3 +1449,11 @@
         barColor: 'bg-slate-400'
       };
     }
+
+    // Expose Global Dashboard Functions
+    window.loadBackendDashboardData = loadBackendDashboardData;
+    window.renderAllDashboardData = renderAllDashboardData;
+    window.ensureMasterStore = ensureMasterStore;
+    window.showDatabaseLoadError = showDatabaseLoadError;
+    window.getContractMeta = getContractMeta;
+
