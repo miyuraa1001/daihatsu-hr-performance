@@ -3099,7 +3099,9 @@
             <td class="py-3 px-4 text-center font-bold ${(e.kehadiranPct !== undefined ? e.kehadiranPct : 100) < 95 ? 'text-amber-600' : 'text-emerald-600'} border-b border-slate-100 whitespace-nowrap">${e.kehadiranPct !== undefined ? e.kehadiranPct : 100}%</td>
             <td class="py-3 px-4 text-center font-bold text-amber-500 border-b border-slate-100 whitespace-nowrap">${e.totalSS || 0} Ide</td>
             <td class="py-3 px-4 text-center font-bold border-b border-slate-100 whitespace-nowrap">
-              ${e.spAktif ? `<span class="bg-red-100 text-red-700 px-2 py-0.5 rounded-full text-[10px]">${e.spAktif}</span>` : `<span class="text-emerald-600 text-xs font-bold">-</span>`}
+              ${(e.spAktif && e.spAktif !== '-') 
+                ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-triangle-exclamation mr-1 text-[9px]"></i>${e.spAktif}</span>` 
+                : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-shield-halved mr-1 text-[9px]"></i>Disiplin</span>`}
             </td>
             <td class="py-3 px-4 text-center border-b border-slate-100 whitespace-nowrap">
               <button onclick="openPBKModal('${npk}')" class="px-2.5 py-1 bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-700 font-bold rounded-lg text-[11px] transition">
@@ -3162,7 +3164,11 @@
             ${isAdmin ? `<td class="py-3.5 px-4 text-left border-b border-slate-100 whitespace-nowrap">${resignInfo}</td>` : ''}
             <td class="py-3.5 px-4 text-center font-bold ${(emp.kehadiranPct !== undefined ? emp.kehadiranPct : 100) < 95 ? 'text-amber-600' : 'text-emerald-600'} border-b border-slate-100 whitespace-nowrap">${emp.kehadiranPct !== undefined ? emp.kehadiranPct : 100}%</td>
             <td class="py-3.5 px-4 text-center font-bold text-amber-500 border-b border-slate-100 whitespace-nowrap">${emp.totalSS || 0} Ide</td>
-            <td class="py-3.5 px-4 text-center font-bold ${emp.spAktif ? 'text-red-600' : 'text-slate-400'} border-b border-slate-100 whitespace-nowrap">${emp.spAktif || '-'}</td>
+            <td class="py-3.5 px-4 text-center border-b border-slate-100 whitespace-nowrap">
+              ${(emp.spAktif && emp.spAktif !== '-') 
+                ? `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-50 text-rose-700 border border-rose-200"><i class="fa-solid fa-triangle-exclamation mr-1 text-[9px]"></i>${emp.spAktif}</span>` 
+                : `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="fa-solid fa-shield-halved mr-1 text-[9px]"></i>Disiplin</span>`}
+            </td>
             <td class="py-3.5 px-4 text-center border-b border-slate-100 whitespace-nowrap"><span class="text-[11px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full"><i class="fa-solid fa-circle-check mr-1"></i>Siap Acuan</span></td>
             <td class="py-3.5 px-4 text-center border-b border-slate-100 whitespace-nowrap">
               <button onclick="openPBKModal('${emp.npk}')" class="px-3 py-1 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-lg text-[11px] transition">Detail</button>

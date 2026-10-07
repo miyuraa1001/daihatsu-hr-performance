@@ -2262,7 +2262,7 @@
 
         row["Kehadiran (%)"] = e.kehadiranPct !== undefined ? `${e.kehadiranPct}%` : '100%';
         row["Total Ide SS"] = e.totalSS !== undefined ? Number(e.totalSS) : 0;
-        row["Catatan SP"] = e.spAktif || '-';
+        row["Status Disiplin"] = (e.spAktif && e.spAktif !== '-') ? e.spAktif : 'Disiplin';
 
         return row;
       });
@@ -2533,10 +2533,10 @@
       );
       const spStatus = (spRows.length > 0 && spRows[0]['Tingkat SP'] && spRows[0]['Tingkat SP'] !== '-') 
         ? spRows[0]['Tingkat SP'] 
-        : (emp.spAktif || 'Bersih');
+        : (emp.spAktif && emp.spAktif !== '-' ? emp.spAktif : 'Disiplin');
       document.getElementById('modal-emp-sp').textContent = spStatus;
       if (document.getElementById('modal-emp-sp-status')) {
-        document.getElementById('modal-emp-sp-status').textContent = spStatus === 'Bersih' ? 'Nihil Sanksi' : 'Sanksi Aktif';
+        document.getElementById('modal-emp-sp-status').textContent = (spStatus === 'Bersih' || spStatus === 'Disiplin') ? 'Nihil Sanksi' : 'Sanksi Aktif';
       }
 
       // 6. Knowledge Management (KM)
