@@ -2382,18 +2382,25 @@
       if (!currentDashboardPayload) return;
       currentActivePBKNpk = String(npk).trim();
 
-      const emp = (currentDashboardPayload.employeeList || []).find(e => 
-        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === currentActivePBKNpk
-      ) || (currentDashboardPayload.rawTables?.Master_Karyawan || []).find(e =>
-        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === currentActivePBKNpk
-      );
+      const cleanTargetNpk = safeString(currentActivePBKNpk).replace(/^0+/, '');
+      const emp = (currentDashboardPayload.employeeList || []).find(e => {
+        const n = safeString(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || e['Personnel no.'] || e['NPK']).trim();
+        return n === currentActivePBKNpk || n.replace(/^0+/, '') === cleanTargetNpk;
+      }) || (currentDashboardPayload.rawTables?.Master_Karyawan || []).find(e => {
+        const n = safeString(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || e['Personnel no.'] || e['NPK']).trim();
+        return n === currentActivePBKNpk || n.replace(/^0+/, '') === cleanTargetNpk;
+      }) || (window.masterFullPayload?.employeeList || []).find(e => {
+        const n = safeString(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || e['Personnel no.'] || e['NPK']).trim();
+        return n === currentActivePBKNpk || n.replace(/^0+/, '') === cleanTargetNpk;
+      });
       if (!emp) return;
 
       const empNama = getRowCellValue(emp, 'Last name', SCHEMAS.Master_Karyawan) || emp.nama || 'Karyawan';
       const empNpk = getRowCellValue(emp, 'Personnel no.', SCHEMAS.Master_Karyawan) || emp.npk || npk;
       const empCabang = getRowCellValue(emp, 'P.subarea', SCHEMAS.Master_Karyawan) || emp.cabang || '-';
       const empJabatan = getRowCellValue(emp, 'Job Title', SCHEMAS.Master_Karyawan) || emp.jabatan || emp.divisi || '-';
-      const empContract = getRowCellValue(emp, 'Contract', SCHEMAS.Master_Karyawan) || emp.tipeKontrak || 'Tetap';
+      const rawContract = getRowCellValue(emp, 'Contract', SCHEMAS.Master_Karyawan) || emp['Contract'] || emp.Contract || emp.tipeKontrak || 'Tetap';
+      const empContract = (typeof normalizeContractCategory === 'function') ? normalizeContractCategory(rawContract) : rawContract;
       const statusKaryawan = getRowCellValue(emp, 'Status_Karyawan', SCHEMAS.Master_Karyawan) || emp.statusKaryawan || emp.Status_Karyawan || 'Aktif';
       const isResign = String(statusKaryawan).trim().toLowerCase() === 'resign';
       const tglResign = formatDatabaseDate(getRowCellValue(emp, 'Tanggal_Resign', SCHEMAS.Master_Karyawan)) || emp.tanggalResign || emp.Tanggal_Resign || '-';
@@ -2588,12 +2595,17 @@
     }
 
     function openPBKDrilldown(type) {
-      if (!currentDashboardPayload || !currentActivePBKNpk) return;
-      const emp = (currentDashboardPayload.employeeList || []).find(e => 
-        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === currentActivePBKNpk
-      ) || (currentDashboardPayload.rawTables?.Master_Karyawan || []).find(e =>
-        String(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || '').trim() === currentActivePBKNpk
-      );
+      const cleanTargetNpk = safeString(currentActivePBKNpk).replace(/^0+/, '');
+      const emp = (currentDashboardPayload.employeeList || []).find(e => {
+        const n = safeString(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || e['Personnel no.'] || e['NPK']).trim();
+        return n === currentActivePBKNpk || n.replace(/^0+/, '') === cleanTargetNpk;
+      }) || (currentDashboardPayload.rawTables?.Master_Karyawan || []).find(e => {
+        const n = safeString(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || e['Personnel no.'] || e['NPK']).trim();
+        return n === currentActivePBKNpk || n.replace(/^0+/, '') === cleanTargetNpk;
+      }) || (window.masterFullPayload?.employeeList || []).find(e => {
+        const n = safeString(getRowCellValue(e, 'Personnel no.', SCHEMAS.Master_Karyawan) || e.npk || e['Personnel no.'] || e['NPK']).trim();
+        return n === currentActivePBKNpk || n.replace(/^0+/, '') === cleanTargetNpk;
+      });
       if (!emp) return;
 
       const empNama = getRowCellValue(emp, 'Last name', SCHEMAS.Master_Karyawan) || emp.nama || 'Karyawan';
@@ -2848,6 +2860,8 @@
         subEl.textContent = `Basis data resmi karyawan terdaftar di sistem PT Astra Daihatsu Motor (NPK: ${empNpk})`;
 
         const unitOrg = getRowCellValue(emp, 'Name of organizational unit', SCHEMAS.Master_Karyawan) || emp.unit || emp.divisi || '-';
+        const rawContract = getRowCellValue(emp, 'Contract', SCHEMAS.Master_Karyawan) || emp['Contract'] || emp.Contract || emp.tipeKontrak || 'Tetap';
+        const contract = (typeof normalizeContractCategory === 'function') ? normalizeContractCategory(rawContract) : rawContract;
         const jabatan = getRowCellValue(emp, 'Job Title', SCHEMAS.Master_Karyawan) || emp.jabatan || '-';
         const cabang = getRowCellValue(emp, 'P.subarea', SCHEMAS.Master_Karyawan) || emp.cabang || '-';
         const baCode = getRowCellValue(emp, 'Business area', SCHEMAS.Master_Karyawan) || emp.kodeBA || '-';

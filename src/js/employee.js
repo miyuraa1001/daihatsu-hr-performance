@@ -949,9 +949,9 @@
       if (contractFilter !== 'ALL') {
         const targetNorm = normalizeContractCategory(contractFilter).toLowerCase();
         list = list.filter(e => {
-          const raw = String(e['Contract'] || 'Tetap / Permanent').trim();
+          const raw = String((typeof getRowCellValue === 'function' ? getRowCellValue(e, 'Contract', SCHEMAS.Master_Karyawan) : '') || e['Contract'] || e.Contract || e.tipeKontrak || 'Tetap / Permanent').trim();
           const rawNorm = normalizeContractCategory(raw).toLowerCase();
-          return rawNorm === targetNorm || raw.toLowerCase() === contractFilter.toLowerCase();
+          return rawNorm === targetNorm || raw.toLowerCase() === contractFilter.toLowerCase() || targetNorm.includes(raw.toLowerCase()) || rawNorm.includes(contractFilter.toLowerCase());
         });
       }
 
