@@ -1420,16 +1420,22 @@
         showToast(`Skema untuk '${targetSheet}' tidak ditemukan!`);
         return;
       }
+      if (!currentDashboardPayload || !currentDashboardPayload.rawTables) {
       const fullMaster = window.masterFullPayload || window.fullUnscopedPayload || currentDashboardPayload;
       if (!fullMaster || !fullMaster.rawTables) {
         showToast("Data tabel belum siap diekspor.");
         return;
       }
 
+      const isAdmin = isUserAdmin(loggedInUser);
+      const userBranchCode = getUserBranchCode(loggedInUser);
       const currentUser = (typeof loggedInUser !== 'undefined' && loggedInUser) ? loggedInUser : (typeof window !== 'undefined' ? window.loggedInUser : null);
       const isAdmin = isUserAdmin(currentUser);
       const userBranchCode = getUserBranchCode(currentUser);
 
+      let rawRows = currentDashboardPayload.rawTables[targetSheet] || [];
+      if (!rawRows.length && targetSheet === 'Master_Karyawan' && currentDashboardPayload.employeeList) {
+        rawRows = currentDashboardPayload.employeeList;
       let rawRows = fullMaster.rawTables[targetSheet] || (targetSheet === 'Knowledge_management' ? fullMaster.rawTables.Data_KM : []) || [];
       if (!rawRows.length && targetSheet === 'Master_Karyawan' && fullMaster.employeeList) {
         rawRows = fullMaster.employeeList;
