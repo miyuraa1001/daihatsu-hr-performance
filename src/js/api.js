@@ -1118,37 +1118,69 @@
       return info.timeFormatted || s;
     }
 
-    async function callBackendAPI(actionName, payload = {}) {
-      try {
-        const bodyData = {
-          action: actionName,
-          ...payload // Kirim action dan payload saja tanpa SECRET_TOKEN
-        };
-    
-        const response = await fetch(BACKEND_PROXY_URL, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache"
-          },
-          cache: "no-store",
-          body: JSON.stringify(bodyData)
-        });
+    function sanitizeErrorMessage(msg) {
+      if (!msg) return 'Terjadi kesalahan pada server backend.';
+      const str = String(msg).trim();
+      if (str.includes('<!DOCTYPE') || str.includes('<html') || str.includes('Page Not Found') || str.includes('unable to open the file')) {
+        return 'Server Google Apps Script sedang sibuk atau mengalami kendala sementara (Unable to open file). Silakan coba lagi.';
+      }
+      return str;
+    }
+    if (typeof window !== 'undefined') window.sanitizeErrorMessage = sanitizeErrorMessage;
 
-        if (!response.ok) {
-          const errText = await response.text();
-          let errJson = null;
-          try { errJson = JSON.parse(errText); } catch(e) {}
-          const msg = errJson?.message || `HTTP ${response.status} (${response.statusText || 'Error server'})`;
-          return { success: false, message: msg };
+    async function callBackendAPI(actionName, payload = {}, maxAttempts = 2) {
+      const bodyData = {
+        action: actionName,
+        ...payload // Kirim action dan payload saja tanpa SECRET_TOKEN
+      };
+
+      for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+        try {
+          const response = await fetch(BACKEND_PROXY_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "Cache-Control": "no-cache",
+              "Pragma": "no-cache"
+            },
+            cache: "no-store",
+            body: JSON.stringify(bodyData)
+          });
+
+          if (!response.ok) {
+            const errText = await response.text();
+            let errJson = null;
+            try { errJson = JSON.parse(errText); } catch(e) {}
+            const rawMsg = errJson?.message || `HTTP ${response.status} (${response.statusText || 'Error server'})`;
+            const cleanMsg = sanitizeErrorMessage(rawMsg);
+
+            if (attempt < maxAttempts) {
+              console.warn(`callBackendAPI: Percobaan ke-${attempt} gagal (${cleanMsg}), mencoba ulang dalam 1.2 detik...`);
+              await new Promise(r => setTimeout(r, 1200));
+              continue;
+            }
+            return { success: false, message: cleanMsg };
+          }
+      
+          const result = await response.json();
+          if (!result || typeof result !== 'object') {
+            if (attempt < maxAttempts) {
+              await new Promise(r => setTimeout(r, 1200));
+              continue;
+            }
+            return { success: false, message: 'Format data respon dari server tidak valid.' };
+          }
+
+          return result;
+        } catch (err) {
+          console.warn(`API Error (attempt ${attempt}/${maxAttempts}):`, err);
+          if (attempt < maxAttempts) {
+            await new Promise(r => setTimeout(r, 1200));
+            continue;
+          }
+          const cleanErr = sanitizeErrorMessage(err.message);
+          return { success: false, message: "Gagal terhubung ke server backend: " + cleanErr };
         }
-    
-        const result = await response.json();
-        return result;
-      } catch (err) {
-        console.error("API Error:", err);
-        return { success: false, message: "Gagal terhubung ke server backend: " + err.message };
       }
     }
 

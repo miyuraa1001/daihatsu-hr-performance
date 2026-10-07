@@ -771,7 +771,8 @@
 
           renderAllDashboardData(window.masterFullPayload || res.data, activeBranchVal, monthVal, yearVal);
         } else {
-          const errMsg = res?.message || 'Server backend tidak mengembalikan data yang valid.';
+          const rawErrMsg = res?.message || 'Server backend tidak mengembalikan data yang valid.';
+          const errMsg = typeof sanitizeErrorMessage === 'function' ? sanitizeErrorMessage(rawErrMsg) : rawErrMsg;
           console.warn("loadBackendDashboardData: backend call tidak berhasil:", errMsg);
 
           // Coba pulihkan dari cache lokal browser jika ada
@@ -790,7 +791,7 @@
           if (window.masterFullPayload) {
             renderAllDashboardData(window.masterFullPayload, activeBranchVal, monthVal, yearVal);
             if (typeof showToast === 'function') {
-              showToast("Memuat data cache lokal (" + errMsg + ")", "warning");
+              showToast("Menampilkan data cache offline (Server Google Apps Script sedang sibuk)", "warning");
             }
           } else {
             showDatabaseLoadError(errMsg);
@@ -798,7 +799,8 @@
         }
       } catch (err) {
         if (loader) loader.classList.add('hidden');
-        console.error("Error loading backend dashboard data:", err);
+        const cleanErr = typeof sanitizeErrorMessage === 'function' ? sanitizeErrorMessage(err.message) : err.message;
+        console.error("Error loading backend dashboard data:", cleanErr);
 
         if (!window.masterFullPayload) {
           try {
@@ -815,10 +817,10 @@
         if (window.masterFullPayload) {
           renderAllDashboardData(window.masterFullPayload, activeBranchVal, monthVal, yearVal);
           if (typeof showToast === 'function') {
-            showToast("Memuat data cache lokal (" + err.message + ")", "warning");
+            showToast("Menampilkan data cache offline (Server Google Apps Script sedang sibuk)", "warning");
           }
         } else {
-          showDatabaseLoadError(err.message);
+          showDatabaseLoadError(cleanErr);
         }
       }
     }
