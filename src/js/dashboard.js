@@ -231,6 +231,11 @@
             emp.tipeKontrak = row['Contract'] || emp.tipeKontrak || 'Tetap';
             emp['Status_Karyawan'] = statusVal;
             emp.statusKaryawan = statusVal;
+            if (!emp.cabang) emp.cabang = row['P.subarea'] || row['Cabang'] || '';
+            if (!emp.kodeBA) emp.kodeBA = row['Business area'] || row['Kode BA'] || '';
+            if (!emp.wilayah) emp.wilayah = row['Wilayah'] || 'DSO Lampung';
+            if (!emp.divisi) emp.divisi = row['Name'] || row['Divisi'] || '';
+            if (!emp.jabatan) emp.jabatan = row['Job Title'] || row['Jabatan'] || '';
             if (dob) {
               emp.tglLahir = dob;
               emp['D.o.birth'] = dob;
@@ -799,6 +804,9 @@
         summary: s
       };
       initializeStandardTables(currentDashboardPayload, targetBranch);
+      if (currentDashboardPayload.employeeList && currentDashboardPayload.employeeList.length > 0) {
+        scopedEmployees = currentDashboardPayload.employeeList;
+      }
 
       // Card 1: Master Karyawan
       document.getElementById('card-total-karyawan').textContent = s.totalKaryawan || 0;
@@ -1083,11 +1091,19 @@
 
       const dashEmpBadge = document.getElementById('dash-emp-table-badge');
       if (dashEmpBadge) {
-        dashEmpBadge.textContent = `${scopedEmployees.length} Karyawan`;
+        dashEmpBadge.textContent = `${(scopedEmployees || []).length} Karyawan`;
       }
 
-      renderEmployeeTable(scopedEmployees);
-      renderPBKTable(scopedEmployees);
+      try {
+        renderEmployeeTable(scopedEmployees);
+      } catch (e) {
+        console.error("renderEmployeeTable error:", e);
+      }
+      try {
+        renderPBKTable(scopedEmployees);
+      } catch (e) {
+        console.error("renderPBKTable error:", e);
+      }
 
       // Render data untuk setiap menu modul dengan proteksi try/catch
       try { renderMasterKaryawanView(currentDashboardPayload); } catch (e) { console.error("renderMasterKaryawanView error:", e); }

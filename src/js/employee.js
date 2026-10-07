@@ -3047,7 +3047,7 @@
       }
 
       // Proteksi Kacab: HANYA tampilkan karyawan aktif murni
-      let displayList = list || [];
+      let displayList = (list && list.length > 0) ? list : (currentDashboardPayload?.employeeList || []);
       if (!isAdmin) {
         displayList = displayList.filter(e => {
           const st = String(e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim().toLowerCase();
@@ -3067,8 +3067,9 @@
         const cabang = e.cabang || e['P.subarea'] || e['Cabang'] || '-';
         const kodeBA = e.kodeBA || e['Business area'] || e['Kode BA'] || '-';
         const divisi = e.divisi || e['Name'] || (typeof resolveEmployeeDivision === 'function' ? resolveEmployeeDivision(e).divisionName : '-');
-        const umur = (e.umurText && e.umurText !== '-') ? e.umurText : (typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(e.tglLahir || e['D.o.birth'] || findDOBirth(e)) : calculateAgeAndService(e.tglLahir || e['D.o.birth'] || findDOBirth(e), 'age'));
-        const masaKerja = (e.masaKerjaText && e.masaKerjaText !== '-') ? e.masaKerjaText : (typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(e.joinDate || e['Date'] || findDate(e)) : calculateAgeAndService(e.joinDate || e['Date'] || findDate(e), 'service'));
+        const jabatan = e.jabatan || e['Job Title'] || e['Jabatan'] || '-';
+        const umur = (e.umurText && e.umurText !== '-') ? e.umurText : (typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(e.tglLahir || e['D.o.birth'] || (typeof findDOBirth === 'function' ? findDOBirth(e) : '')) : (typeof calculateAgeAndService === 'function' ? calculateAgeAndService(e.tglLahir || e['D.o.birth'], 'age') : '-'));
+        const masaKerja = (e.masaKerjaText && e.masaKerjaText !== '-') ? e.masaKerjaText : (typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(e.joinDate || e['Date'] || (typeof findDate === 'function' ? findDate(e) : '')) : (typeof calculateAgeAndService === 'function' ? calculateAgeAndService(e.joinDate || e['Date'], 'service') : '-'));
         const status = String(e.statusKaryawan || e.Status_Karyawan || e['Status_Karyawan'] || 'Aktif').trim();
         const isResign = status.toLowerCase() === 'resign';
         const statusBadge = isResign
@@ -3121,7 +3122,7 @@
         else thPbkResign.classList.add('hidden');
       }
 
-      let displayList = list || [];
+      let displayList = (list && list.length > 0) ? list : (currentDashboardPayload?.employeeList || []);
       if (!isAdmin) {
         displayList = displayList.filter(e => {
           const st = String(e.statusKaryawan || e.Status_Karyawan || 'Aktif').trim().toLowerCase();
@@ -3136,8 +3137,8 @@
       }
 
       tbody.innerHTML = displayList.map((emp, rowIdx) => {
-        const umur = (emp.umurText && emp.umurText !== '-') ? emp.umurText : (typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(emp.tglLahir || emp['D.o.birth'] || findDOBirth(emp)) : calculateAgeAndService(emp.tglLahir || emp['D.o.birth'] || findDOBirth(emp), 'age'));
-        const masaKerja = (emp.masaKerjaText && emp.masaKerjaText !== '-') ? emp.masaKerjaText : (typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(emp.joinDate || emp['Date'] || findDate(emp)) : calculateAgeAndService(emp.joinDate || emp['Date'] || findDate(emp), 'service'));
+        const umur = (emp.umurText && emp.umurText !== '-') ? emp.umurText : (typeof calculateEmployeeAge === 'function' ? calculateEmployeeAge(emp.tglLahir || emp['D.o.birth'] || (typeof findDOBirth === 'function' ? findDOBirth(emp) : '')) : (typeof calculateAgeAndService === 'function' ? calculateAgeAndService(emp.tglLahir || emp['D.o.birth'], 'age') : '-'));
+        const masaKerja = (emp.masaKerjaText && emp.masaKerjaText !== '-') ? emp.masaKerjaText : (typeof calculateEmployeeTenure === 'function' ? calculateEmployeeTenure(emp.joinDate || emp['Date'] || (typeof findDate === 'function' ? findDate(emp) : '')) : (typeof calculateAgeAndService === 'function' ? calculateAgeAndService(emp.joinDate || emp['Date'], 'service') : '-'));
         const status = (emp.statusKaryawan || emp.Status_Karyawan || 'Aktif').trim();
         const isResign = status.toLowerCase() === 'resign';
         const statusBadge = isResign
