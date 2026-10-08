@@ -649,8 +649,10 @@
         else if (viewId === 'absensi') filterAbsensiTable();
         else if (viewId === 'ss') filterSSTable();
         else if (viewId === 'qcc') filterQCCTable();
-        else if (viewId === 'sp') filterSPTable();
-        else if (viewId === 'km') filterKMTable();
+        else if (viewId === 'km') {
+          if (typeof renderKMView === 'function') renderKMView(currentDashboardPayload);
+          else filterKMTable();
+        }
       }
     }
 

@@ -2902,9 +2902,9 @@
     // E.2 Knowledge Management (KM) Presisi (Sesuai Spreadsheet)
     // ----------------------------------------------------
     function renderKMView(data) {
-      if (!data) return;
-      const source = window.masterFullPayload?.rawTables || data.rawTables || currentDashboardPayload?.rawTables || {};
-      let rawRows = (source.Knowledge_management || source.Data_KM) || [];
+      if (!data && !window.masterFullPayload && !currentDashboardPayload) return;
+      const source = window.masterFullPayload?.rawTables || currentDashboardPayload?.rawTables || (data && data.rawTables) || {};
+      let rawRows = (typeof findKMRawRows === 'function' ? findKMRawRows(source) : (source.Knowledge_management || source.Data_KM)) || [];
       if (!Array.isArray(rawRows)) rawRows = [];
 
       const totalKM = rawRows.length;
@@ -2926,7 +2926,7 @@
 
     function populateKMFilters() {
       const source = window.masterFullPayload?.rawTables || currentDashboardPayload?.rawTables || {};
-      const rawRows = (source.Knowledge_management || source.Data_KM) || [];
+      const rawRows = (typeof findKMRawRows === 'function' ? findKMRawRows(source) : (source.Knowledge_management || source.Data_KM)) || [];
 
       // Ekstraksi topik / kategori dinamis jika tersedia
       const catSelect = document.getElementById('km-filter-kategori');
@@ -2937,7 +2937,7 @@
 
     function filterKMTable() {
       const source = window.masterFullPayload?.rawTables || currentDashboardPayload?.rawTables || {};
-      let rawRows = (source.Knowledge_management || source.Data_KM) || [];
+      let rawRows = (typeof findKMRawRows === 'function' ? findKMRawRows(source) : (source.Knowledge_management || source.Data_KM)) || [];
       if (!Array.isArray(rawRows)) rawRows = [];
       const q = (document.getElementById('km-search-input')?.value || '').toLowerCase().trim();
       const branchFilter = document.getElementById('km-filter-cabang')?.value || 'ALL';
@@ -2950,11 +2950,11 @@
 
       if (q) {
         list = list.filter(e => 
-          String(e['NPK'] || '').toLowerCase().includes(q) || 
-          String(e['NAMA'] || e['Nama'] || '').toLowerCase().includes(q) ||
-          String(e['JUDUL'] || e['Judul'] || '').toLowerCase().includes(q) ||
-          String(e['TANGGAL'] || e['Tanggal'] || '').toLowerCase().includes(q) ||
-          String(e['TIME'] || e['Time'] || '').toLowerCase().includes(q)
+          String(e['NPK'] || e['npk'] || '').toLowerCase().includes(q) || 
+          String(e['NAMA'] || e['Nama'] || e['nama'] || '').toLowerCase().includes(q) ||
+          String(e['JUDUL'] || e['Judul'] || e['judul'] || '').toLowerCase().includes(q) ||
+          String(e['TANGGAL'] || e['Tanggal'] || e['tanggal'] || '').toLowerCase().includes(q) ||
+          String(e['TIME'] || e['Time'] || e['time'] || '').toLowerCase().includes(q)
         );
       }
 
@@ -2973,7 +2973,8 @@
       }
 
       if (!list.length) {
-        const isAdmin = isUserAdmin(loggedInUser);
+        const currentUser = (typeof loggedInUser !== 'undefined' && loggedInUser) ? loggedInUser : (typeof window !== 'undefined' ? window.loggedInUser : null);
+        const isAdmin = isUserAdmin(currentUser);
         tbody.innerHTML = `
           <tr>
             <td colspan="${cols.length + 1}" class="py-12 px-4 text-center">
@@ -3027,7 +3028,9 @@
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
             return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
           }
-          let rawCell = row[col] !== undefined ? row[col] : (row[col.toLowerCase()] !== undefined ? row[col.toLowerCase()] : (row[col.toUpperCase()] !== undefined ? row[col.toUpperCase()] : (typeof capitalizeFirst === 'function' ? row[capitalizeFirst(col)] : '')));
+          let rawCell = typeof getRowCellValue === 'function' 
+            ? getRowCellValue(row, col, SCHEMAS.Knowledge_management) 
+            : (row[col] !== undefined ? row[col] : (row[col.toLowerCase()] !== undefined ? row[col.toLowerCase()] : (row[col.toUpperCase()] !== undefined ? row[col.toUpperCase()] : (typeof capitalizeFirst === 'function' ? row[capitalizeFirst(col)] : ''))));
           if ((col === 'NAMA' || col === 'Nama') && (!rawCell || rawCell === '-' || String(rawCell).trim() === '') && rowNpk) {
             rawCell = (typeof lookupEmployeeName === 'function' ? lookupEmployeeName(rowNpk) : '') || rawCell;
           }

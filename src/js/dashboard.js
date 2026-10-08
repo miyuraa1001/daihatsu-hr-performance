@@ -342,15 +342,10 @@
         payload.rawTables.Data_SP = [];
       }
 
-      // 6. Knowledge_management / Data_KM (Tidak menggunakan data palsu jika di spreadsheet kosong)
-      if (!payload.rawTables.Knowledge_management && !payload.rawTables.Data_KM) {
-        payload.rawTables.Knowledge_management = [];
-        payload.rawTables.Data_KM = [];
-      } else if (!payload.rawTables.Knowledge_management && payload.rawTables.Data_KM) {
-        payload.rawTables.Knowledge_management = payload.rawTables.Data_KM;
-      } else if (payload.rawTables.Knowledge_management && !payload.rawTables.Data_KM) {
-        payload.rawTables.Data_KM = payload.rawTables.Knowledge_management;
-      }
+      // 6. Knowledge_management / Data_KM (Tahan variasi penamaan tab spreadsheet)
+      const kmRows = (typeof findKMRawRows === 'function' ? findKMRawRows(payload.rawTables) : (payload.rawTables.Knowledge_management || payload.rawTables.Data_KM)) || [];
+      payload.rawTables.Knowledge_management = kmRows;
+      payload.rawTables.Data_KM = kmRows;
     }
     window.initializeStandardTables = initializeStandardTables;
 
@@ -653,7 +648,7 @@
       sanitizeLampungPayload(fullCopy);
 
       // KM 100% sinkron langsung dari database (Google Sheets) aktual
-      const incomingKM = (fullCopy.rawTables?.Knowledge_management || fullCopy.rawTables?.Data_KM || []);
+      const incomingKM = (typeof findKMRawRows === 'function' ? findKMRawRows(fullCopy.rawTables) : (fullCopy.rawTables?.Knowledge_management || fullCopy.rawTables?.Data_KM)) || [];
       fullCopy.rawTables.Knowledge_management = incomingKM;
       fullCopy.rawTables.Data_KM = incomingKM;
 
@@ -859,8 +854,8 @@
         Data_SS: (rawSource.Data_SS || []).filter(e => matchBranch(e, targetBranch)),
         Data_QCC: (rawSource.Data_QCC || []).filter(q => matchBranch(q, targetBranch)),
         Data_SP: (rawSource.Data_SP || []).filter(e => matchBranch(e, targetBranch)),
-        Knowledge_management: (rawSource.Knowledge_management || rawSource.Data_KM || []).filter(e => matchBranch(e, targetBranch)),
-        Data_KM: (rawSource.Knowledge_management || rawSource.Data_KM || []).filter(e => matchBranch(e, targetBranch))
+        Knowledge_management: (typeof findKMRawRows === 'function' ? findKMRawRows(rawSource) : (rawSource.Knowledge_management || rawSource.Data_KM || [])),
+        Data_KM: (typeof findKMRawRows === 'function' ? findKMRawRows(rawSource) : (rawSource.Knowledge_management || rawSource.Data_KM || []))
       };
 
       // 2. Filter per Bulan & Tahun

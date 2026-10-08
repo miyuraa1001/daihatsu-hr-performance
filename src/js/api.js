@@ -1421,6 +1421,27 @@
     }
 
     /**
+     * Menemukan daftar baris Knowledge Management (KM) dari rawTables
+     * secara fleksibel & tahan variasi nama sheet Google Sheets / Excel
+     * ('Knowledge_management', 'Knowledge Management', 'Knowledge_Management', 'Data_KM', 'Data KM', 'KM')
+     */
+    function findKMRawRows(rawTables) {
+      if (!rawTables || typeof rawTables !== 'object') return [];
+      if (Array.isArray(rawTables.Knowledge_management) && rawTables.Knowledge_management.length > 0) return rawTables.Knowledge_management;
+      if (Array.isArray(rawTables.Data_KM) && rawTables.Data_KM.length > 0) return rawTables.Data_KM;
+
+      const keys = Object.keys(rawTables);
+      for (const k of keys) {
+        const clean = k.toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (clean === 'knowledgemanagement' || clean === 'datakm' || clean === 'km') {
+          if (Array.isArray(rawTables[k]) && rawTables[k].length > 0) return rawTables[k];
+        }
+      }
+      return (Array.isArray(rawTables.Knowledge_management) ? rawTables.Knowledge_management : (Array.isArray(rawTables.Data_KM) ? rawTables.Data_KM : []));
+    }
+    window.findKMRawRows = findKMRawRows;
+
+    /**
      * Menyaring payload agar eksklusif hanya memuat data 5 Cabang DSO Lampung
      */
     function sanitizeLampungPayload(payload) {
@@ -1466,8 +1487,8 @@
           }
         });
 
-        // Sinkronisasi data Knowledge Management (KM)
-        const kmRows = payload.rawTables.Knowledge_management || payload.rawTables.Data_KM || [];
+        // Sinkronisasi data Knowledge Management (KM) secara tahan variasi nama sheet
+        const kmRows = findKMRawRows(payload.rawTables);
         payload.rawTables.Knowledge_management = kmRows;
         payload.rawTables.Data_KM = kmRows;
       }
