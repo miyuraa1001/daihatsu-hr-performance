@@ -1710,9 +1710,9 @@
 
           return `
             <tr class="hover:bg-slate-50/80 transition-colors group">
-              <td class="py-2.5 px-3 whitespace-nowrap sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-500 text-center w-12 min-w-[48px] max-w-[48px] transition-colors">${rowIdx + 1}</td>
-              <td class="py-2.5 px-3 whitespace-nowrap sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] transition-colors">${emp.npk}</td>
-              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap sticky left-[128px] bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[170px] sm:min-w-[200px] transition-colors">
+              <td class="py-2.5 px-3 whitespace-nowrap sticky left-0 bg-white group-hover:bg-slate-50 z-20 border-b border-r border-slate-200/80 font-mono font-bold text-slate-500 text-center w-12 min-w-[48px] max-w-[48px] transition-colors">${rowIdx + 1}</td>
+              <td class="py-2.5 px-3 whitespace-nowrap border-b border-slate-100 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] transition-colors">${emp.npk}</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[180px] transition-colors">
                 <div class="flex items-center gap-2.5">
                   <div class="w-7 h-7 rounded-lg bg-red-50 text-red-600 font-black text-[10px] flex items-center justify-center border border-red-100 flex-shrink-0 shadow-2xs">
                     ${avatarInitials}
@@ -1841,11 +1841,11 @@
 
           let stickyClass = 'text-slate-600 border-b border-slate-100';
           if (isFirst) {
-            stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
+            stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-20 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
           } else if (isSecond) {
-            stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
+            stickyClass = 'border-b border-slate-100 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
           } else if (isThird) {
-            stickyClass = 'sticky left-[128px] bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[170px] sm:min-w-[200px] whitespace-nowrap font-semibold text-slate-900 transition-colors';
+            stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[180px] whitespace-nowrap font-semibold text-slate-900 transition-colors';
           }
 
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
@@ -1863,6 +1863,12 @@
               ? row[col] 
               : getRowCellValue(row, col, SCHEMAS.Data_Kehadiran);
             val = formatColumnCell(col, cellRaw, 'Data_Kehadiran');
+          }
+          if (isThird) {
+            const pNo = getRowCellValue(row, 'Personnel no.', SCHEMAS.Data_Kehadiran) || row['Personnel no.'] || row['Personnel No.'] || row['NPK'] || '';
+            if (pNo) {
+              val = `<div><span class="block truncate max-w-[130px] sm:max-w-[160px]" title="${val}">${val}</span><span class="text-[10px] text-slate-400 font-mono block">NPK: ${pNo}</span></div>`;
+            }
           }
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
@@ -2878,17 +2884,20 @@
 
           let stickyClass = 'text-slate-600 border-b border-slate-100';
           if (isFirst) {
-            stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
+            stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-20 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
           } else if (isSecond) {
-            stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
+            stickyClass = 'border-b border-slate-100 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
           } else if (isThird) {
-            stickyClass = 'sticky left-[128px] bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[160px] sm:min-w-[190px] whitespace-nowrap font-bold text-slate-800 transition-colors';
+            stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[180px] whitespace-nowrap font-bold text-slate-800 transition-colors';
           }
 
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
             return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
           }
-          const val = formatColumnCell(col, row[col], 'Data_SP');
+          let val = formatColumnCell(col, row[col], 'Data_SP');
+          if (isThird && row['NPK']) {
+            val = `<div><span class="block truncate max-w-[130px] sm:max-w-[160px]" title="${val}">${val}</span><span class="text-[10px] text-slate-400 font-mono block">NPK: ${row['NPK']}</span></div>`;
+          }
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -3018,11 +3027,11 @@
 
           let stickyClass = 'text-slate-600 border-b border-slate-100';
           if (isFirst) {
-            stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
+            stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-20 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
           } else if (isSecond) {
-            stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
+            stickyClass = 'border-b border-slate-100 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
           } else if (isThird) {
-            stickyClass = 'sticky left-[128px] bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[160px] sm:min-w-[190px] whitespace-nowrap font-bold text-slate-800 transition-colors';
+            stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[180px] whitespace-nowrap font-bold text-slate-800 transition-colors';
           }
 
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
@@ -3034,7 +3043,10 @@
           if ((col === 'NAMA' || col === 'Nama') && (!rawCell || rawCell === '-' || String(rawCell).trim() === '') && rowNpk) {
             rawCell = (typeof lookupEmployeeName === 'function' ? lookupEmployeeName(rowNpk) : '') || rawCell;
           }
-          const val = formatColumnCell(col, rawCell, 'Knowledge_management');
+          let val = formatColumnCell(col, rawCell, 'Knowledge_management');
+          if (isThird && rowNpk) {
+            val = `<div><span class="block truncate max-w-[130px] sm:max-w-[160px]" title="${val}">${val}</span><span class="text-[10px] text-slate-400 font-mono block">NPK: ${rowNpk}</span></div>`;
+          }
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -3097,10 +3109,11 @@
 
         return `
           <tr class="hover:bg-slate-50/80 transition-colors group">
-            <td class="py-3 px-3 text-center font-mono font-bold text-slate-400 sticky left-0 bg-white group-hover:bg-slate-50 z-10 w-12 min-w-[48px] max-w-[48px] border-b border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
-            <td class="py-3 px-3 font-mono font-bold text-slate-600 sticky left-12 bg-white group-hover:bg-slate-50 z-10 w-20 min-w-[80px] max-w-[80px] border-b border-r border-slate-200/80 transition-colors">${npk}</td>
-            <td class="py-3 px-4 font-semibold text-slate-900 sticky left-[128px] bg-white group-hover:bg-slate-50 z-10 min-w-[170px] sm:min-w-[200px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors whitespace-nowrap">
-              <span class="block truncate max-w-[150px] sm:max-w-[180px]" title="${nama}">${nama}</span>
+            <td class="py-3 px-3 text-center font-mono font-bold text-slate-400 sticky left-0 bg-white group-hover:bg-slate-50 z-20 w-12 min-w-[48px] max-w-[48px] border-b border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
+            <td class="py-3 px-3 font-mono font-bold text-slate-600 w-20 min-w-[80px] max-w-[80px] border-b border-slate-100 whitespace-nowrap transition-colors">${npk}</td>
+            <td class="py-3 px-4 font-semibold text-slate-900 sticky left-12 bg-white group-hover:bg-slate-50 z-10 min-w-[150px] sm:min-w-[180px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors whitespace-nowrap">
+              <span class="block truncate max-w-[140px] sm:max-w-[180px]" title="${nama}">${nama}</span>
+              <span class="text-[10px] text-slate-400 font-mono block">NPK: ${npk}</span>
             </td>
             <td class="py-3 px-4 text-slate-500 border-b border-slate-100 whitespace-nowrap">${cabang} (${kodeBA})</td>
             <td class="py-3 px-4 border-b border-slate-100 whitespace-nowrap">
