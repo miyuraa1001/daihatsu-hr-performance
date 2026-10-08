@@ -999,9 +999,9 @@
             const isSecond = idx === 1;
             let stickyClass = 'text-slate-600 border-b border-slate-100';
             if (isFirst) {
-              stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
+              stickyClass = 'md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-10 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
             } else if (isSecond) {
-              stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 font-mono font-bold text-slate-800 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[120px] whitespace-nowrap transition-colors';
+              stickyClass = 'md:sticky md:left-12 bg-white group-hover:bg-slate-50 md:z-10 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-800 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[120px] whitespace-nowrap transition-colors';
             }
 
             if (col === 'No' || normalizeHeaderName(col) === 'no') {
@@ -1030,8 +1030,8 @@
         const thead = document.getElementById('mk-table-header');
         if (thead) {
           thead.innerHTML = `
-            <th class="py-3 px-3 text-center w-12 min-w-[48px] max-w-[48px] sticky left-0 bg-slate-100 z-30 border-b border-r border-slate-200/80">No.</th>
-            <th class="py-3 px-3 sm:px-4 text-left sticky left-12 bg-slate-100 z-30 min-w-[190px] sm:min-w-[220px] max-w-[260px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]">Nama Karyawan</th>
+            <th class="py-3 px-3 text-center w-12 min-w-[48px] max-w-[48px] md:sticky md:left-0 bg-slate-100 md:z-30 border-b md:border-r border-slate-200/80">No.</th>
+            <th class="py-3 px-3 sm:px-4 text-left md:sticky md:left-12 bg-slate-100 md:z-30 min-w-[190px] sm:min-w-[220px] max-w-[260px] border-b md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]">Nama Karyawan</th>
             <th class="py-3 px-4 min-w-[140px] border-b border-slate-200">Jabatan</th>
             <th class="py-3 px-3 text-center min-w-[90px] border-b border-slate-200">Fungsi</th>
             <th class="py-3 px-3 text-center min-w-[90px] border-b border-slate-200">Status</th>
@@ -1088,15 +1088,14 @@
 
           return `
             <tr class="hover:bg-slate-50/80 transition-colors group">
-              <td class="py-2.5 px-3 text-center font-bold text-slate-500 sticky left-0 bg-white group-hover:bg-slate-50 z-10 w-12 min-w-[48px] max-w-[48px] border-b border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
-              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap sticky left-12 bg-white group-hover:bg-slate-50 z-10 min-w-[190px] sm:min-w-[220px] max-w-[260px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors">
+              <td class="py-2.5 px-3 text-center font-bold text-slate-500 md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-10 w-12 min-w-[48px] max-w-[48px] border-b md:border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap md:sticky md:left-12 bg-white group-hover:bg-slate-50 md:z-10 min-w-[190px] sm:min-w-[220px] max-w-[260px] border-b md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors">
                 <div class="flex items-center gap-2.5">
                   <div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-700 font-bold text-xs flex items-center justify-center border border-slate-200 flex-shrink-0">
                     ${initials}
                   </div>
                   <div class="min-w-0">
-                    <div class="font-bold text-slate-800 text-xs truncate max-w-[130px] sm:max-w-[170px]" title="${nama}">${nama}</div>
-                    <div class="text-[10px] text-slate-400 font-mono">NPK: ${npk}</div>
+                    <div class="font-bold text-slate-800 text-xs truncate max-w-[140px] sm:max-w-[180px]" title="${nama}">${nama}</div>
                   </div>
                 </div>
               </td>
@@ -1710,16 +1709,15 @@
 
           return `
             <tr class="hover:bg-slate-50/80 transition-colors group">
-              <td class="py-2.5 px-3 whitespace-nowrap sticky left-0 bg-white group-hover:bg-slate-50 z-20 border-b border-r border-slate-200/80 font-mono font-bold text-slate-500 text-center w-12 min-w-[48px] max-w-[48px] transition-colors">${rowIdx + 1}</td>
-              <td class="py-2.5 px-3 whitespace-nowrap border-b border-slate-100 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] transition-colors">${emp.npk}</td>
-              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[180px] transition-colors">
+              <td class="py-2.5 px-3 whitespace-nowrap md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-30 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-500 text-center w-12 min-w-[48px] max-w-[48px] transition-colors">${rowIdx + 1}</td>
+              <td class="py-2.5 px-3 whitespace-nowrap md:sticky md:left-12 bg-white group-hover:bg-slate-50 md:z-30 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] transition-colors">${emp.npk}</td>
+              <td class="py-2.5 px-3 sm:px-4 whitespace-nowrap md:sticky md:left-[128px] bg-white group-hover:bg-slate-50 md:z-20 border-b md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[170px] sm:min-w-[200px] transition-colors">
                 <div class="flex items-center gap-2.5">
                   <div class="w-7 h-7 rounded-lg bg-red-50 text-red-600 font-black text-[10px] flex items-center justify-center border border-red-100 flex-shrink-0 shadow-2xs">
                     ${avatarInitials}
                   </div>
                   <div class="min-w-0">
-                    <span class="font-bold text-slate-900 block truncate leading-tight text-xs sm:text-sm max-w-[130px] sm:max-w-[160px]" title="${emp.nama}">${emp.nama}</span>
-                    <span class="text-[10px] text-slate-400 font-medium block truncate mt-0.5">NPK: ${emp.npk}</span>
+                    <span class="font-bold text-slate-900 block truncate leading-tight text-xs sm:text-sm max-w-[140px] sm:max-w-[180px]" title="${emp.nama}">${emp.nama}</span>
                   </div>
                 </div>
               </td>
@@ -1841,11 +1839,11 @@
 
           let stickyClass = 'text-slate-600 border-b border-slate-100';
           if (isFirst) {
-            stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-20 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
+            stickyClass = 'md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-30 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
           } else if (isSecond) {
-            stickyClass = 'border-b border-slate-100 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
+            stickyClass = 'md:sticky md:left-12 bg-white group-hover:bg-slate-50 md:z-30 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
           } else if (isThird) {
-            stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[180px] whitespace-nowrap font-semibold text-slate-900 transition-colors';
+            stickyClass = 'md:sticky md:left-[128px] bg-white group-hover:bg-slate-50 md:z-20 border-b md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[170px] sm:min-w-[200px] whitespace-nowrap font-semibold text-slate-900 transition-colors';
           }
 
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
@@ -1863,12 +1861,6 @@
               ? row[col] 
               : getRowCellValue(row, col, SCHEMAS.Data_Kehadiran);
             val = formatColumnCell(col, cellRaw, 'Data_Kehadiran');
-          }
-          if (isThird) {
-            const pNo = getRowCellValue(row, 'Personnel no.', SCHEMAS.Data_Kehadiran) || row['Personnel no.'] || row['Personnel No.'] || row['NPK'] || '';
-            if (pNo) {
-              val = `<div><span class="block truncate max-w-[130px] sm:max-w-[160px]" title="${val}">${val}</span><span class="text-[10px] text-slate-400 font-mono block">NPK: ${pNo}</span></div>`;
-            }
           }
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
@@ -2480,7 +2472,7 @@
         const cells = cols.map((col, idx) => {
           const isFirst = idx === 0;
           const stickyClass = isFirst 
-            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
+            ? 'md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-10 border-b md:border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
             : 'text-slate-600';
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
             return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
@@ -2771,7 +2763,7 @@
         const cells = cols.map((col, idx) => {
           const isFirst = idx === 0;
           const stickyClass = isFirst 
-            ? 'sticky left-0 bg-white group-hover:bg-slate-50 z-10 border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
+            ? 'md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-10 border-b md:border-r border-slate-200 font-mono font-bold text-slate-700 shadow-sm text-center w-12 min-w-[48px]' 
             : 'text-slate-600';
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
             return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
@@ -2884,20 +2876,17 @@
 
           let stickyClass = 'text-slate-600 border-b border-slate-100';
           if (isFirst) {
-            stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-20 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
+            stickyClass = 'md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-30 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
           } else if (isSecond) {
-            stickyClass = 'border-b border-slate-100 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
+            stickyClass = 'md:sticky md:left-12 bg-white group-hover:bg-slate-50 md:z-30 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
           } else if (isThird) {
-            stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[180px] whitespace-nowrap font-bold text-slate-800 transition-colors';
+            stickyClass = 'md:sticky md:left-[128px] bg-white group-hover:bg-slate-50 md:z-20 border-b md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[160px] sm:min-w-[190px] whitespace-nowrap font-bold text-slate-800 transition-colors';
           }
 
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
             return `<td class="py-2.5 px-3 whitespace-nowrap ${stickyClass} text-slate-500 font-bold">${rowIdx + 1}</td>`;
           }
-          let val = formatColumnCell(col, row[col], 'Data_SP');
-          if (isThird && row['NPK']) {
-            val = `<div><span class="block truncate max-w-[130px] sm:max-w-[160px]" title="${val}">${val}</span><span class="text-[10px] text-slate-400 font-mono block">NPK: ${row['NPK']}</span></div>`;
-          }
+          const val = formatColumnCell(col, row[col], 'Data_SP');
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -3027,11 +3016,11 @@
 
           let stickyClass = 'text-slate-600 border-b border-slate-100';
           if (isFirst) {
-            stickyClass = 'sticky left-0 bg-white group-hover:bg-slate-50 z-20 border-b border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
+            stickyClass = 'md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-30 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-700 text-center w-12 min-w-[48px] max-w-[48px] transition-colors';
           } else if (isSecond) {
-            stickyClass = 'border-b border-slate-100 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
+            stickyClass = 'md:sticky md:left-12 bg-white group-hover:bg-slate-50 md:z-30 border-b md:border-r border-slate-200/80 font-mono font-bold text-slate-700 w-20 min-w-[80px] max-w-[80px] whitespace-nowrap transition-colors';
           } else if (isThird) {
-            stickyClass = 'sticky left-12 bg-white group-hover:bg-slate-50 z-10 border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[150px] sm:min-w-[180px] whitespace-nowrap font-bold text-slate-800 transition-colors';
+            stickyClass = 'md:sticky md:left-[128px] bg-white group-hover:bg-slate-50 md:z-20 border-b md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] min-w-[160px] sm:min-w-[190px] whitespace-nowrap font-bold text-slate-800 transition-colors';
           }
 
           if (col === 'No' || normalizeHeaderName(col) === 'no') {
@@ -3043,10 +3032,7 @@
           if ((col === 'NAMA' || col === 'Nama') && (!rawCell || rawCell === '-' || String(rawCell).trim() === '') && rowNpk) {
             rawCell = (typeof lookupEmployeeName === 'function' ? lookupEmployeeName(rowNpk) : '') || rawCell;
           }
-          let val = formatColumnCell(col, rawCell, 'Knowledge_management');
-          if (isThird && rowNpk) {
-            val = `<div><span class="block truncate max-w-[130px] sm:max-w-[160px]" title="${val}">${val}</span><span class="text-[10px] text-slate-400 font-mono block">NPK: ${rowNpk}</span></div>`;
-          }
+          const val = formatColumnCell(col, rawCell, 'Knowledge_management');
           return `<td class="py-2.5 px-4 whitespace-nowrap ${stickyClass}">${val}</td>`;
         }).join('');
 
@@ -3109,11 +3095,10 @@
 
         return `
           <tr class="hover:bg-slate-50/80 transition-colors group">
-            <td class="py-3 px-3 text-center font-mono font-bold text-slate-400 sticky left-0 bg-white group-hover:bg-slate-50 z-20 w-12 min-w-[48px] max-w-[48px] border-b border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
-            <td class="py-3 px-3 font-mono font-bold text-slate-600 w-20 min-w-[80px] max-w-[80px] border-b border-slate-100 whitespace-nowrap transition-colors">${npk}</td>
-            <td class="py-3 px-4 font-semibold text-slate-900 sticky left-12 bg-white group-hover:bg-slate-50 z-10 min-w-[150px] sm:min-w-[180px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors whitespace-nowrap">
-              <span class="block truncate max-w-[140px] sm:max-w-[180px]" title="${nama}">${nama}</span>
-              <span class="text-[10px] text-slate-400 font-mono block">NPK: ${npk}</span>
+            <td class="py-3 px-3 text-center font-mono font-bold text-slate-400 md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-30 w-12 min-w-[48px] max-w-[48px] border-b md:border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
+            <td class="py-3 px-3 font-mono font-bold text-slate-600 md:sticky md:left-12 bg-white group-hover:bg-slate-50 md:z-30 w-20 min-w-[80px] max-w-[80px] border-b md:border-r border-slate-200/80 transition-colors whitespace-nowrap">${npk}</td>
+            <td class="py-3 px-4 font-semibold text-slate-900 md:sticky md:left-[128px] bg-white group-hover:bg-slate-50 md:z-20 min-w-[170px] sm:min-w-[200px] border-b md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors whitespace-nowrap">
+              <span class="block truncate max-w-[150px] sm:max-w-[180px]" title="${nama}">${nama}</span>
             </td>
             <td class="py-3 px-4 text-slate-500 border-b border-slate-100 whitespace-nowrap">${cabang} (${kodeBA})</td>
             <td class="py-3 px-4 border-b border-slate-100 whitespace-nowrap">
@@ -3181,9 +3166,9 @@
 
         return `
           <tr class="hover:bg-slate-50/80 transition-colors group">
-            <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-400 sticky left-0 bg-white group-hover:bg-slate-50 z-10 w-12 min-w-[48px] max-w-[48px] border-b border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
-            <td class="py-3.5 px-4 font-semibold text-slate-900 sticky left-12 bg-white group-hover:bg-slate-50 z-10 min-w-[190px] sm:min-w-[220px] border-b border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors whitespace-nowrap">
-              ${emp.nama} <span class="font-mono text-slate-400 text-[10px] block">NPK: ${emp.npk}</span>
+            <td class="py-3.5 px-3 text-center font-mono font-bold text-slate-400 md:sticky md:left-0 bg-white group-hover:bg-slate-50 md:z-10 w-12 min-w-[48px] max-w-[48px] border-b md:border-r border-slate-200/80 transition-colors">${rowIdx + 1}</td>
+            <td class="py-3.5 px-4 font-semibold text-slate-900 md:sticky md:left-12 bg-white group-hover:bg-slate-50 md:z-10 min-w-[190px] sm:min-w-[220px] border-b md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)] transition-colors whitespace-nowrap">
+              ${emp.nama}
             </td>
             <td class="py-3.5 px-4 text-slate-600 border-b border-slate-100 whitespace-nowrap">${emp.cabang}</td>
             <td class="py-3.5 px-4 text-center font-medium text-slate-600 whitespace-nowrap border-b border-slate-100">${umur}</td>

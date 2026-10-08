@@ -315,19 +315,19 @@
         let stickyClass = '';
         let widthClass = '';
         if (stickyFirst && isNo) {
-          stickyClass = 'sticky left-0 bg-slate-100 z-30 border-r border-slate-200/80';
+          stickyClass = 'md:sticky md:left-0 bg-slate-100 md:z-30 md:border-r border-slate-200/80';
           widthClass = 'w-12 min-w-[48px] max-w-[48px] text-center px-2 sm:px-3';
         } else if (stickyFirst && hasStickyNpkAndName && idx === 1) {
-          // NPK menjadi kolom scroll biasa agar tidak menutup layar pada perangkat mobile
-          stickyClass = '';
-          widthClass = 'w-20 min-w-[80px] max-w-[80px] text-left px-3 font-mono';
+          // Di mobile scroll bebas (tanpa freeze), di desktop tetap sticky di left-12
+          stickyClass = 'md:sticky md:left-12 bg-slate-100 md:z-30 md:border-r border-slate-200/80 font-mono';
+          widthClass = 'w-20 min-w-[80px] max-w-[80px] text-left px-3';
         } else if (stickyFirst && hasStickyNpkAndName && idx === 2) {
-          // Hanya satu kolom identitas (Nama) yang sticky di left-12
-          stickyClass = 'sticky left-12 bg-slate-100 z-20 border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]';
-          widthClass = 'min-w-[150px] sm:min-w-[180px] text-left px-3 sm:px-4';
+          // Di mobile scroll bebas, di desktop sticky di left-[128px]
+          stickyClass = 'md:sticky md:left-[128px] bg-slate-100 md:z-30 md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]';
+          widthClass = 'min-w-[170px] sm:min-w-[200px] text-left px-3 sm:px-4';
         } else if (stickyFirst && (isCol1NameOnly || (isCol1Npk && !hasStickyNpkAndName)) && idx === 1) {
-          stickyClass = 'sticky left-12 bg-slate-100 z-20 border-r border-slate-200/80 shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]';
-          widthClass = isCol1NameOnly ? 'min-w-[150px] sm:min-w-[180px] text-left px-3 sm:px-4' : 'w-24 min-w-[96px] text-left px-3';
+          stickyClass = 'md:sticky md:left-12 bg-slate-100 md:z-30 md:border-r border-slate-200/80 md:shadow-[4px_0_10px_-2px_rgba(0,0,0,0.06)]';
+          widthClass = isCol1NameOnly ? 'min-w-[170px] sm:min-w-[200px] text-left px-3 sm:px-4' : 'w-24 min-w-[96px] text-left px-3';
         }
         
         const isCentered = isNo || normCol.includes('total') || normCol.includes('masuk') || 
