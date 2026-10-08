@@ -84,7 +84,11 @@
         if (isKM) {
           colsEl.innerHTML = `4 Kolom Wajib Berkas: <b class="text-slate-800 font-mono">NPK, NAMA, JUDUL, TANGGAL</b><span class="text-emerald-600 block text-[11px] font-semibold mt-1"><i class="fa-solid fa-clock mr-1"></i>Kolom <b>TIME</b> otomatis diisi waktu saat berkas diunggah, NAMA otomatis sinkron dari Master Karyawan.</span>`;
         } else {
-          colsEl.textContent = `${schema.columns.length} Kolom Baku (Sesuai Urutan): ${schema.columns.join(', ')}`;
+          const isSP = (targetSheet === 'Data_SP');
+          const branchHint = !isSP 
+            ? `<span class="text-blue-700 block text-[11px] font-semibold mt-1"><i class="fa-solid fa-shield-halved mr-1"></i>Pembersihan Otomatis: Hanya data dari <b>5 Cabang Resmi DSO Lampung</b> (D660, D661, D662, D663, D664) yang akan diproses. Baris cabang lain dibersihkan otomatis.</span>` 
+            : '';
+          colsEl.innerHTML = `<span>${schema.columns.length} Kolom Baku (Sesuai Urutan): ${schema.columns.join(', ')}</span>${branchHint}`;
         }
       }
     }
@@ -2266,6 +2270,40 @@
           const defaultUploadTime = `${hourStr}:${minStr}:${secStr}`;
           const defaultUploadDate = `${dStr}/${mStr}/${yStr}`;
 
+          const isBranchCleaningExempt = (
+            targetSheet === 'Knowledge_management' ||
+            targetSheet === 'Data_KM' ||
+            targetSheet === 'Data_SP'
+          );
+
+          // Siapkan master employee list dan set NPK resmi 5 Cabang DSO Lampung untuk verifikasi relasi NPK
+          const validLampungEmps = (
+            (window.masterFullPayload && window.masterFullPayload.employeeList) ||
+            (window.fullUnscopedPayload && window.fullUnscopedPayload.employeeList) ||
+            (currentDashboardPayload && currentDashboardPayload.employeeList) ||
+            []
+          ).filter(e => {
+            if (typeof isLampungBranch === 'function') {
+              return isLampungBranch(e, []);
+            }
+            const code = safeString(e.kodeBA || e['Business area'] || e['Kode BA'] || '');
+            const cab = safeString(e.cabang || e['P.subarea'] || e['Cabang'] || '');
+            const normCode = typeof resolveBACode === 'function' ? resolveBACode(code) : '';
+            const normCab = typeof resolveBACode === 'function' ? resolveBACode(cab) : '';
+            const allowed = window.ALLOWED_BRANCH_CODES || ["D660", "D661", "D662", "D663", "D664", "660", "661", "662", "663", "664"];
+            return (normCode && allowed.includes(normCode)) || (normCab && allowed.includes(normCab));
+          });
+
+          const lampungNpkSet = new Set();
+          validLampungEmps.forEach(e => {
+            const npk = safeString(e.npk || e['Personnel no.'] || e['NPK']).trim();
+            if (npk) {
+              lampungNpkSet.add(npk);
+              lampungNpkSet.add(npk.replace(/^0+/, ''));
+            }
+          });
+
+          let cleanedRowCount = 0;
           const parsedObjects = [];
           for (let i = 1; i < rawRows.length; i++) {
             const rowData = rawRows[i];
@@ -2276,8 +2314,6 @@
               const colIdx = colIndexMapping[col];
               let cellVal = (colIdx !== -1 && colIdx !== undefined) ? rowData[colIdx] : "";
 
-              // Khusus Knowledge Management: jika kolom TIME tidak ada di file Excel atau kosong, otomatis isi dengan waktu saat berkas diunggah
-              
               // Khusus KM: auto-lookup NAMA dari Master Karyawan jika di berkas kosong
               if ((targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') && (col === 'NAMA' || col === 'Nama')) {
                 if (!cellVal || String(cellVal).trim() === '' || cellVal === '-') {
@@ -2331,13 +2367,31 @@
               }
             }
 
+            // CLEANING / FILTER: Tolak dan bersihkan baris di luar 5 Cabang Resmi DSO Lampung (kecuali KM dan SP)
+            if (!isBranchCleaningExempt) {
+              const belongsToLampung = (typeof isLampungBranch === 'function')
+                ? isLampungBranch(rowObj, validLampungEmps, lampungNpkSet)
+                : true;
+
+              if (!belongsToLampung) {
+                cleanedRowCount++;
+                continue; // Jangan masukkan ke parsedObjects, jangan simpan ke database maupun tampilan
+              }
+            }
+
             parsedObjects.push(rowObj);
           }
 
           if (!parsedObjects.length) {
-            alert("Tidak ada baris data valid yang berhasil diekstraksi dari file.");
+            if (cleanedRowCount > 0) {
+              alert(`Semua baris (${cleanedRowCount} baris) dalam berkas dibersihkan karena bukan berasal dari 5 Cabang Resmi DSO Lampung (D660, D661, D662, D663, D664 / Lampung A Yani, Lampung S Hatta, Bandarjaya, Kotabumi, Lampung Timur). Tidak ada data yang diunggah.`);
+            } else {
+              alert("Tidak ada baris data valid yang berhasil diekstraksi dari file.");
+            }
             btn.disabled = false;
             btn.textContent = "Proses & Simpan";
+            statusBox.className = "text-[11px] p-2.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 block";
+            statusBox.textContent = `⚠️ Proses dibatalkan: ${cleanedRowCount > 0 ? `${cleanedRowCount} baris non-Lampung dibersihkan.` : 'Data kosong.'}`;
             return;
           }
 
@@ -2351,14 +2405,14 @@
             prevMasterRows.forEach(row => {
               const npk = safeString(row['Personnel no.'] || row['NPK']);
               const st = String(row['Status_Karyawan'] || 'Aktif').trim().toLowerCase();
-              if (npk && st !== 'resign') {
+              if (npk && st !== 'resign' && (typeof isLampungBranch !== 'function' || isLampungBranch(row, validLampungEmps, lampungNpkSet))) {
                 prevActiveMap.set(npk, row);
               }
             });
             prevEmployeeList.forEach(emp => {
               const npk = safeString(emp.npk || emp['Personnel no.']);
               const st = String(emp.statusKaryawan || emp.Status_Karyawan || 'Aktif').trim().toLowerCase();
-              if (npk && st !== 'resign' && !prevActiveMap.has(npk)) {
+              if (npk && st !== 'resign' && (typeof isLampungBranch !== 'function' || isLampungBranch(emp, validLampungEmps, lampungNpkSet)) && !prevActiveMap.has(npk)) {
                 prevActiveMap.set(npk, emp);
               }
             });
@@ -2369,7 +2423,7 @@
 
             const newlyMissing = [];
             prevActiveMap.forEach((prevItem, npk) => {
-              if (!newNpkSet.has(npk)) {
+              if (!newNpkSet.has(npk) && (typeof isLampungBranch !== 'function' || isLampungBranch(prevItem, validLampungEmps, lampungNpkSet))) {
                 const preservedRow = {};
                 canonicalColumns.forEach(col => {
                   preservedRow[col] = prevItem[col] !== undefined ? prevItem[col] : (prevItem[normalizeHeaderName(col)] || '');
@@ -2415,6 +2469,13 @@
           if (!currentDashboardPayload.rawTables) currentDashboardPayload.rawTables = {};
           currentDashboardPayload.rawTables[targetSheet] = parsedObjects;
 
+          if (window.masterFullPayload && window.masterFullPayload.rawTables) {
+            window.masterFullPayload.rawTables[targetSheet] = parsedObjects;
+          }
+          if (window.fullUnscopedPayload && window.fullUnscopedPayload.rawTables) {
+            window.fullUnscopedPayload.rawTables[targetSheet] = parsedObjects;
+          }
+
           if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
             currentDashboardPayload.rawTables.Knowledge_management = parsedObjects;
             try { localStorage.removeItem('dperform_km_cache'); } catch(e) {}
@@ -2422,6 +2483,10 @@
             if (window.masterFullPayload && window.masterFullPayload.rawTables) {
               window.masterFullPayload.rawTables.Knowledge_management = parsedObjects;
               window.masterFullPayload.rawTables.Data_KM = parsedObjects;
+            }
+            if (window.fullUnscopedPayload && window.fullUnscopedPayload.rawTables) {
+              window.fullUnscopedPayload.rawTables.Knowledge_management = parsedObjects;
+              window.fullUnscopedPayload.rawTables.Data_KM = parsedObjects;
             }
           }
 
@@ -2471,6 +2536,15 @@
               currentDashboardPayload.summary
             );
 
+            if (window.masterFullPayload) {
+              window.masterFullPayload.employeeList = currentDashboardPayload.employeeList;
+              window.masterFullPayload.summary = currentDashboardPayload.summary;
+            }
+            if (window.fullUnscopedPayload) {
+              window.fullUnscopedPayload.employeeList = currentDashboardPayload.employeeList;
+              window.fullUnscopedPayload.summary = currentDashboardPayload.summary;
+            }
+
             renderMasterKaryawanView(currentDashboardPayload);
             if (typeof updateResignReviewBanner === 'function') updateResignReviewBanner();
           }
@@ -2482,12 +2556,9 @@
             if (typeof renderKMView === 'function') renderKMView(currentDashboardPayload);
             if (typeof filterKMTable === 'function') filterKMTable();
           }
-          else if (targetSheet === 'Knowledge_management' || targetSheet === 'Data_KM') {
-            if (typeof renderKMView === 'function') renderKMView(currentDashboardPayload);
-            if (typeof filterKMTable === 'function') filterKMTable();
-          }
 
-          statusBox.textContent = `Menyimpan ${parsedObjects.length} baris terstandarisasi ke Google Sheets...`;
+          const cleaningNote = cleanedRowCount > 0 ? ` (${cleanedRowCount} baris di luar 5 cabang DSO Lampung dibersihkan)` : '';
+          statusBox.textContent = `Menyimpan ${parsedObjects.length} baris terstandarisasi${cleaningNote} ke Google Sheets...`;
 
           // Format array 2D terstandarisasi (Row 1 = exact canonical headers)
           const formattedDataRows = parsedObjects.map(obj => canonicalColumns.map(col => obj[col]));
@@ -2503,8 +2574,11 @@
 
           if (res.success) {
             statusBox.className = "text-[11px] p-2.5 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-200 block";
-            statusBox.textContent = `✅ Berhasil mengimpor ${parsedObjects.length} baris data ke ${schema.sheetName}!`;
+            statusBox.textContent = `✅ Berhasil mengimpor ${parsedObjects.length} baris data ke ${schema.sheetName}!${cleaningNote}`;
             fileInput.value = "";
+            if (cleanedRowCount > 0) {
+              showToast(`✅ ${parsedObjects.length} baris diimpor (${cleanedRowCount} baris di luar 5 cabang DSO Lampung dibersihkan).`);
+            }
             setTimeout(() => {
               closeModal('modal-upload');
               loadBackendDashboardData();
@@ -2512,7 +2586,7 @@
           } else {
             // Jika backend offline/mock, beri tahu user bahwa sesi lokal tetap sukses diperbarui
             statusBox.className = "text-[11px] p-2.5 rounded-xl bg-amber-50 text-amber-700 border border-amber-200 block";
-            statusBox.textContent = `⚠️ Tersimpan di tabel lokal (${parsedObjects.length} baris). Status backend: ${res.message}`;
+            statusBox.textContent = `⚠️ Tersimpan di tabel lokal (${parsedObjects.length} baris${cleaningNote}). Status backend: ${res.message}`;
             setTimeout(() => {
               closeModal('modal-upload');
             }, 2500);

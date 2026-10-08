@@ -1348,9 +1348,10 @@
     function isLampungBranch(item, fallbackMasterList = null, lampungNpkSet = null) {
       if (!item) return false;
 
-      // Khusus tabel Knowledge_management (hanya ada NPK, NAMA, JUDUL, TANGGAL, TIME):
-      // Merupakan dokumen repositori pengetahuan resmi DSO Lampung, selalu bernilai true
-      if (item['JUDUL'] !== undefined || item['judul'] !== undefined || item['Judul'] !== undefined) {
+      // Khusus tabel Knowledge_management & Data_SP:
+      // KM dan SP dikecualikan dari filter/cleaning cabang ("kecuali km dan sp")
+      if (item['JUDUL'] !== undefined || item['judul'] !== undefined || item['Judul'] !== undefined ||
+          item['Tingkat SP'] !== undefined || item['tingkat sp'] !== undefined || item['Tingkat_SP'] !== undefined) {
         return true;
       }
 
@@ -1359,26 +1360,27 @@
       if (!rawCode && typeof getRowCellValue === 'function') {
         rawCode = getRowCellValue(item, 'Business area') || getRowCellValue(item, 'Kode BA') || '';
       }
-      if (rawCode && rawCode !== '-' && rawCode !== '0') {
-        const norm = resolveBACode(rawCode);
-        if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
-      }
 
       // 2. Cek teks nama cabang (P.subarea / Cabang)
       let rawCabang = item.cabang || item.branch || item['Cabang'] || item['cabang'] || item['P.subarea'] || item['p.subarea'] || item['Nama Cabang'] || item['Cabang/Departemen'] || '';
       if (!rawCabang && typeof getRowCellValue === 'function') {
         rawCabang = getRowCellValue(item, 'P.subarea') || getRowCellValue(item, 'Cabang') || getRowCellValue(item, 'Cabang/Departemen') || '';
       }
-      if (rawCabang && rawCabang !== '-' && rawCabang !== '0') {
-        const norm = resolveBACode(rawCabang);
-        if (norm && ALLOWED_BRANCH_CODES.includes(norm)) return true;
-      }
 
-      // Jika kode BA atau Cabang secara eksplisit terisi namun bukan cabang Lampung, tolak segera (jangan loloskan via wilayah/relasi)
-      const hasExplicitNonLampungBranch = (rawCode && rawCode !== '-' && rawCode !== '0' && !resolveBACode(rawCode)) ||
-                                          (rawCabang && rawCabang !== '-' && rawCabang !== '0' && !resolveBACode(rawCabang));
-      if (hasExplicitNonLampungBranch) {
+      const codeNorm = (rawCode && rawCode !== '-' && rawCode !== '0') ? resolveBACode(rawCode) : null;
+      const cabNorm = (rawCabang && rawCabang !== '-' && rawCabang !== '0') ? resolveBACode(rawCabang) : null;
+
+      // Jika kode BA terisi eksplisit namun BUKAN cabang Lampung -> tolak segera
+      if (rawCode && rawCode !== '-' && rawCode !== '0' && !codeNorm) {
         return false;
+      }
+      // Jika Cabang terisi eksplisit namun BUKAN cabang Lampung -> tolak segera
+      if (rawCabang && rawCabang !== '-' && rawCabang !== '0' && !cabNorm) {
+        return false;
+      }
+      // Jika salah satu valid cabang Lampung -> terima
+      if ((codeNorm && ALLOWED_BRANCH_CODES.includes(codeNorm)) || (cabNorm && ALLOWED_BRANCH_CODES.includes(cabNorm))) {
+        return true;
       }
 
       // 3. Cek Wilayah (hanya jika eksplisit menyebut Lampung)
@@ -1480,7 +1482,7 @@
           payload.rawTables.Master_Karyawan = payload.rawTables.Master_Karyawan.filter(r => isLampungBranch(r, validLampungEmps, lampungNpkSet));
         }
 
-        const sheets = ['Data_Kehadiran', 'Data_SS', 'Data_QCC', 'Data_SP'];
+        const sheets = ['Data_Kehadiran', 'Data_SS', 'Data_QCC'];
         sheets.forEach(sh => {
           if (Array.isArray(payload.rawTables[sh])) {
             payload.rawTables[sh] = payload.rawTables[sh].filter(r => isLampungBranch(r, validLampungEmps, lampungNpkSet));
@@ -2012,6 +2014,19 @@
       const sourcePayload = window.masterFullPayload || window.fullUnscopedPayload || currentDashboardPayload;
       let rawRows = (sourcePayload?.rawTables && (sourcePayload.rawTables[targetSheet] || sourcePayload.rawTables[schema.sheetName])) || [];
       if (!Array.isArray(rawRows)) rawRows = [];
+
+      // Cleaning / Filter 5 Cabang DSO Lampung untuk seluruh tabel kecuali KM dan SP
+      const isExempt = (
+        targetSheet === 'Knowledge_management' ||
+        targetSheet === 'Data_KM' ||
+        targetSheet === 'Data_SP' ||
+        schema.sheetName === 'Knowledge_management' ||
+        schema.sheetName === 'Data_SP'
+      );
+      if (!isExempt) {
+        rawRows = rawRows.filter(r => isLampungBranch(r));
+      }
+
       const canonicalColumns = schema.columns;
       const formattedDataRows = rawRows.map(obj => canonicalColumns.map(col => {
         if (obj[col] !== undefined && obj[col] !== null) return obj[col];
@@ -2131,4 +2146,9 @@
     window.syncSheetToBackend = syncSheetToBackend;
     window.updateRowInBackend = updateRowInBackend;
     window.deleteRowInBackend = deleteRowInBackend;
+    window.ALLOWED_BRANCH_CODES = ALLOWED_BRANCH_CODES;
+    window.resolveBranchInfo = resolveBranchInfo;
+    window.resolveBACode = resolveBACode;
+    window.isLampungBranch = isLampungBranch;
+    window.sanitizeLampungPayload = sanitizeLampungPayload;
 
